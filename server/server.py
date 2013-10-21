@@ -7,6 +7,7 @@ __copyright__ = "Copyright (c) 2013 Nikola Klaric"
 import sys
 import os
 import re
+import time
 import platform
 import _winreg
 import hashlib
@@ -22,6 +23,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship, backref
 
 from vendor import appdirs
+from vendor import tmdb3 as themoviedb
 
 
 Base = declarative_base()
@@ -92,68 +94,104 @@ def _getChromeApplicationId(pathname):
     return applicationId
 
 
+def _extractRawMetadataFromPathname(dirname):
+    """
+    """
+    releaseYear = 2013
+    editVersion = "Theatrical Cut"
+    extractedTitle = None
+
+    searchReleaseYear = re.compile(r"(?<!^)((19|20)\d{2})[a-zA-Z0-9\.\-\) '\[\]]*$").search(dirname)
+    if searchReleaseYear is not None:
+        releaseYear = int(searchReleaseYear.groups()[0])
+        rawTitle = re.search("^(.*)(?=%s)" % releaseYear, dirname).groups()[0]
+    else:
+        rawTitle = dirname
+
+    intermediateTitle = rawTitle
+
+    # Remove special characters.
+    intermediateTitle = re.compile(r"[\(\[,\-]").sub(" ", intermediateTitle)
+
+    # Convert dots to spaces (except when followed by a zero).
+    intermediateTitle = re.compile(r"\.(?!0)").sub(" ", intermediateTitle)
+
+    # Remove superfluous multi-angle indicators.
+    intermediateTitle = re.compile(r"\d[\- ]*in[\- ]*\d").sub("", intermediateTitle).strip()
+
+    # Remove superfluous edition indicator.
+    intermediateTitle = re.compile(r"(?<= )special edition(?= |$)", re.I).sub(" ", intermediateTitle).strip()
+
+    # Remove superfluous cut indicator.
+    intermediateTitle = re.compile("(?<= )hybrid(?= |$)", re.I).sub(" ", intermediateTitle).strip()
+
+    # Remove superfluous source indicator.
+    intermediateTitle = re.compile("(?<= )(2|3)d source(?= |$)", re.I).sub(" ", intermediateTitle).strip()
+
+    # Remove superfluous frame indicator.
+    intermediateTitle = re.compile("(?<= )open matte(?= |$)", re.I).sub(" ", intermediateTitle).strip()
+
+    # Collapse multiple spaces.
+    intermediateTitle = re.compile("  +").sub(" ", intermediateTitle)
+
+    # Extract cut indicator.
+    searchCutIndicator = re.compile(r"((extended|final|theatrical|international|director[ ']s?) cut)$", re.I).search(intermediateTitle)
+    if searchCutIndicator is not None:
+        editVersion = searchCutIndicator.groups()[0]
+        intermediateTitle = re.compile(r"((extended|final|theatrical|international|director[ ']s?) cut)$", re.I).sub("", intermediateTitle)
+    # else:
+    #     cutIndicator = "Theatrical Cut"
+
+    # Remove leading Roman numerals.
+    intermediateTitle = re.compile(r"^X?(IX|IV|V?I{0,3}) ").sub("", intermediateTitle)
+
+    # Remove surrounding whitespace.
+    intermediateTitle = intermediateTitle.strip()
+
+    return {
+        "extractedTitle": intermediateTitle,
+        "releaseYear":    releaseYear,
+        "editVersion":    editVersion,
+    }
+
+
 def _visitDirectory(top):
     """
     """
-    for root, dirs, files in os.walk(top):
-        # print root, dirs, files
-        # continue
+    themoviedb.set_key("ef89c0a371440a7226e1be2ddfe84318")
+    themoviedb.set_cache("null")
+    themoviedb.set_locale("de", "de")
 
+    for root, dirs, files in os.walk(top):
         dirname = re.compile(r"[a-z]\:\/\/", re.I).sub("", root)
 
         # Skip directories which contain no movie files.
-        if not any([True for name in files if name.endswith(".mkv")]) or re.compile(r"\\!?sample$", re.I).search(dirname) is not None: continue
+        if not any([True for name in files if name.endswith((".mkv", ".MKV"))]) or re.compile(r"\\!?sample$", re.I).search(dirname) is not None: continue
 
         # Ignore parent directory for the time being.
         if dirname.find("\\") != -1:
             dirname = re.compile(r"(?<=\\).*$").search(dirname).group()
 
-        # Remove leading underscores.
+        # Remove leading underscore.
         dirname = re.compile(r"^_ +").sub("", dirname).strip()
 
-        searchReleaseYear = re.compile(r"(?<!^)((19|20)\d{2})[a-zA-Z0-9\.\-\) '\[\]]*$").search(dirname)
-        if searchReleaseYear is not None:
-            releaseYear = searchReleaseYear.groups()[0]
+        rawMetadata = _extractRawMetadataFromPathname(dirname)
+        releaseYear = rawMetadata["releaseYear"]
 
-            searchTitle = re.search("^(.*)(?=%s)" % releaseYear, dirname)
-            if searchTitle is not None:
-                rawTitle = searchTitle.groups()[0] 
+        # 30 requests every 10 seconds per IP
 
-                intermediateTitle = re.compile(r"[\(\[,\-\.]").sub(" ", rawTitle)
+        results = themoviedb.searchMovie(query=rawMetadata["extractedTitle"].encode("utf-8"), year=releaseYear)
 
-                # Remove superfluous multi-angle indicators.
-                intermediateTitle = re.compile(r"\d[\- ]*in[\- ]*\d").sub("", intermediateTitle).strip()
+        if not len(results):
+            results = themoviedb.searchMovie(query=rawMetadata["extractedTitle"].encode("utf-8"))
+    
+        if len(results):
+            print "%s -> %s" % (rawMetadata["extractedTitle"], repr(results[0].title))
+        else:
+            print "??? %s" % rawMetadata["extractedTitle"]
+        time.sleep(0.5)
 
-                # Remove superfluous edition indicator.
-                intermediateTitle = re.compile(r"(?<= )special edition(?= |$)", re.I).sub(" ", intermediateTitle).strip()
-
-                # Remove superfluous cut indicator.
-                intermediateTitle = re.compile("(?<= )hybrid(?= |$)", re.I).sub(" ", intermediateTitle).strip()
-
-                # Remove superfluous source indicator.
-                intermediateTitle = re.compile("(?<= )(2|3)d source(?= |$)", re.I).sub(" ", intermediateTitle).strip()
-
-                # Remove superfluous frame indicator.
-                intermediateTitle = re.compile("(?<= )open matte(?= |$)", re.I).sub(" ", intermediateTitle).strip()
-
-                # Collapse multiple spaces.
-                intermediateTitle = re.compile("  +").sub(" ", intermediateTitle)
-
-                # Extract cut indicator.
-                searchCutIndicator = re.compile(r"((extended|final|theatrical|international|director[ ']s?) cut)$", re.I).search(intermediateTitle)
-                if searchCutIndicator is not None:
-                    cutIndicator = searchCutIndicator.groups()[0]
-                    intermediateTitle = re.compile(r"((extended|final|theatrical|international|director[ ']s?) cut)$", re.I).sub("", intermediateTitle)
-                else:
-                    cutIndicator = "Theatrical Cut"
-
-                # Remove leading Roman numerals.
-                intermediateTitle = re.compile(r"^X?(IX|IV|V?I{0,3}) ").sub("", intermediateTitle)
-
-                # Remove surrounding whitespace.
-                intermediateTitle = intermediateTitle.strip()
-
-                print intermediateTitle #, cutIndicator
+        # print "%s (%s, %d)" % (rawMetadata["extractedTitle"], rawMetadata["editVersion"], rawMetadata["releaseYear"])
 
 
 if __name__ == "__main__":

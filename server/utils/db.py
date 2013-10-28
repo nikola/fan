@@ -10,7 +10,8 @@ from sqlite3 import dbapi2 as sqlite
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from utils.win32 import getAppStoragePathname
-from models import Base
+from models import Base, Stream
+
 
 def _getSqliteDsn():
     """
@@ -52,6 +53,12 @@ class StreamManager(object):
         self.session_factory = sessionmaker(bind=self.engine, expire_on_commit=False)
         Base.metadata.drop_all(self.engine, checkfirst=True)
         Base.metadata.create_all(self.engine)
+
+    def isKnownLocation(self, location):
+        """
+        """
+        with self._session() as session:
+            session.query(Stream).filter("location=:location").params(location=location).one()
 
     def _foo(self):
         """

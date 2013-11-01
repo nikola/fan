@@ -4,13 +4,16 @@
 __author__ = "Nikola Klaric (nikola@klaric.org)"
 __copyright__ = "Copyright (c) 2013 Nikola Klaric"
 
+import sys
 import os
 from contextlib import contextmanager
 from sqlite3 import dbapi2 as sqlite
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.sql import exists
 from utils.win32 import getAppStoragePathname
-from models import Base, Stream
+from models import *
 
 
 def _getSqliteDsn():
@@ -54,14 +57,30 @@ class StreamManager(object):
         Base.metadata.drop_all(self.engine, checkfirst=True)
         Base.metadata.create_all(self.engine)
 
-    def isKnownLocation(self, location):
+    def addMovieStream(self, movieRecord, streamLocation):
         """
         """
-        with self._session() as session:
-            session.query(Stream).filter("location=:location").params(location=location).one()
+        if not movieRecord or not streamLocation: return
 
-    def _foo(self):
-        """
-        """
         with self._session() as session:
-            pass
+            try:
+                stream = session.query(Stream).filter_by(location=streamLocation).one()
+            except NoResultFound:
+                streamFormat = "Matroska" if streamLocation.lower().endswith(".mkv") else "BD"
+                stream = Stream(
+                    format = streamFormat,
+                    location = streamLocation,
+                )
+                session.add(stream)
+
+            try:
+                movie = session.query(Movie).filter("titleOriginal=:title and releaseYear=:year").params(title=movieRecord["titleOriginal"], year=movieRecord["releaseYear"]).one()
+            except NoResultFound:
+                movie = Movie(**movieRecord)
+                variant = Variant(**movieRecord)
+                variant.movie = movie
+                session.add_all([movie, variant])
+
+            stream.movie = movie
+
+            session.commit()

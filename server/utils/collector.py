@@ -9,6 +9,7 @@ import re
 
 STREAM_SIZE_THRESHOLD = 1024 * 1024 * 10 # 10 MiB
 
+
 def getMoviePathnames(top):
     """
     """
@@ -34,10 +35,14 @@ def getMoviePathnames(top):
         # Only files with actual movie content.
         streams = []
         for filename in files:
-            if not filename.lower().endswith(".mkv"): continue
-            if re.compile(r"sample", re.I).search(filename) is not None: continue
-            if os.stat(os.path.join(root, filename)).st_size < STREAM_SIZE_THRESHOLD: continue
-            streams.append(filename)
+            if not filename.lower().endswith(".mkv"):
+                continue
+            elif re.compile(r"sample", re.I).search(filename) is not None:
+                continue
+            elif os.stat(os.path.join(root, filename)).st_size < STREAM_SIZE_THRESHOLD:
+                continue
+            else:
+                streams.append(filename)
         if not len(streams): continue
 
         yield (root, dirname, streams)
@@ -86,7 +91,7 @@ def getBasedataFromPathname(pathname):
     extractedTitle = extractedTitle.strip()
 
     return {
-        "extractedTitle": extractedTitle,
-        "releaseYear":    releaseYear,
+        "title": extractedTitle,
+        "year":    releaseYear,
         "editVersion":    editVersion,
     }

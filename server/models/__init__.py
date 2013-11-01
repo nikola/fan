@@ -8,3 +8,4 @@ from common import Base, createNamedTuple
 from streams import Stream
 from genres import Genre
 from movies import Movie
+from variants import Variant

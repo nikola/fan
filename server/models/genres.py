@@ -6,8 +6,7 @@ __copyright__ = "Copyright (c) 2013 Nikola Klaric"
 
 from sqlalchemy import Table, Column, Integer, String, Unicode, ForeignKey
 from sqlalchemy.orm import relation
-
-from models import Base, createNamedTuple
+from models import Base
 
 
 GenreTranslations = Table(
@@ -20,6 +19,7 @@ class Genre(Base):
     __tablename__ = "genres"
 
     id = Column(Integer, primary_key=True)
+    idTmdb = Column(Integer)
     locale = Column(String)
     text = Column(Unicode)
     translations = relation(

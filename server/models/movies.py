@@ -4,11 +4,10 @@
 __author__ = "Nikola Klaric (nikola@klaric.org)"
 __copyright__ = "Copyright (c) 2013 Nikola Klaric"
 
-from models import Base
-
-from sqlalchemy import Column, SmallInteger, Integer, BigInteger, String, Unicode, Date
+from sqlalchemy import Column, SmallInteger, Integer, BigInteger, String, Unicode
 from sqlalchemy import Table, ForeignKey
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import relationship
+from models import Base
 
 GENRES_EN = (
     "Action",
@@ -47,24 +46,20 @@ class Movie(Base):
     id = Column(Integer, primary_key=True)
     idImdb = Column(String)
     titleOriginal = Column(Unicode)
-    titleLocal = Column(Unicode)
-    taglineLocal = Column(Unicode)
-    overviewLocal = Column(Unicode)
     runtime = Column(SmallInteger)
     budget = Column(Integer)
     revenue = Column(BigInteger)
     homepage = Column(String)
-    # releaseDate = Column(Date)
     releaseYear = Column(SmallInteger)
     urlBackdrop = Column(String)
     urlPoster = Column(String)
-    # genres = relationship("Genre", order_by="Genre.id", backref="movie")
 
     # Many-to-many Movies <-> Genres.
     genres = relationship("Genre", secondary=movie_genres, backref="movies")
 
-    def __init__(self):
-        pass
+    def __init__(self, **kwargs):
+        for key, value in kwargs.iteritems():
+            setattr(self, key, value)
 
     def __repr__(self):
         return "<Movie('%s')>" % (self.id)

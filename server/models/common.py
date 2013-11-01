@@ -12,4 +12,4 @@ Base = declarative_base()
 def createNamedTuple(*values):
     """
     """
-     return namedtuple("NamedTuple", values)(*values)
+    return namedtuple("NamedTuple", values)(*values)

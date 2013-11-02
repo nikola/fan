@@ -1,0 +1,25 @@
+{
+ "name": "Kendo UI Packaged App Bootstrap",
+ "description": "A sample packaged application for Chrome using Kendo UI",
+ "version": "1.0",
+ "manifest_version": 2,
+ "offline_enabled" : true,
+ "app": {
+  "background": {
+    "scripts": [ "background.js" ]
+  },
+  "icons": { "128": "icon.png" }
+ },
+ "permissions": [
+  "fullscreen",
+   "fileSystem",
+   "contextMenus",
+   "notifications",
+   "videoCapture",
+   "tts",
+   "idle"
+  , "<all_urls>"
+ ],
+  "sandbox": {
+    "pages": [ "iframe.html" ]
+  }}

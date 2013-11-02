@@ -7,6 +7,7 @@ __copyright__ = "Copyright (c) 2013 Nikola Klaric"
 import os
 import ctypes
 
+
 def getAppStoragePathname(appName, appVendor):
     """
         CSIDL_APPDATA: 26 (Roaming)

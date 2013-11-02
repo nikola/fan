@@ -25,11 +25,13 @@ chrome.app.runtime.onRestarted.addListener(function () {
  */
 function runApp(readInitialState) {
 	chrome.app.window.create("index.html", {
-		id: 'application', 
-		frame: "none", 
-		state: "fullscreen", 
-		resizable: true,
-		bounds: {width: 500, height: 309} 
+		id: 'application'
+	  , frame: "none"
+	  , state: "fullscreen"
+	  , resizable: true
+	  , bounds: {
+	  		width: 1920, height: 1080
+	  	} 
 	},
 	/**
 	 *	When the callback is executed, the DOM is loaded but no script was

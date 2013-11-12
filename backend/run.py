@@ -13,7 +13,8 @@ from utils.db import *
 
 
 if __name__ == "__main__":
-    if platform.system() != "Windows":
+    # Must be Windows 7 or higher, and 32-bit Python interpreter due to CEF dependency.
+    if not platform.platform().startswith("Windows-7") or platform.architecture()[0] != "32bit":
         sys.exit()
 
     streamManager = StreamManager()

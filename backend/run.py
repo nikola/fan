@@ -4,18 +4,30 @@
 __author__ = "Nikola Klaric (nikola@klaric.org)"
 __copyright__ = "Copyright (c) 2013 Nikola Klaric"
 
-import sys
-import time
 import platform
 from utils.collector import *
 from utils.identifier import *
 from utils.db import *
+from utils.chrome import *
+from utils.agent import isCompatiblePlatform
+from server.control import start as startServer
+from server.control import stop as stopServer
 
 
 if __name__ == "__main__":
-    # Must be Windows 7 or higher, and 32-bit Python interpreter due to CEF dependency.
-    if not platform.platform().startswith("Windows-7") or platform.architecture()[0] != "32bit":
+    # Must be Windows 7 or higher, non-debug revision, and 32-bit Python interpreter due to CEF dependency.
+    if not isCompatiblePlatform() or platform.architecture()[0] != "32bit" or platform.win32_ver()[-1].endswith(" Checked"):
         sys.exit()
+
+    startServer(8080)
+
+    sys.excepthook = handleException
+
+    execChromeContainer(r"C:/Users/Niko/Documents/GitHub/ka-BOOM/backend/vendor/cef/example.html", stopServer)
+    # execChromeContainer(r"C:/Users/Niko/Documents/GitHub/ka-BOOM/frontend/app/index.html")
+
+
+    sys.exit()
 
     streamManager = StreamManager()
 

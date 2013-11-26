@@ -13,12 +13,12 @@ module = Module()
 
 @module.route("/", headers=SERVER_HEADERS, content_type="text/html")
 def serveRoot(request):
-    if not request.is_secure or request.headers.get("User-Agent", None) != module.userAgent:
-        request.connection.close()
-    else:
-        pathname = os.path.join(PROJECT_PATH, "frontend", "app", "index.html")
-        with open(pathname) as fp: content = fp.read()
-        return content, 203
+    # if not request.is_secure or request.headers.get("User-Agent", None) != module.userAgent:
+    #     request.connection.close()
+    # else:
+    pathname = os.path.join(PROJECT_PATH, "frontend", "app", "index.html")
+    with open(pathname) as fp: content = fp.read()
+    return content, 203
 
 
 @module.route("/partials/<string:filename>.html", headers=SERVER_HEADERS, content_type="text/html")

@@ -5,10 +5,14 @@ __author__ = "Nikola Klaric (nikola@klaric.org)"
 __copyright__ = "Copyright (c) 2013 Nikola Klaric"
 
 import platform
+# from multiprocessing import Value, Lock
+from ctypes import c_char_p
+# from config import CHROME_USER_AGENT
 from utils.collector import *
 from utils.identifier import *
 from utils.db import *
 from utils.chrome import *
+from utils.agent import getUserAgent
 from utils.agent import isCompatiblePlatform
 from server.control import start as startServer
 from server.control import stop as stopServer
@@ -19,13 +23,19 @@ if __name__ == "__main__":
     if not isCompatiblePlatform() or platform.architecture()[0] != "32bit" or platform.win32_ver()[-1].endswith(" Checked"):
         sys.exit()
 
-    startServer(8080)
+    userAgent = getUserAgent()
+    port = startServer(userAgent)
 
     sys.excepthook = handleException
 
-    execChromeContainer(r"C:/Users/Niko/Documents/GitHub/ka-BOOM/backend/vendor/cef/example.html", stopServer)
-    # execChromeContainer(r"C:/Users/Niko/Documents/GitHub/ka-BOOM/frontend/app/index.html")
+    # execChromeContainer(r"https://127.0.0.1:8080/static/test.html", stopServer)
+    # execChromeContainer(r"https://127.0.0.1:8080/app/index-async.html", stopServer)
+    execChromeContainer(userAgent, r"https://127.0.0.1:%d/" % port, stopServer)
 
+    # execChromeContainer(r"C:/Users/Niko/Documents/GitHub/ka-BOOM/backend/vendor/cef/example.html", stopServer)
+    # execChromeContainer(r"C:/Users/Niko/Documents/GitHub/ka-BOOM/frontend/app/index.html", stopServer)
+
+    # while 1: pass
 
     sys.exit()
 

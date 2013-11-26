@@ -13,8 +13,8 @@ STREAM_SIZE_THRESHOLD = 1024 * 1024 * 10 # 10 MiB
 def getMoviePathnames(top):
     """
     """
-    # If the root is a mapped network share, check first if it's mounted. This check in itself might reconnect the share.
-    if any([True for drive in os.popen('wmic logicaldisk get Name, DriveType').readlines() if
+    # If the root is a mapped network share, check first if it's mounted.
+    if any([True for drive in os.popen("wmic logicaldisk get Name, DriveType").readlines() if
             re.compile(r"^4\s+%s:" % top[0]).search(drive) is not None]) and not os.access(top, os.R_OK):
         return
 

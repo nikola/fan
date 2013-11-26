@@ -73,7 +73,7 @@ def handleException(excType, excValue, traceObject):
     os._exit(1)
 
 
-def execChromeContainer(url, callback):
+def execChromeContainer(agent, url, callback):
     """
     """
     # Memorize callback function that must be executed before shutting down the CEF container.
@@ -84,11 +84,13 @@ def execChromeContainer(url, callback):
     cefpython.g_debugFile = getNormalizedPathname("debug.log")
 
     cefpython.Initialize(dict(
-        log_file                = getNormalizedPathname("debug.log"),
-        log_severity            = cefpython.LOGSEVERITY_INFO,
-        release_dcheck_enabled  = DEBUG, # Disable in production
-        browser_subprocess_path = "%s/%s" % (cefpython.GetModuleDirectory(), "subprocess"),
-        user_agent              = CHROME_USER_AGENT,
+        log_file                  = getNormalizedPathname("debug.log"),
+        log_severity              = cefpython.LOGSEVERITY_INFO,
+        release_dcheck_enabled    = DEBUG, # Disable in production
+        browser_subprocess_path   = "%s/%s" % (cefpython.GetModuleDirectory(), "subprocess"),
+        user_agent                = agent,
+        ignore_certificate_errors = True,
+        remote_debugging_port     = 8090,
     ))
 
     windowId = createChromeWindow(

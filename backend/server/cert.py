@@ -3,3 +3,5 @@
 """
 __author__ = "Nikola Klaric (nikola@klaric.org)"
 __copyright__ = "Copyright (c) 2013 Nikola Klaric"
+
+import tempfile

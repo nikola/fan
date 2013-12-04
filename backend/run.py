@@ -4,11 +4,11 @@
 __author__ = "Nikola Klaric (nikola@klaric.org)"
 __copyright__ = "Copyright (c) 2013 Nikola Klaric"
 
-import os
+import sys
 import platform
 from utils.collector import *
 from utils.identifier import *
-from utils.db import *
+from models import StreamManager
 from chromium.launcher import *
 from utils.agent import getUserAgent
 from utils.agent import isCompatiblePlatform

@@ -4,18 +4,22 @@
 __author__ = "Nikola Klaric (nikola@klaric.org)"
 __copyright__ = "Copyright (c) 2013 Nikola Klaric"
 
+import os
 import platform
-# from multiprocessing import Value, Lock
-from ctypes import c_char_p
-# from config import CHROME_USER_AGENT
 from utils.collector import *
 from utils.identifier import *
 from utils.db import *
-from utils.chrome import *
+from chromium.launcher import *
 from utils.agent import getUserAgent
 from utils.agent import isCompatiblePlatform
-from server.control import start as startServer
-from server.control import stop as stopServer
+from server.control import start as startServer, stop as stopServer
+from config import DB_PERSISTENCE_PATH
+
+
+def _shutdown():
+    """
+    """
+    stopServer()
 
 
 if __name__ == "__main__":
@@ -23,35 +27,37 @@ if __name__ == "__main__":
     if not isCompatiblePlatform() or platform.architecture()[0] != "32bit" or platform.win32_ver()[-1].endswith(" Checked"):
         sys.exit()
 
-    userAgent = getUserAgent()
-    port = startServer(userAgent)
+    try:
+        userAgent = getUserAgent()
+        port = startServer(userAgent)
 
-    sys.excepthook = handleException
+        # sys.excepthook = handleException
 
-    # execChromeContainer(r"https://127.0.0.1:8080/static/test.html", stopServer)
-    # execChromeContainer(r"https://127.0.0.1:8080/app/index-async.html", stopServer)
-    execChromeContainer(userAgent, r"https://127.0.0.1:%d/" % port, stopServer)
+        streamManager = StreamManager(DB_PERSISTENCE_PATH)
 
-    # execChromeContainer(r"C:/Users/Niko/Documents/GitHub/ka-BOOM/backend/vendor/cef/example.html", stopServer)
-    # execChromeContainer(r"C:/Users/Niko/Documents/GitHub/ka-BOOM/frontend/app/index.html", stopServer)
+        for (path, container, files) in getMoviePathnames(r"M:\\"):
+            basedata = getBasedataFromPathname(container)
 
-    # while 1: pass
+            for filename in files:
+                streamLocation = os.path.join(path, filename)
+                print streamLocation
+                continue
 
-    sys.exit()
+                print "processing %s" % streamLocation
+                movieRecord = getMovieFromRawData("de", "de", basedata["title"], basedata["year"])
+                if movieRecord is None: continue
 
-    streamManager = StreamManager()
+                print "adding %s from %s" % (movieRecord["titleOriginal"], streamLocation)
+                streamManager.addMovieStream(movieRecord, streamLocation)
 
-    for (path, container, files) in getMoviePathnames(r"M:\\"):
-        basedata = getBasedataFromPathname(container)
+                time.sleep(0.5)
 
-        for filename in files:
-            streamLocation = os.path.join(path, filename)
-
-            print "processing %s" % streamLocation
-            movieRecord = getMovieFromRawData("de", "de", basedata["title"], basedata["year"])
-            if movieRecord is None: continue
-
-            print "adding %s from %s" % (movieRecord["titleOriginal"], streamLocation)
-            streamManager.addMovieStream(movieRecord, streamLocation)
-
-            time.sleep(0.5)
+        launchChrome(userAgent, r"https://127.0.0.1:%d/" % port, (stopServer, streamManager.shutdown))
+    except (KeyboardInterrupt, SystemError):
+        streamManager.shutdown()
+        stopServer()
+        sys.exit(1)
+    except Exception, e:
+        streamManager.shutdown()
+        stopServer()
+        sys.exit(1)

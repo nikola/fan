@@ -4,8 +4,12 @@
 __author__ = "Nikola Klaric (nikola@klaric.org)"
 __copyright__ = "Copyright (c) 2013 Nikola Klaric"
 
+import httplib
+import socket
 import tmdb3 as themoviedb
 from babel import Locale as BabelLocale
+
+socket.setdefaulttimeout(5)
 
 themoviedb.set_key("ef89c0a371440a7226e1be2ddfe84318")
 themoviedb.set_cache("null")
@@ -50,27 +54,30 @@ def getMovieFromRawData(language, territory, title, year):
     """
     record = None
 
-    # Search movie by title and year. Omit year in retry.
-    locale = themoviedb.locales.Locale(language, territory, encoding="iso-8859-1")
-    results = themoviedb.searchMovie(query=title.encode("utf-8"), locale=locale, year=year)
-    if not len(results): results = themoviedb.searchMovie(query=title.encode("utf-8"), locale=locale)
+    try:
+        # Search movie by title and year. Omit year in retry.
+        locale = themoviedb.locales.Locale(language, territory, encoding="iso-8859-1")
+        results = themoviedb.searchMovie(query=title.encode("utf-8"), locale=locale, year=year)
+        if not len(results): results = themoviedb.searchMovie(query=title.encode("utf-8"), locale=locale)
 
-    if len(results):
-        result = results[0]
-        record = dict(
-            titleOriginal = result.originaltitle,
-            titleLocal    = result.title,
-            releaseYear   = result.releasedate.year,
-            urlBackdrop   = result.backdrop.geturl(),
-            urlPoster     = result.poster.geturl(),
-            idImdb        = result.imdb,
-            taglineLocal  = result.tagline,
-            overviewLocal = result.overview,
-            runtime       = result.runtime or None,
-            budget        = result.budget or None,
-            revenue       = result.revenue or None,
-            homepage      = result.homepage,
-            locale        = BabelLocale(language, territory),
-        )
+        if len(results):
+            result = results[0]
+            record = dict(
+                titleOriginal = result.originaltitle,
+                titleLocal    = result.title,
+                releaseYear   = result.releasedate.year,
+                urlBackdrop   = result.backdrop.geturl(),
+                urlPoster     = result.poster.geturl(),
+                idImdb        = result.imdb,
+                taglineLocal  = result.tagline,
+                overviewLocal = result.overview,
+                runtime       = result.runtime or None,
+                budget        = result.budget or None,
+                revenue       = result.revenue or None,
+                homepage      = result.homepage,
+                locale        = BabelLocale(language, territory),
+            )
+    except (themoviedb.TMDBHTTPError, httplib.BadStatusLine, socket.timeout):
+        print "error"
 
     return record

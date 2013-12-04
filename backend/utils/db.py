@@ -6,6 +6,7 @@ __copyright__ = "Copyright (c) 2013 Nikola Klaric"
 
 import sys
 import os
+import bz2
 from contextlib import contextmanager
 from sqlite3 import dbapi2 as sqlite
 from sqlalchemy import create_engine
@@ -14,6 +15,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql import exists
 from utils.win32 import getAppStoragePathname
 from models import *
+from cStringIO import StringIO
 
 
 def _getSqliteDsn():
@@ -24,7 +26,7 @@ def _getSqliteDsn():
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-    filename = "sqlite:///" + (directory + "\\data").replace("\\", r"\\\\")
+    filename = "sqlite:///" + (directory + "\\data.accdr").replace("\\", r"\\\\")
 
     return filename
 
@@ -48,14 +50,25 @@ class StreamManager(object):
             else:
                 session.commit()
 
-    def __init__(self):
+    def __init__(self, pathname):
         """
         """
-        self.engine = create_engine(_getSqliteDsn(), echo=False, module=sqlite)
+        self._persistenceFile = pathname
+        self.engine = create_engine("sqlite://", echo=False, module=sqlite)
         self.engine.execute("select 1").scalar()
         self.session_factory = sessionmaker(bind=self.engine, expire_on_commit=False)
         Base.metadata.drop_all(self.engine, checkfirst=True)
-        Base.metadata.create_all(self.engine)
+
+        if os.path.exists(self._persistenceFile):
+            self._restore()
+            # TO DO: migrate schema
+        else:
+            Base.metadata.create_all(self.engine)
+
+    def shutdown(self):
+        """
+        """
+        self._persist()
 
     def addMovieStream(self, movieRecord, streamLocation):
         """
@@ -84,3 +97,31 @@ class StreamManager(object):
             stream.movie = movie
 
             session.commit()
+
+    def _persist(self):
+        """
+        """
+        compressor = bz2.BZ2Compressor()
+        connection = self.engine.raw_connection()
+        fp = open(self._persistenceFile, "wb")
+        try:
+            for line in connection.iterdump():
+                fp.write(compressor.compress(line.encode("iso-8859-1")))
+            fp.write(compressor.flush())
+        finally:
+            fp.close()
+            connection.close()
+
+    def _restore(self):
+        """
+        """
+        connection = self.engine.raw_connection()
+        try:
+            with open(self._persistenceFile, "rb") as fp:
+                connection.cursor().executescript(bz2.decompress(fp.read()).decode("iso-8859-1"))
+        except:
+            raise
+        else:
+            connection.commit()
+        finally:
+            connection.close()

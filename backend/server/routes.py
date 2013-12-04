@@ -17,7 +17,7 @@ def serveRoot(request):
     #     request.connection.close()
     # else:
     pathname = os.path.join(PROJECT_PATH, "frontend", "app", "index.html")
-    with open(pathname) as fp: content = fp.read()
+    with open(pathname, "rb") as fp: content = fp.read()
     return content, 203
 
 
@@ -25,7 +25,7 @@ def serveRoot(request):
 def serveStylesheet(request, filename):
     pathname = os.path.join(PROJECT_PATH, "frontend", "app", "partials", "%s.html" % filename)
     if os.path.exists(pathname):
-        with open(pathname) as fp: content = fp.read()
+        with open(pathname, "rb") as fp: content = fp.read()
         return content, 203
     else:
         return None, 404
@@ -35,7 +35,7 @@ def serveStylesheet(request, filename):
 def serveStylesheet(request, filename):
     pathname = os.path.join(PROJECT_PATH, "frontend", "app", "css", "%s.css" % filename)
     if os.path.exists(pathname):
-        with open(pathname) as fp: content = fp.read()
+        with open(pathname, "rb") as fp: content = fp.read()
         return content, 203
     else:
         return None, 404
@@ -45,7 +45,11 @@ def serveStylesheet(request, filename):
 def serveScript(request, filename):
     pathname = os.path.join(PROJECT_PATH, "frontend", "app", "js", "%s.js" % filename)
     if os.path.exists(pathname):
-        with open(pathname) as fp: content = fp.read()
+        with open(pathname, "rb") as fp: content = fp.read()
+
+        # Monkey-patch user agent string.
+        if filename.startswith("angular."):
+            content = content.replace('navigator.userAgent', '"Mozilla/5.0 (Windows NT) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.80 Safari/537.36"')
         return content, 203
     else:
         return None, 404

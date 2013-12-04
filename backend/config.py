@@ -31,3 +31,22 @@ SERVER_HEADERS = {
     "X-AspNet-Version": "4.0.30319",
     "X-AspNetMvc-Version": "3.0",
 }
+
+RESOURCES_SCRIPT = [
+    "static/angular/angular.min.js",
+    "static/angular/angular-animate.min.js",
+    "static/angular/angular-route.min.js",
+    "app/js/services.js",
+    "app/js/controllers.js",
+    "app/js/filters.js",
+    "app/js/directives.js",
+    "app/js/app.js",
+    "static/lodash/lodash.min.js",
+]
+
+RESOURCES_STYLE = [
+    "app/css/app.css",
+    "app/css/animations.css",
+]
+
+CHROME_USER_AGENT = '"Mozilla/5.0 (Windows NT) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.80 Safari/537.36"'

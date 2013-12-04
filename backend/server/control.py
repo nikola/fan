@@ -9,7 +9,7 @@ import os
 from multiprocessing import Process
 from pants.web import Application
 from pants.http import HTTPServer
-from pants.web.fileserver import FileServer
+# from pants.web.fileserver import FileServer
 from pants import Engine
 from server.routes import module as appRoutes
 from server.cert import getCertificateFile
@@ -20,10 +20,10 @@ def _startHttpServer(userAgent, port , certfile):
     """
     appRoutes.userAgent = userAgent
 
-    app = Application()
+    app = Application(debug=True)
 
     app.add("/", appRoutes)
-    FileServer(r"C:/Users/Niko/Documents/GitHub/ka-BOOM/frontend/static").attach(app, "/static/")
+    # FileServer(r"C:/Users/Niko/Documents/GitHub/ka-BOOM/frontend/static").attach(app, "/static/")
     HTTPServer(app).startSSL(dict(do_handshake_on_connect=False, server_side=True, certfile=certfile)).listen(("", port))
 
     Engine.instance().start()

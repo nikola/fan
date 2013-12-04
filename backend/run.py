@@ -35,6 +35,7 @@ if __name__ == "__main__":
 
         streamManager = StreamManager(DB_PERSISTENCE_PATH)
 
+        """
         for (path, container, files) in getMoviePathnames(r"M:\\"):
             basedata = getBasedataFromPathname(container)
 
@@ -51,13 +52,16 @@ if __name__ == "__main__":
                 streamManager.addMovieStream(movieRecord, streamLocation)
 
                 time.sleep(0.5)
+        """
 
         launchChrome(userAgent, r"https://127.0.0.1:%d/" % port, (stopServer, streamManager.shutdown))
     except (KeyboardInterrupt, SystemError):
         streamManager.shutdown()
         stopServer()
-        sys.exit(1)
+        # sys.exit(1)
+        raise
     except Exception, e:
         streamManager.shutdown()
         stopServer()
-        sys.exit(1)
+        # sys.exit(1)
+        raise

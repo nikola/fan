@@ -64,8 +64,6 @@ def launchChrome(agent, url, callbacks):
         remote_debugging_port     = 8090,
     ))
 
-    print getNormalizedPathname("cef/icon.ico"),
-
     windowId = createChromeWindow(
         title = "ka-BOOM",
         className = "kaboom_%s" % uuid.uuid4().hex,

@@ -45,9 +45,9 @@ def launchChrome(agent, url, callbacks):
     """
     global cefpython
 
-    cefpython = imp.load_dynamic("cefpython_py27", os.path.join(PROJECT_PATH, "backend", "vendor", "cef", "cefpython_py27.pyd"))
+    cefpython = imp.load_dynamic("cefpython_py27", os.path.join(PROJECT_PATH, "backend", "chromium", "cef", "framework.pyd"))
 
-    # Memorize callback function that must be executed before shutting down the CEF container.
+    # Memorize callback functions that must be executed before shutting down the CEF container.
     global onCloseCallbacks
     onCloseCallbacks = callbacks
 
@@ -64,10 +64,12 @@ def launchChrome(agent, url, callbacks):
         remote_debugging_port     = 8090,
     ))
 
+    print getNormalizedPathname("cef/icon.ico"),
+
     windowId = createChromeWindow(
         title = "ka-BOOM",
         className = "kaboom_%s" % uuid.uuid4().hex,
-        iconPathname = getNormalizedPathname("../vendor/cef/icon.ico"),
+        iconPathname = getNormalizedPathname("../chromium/cef/icon.ico"),
     )
 
     windowInfo = cefpython.WindowInfo()

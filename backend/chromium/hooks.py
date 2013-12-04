@@ -228,6 +228,7 @@ class ClientHandler(object):
             Remember to keep a strong reference to this object while resource is being loaded.
             The GetResourceHandler example can be found in the wxpython-response.py script on Linux.
         """
+    #     return None
 
     # void OnResourceRedirect(Browser browser, Frame frame, string oldUrl, list& newUrlOut)
     # def OnResourceRedirect(self, browser, frame, oldUrl, newUrlOut):

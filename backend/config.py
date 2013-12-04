@@ -18,6 +18,7 @@ CHROME_BROWSER_SETTINGS = dict(
     plugins_disabled = True,
     text_area_resize_disabled = True,
     application_cache_disabled = True,
+    # pack_loading_disabled = True,
 )
 
 PROJECT_PATH = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), ".."))

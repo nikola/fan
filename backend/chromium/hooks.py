@@ -120,7 +120,6 @@ class ClientHandler(object):
             Sub-frames may start or continue loading after the main frame load has ended. This method may not be called for a particular frame
             if the load request for that frame fails. For notification of overall browser load status use DisplayHandler.OnLoadingStateChange instead.
         """
-    #     frame.ExecuteJavascript("document.oncontextmenu = function() { return false; }")
 
     # void OnLoadEnd(Browser browser, Frame frame, int httpStatusCode)
     # def OnLoadEnd(self, browser, frame, httpStatusCode):

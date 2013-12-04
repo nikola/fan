@@ -16,7 +16,7 @@ from config import *
 from utils.win32 import getNormalizedPathname
 from chromium.hooks import ClientHandler
 
-DEBUG = True
+# DEBUG = True
 
 
 def handleException(excType, excValue, traceObject):

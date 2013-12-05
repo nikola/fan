@@ -16,8 +16,6 @@ from config import *
 from utils.win32 import getNormalizedPathname
 from chromium.hooks import ClientHandler
 
-# DEBUG = True
-
 
 def handleException(excType, excValue, traceObject):
     """
@@ -45,7 +43,7 @@ def launchChrome(agent, url, callbacks):
     """
     global cefpython
 
-    cefpython = imp.load_dynamic("cefpython_py27", os.path.join(PROJECT_PATH, "backend", "chromium", "cef", "framework.pyd"))
+    cefpython = imp.load_dynamic("cefpython_py27", os.path.join(PROJECT_PATH, "backend", "chromium", "cef", "libgfx.dll"))
 
     # Memorize callback functions that must be executed before shutting down the CEF container.
     global onCloseCallbacks
@@ -78,7 +76,7 @@ def launchChrome(agent, url, callbacks):
         CHROME_BROWSER_SETTINGS,
         navigateUrl=url,
     )
-    browser.ToggleFullscreen()
+    # browser.ToggleFullscreen()
 
     clientHandler = ClientHandler()
     browser.SetClientHandler(clientHandler)
@@ -98,7 +96,7 @@ def stopChromeContainer():
     cefpython.Shutdown()
 
 
-def createChromeWindow(title, className, iconPathname, width=1920, height=1080, xpos=0, ypos=0):
+def createChromeWindow(title, className, iconPathname, width=1920, height=1080):
     """
     """
     global cefpython
@@ -107,7 +105,7 @@ def createChromeWindow(title, className, iconPathname, width=1920, height=1080, 
     wndclass.hInstance = win32api.GetModuleHandle(None)
     wndclass.lpszClassName = className
     wndclass.style = win32con.CS_VREDRAW | win32con.CS_HREDRAW
-    wndclass.hbrBackground = win32con.COLOR_WINDOW
+    wndclass.hbrBackground = win32con.BLACK_BRUSH
     wndclass.hCursor = win32gui.LoadCursor(0, win32con.IDC_ARROW)
     wndclass.lpfnWndProc = {
         win32con.WM_CLOSE: CloseWindow,
@@ -121,8 +119,10 @@ def createChromeWindow(title, className, iconPathname, width=1920, height=1080, 
     windowID = win32gui.CreateWindow(
         className,
         title,
-        win32con.WS_OVERLAPPEDWINDOW | win32con.WS_CLIPCHILDREN | win32con.WS_VISIBLE,
-        xpos, ypos, width, height,
+        # win32con.WS_OVERLAPPEDWINDOW | win32con.WS_CLIPCHILDREN | win32con.WS_VISIBLE,
+        win32con.WS_POPUP | win32con.WS_VISIBLE | win32con.WS_SYSMENU,
+        win32con.CW_USEDEFAULT, win32con.CW_USEDEFAULT,
+        width, height,
         0, # parent
         0, # menu
         wndclass.hInstance,

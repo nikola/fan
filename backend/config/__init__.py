@@ -35,15 +35,15 @@ SERVER_HEADERS = {
 }
 
 RESOURCES_SCRIPT = [
-    "static/angular/angular.min.js",
-    "static/angular/angular-animate.min.js",
-    "static/angular/angular-route.min.js",
+    "vendor/lodash/lodash.min.js",
+    "vendor/angular/angular.min.js",
+    "vendor/angular/angular-animate.min.js",
+    "vendor/angular/angular-route.min.js",
     "app/js/services.js",
     "app/js/controllers.js",
     "app/js/filters.js",
     "app/js/directives.js",
     "app/js/app.js",
-    "static/lodash/lodash.min.js",
 ]
 
 RESOURCES_STYLE = [

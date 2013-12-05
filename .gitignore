@@ -1,4 +1,6 @@
 *.py[cod]
+*.original.dll
+*.log
 
 # C extensions
 *.so

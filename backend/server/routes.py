@@ -64,7 +64,7 @@ def serveStylesheet(request, filename, isAllowed):
 @check
 def serveScript(request, filename, isAllowed):
     if isAllowed:
-        pathname = os.path.join(PROJECT_PATH, "frontend", "static", "angular", "%s.min.js.map" % filename)
+        pathname = os.path.join(PROJECT_PATH, "frontend", "vendor", "angular", "%s.min.js.map" % filename)
         if os.path.exists(pathname):
             with open(pathname, "rb") as fp: content = fp.read()
             return content, 203

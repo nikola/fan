@@ -2,7 +2,7 @@
 """ ATTENTION: only 30 requests every 10 seconds per IP!
 """
 __author__ = "Nikola Klaric (nikola@klaric.org)"
-__copyright__ = "Copyright (c) 2013 Nikola Klaric"
+__copyright__ = "Copyright (c) 2013-2014 Nikola Klaric"
 
 import httplib
 import socket

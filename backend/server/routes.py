@@ -2,7 +2,7 @@
 """
 """
 __author__ = "Nikola Klaric (nikola@klaric.org)"
-__copyright__ = "Copyright (c) 2013 Nikola Klaric"
+__copyright__ = "Copyright (c) 2013-2014 Nikola Klaric"
 
 import os.path
 from config import DEBUG, PROJECT_PATH, SERVER_HEADERS, RESOURCES_SCRIPT, RESOURCES_STYLE, CHROME_USER_AGENT

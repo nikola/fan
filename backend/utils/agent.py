@@ -2,7 +2,7 @@
 """ http://msdn.microsoft.com/library/ms537503.aspx
 """
 __author__ = "Nikola Klaric (nikola@klaric.org)"
-__copyright__ = "Copyright (c) 2013 Nikola Klaric"
+__copyright__ = "Copyright (c) 2013-2014 Nikola Klaric"
 
 import sys
 import random

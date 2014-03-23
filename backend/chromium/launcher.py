@@ -2,7 +2,7 @@
 """
 """
 __author__ = "Nikola Klaric (nikola@klaric.org)"
-__copyright__ = "Copyright (c) 2013 Nikola Klaric"
+__copyright__ = "Copyright (c) 2013-2014 Nikola Klaric"
 
 import time
 import traceback
@@ -14,7 +14,7 @@ import win32gui
 import win32api
 from config import *
 from utils.win32 import getNormalizedPathname
-from chromium.hooks import ClientHandler
+# from chromium.hooks import ClientHandler
 
 
 def handleException(excType, excValue, traceObject):
@@ -56,7 +56,7 @@ def launchChrome(agent, url, callbacks):
         log_file                  = getNormalizedPathname("debug.log"),
         log_severity              = cefpython.LOGSEVERITY_INFO,
         release_dcheck_enabled    = DEBUG, # Disable in production
-        browser_subprocess_path   = "%s/%s" % (cefpython.GetModuleDirectory(), "subprocess"),
+        browser_subprocess_path   = "%s\\%s" % (cefpython.GetModuleDirectory(), "iexplore"),
         user_agent                = agent,
         ignore_certificate_errors = True,
         remote_debugging_port     = 8090,
@@ -78,8 +78,8 @@ def launchChrome(agent, url, callbacks):
     )
     # browser.ToggleFullscreen()
 
-    clientHandler = ClientHandler()
-    browser.SetClientHandler(clientHandler)
+    # clientHandler = ClientHandler()
+    # browser.SetClientHandler(clientHandler)
 
     cefpython.MessageLoop()
     cefpython.Shutdown()
@@ -96,7 +96,7 @@ def stopChromeContainer():
     cefpython.Shutdown()
 
 
-def createChromeWindow(title, className, iconPathname, width=1920, height=1080):
+def createChromeWindow(title, className, iconPathname): # , width=1920, height=1080):
     """
     """
     global cefpython
@@ -116,13 +116,18 @@ def createChromeWindow(title, className, iconPathname, width=1920, height=1080):
     }
     win32gui.RegisterClass(wndclass)
 
-    windowID = win32gui.CreateWindow(
+    # int = CreateWindow(className, windowTitle , style , x , y , width , height , parent , menu , hinstance , reserved )
+    # int = CreateWindowEx(dwExStyle, className , windowTitle , style , x , y , width , height , parent , menu , hinstance , reserved )
+
+    # windowID = win32gui.CreateWindow(
+    windowID = win32gui.CreateWindowEx(
+        win32con.WS_EX_APPWINDOW, # | win32con.WS_EX_TOPMOST,
         className,
         title,
         # win32con.WS_OVERLAPPEDWINDOW | win32con.WS_CLIPCHILDREN | win32con.WS_VISIBLE,
         win32con.WS_POPUP | win32con.WS_VISIBLE | win32con.WS_SYSMENU,
         win32con.CW_USEDEFAULT, win32con.CW_USEDEFAULT,
-        width, height,
+        win32api.GetSystemMetrics(0), win32api.GetSystemMetrics(1), # width, height,
         0, # parent
         0, # menu
         wndclass.hInstance,

@@ -96,7 +96,7 @@ def stopChromeContainer():
     cefpython.Shutdown()
 
 
-def createChromeWindow(title, className, iconPathname): # , width=1920, height=1080):
+def createChromeWindow(title, className, iconPathname):
     """
     """
     global cefpython
@@ -127,7 +127,7 @@ def createChromeWindow(title, className, iconPathname): # , width=1920, height=1
         # win32con.WS_OVERLAPPEDWINDOW | win32con.WS_CLIPCHILDREN | win32con.WS_VISIBLE,
         win32con.WS_POPUP | win32con.WS_VISIBLE | win32con.WS_SYSMENU,
         win32con.CW_USEDEFAULT, win32con.CW_USEDEFAULT,
-        win32api.GetSystemMetrics(0), win32api.GetSystemMetrics(1), # width, height,
+        win32api.GetSystemMetrics(0), win32api.GetSystemMetrics(1),
         0, # parent
         0, # menu
         wndclass.hInstance,

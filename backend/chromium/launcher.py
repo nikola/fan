@@ -9,11 +9,14 @@ import traceback
 import codecs
 import uuid
 import imp
-import win32con
+
 import win32gui
 import win32api
+import win32con
+
 from config import *
 from utils.win32 import getNormalizedPathname
+
 # from chromium.hooks import ClientHandler
 
 
@@ -52,15 +55,53 @@ def launchChrome(agent, url, callbacks):
     cefpython.g_debug = DEBUG
     cefpython.g_debugFile = getNormalizedPathname("debug.log")
 
-    cefpython.Initialize(dict(
-        log_file                  = getNormalizedPathname("debug.log"),
-        log_severity              = cefpython.LOGSEVERITY_INFO,
-        release_dcheck_enabled    = DEBUG, # Disable in production
-        browser_subprocess_path   = "%s\\%s" % (cefpython.GetModuleDirectory(), "iexplore"),
-        user_agent                = agent,
-        ignore_certificate_errors = True,
-        remote_debugging_port     = 8090,
-    ))
+    cefpython.Initialize(
+        dict(   # applicationSettings
+            debug                     = DEBUG,
+            cache_path                = '',
+            log_file                  = getNormalizedPathname("debug.log"),
+            log_severity              = cefpython.LOGSEVERITY_INFO,
+            release_dcheck_enabled    = DEBUG, # Disable in production
+            browser_subprocess_path   = "%s\\%s" % (cefpython.GetModuleDirectory(), "iexplore"),
+            user_agent                = agent,
+            ignore_certificate_errors = True,
+            remote_debugging_port     = 8090,
+        ),
+        {
+            # https://code.google.com/p/chromiumembedded/source/browse/trunk/cef3/libcef/common/cef_switches.cc
+            'disable-javascript-open-windows':      '',
+            'disable-javascript-close-windows':     '',
+            'disable-javascript-access-clipboard':  '',
+            'disable-javascript-dom-paste':         '',
+            'disable-text-area-resize':             '',
+            'disable-tab-to-links':                 '',
+            # http://peter.sh/experiments/chromium-command-line-switches/
+            'disable-breakpad':                     '',
+            'disable-extensions':                   '',
+            'disable-google-now-integration':       '',
+            'disable-improved-download-protection': '',
+            'disable-infobars':                     '',
+            'disable-ipv6':                         '',
+            'disable-java':                         '',
+            'disable-logging':                      '',
+            'disable-preconnect':                   '',
+            'disable-prerender-local-predictor':    '',
+            'disable-sync':                         '',
+            'disable-volume-adjust-sound':          '',
+            'disable-webaudio':                     '',
+            'dns-prefetch-disable':                 '',
+            'disk-cache-dir':                       'nul',
+            'media-cache-dir':                      'nul',
+            'disk-cache-size':                      '1',
+            'enable-benchmarking':                  '',
+            'no-displaying-insecure-content':       '',
+            'no-pings':                             '',
+            'no-referrers':                         '',
+            'noerrdialogs':                         '',
+
+            # locale_pak Load the locale resources from the given path. When running on Mac/Unix the path should point to a locale.pak file.
+        },
+    )
 
     windowId = createChromeWindow(
         title = "ka-BOOM",

@@ -7,14 +7,16 @@ __copyright__ = "Copyright (c) 2013-2014 Nikola Klaric"
 import socket
 import os
 from multiprocessing import Process
+
 from pants.web import Application
 from pants.http import HTTPServer
 from pants import Engine
+
 from server.routes import module as appRoutes
 from server.cert import getCertificateFile
 
 
-def _startHttpServer(userAgent, port , certfile):
+def _startHttpServer(userAgent, port , certificateFile):
     """
     """
     appRoutes.userAgent = userAgent
@@ -22,7 +24,7 @@ def _startHttpServer(userAgent, port , certfile):
     app = Application(debug=True)
 
     app.add("/", appRoutes)
-    HTTPServer(app).startSSL(dict(do_handshake_on_connect=False, server_side=True, certfile=certfile)).listen(("", port))
+    HTTPServer(app).startSSL(dict(do_handshake_on_connect=False, server_side=True, certfile=certificateFile)).listen(("", port))
 
     Engine.instance().start()
 
@@ -30,7 +32,7 @@ def _startHttpServer(userAgent, port , certfile):
 def _getVacantPort():
     """
     """
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s = socket.socket() # socket.AF_INET, socket.SOCK_STREAM)
     s.bind(("", 0))
     port = s.getsockname()[1]
     s.close()

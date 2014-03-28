@@ -91,7 +91,7 @@ def getBasedataFromPathname(pathname):
     extractedTitle = extractedTitle.strip()
 
     return {
-        "title": extractedTitle,
-        "year":    releaseYear,
-        "editVersion":    editVersion,
+        "title":        extractedTitle,
+        "year":         releaseYear,
+        "editVersion":  editVersion,
     }

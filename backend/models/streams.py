@@ -25,4 +25,4 @@ class Stream(Base):
         self.location = location
 
     def __repr__(self):
-        return "<Stream('%s')>" % (self.id)
+        return "<Stream('%s')>" % self.id

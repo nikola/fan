@@ -38,7 +38,11 @@ body {
 }
 */
 
-
+/*
+* {
+    cursor: none !important;
+    }
+*/
 
 .table-container {
     display: table;

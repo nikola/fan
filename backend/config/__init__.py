@@ -5,9 +5,14 @@ __author__ = "Nikola Klaric (nikola@klaric.org)"
 __copyright__ = "Copyright (c) 2013-2014 Nikola Klaric"
 
 import os
+
 from utils.win32 import getAppStoragePathname
+from cert import CERTIFICATE
+
 
 DEBUG = True
+
+THEMOVIEDB_API_KEY = 'ef89c0a371440a7226e1be2ddfe84318'
 
 CHROME_BROWSER_SETTINGS = dict(
     # default_encoding = "",
@@ -24,8 +29,7 @@ CHROME_BROWSER_SETTINGS = dict(
 )
 
 PROJECT_PATH = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", ".."))
-
-DB_PERSISTENCE_PATH = os.path.join(getAppStoragePathname("ka-boom", "Generic Company"), "data")
+DB_PERSISTENCE_PATH = getAppStoragePathname("ka-BOOM", "Generic Company")
 
 SERVER_HEADERS = {
     "Server": "Microsoft-IIS/7.5",
@@ -52,3 +56,7 @@ RESOURCES_STYLE = [
 ]
 
 CHROME_USER_AGENT = '"Mozilla/5.0 (Windows NT) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.80 Safari/537.36"'
+
+ENFORCED_CIPHERS = 'ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS'
+
+MADVR_CLSID = '{E1A8B82A-32CE-4B0D-BE0D-AA68C772E423}'

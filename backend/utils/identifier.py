@@ -4,6 +4,7 @@
 __author__ = "Nikola Klaric (nikola@klaric.org)"
 __copyright__ = "Copyright (c) 2013-2014 Nikola Klaric"
 
+from config import THEMOVIEDB_API_KEY
 import httplib
 import socket
 import tmdb3 as themoviedb
@@ -11,8 +12,8 @@ from babel import Locale as BabelLocale
 
 socket.setdefaulttimeout(5)
 
-themoviedb.set_key("ef89c0a371440a7226e1be2ddfe84318")
-themoviedb.set_cache("null")
+themoviedb.set_key(THEMOVIEDB_API_KEY)
+themoviedb.set_cache('null')
 
 
 def getMovieFromRawData(language, territory, title, year):

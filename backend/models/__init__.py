@@ -55,13 +55,13 @@ class StreamManager(object):
     def __init__(self, pathname):
         """
         """
-        self._persistenceFile = pathname
+        self._persistencePathname = pathname
         self.engine = create_engine("sqlite://", echo=False, module=sqlite)
         self.engine.execute("select 1").scalar()
         self.session_factory = sessionmaker(bind=self.engine, expire_on_commit=False)
         Base.metadata.drop_all(self.engine, checkfirst=True)
 
-        if os.path.exists(self._persistenceFile):
+        if os.path.exists(os.path.join(self._persistencePathname, 'data.accdr')):
             self._restore()
             # TO DO: migrate schema
         else:
@@ -105,10 +105,13 @@ class StreamManager(object):
         """
         compressor = bz2.BZ2Compressor()
         connection = self.engine.raw_connection()
-        fp = open(self._persistenceFile, "wb")
+        if not os.path.exists(self._persistencePathname):
+            os.makedirs(self._persistencePathname)
+        fp = open(os.path.join(self._persistencePathname, 'data.accdr'), 'wb')
         try:
             for line in connection.iterdump():
-                fp.write(compressor.compress(line.encode("iso-8859-1")))
+                # fp.write(compressor.compress(line.encode('iso-8859-1')))
+                fp.write(compressor.compress(line.encode('utf-8')))
             fp.write(compressor.flush())
         finally:
             fp.close()
@@ -119,8 +122,9 @@ class StreamManager(object):
         """
         connection = self.engine.raw_connection()
         try:
-            with open(self._persistenceFile, "rb") as fp:
-                connection.cursor().executescript(bz2.decompress(fp.read()).decode("iso-8859-1"))
+            with open(os.path.join(self._persistencePathname, 'data.accdr'), 'rb') as fp:
+                # connection.cursor().executescript(bz2.decompress(fp.read()).decode('iso-8859-1'))
+                connection.cursor().executescript(bz2.decompress(fp.read()).decode('utf-8'))
         except:
             raise
         else:

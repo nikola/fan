@@ -7,7 +7,7 @@ __copyright__ = "Copyright (c) 2013-2014 Nikola Klaric"
 import os
 
 from utils.win32 import getAppStoragePathname
-from cert import CERTIFICATE
+from cert import *
 
 
 DEBUG = True

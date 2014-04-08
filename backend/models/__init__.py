@@ -18,28 +18,25 @@ from models.streams import Stream
 from models.genres import Genre
 from models.movies import Movie
 from models.variants import Variant
+from config import DEBUG
 
 
 def _getSqliteDsn():
-    """
-    """
-    directory = getAppStoragePathname("ka-boom", "Generic Company")
+    if DEBUG:
+        directory = getAppStoragePathname("ka-boom", "Generic Company")
+        if not os.path.exists(directory): os.makedirs(directory)
 
-    if not os.path.exists(directory):
-        os.makedirs(directory)
+        dsn = 'sqlite:///' + (directory + '\\db.sqlite3').replace('\\', r'\\\\')
+    else:
+        dsn = 'sqlite://'
 
-    filename = "sqlite:///" + (directory + "\\data.accdr").replace("\\", r"\\\\")
-
-    return filename
+    return dsn
 
 
 class StreamManager(object):
-    """
-    """
+
     @contextmanager
     def _session(self, session=None):
-        """
-        """
         if session:
             yield session
         else:
@@ -53,28 +50,23 @@ class StreamManager(object):
                 session.commit()
 
     def __init__(self, pathname):
-        """
-        """
         self._persistencePathname = pathname
-        self.engine = create_engine("sqlite://", echo=False, module=sqlite)
+        self.engine = create_engine(_getSqliteDsn(), echo=False, module=sqlite)
         self.engine.execute("select 1").scalar()
         self.session_factory = sessionmaker(bind=self.engine, expire_on_commit=False)
         Base.metadata.drop_all(self.engine, checkfirst=True)
 
-        if os.path.exists(os.path.join(self._persistencePathname, 'data.accdr')):
+        if not DEBUG and os.path.exists(os.path.join(self._persistencePathname, 'data.accdb')):
             self._restore()
-            # TO DO: migrate schema
+            # TODO: migrate schema
         else:
             Base.metadata.create_all(self.engine)
 
     def shutdown(self):
-        """
-        """
-        self._persist()
+        if not DEBUG:
+            self._persist()
 
     def addMovieStream(self, movieRecord, streamLocation):
-        """
-        """
         if not movieRecord or not streamLocation: return
 
         with self._session() as session:
@@ -101,16 +93,13 @@ class StreamManager(object):
             session.commit()
 
     def _persist(self):
-        """
-        """
         compressor = bz2.BZ2Compressor()
         connection = self.engine.raw_connection()
         if not os.path.exists(self._persistencePathname):
             os.makedirs(self._persistencePathname)
-        fp = open(os.path.join(self._persistencePathname, 'data.accdr'), 'wb')
+        fp = open(os.path.join(self._persistencePathname, 'data.accdb'), 'wb')
         try:
             for line in connection.iterdump():
-                # fp.write(compressor.compress(line.encode('iso-8859-1')))
                 fp.write(compressor.compress(line.encode('utf-8')))
             fp.write(compressor.flush())
         finally:
@@ -118,12 +107,9 @@ class StreamManager(object):
             connection.close()
 
     def _restore(self):
-        """
-        """
         connection = self.engine.raw_connection()
         try:
-            with open(os.path.join(self._persistencePathname, 'data.accdr'), 'rb') as fp:
-                # connection.cursor().executescript(bz2.decompress(fp.read()).decode('iso-8859-1'))
+            with open(os.path.join(self._persistencePathname, 'data.accdb'), 'rb') as fp:
                 connection.cursor().executescript(bz2.decompress(fp.read()).decode('utf-8'))
         except:
             raise

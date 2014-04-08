@@ -5,8 +5,10 @@ __author__ = "Nikola Klaric (nikola@klaric.org)"
 __copyright__ = "Copyright (c) 2013-2014 Nikola Klaric"
 
 import _winreg
+
 from comtypes import client
 import pefile
+
 from config import MADVR_CLSID
 
 

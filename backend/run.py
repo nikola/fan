@@ -61,7 +61,10 @@ if __name__ == "__main__":
         # sys.exit(1)
         raise
     except Exception, e:
-        streamManager.shutdown()
-        stopServer()
+        # streamManager.shutdown()
+        # stopServer()
         # sys.exit(1)
         raise
+    # else:
+    #     streamManager.shutdown()
+    #     stopServer()

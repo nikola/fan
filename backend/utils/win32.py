@@ -9,8 +9,10 @@ import os
 import re
 import ctypes
 
+from config import APP_VENDOR, APP_NAME
 
-def getAppStoragePathname(appName, appVendor):
+
+def getAppStoragePathname():
     """
         CSIDL_APPDATA: 26 (Roaming)
         CSIDL_LOCAL_APPDATA: 28 (Local)
@@ -22,7 +24,7 @@ def getAppStoragePathname(appName, appVendor):
     if ctypes.windll.kernel32.GetShortPathNameW(bufferUnicode.value, bufferCanonical, 1024):
         bufferUnicode = bufferCanonical
 
-    pathname = os.path.join(os.path.normpath(bufferUnicode.value), appVendor, appName)
+    pathname = os.path.join(os.path.normpath(bufferUnicode.value), APP_VENDOR, APP_NAME)
 
     return pathname
 

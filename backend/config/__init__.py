@@ -6,11 +6,13 @@ __copyright__ = "Copyright (c) 2013-2014 Nikola Klaric"
 
 import os
 
-from utils.win32 import getAppStoragePathname
 from cert import *
 
 
 DEBUG = True
+
+APP_NAME = 'ka-BOOM'
+APP_VENDOR = 'Generic Company'
 
 THEMOVIEDB_API_KEY = 'ef89c0a371440a7226e1be2ddfe84318'
 
@@ -29,7 +31,7 @@ CHROME_BROWSER_SETTINGS = dict(
 )
 
 PROJECT_PATH = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", ".."))
-DB_PERSISTENCE_PATH = getAppStoragePathname("ka-BOOM", "Generic Company")
+# DB_PERSISTENCE_PATH = getAppStoragePathname()
 
 SERVER_HEADERS = {
     "Server": "Microsoft-IIS/7.5",

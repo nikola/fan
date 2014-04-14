@@ -23,7 +23,7 @@ from config import DEBUG
 
 def _getSqliteDsn():
     if DEBUG:
-        directory = getAppStoragePathname("ka-boom", "Generic Company")
+        directory = getAppStoragePathname()
         if not os.path.exists(directory): os.makedirs(directory)
 
         dsn = 'sqlite:///' + (directory + '\\db.sqlite3').replace('\\', r'\\\\')
@@ -49,14 +49,15 @@ class StreamManager(object):
             else:
                 session.commit()
 
-    def __init__(self, pathname):
-        self._persistencePathname = pathname
+    def __init__(self): # ), pathname):
+        # self._persistencePathname = pathname
         self.engine = create_engine(_getSqliteDsn(), echo=False, module=sqlite)
         self.engine.execute("select 1").scalar()
         self.session_factory = sessionmaker(bind=self.engine, expire_on_commit=False)
         Base.metadata.drop_all(self.engine, checkfirst=True)
 
-        if not DEBUG and os.path.exists(os.path.join(self._persistencePathname, 'data.accdb')):
+        # if not DEBUG and os.path.exists(os.path.join(self._persistencePathname, 'data.accdb')):
+        if not DEBUG and os.path.exists(os.path.join(getAppStoragePathname(), 'data.accdb')):
             self._restore()
             # TODO: migrate schema
         else:
@@ -95,9 +96,10 @@ class StreamManager(object):
     def _persist(self):
         compressor = bz2.BZ2Compressor()
         connection = self.engine.raw_connection()
-        if not os.path.exists(self._persistencePathname):
-            os.makedirs(self._persistencePathname)
-        fp = open(os.path.join(self._persistencePathname, 'data.accdb'), 'wb')
+        if not os.path.exists(getAppStoragePathname()): # self._persistencePathname):
+            # os.makedirs(self._persistencePathname)
+            os.makedirs(getAppStoragePathname())
+        fp = open(os.path.join(getAppStoragePathname(), 'data.accdb'), 'wb')
         try:
             for line in connection.iterdump():
                 fp.write(compressor.compress(line.encode('utf-8')))
@@ -109,7 +111,7 @@ class StreamManager(object):
     def _restore(self):
         connection = self.engine.raw_connection()
         try:
-            with open(os.path.join(self._persistencePathname, 'data.accdb'), 'rb') as fp:
+            with open(os.path.join(getAppStoragePathname(), 'data.accdb'), 'rb') as fp:
                 connection.cursor().executescript(bz2.decompress(fp.read()).decode('utf-8'))
         except:
             raise

@@ -1,5 +1,5 @@
 # coding: utf-8
-"""
+""" TODO: replace with https://github.com/kvesteri/sqlalchemy-i18n
 """
 __author__ = "Nikola Klaric (nikola@klaric.org)"
 __copyright__ = "Copyright (c) 2013-2014 Nikola Klaric"

@@ -52,7 +52,7 @@ class StreamManager(object):
     def __init__(self): # ), pathname):
         # self._persistencePathname = pathname
         self.engine = create_engine(_getSqliteDsn(), echo=False, module=sqlite)
-        self.engine.execute("select 1").scalar()
+        self.engine.execute('select 1').scalar()
         self.session_factory = sessionmaker(bind=self.engine, expire_on_commit=False)
         Base.metadata.drop_all(self.engine, checkfirst=True)
 

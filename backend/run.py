@@ -13,7 +13,7 @@ from chromium.launcher import *
 from utils.agent import getUserAgent
 from utils.agent import isCompatiblePlatform
 from server.control import start as startServer, stop as stopServer
-from config import DB_PERSISTENCE_PATH
+# from config import DB_PERSISTENCE_PATH
 
 
 def _shutdown():
@@ -33,7 +33,7 @@ if __name__ == "__main__":
 
         # sys.excepthook = handleException
 
-        streamManager = StreamManager(DB_PERSISTENCE_PATH)
+        streamManager = StreamManager() # DB_PERSISTENCE_PATH)
 
         """
         for (path, container, files) in getMoviePathnames(r"M:\\"):
@@ -56,8 +56,8 @@ if __name__ == "__main__":
 
         launchChrome(userAgent, r"https://127.0.0.1:%d/" % port, (stopServer, streamManager.shutdown))
     except (KeyboardInterrupt, SystemError):
-        streamManager.shutdown()
-        stopServer()
+        # streamManager.shutdown()
+        # stopServer()
         # sys.exit(1)
         raise
     except Exception, e:

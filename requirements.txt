@@ -1,0 +1,4 @@
+Babel
+PyInstaller
+SQLAlchemy
+SQLAlchemy-utils

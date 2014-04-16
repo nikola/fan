@@ -4,6 +4,7 @@
 __author__ = "Nikola Klaric (nikola@klaric.org)"
 __copyright__ = "Copyright (c) 2013-2014 Nikola Klaric"
 
+import os
 import time
 import traceback
 import codecs
@@ -112,7 +113,8 @@ def launchChrome(agent, url, callbacks):
     windowInfo = cefpython.WindowInfo()
     windowInfo.SetAsChild(windowId)
 
-    browser = cefpython.CreateBrowserSync(
+    # browser = cefpython.CreateBrowserSync(
+    cefpython.CreateBrowserSync(
         windowInfo,
         CHROME_BROWSER_SETTINGS,
         navigateUrl=url,

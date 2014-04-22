@@ -148,7 +148,8 @@ def createChromeWindow(title, className, iconPathname):
     wndclass.hInstance = win32api.GetModuleHandle(None)
     wndclass.lpszClassName = className
     wndclass.style = win32con.CS_VREDRAW | win32con.CS_HREDRAW
-    wndclass.hbrBackground = win32con.BLACK_BRUSH
+    # wndclass.hbrBackground = win32con.BLACK_BRUSH
+    wndclass.hbrBackground = win32con.NULL_BRUSH
     wndclass.hCursor = win32gui.LoadCursor(0, win32con.IDC_ARROW)
     wndclass.lpfnWndProc = {
         win32con.WM_CLOSE: CloseWindow,
@@ -164,7 +165,9 @@ def createChromeWindow(title, className, iconPathname):
 
     # windowID = win32gui.CreateWindow(
     windowID = win32gui.CreateWindowEx(
-        win32con.WS_EX_APPWINDOW, # | win32con.WS_EX_TOPMOST,
+        # win32con.WS_EX_APPWINDOW, # | win32con.WS_EX_TOPMOST,
+        # win32con.WS_EX_LAYERED, # | win32con.WS_EX_TOPMOST,
+        win32con.WS_EX_APPWINDOW | win32con.WS_EX_TOPMOST | win32con.WS_EX_LAYERED,
         className,
         title,
         # win32con.WS_OVERLAPPEDWINDOW | win32con.WS_CLIPCHILDREN | win32con.WS_VISIBLE,
@@ -176,6 +179,17 @@ def createChromeWindow(title, className, iconPathname):
         wndclass.hInstance,
         None, # reserved
     )
+
+    #
+
+    win32gui.SetLayeredWindowAttributes(windowID, win32api.RGB(255, 255, 255), 0, win32con.LWA_COLORKEY)
+
+    # To turn off:
+    # win32gui.SetWindowLong(windowID, win32con.GWL_EXSTYLE, win32gui.GetWindowLong(windowID, win32con.GWL_EXSTYLE) & ~win32con.WS_EX_LAYERED)
+    # win32gui.RedrawWindow(windowID, None, None, win32con.RDW_ERASE | win32con.RDW_INVALIDATE | win32con.RDW_FRAME | win32con.RDW_ALLCHILDREN)
+
+    # 100% Opaque:
+    # win32gui.SetLayeredWindowAttributes(windowID, 0, (255 * 100) / 100, win32con.LWA_ALPHA)
 
     bigX = win32api.GetSystemMetrics(win32con.SM_CXICON)
     bigY = win32api.GetSystemMetrics(win32con.SM_CYICON)

@@ -58,6 +58,17 @@ def serveScript(request, filename):
         request.connection.close()
 
 
+@module.route('<string:filename>.png', headers=SERVER_HEADERS, content_type='image/png')
+def serveImage(request, filename):
+    pathname = os.path.join(PROJECT_PATH, 'frontend', 'app', 'img', '%s.png' % filename)
+    if os.path.exists(pathname):
+        with open(pathname, 'rb') as fp: content = fp.read()
+        return content, 203
+    else:
+        request.finish()
+        request.connection.close()
+
+
 @module.route("<path:pathname>", headers=SERVER_HEADERS)
 def serveAny(request, pathname):
     request.finish()

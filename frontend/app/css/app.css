@@ -7,6 +7,24 @@ body {
     position: absolute; left: 0; top: 0;
     }
 
+#app-logo {
+    width: 100px;
+    height: 100px;
+    display: block;
+    margin: 0 auto 16px auto;
+    /* padding-left: 20px; */
+    padding-top: 20px;
+    }
+
+#app-info {
+    color: white;
+    font: 10px Verdana;
+    display: block;
+    width: 100px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 /*
 .menu {
   list-style: none;
@@ -38,11 +56,11 @@ body {
 }
 */
 
-/*
+
 * {
     cursor: none !important;
     }
-*/
+
 
 .table-container {
     display: table;

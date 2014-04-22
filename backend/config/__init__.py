@@ -41,6 +41,7 @@ SERVER_HEADERS = {
 }
 
 RESOURCES_SCRIPT = [
+    'vendor/jquery/jquery.min.js',
     "vendor/lodash/lodash.min.js",
     "vendor/angular/angular.min.js",
     "vendor/angular/angular-animate.min.js",

@@ -1,7 +1,7 @@
 # coding: utf-8
 """
 """
-__author__ = "Nikola Klaric (nikola@klaric.org)"
+__author__ = "Nikola Klaric (nikola@generic.company)"
 __copyright__ = "Copyright (c) 2013-2014 Nikola Klaric"
 
 import sys
@@ -11,20 +11,20 @@ from utils.identifier import *
 from models import StreamManager
 from chromium.launcher import *
 from utils.agent import getUserAgent
-from utils.agent import isCompatiblePlatform
+from utils.system import isCompatiblePlatform
 from server.control import start as startServer, stop as stopServer
-# from config import DB_PERSISTENCE_PATH
 
 
-def _shutdown():
-    """
-    """
-    stopServer()
+
+# def _shutdown():
+#     """
+#     """
+#     stopServer()
 
 
 if __name__ == "__main__":
-    # Must be Windows 7 or higher, non-debug revision, and 32-bit Python interpreter due to CEF dependency.
-    if not isCompatiblePlatform() or platform.architecture()[0] != "32bit" or platform.win32_ver()[-1].endswith(" Checked"):
+
+    if not isCompatiblePlatform(): #  or platform.architecture()[0] != "32bit" or platform.win32_ver()[-1].endswith(" Checked"):
         sys.exit()
 
     try:

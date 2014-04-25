@@ -4,7 +4,6 @@
 __author__ = "Nikola Klaric (nikola@generic.company)"
 __copyright__ = "Copyright (c) 2013-2014 Nikola Klaric"
 
-import os
 import time
 import traceback
 import codecs
@@ -113,13 +112,11 @@ def launchChrome(agent, url, callbacks):
     windowInfo = cefpython.WindowInfo()
     windowInfo.SetAsChild(windowId)
 
-    # browser = cefpython.CreateBrowserSync(
     cefpython.CreateBrowserSync(
         windowInfo,
         CHROME_BROWSER_SETTINGS,
         navigateUrl=url,
     )
-    # browser.ToggleFullscreen()
 
     # clientHandler = ClientHandler()
     # browser.SetClientHandler(clientHandler)
@@ -129,8 +126,6 @@ def launchChrome(agent, url, callbacks):
 
 
 def stopChromeContainer():
-    """
-    """
     global cefpython, onCloseCallbacks
 
     for callback in onCloseCallbacks: callback()
@@ -140,15 +135,12 @@ def stopChromeContainer():
 
 
 def createChromeWindow(title, className, iconPathname):
-    """
-    """
     global cefpython
 
     wndclass = win32gui.WNDCLASS()
     wndclass.hInstance = win32api.GetModuleHandle(None)
     wndclass.lpszClassName = className
     wndclass.style = win32con.CS_VREDRAW | win32con.CS_HREDRAW
-    # wndclass.hbrBackground = win32con.BLACK_BRUSH
     wndclass.hbrBackground = win32con.NULL_BRUSH
     wndclass.hCursor = win32gui.LoadCursor(0, win32con.IDC_ARROW)
     wndclass.lpfnWndProc = {
@@ -160,18 +152,18 @@ def createChromeWindow(title, className, iconPathname):
     }
     win32gui.RegisterClass(wndclass)
 
-    # int = CreateWindow(className, windowTitle , style , x , y , width , height , parent , menu , hinstance , reserved )
-    # int = CreateWindowEx(dwExStyle, className , windowTitle , style , x , y , width , height , parent , menu , hinstance , reserved )
+    if DEBUG:
+        dwExStyle = win32con.WS_EX_APPWINDOW
+        style = win32con.WS_OVERLAPPEDWINDOW | win32con.WS_CLIPCHILDREN | win32con.WS_VISIBLE
+    else:
+        dwExStyle = win32con.WS_EX_APPWINDOW | win32con.WS_EX_TOPMOST | win32con.WS_EX_LAYERED
+        style = win32con.WS_POPUP | win32con.WS_VISIBLE | win32con.WS_SYSMENU
 
-    # windowID = win32gui.CreateWindow(
     windowID = win32gui.CreateWindowEx(
-        # win32con.WS_EX_APPWINDOW, # | win32con.WS_EX_TOPMOST,
-        # win32con.WS_EX_LAYERED, # | win32con.WS_EX_TOPMOST,
-        win32con.WS_EX_APPWINDOW | win32con.WS_EX_TOPMOST | win32con.WS_EX_LAYERED,
+        dwExStyle,
         className,
         title,
-        win32con.WS_OVERLAPPEDWINDOW | win32con.WS_CLIPCHILDREN | win32con.WS_VISIBLE,
-        # win32con.WS_POPUP | win32con.WS_VISIBLE | win32con.WS_SYSMENU,
+        style,
         win32con.CW_USEDEFAULT, win32con.CW_USEDEFAULT,
         win32api.GetSystemMetrics(0), win32api.GetSystemMetrics(1),
         0, # parent
@@ -180,9 +172,8 @@ def createChromeWindow(title, className, iconPathname):
         None, # reserved
     )
 
-    #
-
-    win32gui.SetLayeredWindowAttributes(windowID, win32api.RGB(255, 255, 255), 0, win32con.LWA_COLORKEY)
+    if not DEBUG:
+        win32gui.SetLayeredWindowAttributes(windowID, win32api.RGB(255, 255, 255), 0, win32con.LWA_COLORKEY)
 
     # To turn off:
     # win32gui.SetWindowLong(windowID, win32con.GWL_EXSTYLE, win32gui.GetWindowLong(windowID, win32con.GWL_EXSTYLE) & ~win32con.WS_EX_LAYERED)
@@ -205,8 +196,6 @@ def createChromeWindow(title, className, iconPathname):
 
 
 def CloseWindow(windowHandle, message, wparam, lparam):
-    """
-    """
     global cefpython, onCloseCallbacks
 
     browser = cefpython.GetBrowserByWindowHandle(windowHandle)

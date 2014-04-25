@@ -1,7 +1,7 @@
 # coding: utf-8
 """
 """
-__author__ = "Nikola Klaric (nikola@klaric.org)"
+__author__ = "Nikola Klaric (nikola@generic.company)"
 __copyright__ = "Copyright (c) 2013-2014 Nikola Klaric"
 
 import os
@@ -30,7 +30,7 @@ CHROME_BROWSER_SETTINGS = dict(
     # pack_loading_disabled = True,
 )
 
-PROJECT_PATH = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", ".."))
+PROJECT_PATH = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..'))
 # DB_PERSISTENCE_PATH = getAppStoragePathname()
 
 SERVER_HEADERS = {

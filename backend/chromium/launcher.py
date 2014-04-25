@@ -1,7 +1,7 @@
 # coding: utf-8
 """
 """
-__author__ = "Nikola Klaric (nikola@klaric.org)"
+__author__ = "Nikola Klaric (nikola@generic.company)"
 __copyright__ = "Copyright (c) 2013-2014 Nikola Klaric"
 
 import os
@@ -170,8 +170,8 @@ def createChromeWindow(title, className, iconPathname):
         win32con.WS_EX_APPWINDOW | win32con.WS_EX_TOPMOST | win32con.WS_EX_LAYERED,
         className,
         title,
-        # win32con.WS_OVERLAPPEDWINDOW | win32con.WS_CLIPCHILDREN | win32con.WS_VISIBLE,
-        win32con.WS_POPUP | win32con.WS_VISIBLE | win32con.WS_SYSMENU,
+        win32con.WS_OVERLAPPEDWINDOW | win32con.WS_CLIPCHILDREN | win32con.WS_VISIBLE,
+        # win32con.WS_POPUP | win32con.WS_VISIBLE | win32con.WS_SYSMENU,
         win32con.CW_USEDEFAULT, win32con.CW_USEDEFAULT,
         win32api.GetSystemMetrics(0), win32api.GetSystemMetrics(1),
         0, # parent

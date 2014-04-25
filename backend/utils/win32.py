@@ -1,15 +1,20 @@
 # coding: utf-8
 """
 """
-__author__ = "Nikola Klaric (nikola@klaric.org)"
+__author__ = "Nikola Klaric (nikola@generic.company)"
 __copyright__ = "Copyright (c) 2013-2014 Nikola Klaric"
 
 import sys
 import os
 import re
 import ctypes
+import win32api
 
-from config import APP_VENDOR, APP_NAME
+from config import APP_VENDOR, APP_NAME, PROJECT_PATH
+
+
+def isNtfsFilesystem():
+    return bool(win32api.GetVolumeInformation(os.path.splitdrive(PROJECT_PATH)[0] + '/')[3] & 0x00040000) # FILE_NAMED_STREAMS
 
 
 def getAppStoragePathname():

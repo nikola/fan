@@ -1,0 +1,3 @@
+[submodule "backend/updater"]
+	path = backend/updater
+	url = git://github.com/nikola/updaterlib.git

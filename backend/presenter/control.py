@@ -46,7 +46,13 @@ def launchChrome(agent, url, callbacks):
     """
     global cefpython
 
-    cefpython = imp.load_dynamic("cefpython_py27", os.path.join(PROJECT_PATH, "backend", "chromium", "cef", "libgfx.dll"))
+    # TODO: Refactor:
+    #   https://github.com/kivy-garden/garden.cefpython/blob/master/__init__.py
+
+    # Implant into .EXE:
+    #   http://www.pyinstaller.org/export/v2.0/project/doc/Manual.html#collect
+
+    cefpython = imp.load_dynamic("cefpython_py27", os.path.join(PROJECT_PATH, "backend", "presenter", "cef", "libgfx.dll"))
 
     # Memorize callback functions that must be executed before shutting down the CEF container.
     global onCloseCallbacks
@@ -106,7 +112,7 @@ def launchChrome(agent, url, callbacks):
     windowId = createChromeWindow(
         title = "ka-BOOM",
         className = "kaboom_%s" % uuid.uuid4().hex,
-        iconPathname = getNormalizedPathname("../chromium/cef/icon.ico"),
+        iconPathname = getNormalizedPathname("../presenter/cef/icon.ico"),
     )
 
     windowInfo = cefpython.WindowInfo()
@@ -151,6 +157,12 @@ def createChromeWindow(title, className, iconPathname):
         win32con.WM_ERASEBKGND: cefpython.WindowUtils.OnEraseBackground
     }
     win32gui.RegisterClass(wndclass)
+
+    # Extended Window Styles:
+    #   http://msdn.microsoft.com/en-us/library/windows/desktop/ff700543(v=vs.85).aspx
+
+    # SetWindowPos function:
+    #   http://msdn.microsoft.com/en-us/library/windows/desktop/ms633545(v=vs.85).aspx
 
     if DEBUG:
         dwExStyle = win32con.WS_EX_APPWINDOW

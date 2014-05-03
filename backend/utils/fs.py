@@ -13,3 +13,6 @@ def getFileStreams(pathname):
 
 def removeFileStreams(pathname):
     pass
+
+def getStreamContentType(stream):
+    pass

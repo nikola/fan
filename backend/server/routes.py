@@ -1,12 +1,13 @@
 # coding: utf-8
 """
 """
-__author__ = "Nikola Klaric (nikola@klaric.org)"
+__author__ = "Nikola Klaric (nikola@generic.company)"
 __copyright__ = "Copyright (c) 2013-2014 Nikola Klaric"
 
 import os.path
 
 from pants.web.application import Module
+from pants.http import WebSocket
 
 from config import PROJECT_PATH, SERVER_HEADERS, RESOURCES_SCRIPT, RESOURCES_STYLE, CHROME_USER_AGENT
 
@@ -14,7 +15,7 @@ from config import PROJECT_PATH, SERVER_HEADERS, RESOURCES_SCRIPT, RESOURCES_STY
 module = Module()
 
 
-@module.route("", headers=SERVER_HEADERS, content_type="text/html")
+@module.route('', headers=SERVER_HEADERS, content_type='text/html')
 def serveRoot(request):
     pathname = os.path.join(PROJECT_PATH, "frontend", "app", "index.html")
     with open(pathname, "rb") as fp:
@@ -67,6 +68,24 @@ def serveImage(request, filename):
     else:
         request.finish()
         request.connection.close()
+
+
+@module.route('<string:name>.socket')
+class EchoSocket(WebSocket):
+
+    # def on_handshake(self, request, headers):
+    #     return True # self.is_secure and 'X-Pizza' in request.headers
+
+    def on_connect(self, name):
+        print 1
+        print name
+        self.read_delimiter = u'\n' # TODO: oder '\n' ???
+        self.write(u"Hello, {name}!".format(name=name))
+
+    def on_read(self, data):
+        print 2
+        print data
+        self.write(data)
 
 
 @module.route("<path:pathname>", headers=SERVER_HEADERS)

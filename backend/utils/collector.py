@@ -51,7 +51,7 @@ def getMoviePathnames(top):
 def getBasedataFromPathname(pathname):
     """
     """
-    releaseYear = 2013
+    releaseYear = 2014
     editVersion = "Theatrical Cut"
 
     searchReleaseYear = re.compile(r"(?<!^)((19|20)\d{2})[a-zA-Z0-9\.\-\) '\[\]]*$").search(pathname)

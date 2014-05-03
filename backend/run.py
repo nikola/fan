@@ -9,10 +9,11 @@ import platform
 from utils.collector import *
 from utils.identifier import *
 from models import StreamManager
-from chromium.launcher import *
+from presenter.control import *
 from utils.agent import getUserAgent
 from utils.system import isCompatiblePlatform
 from server.control import start as startServer, stop as stopServer
+from player.mpchc import patchManifest
 
 
 
@@ -27,9 +28,18 @@ if __name__ == "__main__":
     if not isCompatiblePlatform(): #  or platform.architecture()[0] != "32bit" or platform.win32_ver()[-1].endswith(" Checked"):
         sys.exit()
 
+    # patchManifest()
+    # sys.exit()
+
+    # TODO: implement SIGINT handler
+    # http://stackoverflow.com/a/1112350
+
     try:
         userAgent = getUserAgent()
         port = startServer(userAgent)
+
+        from utils.fs import getFileStreams
+        print getFileStreams(os.path.join(PROJECT_PATH, 'backend', 'run.py'))
 
         # sys.excepthook = handleException
 

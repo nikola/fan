@@ -20,6 +20,8 @@ from models.movies import Movie
 from models.variants import Variant
 from config import DEBUG
 
+# TODO: use named tuples ?
+#   https://docs.python.org/2/library/collections.html#collections.namedtuple
 
 def _getSqliteDsn():
     if DEBUG:
@@ -60,6 +62,7 @@ class StreamManager(object):
         if not DEBUG and os.path.exists(os.path.join(getAppStoragePathname(), 'data.accdb')):
             self._restore()
             # TODO: migrate schema
+            # https://sqlalchemy-migrate.readthedocs.org/en/latest/
         else:
             Base.metadata.create_all(self.engine)
 

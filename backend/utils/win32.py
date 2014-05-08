@@ -17,6 +17,13 @@ def isNtfsFilesystem():
     return bool(win32api.GetVolumeInformation(os.path.splitdrive(PROJECT_PATH)[0] + '/')[3] & 0x00040000) # FILE_NAMED_STREAMS
 
 
+def isDesktopCompositionEnabled():
+    # dwm.DwmEnableComposition(0|1)
+    b = ctypes.c_bool()
+    retcode = ctypes.windll.dwmapi.DwmIsCompositionEnabled(ctypes.byref(b))
+    print (retcode == 0 and b.value)
+
+
 def getAppStoragePathname():
     """
         CSIDL_APPDATA: 26 (Roaming)

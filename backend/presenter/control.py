@@ -63,6 +63,7 @@ def startPresenter(agent, url, callbacks):
         'log_severity':            cefpython.LOGSEVERITY_DISABLE,
         'browser_subprocess_path': os.path.join(cefpython.GetModuleDirectory(), 'iexplore'),
         'user_agent':              agent,
+        'locales_dir_path':        os.path.join(cefpython.GetModuleDirectory()),
     })
     if DEBUG:
         appSettings.update({

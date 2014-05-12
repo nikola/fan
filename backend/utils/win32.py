@@ -21,7 +21,17 @@ def isDesktopCompositionEnabled():
     # dwm.DwmEnableComposition(0|1)
     b = ctypes.c_bool()
     retcode = ctypes.windll.dwmapi.DwmIsCompositionEnabled(ctypes.byref(b))
-    print (retcode == 0 and b.value)
+    return (retcode == 0 and b.value)
+
+
+def getWhiteBrush():
+    class _COLORREF(ctypes.Structure):
+        _fields_ = [
+            ('byRed', ctypes.c_byte),
+            ('byGreen', ctypes.c_byte),
+            ('byBlue', ctypes.c_byte),
+        ]
+    return ctypes.windll.gdi32.CreateSolidBrush(_COLORREF(255, 0, 0))
 
 
 def getAppStoragePathname():

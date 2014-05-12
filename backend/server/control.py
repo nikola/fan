@@ -1,8 +1,8 @@
 # coding: utf-8
 """
 """
-__author__ = "Nikola Klaric (nikola@generic.company)"
-__copyright__ = "Copyright (c) 2013-2014 Nikola Klaric"
+__author__ = 'Nikola Klaric (nikola@generic.company)'
+__copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 import os
 import socket
@@ -82,16 +82,14 @@ def _getCertificateLocation():
 
 
 def start(*args):
-    """
-    """
-    global globalServerProcess, globalCertificateLocation
-
     port = _getVacantPort()
     args += port,
 
+    global globalCertificateLocation
     globalCertificateLocation = _getCertificateLocation()
     args += globalCertificateLocation,
 
+    global globalServerProcess
     globalServerProcess = Process(target=_startHttpServer, args=args)
     globalServerProcess.start()
 
@@ -99,9 +97,8 @@ def start(*args):
 
 
 def stop():
-    """
-    """
-    global globalServerProcess, globalCertificateLocation
-
+    global globalCertificateLocation
     os.remove(globalCertificateLocation)
+
+    global globalServerProcess
     globalServerProcess.terminate()

@@ -84,7 +84,7 @@ def _getCertificateLocation():
 def start(*args):
     """
     """
-    global globalProcess, globalCertificateLocation
+    global globalServerProcess, globalCertificateLocation
 
     port = _getVacantPort()
     args += port,
@@ -92,8 +92,8 @@ def start(*args):
     globalCertificateLocation = _getCertificateLocation()
     args += globalCertificateLocation,
 
-    globalProcess = Process(target=_startHttpServer, args=args)
-    globalProcess.start()
+    globalServerProcess = Process(target=_startHttpServer, args=args)
+    globalServerProcess.start()
 
     return port
 
@@ -101,7 +101,7 @@ def start(*args):
 def stop():
     """
     """
-    global globalProcess, globalCertificateLocation
+    global globalServerProcess, globalCertificateLocation
 
     os.remove(globalCertificateLocation)
-    globalProcess.terminate()
+    globalServerProcess.terminate()

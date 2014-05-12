@@ -101,4 +101,5 @@ def stop():
     os.remove(globalCertificateLocation)
 
     global globalServerProcess
+    # globalServerProcess.join()
     globalServerProcess.terminate()

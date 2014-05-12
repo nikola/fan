@@ -14,6 +14,7 @@ import sys
 # import os
 # import re
 import win32api
+from subprocess import Popen
 
 from utils.win32 import getAppStoragePathname
 # from updater.const import *
@@ -167,3 +168,12 @@ def update():
     if _updateComponents():
         _patchManifest()
         _writeConfig()
+
+
+def playFile(location):
+    process = Popen([
+        os.path.join(PLAYER_AMALGAM_PATH, 'mpc-hc.exe'),
+        location,
+        '/play', '/close', '/fullscreen',
+    ])
+    process.wait()

@@ -10,6 +10,7 @@ from pants.web.application import Module
 from pants.http import WebSocket
 
 from config import PROJECT_PATH, SERVER_HEADERS, RESOURCES_SCRIPT, RESOURCES_STYLE, CHROME_USER_AGENT
+# from watcher.control import work as startStreamManager
 
 
 module = Module()
@@ -33,6 +34,9 @@ def serveRoot(request):
     scriptsAmalgamated = "\n".join(scriptContent)
 
     html = html.replace('</head>', '<script>%s</script><style>%s</style></head>' % (scriptsAmalgamated, stylesheetsAmalgamated))
+
+    # TODO: refactor this into separate URL !!!
+    # startStreamManager()
 
     return html, 203
 

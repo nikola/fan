@@ -8,42 +8,32 @@ import sys
 import platform
 from utils.collector import *
 from utils.identifier import *
-from models import StreamManager
-from presenter.control import *
+
+from presenter.control import startPresenter #, stopPresenter
 from utils.agent import getUserAgent
 from utils.system import isCompatiblePlatform
 from server.control import start as startServer, stop as stopServer
-from player.mpchc import patchManifest
-
-
-
-# def _shutdown():
-#     """
-#     """
-#     stopServer()
+from watcher.control import start as startWatcher, stop as stopWatcher
 
 
 if __name__ == "__main__":
-
     if not isCompatiblePlatform(): #  or platform.architecture()[0] != "32bit" or platform.win32_ver()[-1].endswith(" Checked"):
         sys.exit()
 
-    # patchManifest()
-    # sys.exit()
 
     # TODO: implement SIGINT handler
     # http://stackoverflow.com/a/1112350
 
     try:
+        startWatcher()
+
         userAgent = getUserAgent()
         port = startServer(userAgent)
 
-        from utils.fs import getFileStreams
-        print getFileStreams(os.path.join(PROJECT_PATH, 'backend', 'run.py'))
+        # from utils.fs import getFileStreams
+        # print getFileStreams(os.path.join(PROJECT_PATH, 'backend', 'run.py'))
 
         # sys.excepthook = handleException
-
-        streamManager = StreamManager() # DB_PERSISTENCE_PATH)
 
         """
         for (path, container, files) in getMoviePathnames(r"M:\\"):
@@ -64,7 +54,8 @@ if __name__ == "__main__":
                 time.sleep(0.5)
         """
 
-        launchChrome(userAgent, r"https://127.0.0.1:%d/" % port, (stopServer, streamManager.shutdown))
+        startPresenter(userAgent, r"https://127.0.0.1:%d/" % port, (stopServer, stopWatcher))
+
     except (KeyboardInterrupt, SystemError):
         # streamManager.shutdown()
         # stopServer()

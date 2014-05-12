@@ -14,16 +14,18 @@ from models import StreamManager
 def _startWatcher(q, *args, **kwargs):
     streamManager = StreamManager()
 
-    # TODO: wait a few seconds until presenter is ready
-
-    while True:
-        try:
-            command = q.get(False)
-            if command == 'stop':
-                streamManager.shutdown()
-                break
-        except Empty:
-            time.sleep(0.25)
+    # command = q.get()
+    # if command == 'work':
+    #     print 'work'
+    if True:
+        while True:
+            try:
+                command = q.get_nowait()
+                if command == 'stop':
+                    streamManager.shutdown()
+                    break
+            except Empty:
+                time.sleep(0.25)
 
 
 def start(*args):
@@ -35,6 +37,12 @@ def start(*args):
     global globalWatcherProcess
     globalWatcherProcess = Process(target=_startWatcher, args=args)
     globalWatcherProcess.start()
+
+
+def work():
+    # TODO: refactor this into sending of commands between processes
+    global globalWatcherQueue
+    globalWatcherQueue.put('work')
 
 
 def stop():

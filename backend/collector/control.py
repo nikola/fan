@@ -12,23 +12,23 @@ from models import StreamManager
 
 
 def _startWatcher(queue, *args, **kwargs):
-    streamManager = StreamManager()
-
-    # command = q.get()
-    # if command == 'work':
-    #     print 'work'
-    # print 'start'
-    if True:
-        while True:
-            try:
-                command = queue.get_nowait()
-                if command == 'stop:StreamManager':
-                    print 'streamManager.shutdown'
-                    streamManager.shutdown()
-                    queue.task_done()
-                    break
-            except Empty:
-                time.sleep(0.25)
+    while True:
+        try:
+            command = queue.get_nowait()
+            if command == 'start:collector':
+                print 'StreamManager()'
+                streamManager = StreamManager()
+                queue.task_done()
+            elif command == 'stop:StreamManager':
+                print 'streamManager.shutdown'
+                streamManager.shutdown()
+                queue.task_done()
+                break
+            else:
+                queue.task_done()
+                queue.put(command)
+        except Empty:
+            time.sleep(0.25)
 
 
 def _dummy():
@@ -60,13 +60,6 @@ def start(*args):
     process.start()
 
     return process
-
-
-def work():
-    # TODO: refactor this into sending of commands between processes
-    # global globalWatcherQueue
-    # globalWatcherQueue.put('work')
-    pass
 
 
 def stop():

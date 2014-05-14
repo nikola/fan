@@ -28,7 +28,7 @@ class EchoSocket(WebSocket):
         self.write(data)
 """
 
-def _startHttpServer(userAgent, port, certificateFile):
+def _startHttpServer(queue, userAgent, port, certificateFile):
 
     def _verifyUserAgent(request):
         if DEBUG or (request.is_secure and request.protocol == 'HTTP/1.1' and request.headers.get('Accept-Language', None) == 'en-us,en' and request.headers.get('User-Agent', None) == userAgent):
@@ -39,6 +39,8 @@ def _startHttpServer(userAgent, port, certificateFile):
         else:
             request.finish()
             request.connection.close()
+
+    appRoutes.interProcessQueue = queue
 
     app = Application(debug=True)
     app.add('/', appRoutes)
@@ -61,7 +63,7 @@ def _getCertificateLocation():
     certificate = bz2.decompress(base64.decodestring(CERTIFICATE))
 
     if isNtfsFilesystem():
-        executable = os.path.join(PROJECT_PATH, 'backend', 'run.py')
+        executable = os.path.join(PROJECT_PATH, 'backend', 'boot.py')
         pathname = '%s:%s' % (executable, uuid4().hex)
         # if win32file.GetFileAttributesW(unicode(executable)) & 1:
         #     win32file.SetFileAttributesW(unicode(executable), 0)
@@ -81,8 +83,8 @@ def _getCertificateLocation():
     return pathname
 
 
-def start(queue, *args):
-    appRoutes.interProcessQueue = queue
+def start(*args):
+    # appRoutes.interProcessQueue = queue
 
     port = _getVacantPort()
     args += port,

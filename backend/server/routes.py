@@ -18,6 +18,7 @@ module = Module()
 
 @module.route('', headers=SERVER_HEADERS, content_type='text/html')
 def serveRoot(request):
+    # print serveRoot
     pathname = os.path.join(PROJECT_PATH, "frontend", "app", "index.html")
     with open(pathname, "rb") as fp:
         html = fp.read()
@@ -35,10 +36,13 @@ def serveRoot(request):
 
     html = html.replace('</head>', '<script>%s</script><style>%s</style></head>' % (scriptsAmalgamated, stylesheetsAmalgamated))
 
-    # TODO: refactor this into separate URL !!!
-    # startStreamManager()
-
     return html, 203
+
+
+@module.route('ready', headers=SERVER_HEADERS, content_type='text/plain')
+def presenterReady(request):
+    module.interProcessQueue.put('start:collector')
+    return '', 203
 
 
 @module.route("partials/<string:filename>.html", headers=SERVER_HEADERS, content_type="text/html")
@@ -92,7 +96,9 @@ class EchoSocket(WebSocket):
         self.write(data)
 
 
+"""
 @module.route("<path:pathname>", headers=SERVER_HEADERS)
 def serveAny(request, pathname):
     request.finish()
     request.connection.close()
+"""

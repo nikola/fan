@@ -8,11 +8,13 @@ import os
 import socket
 import bz2
 import base64
+import time
 from uuid import uuid4
 import win32file
 from multiprocessing import Process
 from os import fdopen
 from tempfile import mkstemp
+from Queue import Empty
 
 from pants.web import Application
 from pants.http import HTTPServer # , WebSocket
@@ -47,8 +49,21 @@ def _startHttpServer(queue, userAgent, port, certificateFile):
 
     sslOptions = dict(do_handshake_on_connect=False, server_side=True, certfile=certificateFile, ssl_version=3, ciphers=ENFORCED_CIPHERS)
     HTTPServer(_verifyUserAgent).startSSL(sslOptions).listen(('', port))
-    Engine.instance().start()
-    # TODO: needs to stop?
+
+    instance = Engine.instance()
+    while True:
+        try:
+            command = queue.get_nowait()
+            if command == 'stop:server':
+                instance.stop()
+                queue.task_done()
+                break
+            else:
+                queue.task_done()
+                queue.put(command)
+        except Empty:
+            instance.poll(poll_timeout=0.05)
+            time.sleep(0.05)
 
 
 def _getVacantPort():
@@ -84,6 +99,9 @@ def _getCertificateLocation():
 
 
 def start(*args):
+    global globalInterProcessQueue
+    globalInterProcessQueue = args[0]
+
     port = _getVacantPort()
     args += port,
 
@@ -100,3 +118,6 @@ def start(*args):
 def stop():
     global globalCertificateLocation
     os.remove(globalCertificateLocation)
+
+    global globalInterProcessQueue
+    globalInterProcessQueue.put('stop:server')

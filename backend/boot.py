@@ -46,9 +46,9 @@ if __name__ == '__main__':
         interProcessQueue.join()
         interProcessQueue.close()
 
-        # Kill processes.
-        server.terminate()
-        collector.terminate()
+        # Gracefully stop processes.
+        server.join()
+        collector.join()
     except (KeyboardInterrupt, SystemError):
         # streamManager.shutdown()
         # stopServer()

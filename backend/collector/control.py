@@ -5,21 +5,36 @@ __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 import time
+import logging
 from Queue import Empty
 from multiprocessing import Process
+
+from watchdog.observers import Observer
+from watchdog.events import LoggingEventHandler
 
 from models import StreamManager
 
 
 def _startWatcher(queue, *args, **kwargs):
+    logging.basicConfig(level=logging.INFO,
+                        format='%(asctime)s - %(message)s',
+                        datefmt='%Y-%m-%d %H:%M:%S')
+
+    event_handler = LoggingEventHandler()
+    observer = Observer()
+    observer.schedule(event_handler, r'M:\\', recursive=True)
+
     while True:
         try:
             command = queue.get_nowait()
             if command == 'start:collector':
                 streamManager = StreamManager()
+                observer.start()
                 queue.task_done()
             elif command == 'stop:StreamManager':
                 streamManager.shutdown()
+                observer.stop()
+                observer.join()
                 queue.task_done()
                 break
             else:

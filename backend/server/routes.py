@@ -9,16 +9,19 @@ import os.path
 from pants.web.application import Module
 from pants.http import WebSocket
 
-from config import PROJECT_PATH, SERVER_HEADERS, RESOURCES_SCRIPT, RESOURCES_STYLE, CHROME_USER_AGENT
-# from watcher.control import work as startStreamManager
+from config import DEBUG, PROJECT_PATH, SERVER_HEADERS, RESOURCES_SCRIPT, RESOURCES_STYLE, CHROME_USER_AGENT
 
 
 module = Module()
 
+@module.route('ready', headers=SERVER_HEADERS, content_type='text/plain')
+def presenterReady(request):
+    module.interProcessQueue.put('start:collector')
+    return '', 203
+
 
 @module.route('', headers=SERVER_HEADERS, content_type='text/html')
 def serveRoot(request):
-    # print serveRoot
     pathname = os.path.join(PROJECT_PATH, "frontend", "app", "index.html")
     with open(pathname, "rb") as fp:
         html = fp.read()
@@ -39,12 +42,7 @@ def serveRoot(request):
     return html, 203
 
 
-@module.route('ready', headers=SERVER_HEADERS, content_type='text/plain')
-def presenterReady(request):
-    module.interProcessQueue.put('start:collector')
-    return '', 203
-
-
+"""
 @module.route("partials/<string:filename>.html", headers=SERVER_HEADERS, content_type="text/html")
 def serveStylesheet(request, filename):
     pathname = os.path.join(PROJECT_PATH, "frontend", "app", "partials", "%s.html" % filename)
@@ -54,17 +52,19 @@ def serveStylesheet(request, filename):
     else:
         request.finish()
         request.connection.close()
+"""
 
 
-@module.route("<string:filename>.min.js.map", headers=SERVER_HEADERS, content_type="application/javascript")
+@module.route('<string:filename>.min.js.map', headers=SERVER_HEADERS, content_type='application/javascript')
 def serveScript(request, filename):
-    pathname = os.path.join(PROJECT_PATH, "frontend", "vendor", "angular", "%s.min.js.map" % filename)
-    if os.path.exists(pathname):
-        with open(pathname, "rb") as fp: content = fp.read()
-        return content, 203
-    else:
-        request.finish()
-        request.connection.close()
+    if DEBUG:
+        pathname = os.path.join(PROJECT_PATH, "frontend", "vendor", "angular", "%s.min.js.map" % filename)
+        if os.path.exists(pathname):
+            with open(pathname, "rb") as fp: content = fp.read()
+            return content, 203
+
+    request.finish()
+    request.connection.close()
 
 
 @module.route('<string:filename>.png', headers=SERVER_HEADERS, content_type='image/png')
@@ -78,6 +78,7 @@ def serveImage(request, filename):
         request.connection.close()
 
 
+"""
 @module.route('<string:name>.socket')
 class EchoSocket(WebSocket):
 
@@ -94,11 +95,16 @@ class EchoSocket(WebSocket):
         print 2
         print data
         self.write(data)
+"""
+
+
+
 
 
 """
-@module.route("<path:pathname>", headers=SERVER_HEADERS)
+@module.route("/<path:pathname>", headers=SERVER_HEADERS)
 def serveAny(request, pathname):
+    print 'any called', repr(pathname)
     request.finish()
     request.connection.close()
 """

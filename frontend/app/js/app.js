@@ -20,9 +20,9 @@ document.oncontextmenu = function (evt) {
 }
 
 document.addEventListener('DOMContentLoaded', function(event) {
-    $.get(
-        '/ready'
-    );
+    /* Notify backend that UI is ready. */
+    $.get('/ready');
+
     /*
     setTimeout(function () {
         $('#app-logo').animate({opacity: 0}, 500, 'linear');

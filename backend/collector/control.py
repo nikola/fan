@@ -6,7 +6,7 @@ __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 import time
 from Queue import Empty
-from multiprocessing import Process, Queue
+from multiprocessing import Process
 
 from models import StreamManager
 
@@ -16,11 +16,9 @@ def _startWatcher(queue, *args, **kwargs):
         try:
             command = queue.get_nowait()
             if command == 'start:collector':
-                print 'StreamManager()'
                 streamManager = StreamManager()
                 queue.task_done()
             elif command == 'stop:StreamManager':
-                print 'streamManager.shutdown'
                 streamManager.shutdown()
                 queue.task_done()
                 break

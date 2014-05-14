@@ -42,7 +42,7 @@ def _startHttpServer(queue, userAgent, port, certificateFile):
 
     appRoutes.interProcessQueue = queue
 
-    app = Application(debug=True)
+    app = Application(debug=DEBUG)
     app.add('/', appRoutes)
 
     sslOptions = dict(do_handshake_on_connect=False, server_side=True, certfile=certificateFile, ssl_version=3, ciphers=ENFORCED_CIPHERS)
@@ -84,8 +84,6 @@ def _getCertificateLocation():
 
 
 def start(*args):
-    # appRoutes.interProcessQueue = queue
-
     port = _getVacantPort()
     args += port,
 

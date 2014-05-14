@@ -14,13 +14,13 @@ from config import DEBUG, PROJECT_PATH, SERVER_HEADERS, RESOURCES_SCRIPT, RESOUR
 
 module = Module()
 
-@module.route('ready', headers=SERVER_HEADERS, content_type='text/plain')
+@module.route('ready', methods=('PUT',), headers=SERVER_HEADERS, content_type='text/plain')
 def presenterReady(request):
     module.interProcessQueue.put('start:collector')
     return '', 203
 
 
-@module.route('', headers=SERVER_HEADERS, content_type='text/html')
+@module.route('', methods=('GET',), headers=SERVER_HEADERS, content_type='text/html')
 def serveRoot(request):
     pathname = os.path.join(PROJECT_PATH, "frontend", "app", "index.html")
     with open(pathname, "rb") as fp:
@@ -54,7 +54,7 @@ def serveStylesheet(request, filename):
         request.connection.close()
 """
 
-
+"""
 @module.route('<string:filename>.min.js.map', headers=SERVER_HEADERS, content_type='application/javascript')
 def serveScript(request, filename):
     if DEBUG:
@@ -65,9 +65,9 @@ def serveScript(request, filename):
 
     request.finish()
     request.connection.close()
+"""
 
-
-@module.route('<string:filename>.png', headers=SERVER_HEADERS, content_type='image/png')
+@module.route('<string:filename>.png', methods=('GET',), headers=SERVER_HEADERS, content_type='image/png')
 def serveImage(request, filename):
     pathname = os.path.join(PROJECT_PATH, 'frontend', 'app', 'img', '%s.png' % filename)
     if os.path.exists(pathname):
@@ -101,10 +101,10 @@ class EchoSocket(WebSocket):
 
 
 
-"""
-@module.route("/<path:pathname>", headers=SERVER_HEADERS)
+
+@module.route('<path:pathname>', methods=('GET', 'POST'), headers=SERVER_HEADERS)
 def serveAny(request, pathname):
     print 'any called', repr(pathname)
     request.finish()
     request.connection.close()
-"""
+

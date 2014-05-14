@@ -6,7 +6,7 @@ __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 import sys
-from multiprocessing import JoinableQueue as InterProcessQueue
+from multiprocessing import JoinableQueue as InterProcessQueue, freeze_support
 
 from presenter.control import startPresenter
 from utils.agent import getUserAgent
@@ -16,6 +16,8 @@ from collector.control import start as startCollector, stop as stopCollector
 
 
 if __name__ == '__main__':
+    freeze_support()
+
     if not isCompatiblePlatform():
         sys.exit()
 

@@ -14,7 +14,7 @@ from config import DEBUG, PROJECT_PATH, SERVER_HEADERS, RESOURCES_SCRIPT, RESOUR
 
 module = Module()
 
-@module.route('ready', methods=('PUT',), headers=SERVER_HEADERS, content_type='text/plain')
+@module.route('ready', methods=('PATCH',), headers=SERVER_HEADERS, content_type='text/plain')
 def presenterReady(request):
     module.interProcessQueue.put('start:collector')
     return '', 203
@@ -98,13 +98,8 @@ class EchoSocket(WebSocket):
 """
 
 
-
-
-
-
-@module.route('<path:pathname>', methods=('GET', 'POST'), headers=SERVER_HEADERS)
+@module.route('<path:pathname>', methods=('GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'TRACE', 'OPTIONS', 'CONNECT'))
 def serveAny(request, pathname):
-    print 'any called', repr(pathname)
     request.finish()
     request.connection.close()
 

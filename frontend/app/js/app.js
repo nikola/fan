@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
     /* Notify backend that UI is ready. */
     $.ajax({
         url: '/ready',
-        type: 'PUT',
+        type: 'PATCH',
         success: function (result) {
 
         }

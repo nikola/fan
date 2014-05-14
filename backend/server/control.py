@@ -46,6 +46,7 @@ def _startHttpServer(userAgent, port, certificateFile):
     sslOptions = dict(do_handshake_on_connect=False, server_side=True, certfile=certificateFile, ssl_version=3, ciphers=ENFORCED_CIPHERS)
     HTTPServer(_verifyUserAgent).startSSL(sslOptions).listen(('', port))
     Engine.instance().start()
+    # TODO: needs to stop?
 
 
 def _getVacantPort():

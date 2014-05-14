@@ -1,8 +1,8 @@
 # coding: utf-8
 """
 """
-__author__ = "Nikola Klaric (nikola@generic.company)"
-__copyright__ = "Copyright (c) 2013-2014 Nikola Klaric"
+__author__ = 'Nikola Klaric (nikola@generic.company)'
+__copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 from sqlalchemy import Column, SmallInteger, Integer, BigInteger, String, Unicode
 from sqlalchemy import Table, ForeignKey

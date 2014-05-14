@@ -1,8 +1,8 @@
 # coding: utf-8
 """
 """
-__author__ = "Nikola Klaric (nikola@generic.company)"
-__copyright__ = "Copyright (c) 2013-2014 Nikola Klaric"
+__author__ = 'Nikola Klaric (nikola@generic.company)'
+__copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 CEF_CMD_LINE_SETTINGS = {
     # https://code.google.com/p/chromiumembedded/source/browse/trunk/cef3/libcef/common/cef_switches.cc

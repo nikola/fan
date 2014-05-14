@@ -1,8 +1,8 @@
 # coding: utf-8
 """
 """
-__author__ = "Nikola Klaric (nikola@generic.company)"
-__copyright__ = "Copyright (c) 2013-2014 Nikola Klaric"
+__author__ = 'Nikola Klaric (nikola@generic.company)'
+__copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 import time
 from Queue import Empty
@@ -26,6 +26,27 @@ def _startWatcher(q, *args, **kwargs):
                     break
             except Empty:
                 time.sleep(0.25)
+
+
+def _dummy():
+    """
+        for (path, container, files) in getMoviePathnames(r"M:\\"):
+            basedata = getBasedataFromPathname(container)
+
+            for filename in files:
+                streamLocation = os.path.join(path, filename)
+                print streamLocation
+                continue
+
+                print "processing %s" % streamLocation
+                movieRecord = getMovieFromRawData("de", "de", basedata["title"], basedata["year"])
+                if movieRecord is None: continue
+
+                print "adding %s from %s" % (movieRecord["titleOriginal"], streamLocation)
+                streamManager.addMovieStream(movieRecord, streamLocation)
+
+                time.sleep(0.5)
+    """
 
 
 def start(*args):

@@ -1,8 +1,8 @@
 # coding: utf-8
 """ ATTENTION: only 30 requests every 10 seconds per IP!
 """
-__author__ = "Nikola Klaric (nikola@generic.company)"
-__copyright__ = "Copyright (c) 2013-2014 Nikola Klaric"
+__author__ = 'Nikola Klaric (nikola@generic.company)'
+__copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 from config import THEMOVIEDB_API_KEY
 import httplib

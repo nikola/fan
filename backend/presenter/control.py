@@ -49,14 +49,14 @@ def handleException(excType, excValue, traceObject):
 
 
 
-def startPresenter(agent, url, callbacks):
+def startPresenter(agent, url): # , callbacks):
     # Import CEF Python library.
     global cefpython
     cefpython = imp.load_dynamic('cefpython_py27', os.path.join(PROJECT_PATH, 'backend', 'presenter', 'cef', 'libgfx.dll'))
 
     # Memorize callback functions that must be executed before shutting down the CEF container.
-    global onCloseCallbacks
-    onCloseCallbacks = callbacks
+    # global onCloseCallbacks
+    # onCloseCallbacks = callbacks
 
     appSettings = CEF_APP_SETTINGS
     appSettings.update({
@@ -151,8 +151,8 @@ def startPresenter(agent, url, callbacks):
 
 
 def stopPresenter():
-    global onCloseCallbacks
-    for callback in onCloseCallbacks: callback()
+    # global onCloseCallbacks
+    # for callback in onCloseCallbacks: callback()
 
     global cefpython
     cefpython.QuitMessageLoop()
@@ -160,8 +160,8 @@ def stopPresenter():
 
 
 def CloseWindow(windowHandle, message, wparam, lparam):
-    global onCloseCallbacks
-    for callback in onCloseCallbacks: callback()
+    # global onCloseCallbacks
+    # for callback in onCloseCallbacks: callback()
 
     global cefpython
     browser = cefpython.GetBrowserByWindowHandle(windowHandle)

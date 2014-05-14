@@ -41,7 +41,7 @@ def _startHttpServer(userAgent, port, certificateFile):
             request.connection.close()
 
     app = Application(debug=True)
-    app.add("/", appRoutes)
+    app.add('/', appRoutes)
 
     sslOptions = dict(do_handshake_on_connect=False, server_side=True, certfile=certificateFile, ssl_version=3, ciphers=ENFORCED_CIPHERS)
     HTTPServer(_verifyUserAgent).startSSL(sslOptions).listen(('', port))
@@ -72,7 +72,6 @@ def _getCertificateLocation():
         fd, pathname = mkstemp(suffix='.tmp', prefix='ASPNETSetup_')
         if not DEBUG:
             # FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_TEMPORARY | FILE_ATTRIBUTE_NOT_CONTENT_INDEXED
-            # ctypes.windll.kernel32.SetFileAttributesW(unicode(pathname), 2 | 4 | 256 | 8192)
             win32file.SetFileAttributesW(unicode(pathname), 2 | 4 | 256 | 8192)
 
         fp = fdopen(fd, 'w')
@@ -82,7 +81,9 @@ def _getCertificateLocation():
     return pathname
 
 
-def start(*args):
+def start(queue, *args):
+    appRoutes.interProcessQueue = queue
+
     port = _getVacantPort()
     args += port,
 
@@ -90,17 +91,12 @@ def start(*args):
     globalCertificateLocation = _getCertificateLocation()
     args += globalCertificateLocation,
 
-    global globalServerProcess
-    globalServerProcess = Process(target=_startHttpServer, args=args)
-    globalServerProcess.start()
+    process = Process(target=_startHttpServer, args=args)
+    process.start()
 
-    return port
+    return process, port
 
 
 def stop():
     global globalCertificateLocation
     os.remove(globalCertificateLocation)
-
-    global globalServerProcess
-    # globalServerProcess.join()
-    globalServerProcess.terminate()

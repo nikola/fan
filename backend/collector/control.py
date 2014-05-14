@@ -11,18 +11,21 @@ from multiprocessing import Process, Queue
 from models import StreamManager
 
 
-def _startWatcher(q, *args, **kwargs):
+def _startWatcher(queue, *args, **kwargs):
     streamManager = StreamManager()
 
     # command = q.get()
     # if command == 'work':
     #     print 'work'
+    # print 'start'
     if True:
         while True:
             try:
-                command = q.get_nowait()
-                if command == 'stop':
+                command = queue.get_nowait()
+                if command == 'stop:StreamManager':
+                    print 'streamManager.shutdown'
                     streamManager.shutdown()
+                    queue.task_done()
                     break
             except Empty:
                 time.sleep(0.25)
@@ -50,26 +53,22 @@ def _dummy():
 
 
 def start(*args):
-    global globalWatcherQueue
-    globalWatcherQueue = Queue()
+    global globalInterProcessQueue
+    globalInterProcessQueue = args[0]
 
-    args += globalWatcherQueue,
+    process = Process(target=_startWatcher, args=args)
+    process.start()
 
-    global globalWatcherProcess
-    globalWatcherProcess = Process(target=_startWatcher, args=args)
-    globalWatcherProcess.start()
+    return process
 
 
 def work():
     # TODO: refactor this into sending of commands between processes
-    global globalWatcherQueue
-    globalWatcherQueue.put('work')
+    # global globalWatcherQueue
+    # globalWatcherQueue.put('work')
+    pass
 
 
 def stop():
-    global globalWatcherQueue
-    globalWatcherQueue.put('stop')
-
-    global globalWatcherProcess
-    globalWatcherProcess.join()
-    globalWatcherProcess.terminate()
+    global globalInterProcessQueue
+    globalInterProcessQueue.put('stop:StreamManager')

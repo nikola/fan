@@ -6,11 +6,9 @@ __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 import sys
-# import platform
-from utils.collector import *
-from utils.identifier import *
+from multiprocessing import JoinableQueue as InterProcessQueue
 
-from presenter.control import startPresenter #, stopPresenter
+from presenter.control import startPresenter
 from utils.agent import getUserAgent
 from utils.system import isCompatiblePlatform
 from server.control import start as startServer, stop as stopServer
@@ -24,12 +22,31 @@ if __name__ == '__main__':
     # sys.excepthook = handleException
 
     try:
-        startCollector()
+        # Omni-directional message queue between boot process,
+        # collector process and server process.
+        interProcessQueue = InterProcessQueue()
+
+        # Start process, but spawn file watcher and stream manager only after
+        # receiving a kick off event from the presenter.
+        collector = startCollector(interProcessQueue)
 
         userAgent = getUserAgent()
-        port = startServer(userAgent)
+        server, port = startServer(interProcessQueue, userAgent)
 
-        startPresenter(userAgent, r"https://127.0.0.1:%d/" % port, (stopServer, stopCollector))
+        # Start blocking presenter process.
+        startPresenter(userAgent, 'https://127.0.0.1:%d/' % port)
+
+        # Presenter has been closed, now kick off clean-up tasks.
+        stopServer()
+        stopCollector()
+
+        # Block until all queue items have been processed.
+        interProcessQueue.join()
+        interProcessQueue.close()
+
+        # Kill processes.
+        server.terminate()
+        collector.terminate()
     except (KeyboardInterrupt, SystemError):
         # streamManager.shutdown()
         # stopServer()

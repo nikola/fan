@@ -23,10 +23,10 @@ def _startWatcher(queue, *args, **kwargs):
                 queue.task_done()
                 break
             else:
-                queue.task_done()
                 queue.put(command)
+                queue.task_done()
         except Empty:
-            time.sleep(0.25)
+            time.sleep(0.015)
 
 
 def _dummy():

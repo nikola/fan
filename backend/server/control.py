@@ -59,11 +59,11 @@ def _startHttpServer(queue, userAgent, port, certificateFile):
                 queue.task_done()
                 break
             else:
-                queue.task_done()
                 queue.put(command)
+                queue.task_done()
         except Empty:
-            instance.poll(poll_timeout=0.05)
-            time.sleep(0.05)
+            instance.poll(poll_timeout=0.015)
+            time.sleep(0.015)
 
 
 def _getVacantPort():

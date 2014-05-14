@@ -20,6 +20,7 @@ document.oncontextmenu = function (evt) {
 }
 
 document.addEventListener('DOMContentLoaded', function(event) {
+    /*
     setTimeout(function () {
         $('#app-logo').animate({opacity: 0}, 500, 'linear');
         $('#app-info').animate({opacity: 0}, 500, 'linear');
@@ -28,5 +29,5 @@ document.addEventListener('DOMContentLoaded', function(event) {
         $('.spinner .container').animate({marginTop: 512, opacity: 0}, 1000, 'linear', function () {
 
         });
-    }, 3000);
+    }, 3000); */
 });

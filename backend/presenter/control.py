@@ -24,9 +24,75 @@ import win32gui
 import win32api
 import win32con
 
+from presenter.hooks import ClientHandler
 from config import *
 from settings.presenter import *
 from utils.win32 import getNormalizedPathname
+
+
+class JavascriptBridge:
+    mainBrowser = None
+    stringVisitor = None
+
+    def __init__(self, mainBrowser, shutdownCallback):
+        self.mainBrowser = mainBrowser
+        self.shutdownCallback = shutdownCallback
+
+    def log(self, message):
+        print(message)
+
+    def shutdown(self):
+        stopPresenter()
+        # self.mainBrowser.CloseBrowser()
+        # QuitApplication()
+        self.shutdownCallback()
+        os._exit(1)
+        # QuitApplication()
+        # global cefpython
+
+
+    def Print(self, message):
+        print(message)
+
+    def TestAllTypes(self, *args):
+        print(args)
+
+    def ExecuteFunction(self, *args):
+        self.mainBrowser.GetMainFrame().ExecuteFunction(*args)
+
+    def TestJSCallback(self, jsCallback):
+        print("jsCallback.GetFunctionName() = %s" % jsCallback.GetFunctionName())
+        print("jsCallback.GetFrame().GetIdentifier() = %s" % \
+                jsCallback.GetFrame().GetIdentifier())
+        jsCallback.Call("This message was sent from python using js callback")
+
+    def TestJSCallbackComplexArguments(self, jsObject):
+        jsCallback = jsObject["myCallback"];
+        jsCallback.Call(1, None, 2.14, "string", ["list", ["nested list", \
+                {"nested object":None}]], \
+                {"nested list next":[{"deeply nested object":1}]})
+
+    def TestPythonCallback(self, jsCallback):
+        jsCallback.Call(self.PyCallback)
+
+    def PyCallback(self, *args):
+        message = "PyCallback() was executed successfully! Arguments: %s" \
+                % str(args)
+        print(message)
+        self.mainBrowser.GetMainFrame().ExecuteJavascript(
+                "window.alert(\"%s\")" % message)
+
+    # def GetSource(self):
+    #     # Must keep a strong reference to the StringVisitor object
+    #     # during the visit.
+    #     self.stringVisitor = StringVisitor()
+    #     self.mainBrowser.GetMainFrame().GetSource(self.stringVisitor)
+    #
+    # def GetText(self):
+    #     # Must keep a strong reference to the StringVisitor object
+    #     # during the visit.
+    #     self.stringVisitor = StringVisitor()
+    #     self.mainBrowser.GetMainFrame().GetText(self.stringVisitor)
 
 
 def handleException(excType, excValue, traceObject):
@@ -49,7 +115,7 @@ def handleException(excType, excValue, traceObject):
 
 
 
-def startPresenter(agent, url): # , callbacks):
+def startPresenter(userAgent, httpPort, websocketPort, shutdownCallback, bridgeToken): # , callbacks):
     # Import CEF Python library.
     global cefpython
     cefpython = imp.load_dynamic('cefpython_py27', os.path.join(PROJECT_PATH, 'backend', 'presenter', 'cef', 'libgfx.dll'))
@@ -62,7 +128,7 @@ def startPresenter(agent, url): # , callbacks):
     appSettings.update({
         'log_severity':            cefpython.LOGSEVERITY_DISABLE,
         'browser_subprocess_path': os.path.join(cefpython.GetModuleDirectory(), 'iexplore'),
-        'user_agent':              agent,
+        'user_agent':              userAgent,
         'locales_dir_path':        os.path.join(cefpython.GetModuleDirectory()),
     })
     if DEBUG:
@@ -140,36 +206,44 @@ def startPresenter(agent, url): # , callbacks):
     windowInfo = cefpython.WindowInfo()
     windowInfo.SetAsChild(windowId)
 
-    cefpython.CreateBrowserSync(
+    browser = cefpython.CreateBrowserSync(
         windowInfo,
         CHROME_BROWSER_SETTINGS,
-        navigateUrl=url,
+        navigateUrl='https://127.0.0.1:%d/' % httpPort,
     )
+
+    clientHandler = ClientHandler()
+    browser.SetClientHandler(clientHandler)
+
+    bridge = JavascriptBridge(browser, shutdownCallback)
+
+    jsBindings = cefpython.JavascriptBindings(bindToFrames=False, bindToPopups=True) # TODO: set to False
+    jsBindings.SetProperty('WEBSOCKET_PORT', websocketPort)
+    jsBindings.SetObject(bridgeToken, bridge)
+    jsBindings.SetObject('console', bridge)
+    browser.SetJavascriptBindings(jsBindings)
 
     cefpython.MessageLoop()
     cefpython.Shutdown()
 
 
 def stopPresenter():
-    # global onCloseCallbacks
-    # for callback in onCloseCallbacks: callback()
-
     global cefpython
     cefpython.QuitMessageLoop()
     cefpython.Shutdown()
 
 
 def CloseWindow(windowHandle, message, wparam, lparam):
-    # global onCloseCallbacks
-    # for callback in onCloseCallbacks: callback()
-
     global cefpython
     browser = cefpython.GetBrowserByWindowHandle(windowHandle)
     browser.CloseBrowser()
+
+    print 'CloseWindow'
 
     return win32gui.DefWindowProc(windowHandle, message, wparam, lparam)
 
 
 def QuitApplication(*args, **kwargs):
+    print 'QuitApplication'
     win32gui.PostQuitMessage(0)
     return 0

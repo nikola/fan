@@ -67,6 +67,7 @@ class StreamManager(object):
             Base.metadata.create_all(self.engine)
 
     def shutdown(self):
+        print 'streamManager.shutdown()'
         if not DEBUG:
             self._persist()
 

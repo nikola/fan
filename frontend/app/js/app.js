@@ -15,6 +15,8 @@ config(['$routeProvider', function($routeProvider) {
   $routeProvider.otherwise({redirectTo: '/view1'});
 }]);
 
+
+
 document.oncontextmenu = function (evt) {
     evt.preventDefault();
 }
@@ -25,9 +27,36 @@ document.addEventListener('DOMContentLoaded', function(event) {
         url: '/ready',
         type: 'PATCH',
         success: function (result) {
+            console.log(navigator.userAgent);
+            var socket = new WebSocket('wss://127.0.0.1:' + WEBSOCKET_PORT + '/');
+
+            $('<div>', {
+                    // 'text': 'socket: ' + WEBSOCKET_PORT // socket
+                'text': 'console: ' + console
+                }).appendTo('body');
+
+            socket.onopen = function (evt) {
+                // socket.send('test1');
+                // socket.send('test2');
+            };
+
+            socket.onmessage = function (evt) {
+                var bridge = window[evt.data];
+                // bridge.shutdown();
+                // console.log(bridge);
+                $('<div>', {
+                    'text': evt.data
+                }).appendTo('body');
+
+            };
 
         }
     });
+
+
+    /* setTimeout(function () {
+        BRIDGE.shutdown();
+    }, 3000); */
 
 
     /*

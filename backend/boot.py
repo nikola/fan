@@ -10,12 +10,12 @@ import os
 from uuid import uuid4
 from multiprocessing import JoinableQueue as InterProcessQueue, freeze_support
 
-from presenter.control import startPresenter
-from utils.agent import getUserAgent
 from utils.system import isCompatiblePlatform
+from utils.agent import getUserAgent
 from utils.net import getVacantPort, getCertificateLocation
-from server.control import start as startServer, stop as stopServer
 from collector.control import start as startCollector, stop as stopCollector
+from server.control import start as startServer, stop as stopServer
+from presenter.control import start as present
 
 
 if __name__ == '__main__':
@@ -41,7 +41,8 @@ if __name__ == '__main__':
 
         os.remove(certificateLocation)
 
-
+        # Circumvent SystemExit exception handler.
+        os._exit(1)
 
     # sys.excepthook = handleException
 
@@ -51,39 +52,18 @@ if __name__ == '__main__':
         certificateLocation = getCertificateLocation()
         userAgent = getUserAgent()
 
-        # Omni-directional message queue between boot process,
-        # collector process and server process.
+        # Omni-directional message queue between boot process, collector process and server process.
         interProcessQueue = InterProcessQueue()
 
-        # Start process, but spawn file watcher and stream manager only after
-        # receiving a kick off event from the presenter.
+        # Start process, but spawn file watcher and stream manager only after receiving a kick off event from the presenter.
         websocketPort = getVacantPort()
-        collector = startCollector(interProcessQueue, websocketPort, certificateLocation, userAgent, bridgeToken)
+        collector = startCollector(interProcessQueue, websocketPort, certificateLocation, userAgent, bridgeToken) # TODO: not token here
 
         httpPort = getVacantPort()
-        server = startServer(interProcessQueue, httpPort, certificateLocation, userAgent)
+        server = startServer(interProcessQueue, httpPort, certificateLocation, userAgent)                       # TODO: token here!
 
         # Start blocking presenter process.
-        # startPresenter(userAgent, 'https://127.0.0.1:%d/' % httpPort)
-        startPresenter(userAgent, httpPort, websocketPort, _shutdown, bridgeToken)
-        # Calling cefpython.shutdown() will also close all open Websockets,
-        # i.e. at this point there are none open.
-
-        _shutdown()
-
-        # # Presenter has been closed, now kick off clean-up tasks.
-        # stopServer()
-        # stopCollector()
-        #
-        # # Block until all queue items have been processed.
-        # interProcessQueue.join()
-        # interProcessQueue.close()
-        #
-        # # Gracefully stop processes.
-        # server.join()
-        # collector.join()
-        #
-        # os.remove(certificateLocation)
+        present(userAgent, httpPort, websocketPort, _shutdown, bridgeToken)
     except (KeyboardInterrupt, SystemError):
         # streamManager.shutdown()
         # stopServer()

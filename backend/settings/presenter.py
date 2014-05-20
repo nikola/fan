@@ -44,4 +44,5 @@ CEF_APP_SETTINGS = {
     'multi_threaded_message_loop': False,
     'ignore_certificate_errors':   True,
     'log_file':                    '',
+    'locale':                      'he',
 }

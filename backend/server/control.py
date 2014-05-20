@@ -22,7 +22,7 @@ from server.routes import module as appRoutes
 def _startHttpServer(queue, port, certificateFile, userAgent):
 
     def proxy(request):
-        if DEBUG or (request.is_secure and request.protocol == 'HTTP/1.1' and request.headers.get('Accept-Language', None) == 'en-us,en' and request.headers.get('User-Agent', None) == userAgent):
+        if DEBUG or (request.is_secure and request.protocol == 'HTTP/1.1' and request.headers.get('User-Agent', None) == userAgent):
             app(request)
         else:
             request.finish()

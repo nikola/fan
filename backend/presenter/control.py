@@ -30,25 +30,23 @@ from settings.presenter import *
 from utils.win32 import getNormalizedPathname
 
 
-class JavascriptBridge:
-    mainBrowser = None
-    stringVisitor = None
+shutdownAll = None
 
-    def __init__(self, mainBrowser, shutdownCallback):
+
+class JavascriptBridge(object):
+    # mainBrowser = None
+    # stringVisitor = None
+
+    def __init__(self, mainBrowser): # , shutdownCallback):
         self.mainBrowser = mainBrowser
-        self.shutdownCallback = shutdownCallback
+        # self.shutdownCallback = shutdownCallback
 
     def log(self, message):
         print(message)
 
     def shutdown(self):
-        stopPresenter()
-        # self.mainBrowser.CloseBrowser()
-        # QuitApplication()
-        self.shutdownCallback()
-        os._exit(1)
-        # QuitApplication()
-        # global cefpython
+        stop()
+        # self.shutdownCallback()
 
 
     def Print(self, message):
@@ -110,12 +108,15 @@ def handleException(excType, excValue, traceObject):
     errorMsg = errorMsg.encode("ascii", errors="replace").decode("ascii", errors="replace")
     print("\n%s\n" % errorMsg)
 
-    stopPresenter()
+    stop()
     os._exit(1)
 
 
 
-def startPresenter(userAgent, httpPort, websocketPort, shutdownCallback, bridgeToken): # , callbacks):
+def start(userAgent, httpPort, websocketPort, callback, bridgeToken): # , callbacks):
+    global shutdownAll
+    shutdownAll = callback
+
     # Import CEF Python library.
     global cefpython
     cefpython = imp.load_dynamic('cefpython_py27', os.path.join(PROJECT_PATH, 'backend', 'presenter', 'cef', 'libgfx.dll'))
@@ -129,22 +130,22 @@ def startPresenter(userAgent, httpPort, websocketPort, shutdownCallback, bridgeT
         'log_severity':            cefpython.LOGSEVERITY_DISABLE,
         'browser_subprocess_path': os.path.join(cefpython.GetModuleDirectory(), 'iexplore'),
         'user_agent':              userAgent,
-        'locales_dir_path':        os.path.join(cefpython.GetModuleDirectory()),
+        'locales_dir_path':        os.path.join(cefpython.GetModuleDirectory()), # TODO: replace this with known directory
     })
     if DEBUG:
         appSettings.update({
             'debug':                  True,
             'release_dcheck_enabled': True,
             'remote_debugging_port':  8090,
-            'log_file':               getNormalizedPathname('debug.log'),
+            'log_file':               getNormalizedPathname('debug.log'), # TODO: replace this
             'log_severity':           cefpython.LOGSEVERITY_INFO,
         })
     # {END DEBUG}
 
     cefpython.Initialize(appSettings, CEF_CMD_LINE_SETTINGS)
 
-    windowName = 'ka-BOOM'
-    className = 'kaboom_%s' % uuid.uuid4().hex
+    windowName = 'ka-BOOM' # TODO: use random name
+    className = 'kaboom_%s' % uuid.uuid4().hex  # TODO: use random class
     iconPathname = getNormalizedPathname("../presenter/cef/icon.ico")
 
     wndclass = win32gui.WNDCLASS()
@@ -215,22 +216,29 @@ def startPresenter(userAgent, httpPort, websocketPort, shutdownCallback, bridgeT
     clientHandler = ClientHandler()
     browser.SetClientHandler(clientHandler)
 
-    bridge = JavascriptBridge(browser, shutdownCallback)
+    bridge = JavascriptBridge(browser) # , shutdownCallback)
 
     jsBindings = cefpython.JavascriptBindings(bindToFrames=False, bindToPopups=True) # TODO: set to False
     jsBindings.SetProperty('WEBSOCKET_PORT', websocketPort)
     jsBindings.SetObject(bridgeToken, bridge)
     jsBindings.SetObject('console', bridge)
+    # TODO: put this into settings
+    jsBindings.SetProperty('navigator', {'userAgent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.80 Safari/537.36'})
     browser.SetJavascriptBindings(jsBindings)
 
     cefpython.MessageLoop()
     cefpython.Shutdown()
 
+    shutdownAll()
 
-def stopPresenter():
+
+def stop():
     global cefpython
     cefpython.QuitMessageLoop()
     cefpython.Shutdown()
+
+    global shutdownAll
+    shutdownAll()
 
 
 def CloseWindow(windowHandle, message, wparam, lparam):

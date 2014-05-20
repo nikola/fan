@@ -19,6 +19,7 @@ from models import StreamManager
 
 from config import DEBUG, ENFORCED_CIPHERS
 from settings.net import SERVER_HEADERS
+from collector.extractor import *
 
 
 class Publisher(WebSocket):
@@ -33,10 +34,7 @@ class Publisher(WebSocket):
     def on_handshake(self, request, headers=SERVER_HEADERS):
         print 'on_handshake'
 
-        if DEBUG or (request.is_secure and request.protocol == 'HTTP/1.1' and request.headers.get('Accept-Language', None) == 'en-us,en' and request.headers.get('User-Agent', None) == self.userAgent):
-            return True
-        else:
-            return False
+        return DEBUG or (request.is_secure and request.protocol == 'HTTP/1.1' and request.headers.get('User-Agent', None) == self.userAgent)
 
 
     def on_connect(self, *args):
@@ -59,8 +57,9 @@ class Publisher(WebSocket):
 
     def on_close(self):
         print 'on_close'
-        global publisherInstance
-        publisherInstance = None
+        # self.close(flush=True)
+        # global publisherInstance
+        # publisherInstance = None
 
 
 def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
@@ -79,10 +78,8 @@ def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
     # http://stackoverflow.com/questions/21892080/combining-python-watchdog-with-multiprocessing-or-threading
 
     event_handler = LoggingEventHandler()
-    observer = Observer()
-    observer.schedule(event_handler, r'M:\\', recursive=True)
-
-    counter = 0
+    streamWatcher = Observer()
+    streamWatcher.schedule(event_handler, r'M:\\', recursive=True)
 
     sslOptions = dict(do_handshake_on_connect=False, server_side=True, certfile=certificateFile, ssl_version=3, ciphers=ENFORCED_CIPHERS)
     HTTPServer(proxy).startSSL(sslOptions).listen(port)
@@ -92,23 +89,27 @@ def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
     global publisherInstance
     publisherInstance = None
 
+    streamGenerator = None
 
-
-    counter = 0
     while True:
         try:
             command = queue.get_nowait()
             if command == 'start:collector':
                 streamManager = StreamManager()
-                observer.start()
+                streamGenerator = getMoviePathnames(r'M:\\')
+
+                streamWatcher.start()
+
                 queue.task_done()
             elif command == 'stop:collector':
                 streamManager.shutdown()
 
-                observer.stop()
-                observer.join()
+                streamWatcher.stop()
+                streamWatcher.join()
 
                 if engine is not None:
+                    publisherInstance.close()
+                    publisherInstance = None
                     engine.stop()
                     engine = None
 
@@ -118,12 +119,23 @@ def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
                 queue.put(command)
                 queue.task_done()
         except Empty:
-            if publisherInstance is not None:
-                publisherInstance.write(unicode(counter))
-                counter += 1
             if engine is not None:
                 engine.poll(poll_timeout=0.015)
-            time.sleep(0.015)
+
+            if publisherInstance is not None and streamGenerator is not None:
+                try:
+                    (path, container, files) = streamGenerator.next()
+                except StopIteration:
+                    streamGenerator = None
+                else:
+                    basedata = getBaseDataFromDirName(container)
+
+                    for filename in files:
+                        streamLocation = os.path.join(path, filename)
+                        # print basedata.get('title').ljust(70) + getEditVersionFromFilename(filename, basedata.get('year')).ljust(30) + streamLocation
+                        publisherInstance.write(basedata.get('title'))
+            else:
+                time.sleep(0.015)
 
 
 def _dummy():
@@ -148,7 +160,6 @@ def _dummy():
 
 
 def start(*args):
-# def start(interProcessQueue, port, certificateLocation):
     global globalInterProcessQueue
     globalInterProcessQueue = args[0]
 

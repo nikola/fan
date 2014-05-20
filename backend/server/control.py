@@ -5,17 +5,15 @@ __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 import time
-
 from multiprocessing import Process
-
 from Queue import Empty
 
 from pants.web import Application
 from pants.http import HTTPServer
 from pants import Engine as HttpServerEngine
 
-
-from config import DEBUG, ENFORCED_CIPHERS
+from settings import DEBUG
+from settings.net import ENFORCED_CIPHERS
 from server.routes import module as appRoutes
 
 
@@ -30,7 +28,6 @@ def _startHttpServer(queue, port, certificateFile, userAgent):
 
     appRoutes.interProcessQueue = queue
     appRoutes.presented = False
-
 
     app = Application(debug=DEBUG)
     app.add('/', appRoutes)
@@ -64,13 +61,6 @@ def start(*args):
     global globalInterProcessQueue
     globalInterProcessQueue = args[0]
 
-    # port = _getVacantPort()
-    # args += port,
-
-    # global globalCertificateLocation
-    # globalCertificateLocation = _getCertificateLocation()
-    # args += globalCertificateLocation,
-
     process = Process(target=_startHttpServer, args=args)
     process.start()
 
@@ -78,8 +68,5 @@ def start(*args):
 
 
 def stop():
-    # global globalCertificateLocation
-    # os.remove(globalCertificateLocation)
-
     global globalInterProcessQueue
     globalInterProcessQueue.put('stop:server')

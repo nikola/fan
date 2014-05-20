@@ -14,6 +14,7 @@
 __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
+import os
 import time
 import traceback
 import codecs
@@ -25,7 +26,8 @@ import win32api
 import win32con
 
 from presenter.hooks import ClientHandler
-from config import *
+from config import PROJECT_PATH
+from settings import DEBUG
 from settings.presenter import *
 from utils.win32 import getNormalizedPathname
 
@@ -209,21 +211,20 @@ def start(userAgent, httpPort, websocketPort, callback, bridgeToken): # , callba
 
     browser = cefpython.CreateBrowserSync(
         windowInfo,
-        CHROME_BROWSER_SETTINGS,
+        CEF_BROWSER_SETTINGS,
         navigateUrl='https://127.0.0.1:%d/' % httpPort,
     )
 
     clientHandler = ClientHandler()
     browser.SetClientHandler(clientHandler)
 
-    bridge = JavascriptBridge(browser) # , shutdownCallback)
+    bridge = JavascriptBridge(browser)
 
     jsBindings = cefpython.JavascriptBindings(bindToFrames=False, bindToPopups=True) # TODO: set to False
     jsBindings.SetProperty('WEBSOCKET_PORT', websocketPort)
     jsBindings.SetObject(bridgeToken, bridge)
     jsBindings.SetObject('console', bridge)
-    # TODO: put this into settings
-    jsBindings.SetProperty('navigator', {'userAgent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.80 Safari/537.36'})
+    jsBindings.SetProperty('navigator', {'userAgent': CEF_REAL_AGENT})
     browser.SetJavascriptBindings(jsBindings)
 
     cefpython.MessageLoop()

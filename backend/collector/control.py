@@ -11,14 +11,12 @@ from multiprocessing import Process
 
 from pants.http import HTTPServer, WebSocket
 from pants import Engine
-
 from watchdog.observers import Observer
 from watchdog.events import LoggingEventHandler
 
+from settings import DEBUG
+from settings.net import SERVER_HEADERS, ENFORCED_CIPHERS
 from models import StreamManager
-
-from config import DEBUG, ENFORCED_CIPHERS
-from settings.net import SERVER_HEADERS
 from collector.extractor import *
 
 
@@ -134,6 +132,8 @@ def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
                         streamLocation = os.path.join(path, filename)
                         # print basedata.get('title').ljust(70) + getEditVersionFromFilename(filename, basedata.get('year')).ljust(30) + streamLocation
                         publisherInstance.write(basedata.get('title'))
+            elif False:
+                pass # TODO: implement here kickoff of filewatcher
             else:
                 time.sleep(0.015)
 

@@ -13,13 +13,14 @@ from os import fdopen
 from uuid import uuid4
 from tempfile import mkstemp
 
-from config import DEBUG, CERTIFICATE, PROJECT_PATH
+from settings import DEBUG
+from config import CERTIFICATE, PROJECT_PATH
 from utils.win32 import isNtfsFilesystem
 
 
 def getVacantPort():
     s = socket.socket()
-    s.bind(("", 0))
+    s.bind(('', 0))
     port = s.getsockname()[1]
     s.close()
     return port

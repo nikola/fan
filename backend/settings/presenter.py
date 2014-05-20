@@ -46,3 +46,19 @@ CEF_APP_SETTINGS = {
     'log_file':                    '',
     'locale':                      'he',
 }
+
+CEF_BROWSER_SETTINGS = dict(
+    # default_encoding = "",
+    universal_access_from_file_urls_allowed = True,
+    file_access_from_file_urls_allowed = True,
+    javascript_open_windows_disallowed = True,
+    javascript_close_windows_disallowed = True,
+    javascript_access_clipboard_disallowed = True,
+    java_disabled = True,
+    plugins_disabled = True,
+    text_area_resize_disabled = True,
+    application_cache_disabled = True,
+    # pack_loading_disabled = True,
+)
+
+CEF_REAL_AGENT = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.80 Safari/537.36'

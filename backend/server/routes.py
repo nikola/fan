@@ -8,9 +8,9 @@ import os.path
 
 from pants.web.application import Module
 
-
-from config import DEBUG, PROJECT_PATH, RESOURCES_SCRIPT, RESOURCES_STYLE, CHROME_USER_AGENT
+from settings import DEBUG
 from settings.net import SERVER_HEADERS
+from config import PROJECT_PATH, RESOURCES_SCRIPT, RESOURCES_STYLE
 
 module = Module()
 
@@ -39,8 +39,8 @@ def serveRoot(request):
         for pathname in RESOURCES_SCRIPT:
             with open(os.path.join(PROJECT_PATH, "frontend", pathname)) as fp:
                 content = fp.read()
-            if pathname.find("angular.") != -1:
-                content = content.replace("navigator.userAgent", CHROME_USER_AGENT)
+            # if pathname.find("angular.") != -1:
+            #     content = content.replace("navigator.userAgent", CHROME_USER_AGENT)
             scriptContent.append(content)
         scriptsAmalgamated = "\n".join(scriptContent)
 

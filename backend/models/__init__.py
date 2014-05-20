@@ -8,17 +8,19 @@ import os
 import bz2
 from contextlib import contextmanager
 from sqlite3 import dbapi2 as sqlite
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql import exists
+
+from settings import DEBUG
 from utils.win32 import getAppStoragePathname
 from models.common import Base, createNamedTuple
 from models.streams import Stream
 from models.genres import Genre
 from models.movies import Movie
 from models.variants import Variant
-from config import DEBUG
 
 # TODO: use named tuples ?
 #   https://docs.python.org/2/library/collections.html#collections.namedtuple

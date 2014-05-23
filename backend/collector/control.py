@@ -44,8 +44,8 @@ class Publisher(WebSocket):
         print 'data ponged:', data
         global publisherInstance
         publisherInstance = self
-        print 'sending:', repr(self.bridgeToken)
-        self.write(unicode(self.bridgeToken), flush=True)
+        # print 'sending:', repr(self.bridgeToken)
+        # self.write(unicode(self.bridgeToken), flush=True)
 
 
     def on_read(self, data):
@@ -120,7 +120,7 @@ def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
             if engine is not None:
                 engine.poll(poll_timeout=0.015)
 
-            if publisherInstance is not None and streamGenerator is not None:
+            if publisherInstance is not None and publisherInstance.connected and streamGenerator is not None:
                 try:
                     (path, container, files) = streamGenerator.next()
                 except StopIteration:
@@ -131,7 +131,7 @@ def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
                     for filename in files:
                         streamLocation = os.path.join(path, filename)
                         # print basedata.get('title').ljust(70) + getEditVersionFromFilename(filename, basedata.get('year')).ljust(30) + streamLocation
-                        publisherInstance.write(basedata.get('title'))
+                        publisherInstance.write(unicode('["receive:movie:item", "%s"]' % basedata.get('title')))
             elif False:
                 pass # TODO: implement here kickoff of filewatcher
             else:

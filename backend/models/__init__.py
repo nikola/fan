@@ -12,25 +12,27 @@ from sqlite3 import dbapi2 as sqlite
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import NoResultFound
-from sqlalchemy.sql import exists
+
 
 from settings import DEBUG
 from utils.win32 import getAppStoragePathname
-from models.common import Base, createNamedTuple
+from models.common import Base, GUID, createNamedTuple, createUuid
 from models.streams import Stream
 from models.genres import Genre
 from models.movies import Movie
 from models.variants import Variant
+from models.images import Image
+
 
 # TODO: use named tuples ?
 #   https://docs.python.org/2/library/collections.html#collections.namedtuple
 
-def _getSqliteDsn():
+def _getSqliteDsn(identifier):
     if DEBUG:
         directory = getAppStoragePathname()
         if not os.path.exists(directory): os.makedirs(directory)
 
-        dsn = 'sqlite:///' + (directory + '\\db.sqlite3').replace('\\', r'\\\\')
+        dsn = 'sqlite:///' + (directory + '\\%s.sqlite3' % identifier).replace('\\', r'\\\\')
     else:
         dsn = 'sqlite://'
 
@@ -53,14 +55,13 @@ class StreamManager(object):
             else:
                 session.commit()
 
-    def __init__(self): # ), pathname):
-        # self._persistencePathname = pathname
-        self.engine = create_engine(_getSqliteDsn(), echo=False, module=sqlite)
+
+    def __init__(self):
+        self.engine = create_engine(_getSqliteDsn('db'), echo=False, module=sqlite)
         self.engine.execute('select 1').scalar()
         self.session_factory = sessionmaker(bind=self.engine, expire_on_commit=False)
-        Base.metadata.drop_all(self.engine, checkfirst=True)
+        # Base.metadata.drop_all(self.engine, checkfirst=True)
 
-        # if not DEBUG and os.path.exists(os.path.join(self._persistencePathname, 'data.accdb')):
         if not DEBUG and os.path.exists(os.path.join(getAppStoragePathname(), 'data.accdb')):
             self._restore()
             # TODO: migrate schema
@@ -68,42 +69,68 @@ class StreamManager(object):
         else:
             Base.metadata.create_all(self.engine)
 
+
     def shutdown(self):
-        print 'streamManager.shutdown()'
+        print 'StreamManager.shutdown()'
         if not DEBUG:
             self._persist()
 
-    def addMovieStream(self, movieRecord, streamLocation):
-        if not movieRecord or not streamLocation: return
 
+    def addMovieStream(self, movieRecord, streamLocation):
+        if not streamLocation: return
+
+        movie = None
         with self._session() as session:
             try:
                 stream = session.query(Stream).filter_by(location=streamLocation).one()
             except NoResultFound:
-                streamFormat = "Matroska" if streamLocation.lower().endswith(".mkv") else "BD"
+                streamFormat = 'Matroska' if streamLocation.lower().endswith('.mkv') else 'BD'
                 stream = Stream(
                     format = streamFormat,
                     location = streamLocation,
                 )
                 session.add(stream)
 
-            try:
-                movie = session.query(Movie).filter("titleOriginal=:title and releaseYear=:year").params(title=movieRecord["titleOriginal"], year=movieRecord["releaseYear"]).one()
-            except NoResultFound:
-                movie = Movie(**movieRecord)
-                variant = Variant(**movieRecord)
-                variant.movie = movie
-                session.add_all([movie, variant])
+            if movieRecord is not None:
+                try:
+                    movie = session.query(Movie).filter("titleOriginal=:title and releaseYear=:year").params(title=movieRecord["titleOriginal"], year=movieRecord["releaseYear"]).one()
+                except NoResultFound:
+                    movie = Movie(**movieRecord)
+                    variant = Variant(**movieRecord)
+                    variant.movie = movie
+                    session.add_all([movie, variant])
 
-            stream.movie = movie
+                stream.movie = movie
 
             session.commit()
+
+        return movie
+
+
+    def isStreamKnown(self, streamLocation):
+        with self._session() as session:
+            try:
+                session.query(Stream).filter(Stream.location == streamLocation).one()
+            except NoResultFound:
+                return False
+            else:
+                return True
+
+
+    def getMovieFromStreamLocation(self, streamLocation):
+        with self._session() as session:
+            try:
+                stream = session.query(Stream).filter(Stream.location == streamLocation).one()
+            except NoResultFound:
+                return None
+            else:
+                return stream.movie
+
 
     def _persist(self):
         compressor = bz2.BZ2Compressor()
         connection = self.engine.raw_connection()
-        if not os.path.exists(getAppStoragePathname()): # self._persistencePathname):
-            # os.makedirs(self._persistencePathname)
+        if not os.path.exists(getAppStoragePathname()):
             os.makedirs(getAppStoragePathname())
         fp = open(os.path.join(getAppStoragePathname(), 'data.accdb'), 'wb')
         try:
@@ -113,6 +140,7 @@ class StreamManager(object):
         finally:
             fp.close()
             connection.close()
+
 
     def _restore(self):
         connection = self.engine.raw_connection()
@@ -125,3 +153,59 @@ class StreamManager(object):
             connection.commit()
         finally:
             connection.close()
+
+
+class ImageManager(object):
+
+    @contextmanager
+    def _session(self, session=None):
+        if session:
+            yield session
+        else:
+            session = self.session_factory()
+            try:
+                yield session
+            except:
+                session.rollback()
+                raise
+            else:
+                session.commit()
+
+    def __init__(self):
+        self.engine = create_engine(_getSqliteDsn('imgcache'), echo=False, module=sqlite)
+        self.engine.execute('select 1').scalar()
+        self.session_factory = sessionmaker(bind=self.engine, expire_on_commit=False)
+        # Base.metadata.drop_all(self.engine, checkfirst=True)
+
+        if not DEBUG and os.path.exists(os.path.join(getAppStoragePathname(), 'data.accdb')):
+            self._restore()
+            # TODO: migrate schema
+            # https://sqlalchemy-migrate.readthedocs.org/en/latest/
+        else:
+            Base.metadata.create_all(self.engine)
+
+    def getImageBlobById(self, identifier):
+        with self._session() as session:
+            try:
+                image = session.query(Image).filter(Image.idTheMovieDb == identifier).one()
+            except NoResultFound:
+                return None
+            else:
+                return image.blob
+
+    def saveImageData(self, identifier, blob):
+        with self._session() as session:
+            image = Image(
+                idTheMovieDb = identifier,
+                blob = blob,
+            )
+            session.add(image)
+            session.commit()
+
+    def shutdown(self):
+        print 'ImageManager.shutdown()'
+        if not DEBUG:
+            self._persist()
+
+
+

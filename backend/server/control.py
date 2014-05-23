@@ -15,6 +15,7 @@ from pants import Engine as HttpServerEngine
 from settings import DEBUG
 from settings.net import ENFORCED_CIPHERS
 from server.routes import module as appRoutes
+from models import ImageManager
 
 
 def _startHttpServer(queue, port, certificateFile, userAgent):
@@ -26,8 +27,11 @@ def _startHttpServer(queue, port, certificateFile, userAgent):
             request.finish()
             request.connection.close()
 
+    imageManager = ImageManager()
+
     appRoutes.interProcessQueue = queue
     appRoutes.presented = False
+    appRoutes.imageManager = imageManager
 
     app = Application(debug=DEBUG)
     app.add('/', appRoutes)
@@ -37,6 +41,8 @@ def _startHttpServer(queue, port, certificateFile, userAgent):
 
     engine = HttpServerEngine.instance()
 
+
+
     while True:
         try:
             command = queue.get_nowait()
@@ -45,6 +51,8 @@ def _startHttpServer(queue, port, certificateFile, userAgent):
                     print 'stopping server'
                     engine.stop()
                     engine = None
+
+                imageManager.shutdown()
 
                 queue.task_done()
                 break

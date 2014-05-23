@@ -4,6 +4,7 @@
 __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
+import os
 import time
 import logging
 from Queue import Empty
@@ -17,7 +18,8 @@ from watchdog.events import LoggingEventHandler
 from settings import DEBUG
 from settings.net import SERVER_HEADERS, ENFORCED_CIPHERS
 from models import StreamManager
-from collector.extractor import *
+from collector.extractor import getMoviePathnames, getBaseDataFromDirName
+from collector.identifier import getMovieFromRawData
 
 
 class Publisher(WebSocket):
@@ -100,8 +102,6 @@ def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
 
                 queue.task_done()
             elif command == 'stop:collector':
-                streamManager.shutdown()
-
                 streamWatcher.stop()
                 streamWatcher.join()
 
@@ -110,6 +110,8 @@ def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
                     publisherInstance = None
                     engine.stop()
                     engine = None
+
+                streamManager.shutdown()
 
                 queue.task_done()
                 break
@@ -130,11 +132,29 @@ def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
 
                     for filename in files:
                         streamLocation = os.path.join(path, filename)
-                        # print basedata.get('title').ljust(70) + getEditVersionFromFilename(filename, basedata.get('year')).ljust(30) + streamLocation
-                        publisherInstance.write(unicode('["receive:movie:item", "%s"]' % basedata.get('title')))
+
+                        if streamManager.isStreamKnown(streamLocation):
+                            movie = streamManager.getMovieFromStreamLocation(streamLocation)
+                        else:
+                            movieRecord = getMovieFromRawData('en', 'us', basedata.get('title'), basedata.get('year'))
+                            if movieRecord is None:
+                                print 'unknown stream:', streamLocation
+                            movie = streamManager.addMovieStream(movieRecord, streamLocation)
+                            # else:
+                            #     movie = None
+                            time.sleep(0.35)
+
+                        # TODO: also create ImageManager() here and write dummy entry containing the GUID of movie
+                        # then pass along GUID via web socket
+
+                        if movie is not None:
+                            # publisherInstance.write(unicode('["receive:movie:item", "%s"]' % movie.titleOriginal))
+                            # publisherInstance.write(unicode('["receive:movie:item", "%s"]' % movie.urlPoster))
+                            publisherInstance.write(unicode('["receive:movie:item", "%s"]' % movie.idTheMovieDb))
             elif False:
                 pass # TODO: implement here kickoff of filewatcher
             else:
+                # only 30 requests every 10 seconds per IP
                 time.sleep(0.015)
 
 

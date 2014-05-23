@@ -1,22 +1,29 @@
 # coding: utf-8
-""" ATTENTION: only 30 requests every 10 seconds per IP!
+"""
 """
 __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
-from config import THEMOVIEDB_API_KEY
+import os
+import time
 import httplib
 import socket
+
 import tmdb3 as themoviedb
 from babel import Locale as BabelLocale
 
-socket.setdefaulttimeout(5)
+from settings.collector import THEMOVIEDB_API_KEY
+from utils.win32 import getAppStoragePathname
 
-themoviedb.set_key(THEMOVIEDB_API_KEY)
-themoviedb.set_cache('null')
 
 
 def getMovieFromRawData(language, territory, title, year):
+    socket.setdefaulttimeout(5)
+
+    themoviedb.set_key(THEMOVIEDB_API_KEY)
+    themoviedb.set_cache('null') # filename=os.path.join(getAppStoragePathname(), 'tmdb3.cache'))
+
+
     """
 
 
@@ -57,9 +64,11 @@ def getMovieFromRawData(language, territory, title, year):
 
     try:
         # Search movie by title and year. Omit year in retry.
-        locale = themoviedb.locales.Locale(language, territory, encoding="iso-8859-1")
-        results = themoviedb.searchMovie(query=title.encode("utf-8"), locale=locale, year=year)
-        if not len(results): results = themoviedb.searchMovie(query=title.encode("utf-8"), locale=locale)
+        locale = themoviedb.locales.Locale(language, territory, encoding='iso-8859-1')
+        results = themoviedb.searchMovie(query=title.encode('utf-8'), locale=locale, year=year)
+        if not len(results):
+            time.sleep(0.35)
+            results = themoviedb.searchMovie(query=title.encode('utf-8'), locale=locale)
 
         if len(results):
             result = results[0]
@@ -70,6 +79,7 @@ def getMovieFromRawData(language, territory, title, year):
                 urlBackdrop   = result.backdrop.geturl(),
                 urlPoster     = result.poster.geturl(),
                 idImdb        = result.imdb,
+                idTheMovieDb  = result.id,
                 taglineLocal  = result.tagline,
                 overviewLocal = result.overview,
                 runtime       = result.runtime or None,

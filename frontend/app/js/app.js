@@ -7,52 +7,23 @@
 
 function boot() {
     var dispatcher = new ka.lib.WebSocketDispatcher('wss://127.0.0.1:' + WEBSOCKET_PORT + '/');
-
-
-            // console.log(navigator.userAgent);
-            // var socket = new WebSocket('wss://127.0.0.1:' + WEBSOCKET_PORT + '/');
-
-            /*
-            $('<div>', {
-                    // 'text': 'socket: ' + WEBSOCKET_PORT // socket
-                'text': 'console: ' + console
-                }).appendTo('body');
-            */
-
-            /*
-            socket.onopen = function (evt) {
-                // socket.send('test1');
-                // socket.send('test2');
-            };
-            */
-
-            // console.log(ka.lib.WebSocketDispatcher);
-            // console.log(dispatcher);
-            // return;
-
-            dispatcher.bind('receive:movie:item', function (record) {
-                $('<div>', {
-                    'text': record
-                }).appendTo('body');
-            });
-
-            /*
-            socket.onmessage = function (evt) {
-                // TODO: refactor in order to retrieve actual name of bridge every time
-                bridge = window[evt.data];
-                // bridge.shutdown();
-                // console.log(bridge);
-                $('<div>', {
-                    'text': evt.data
-                }).appendTo('body');
-
-            };
-            */
+    dispatcher.bind('receive:movie:item', function (record) {
+        /* $('<div>', {
+            'text': record
+        }).appendTo('body'); */
+        // console.log(record)
+        // http://image.tmdb.org/t/p/original/9gZZyQ8XStpUJBFU1ceU4xx1crv.jpg
+        // http://image.tmdb.org/t/p/w130/qKkFk9HELmABpcPoc1HHZGIxQ5a.jpg
+        $('<img>', {
+            'src': 'https://127.0.0.1:' + HTTP_PORT + '/' + record + '.jpg' // record.replace('http:', 'https:').replace('/original/', '/w150/')
+          , 'width': 150
+        }).appendTo('body');
+    });
 }
 
-document.oncontextmenu = function (evt) {
+/* document.oncontextmenu = function (evt) {
     evt.preventDefault();
-};
+}; */
 
 document.addEventListener('DOMContentLoaded', function(event) {
     /* Notify backend that UI is ready. */

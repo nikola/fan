@@ -227,6 +227,7 @@ def start(userAgent, httpPort, websocketPort, callback, bridgeToken): # , callba
     bridge = JavascriptBridge(browser)
 
     jsBindings = cefpython.JavascriptBindings(bindToFrames=False, bindToPopups=True) # TODO: set to False
+    jsBindings.SetProperty('HTTP_PORT', httpPort)
     jsBindings.SetProperty('WEBSOCKET_PORT', websocketPort)
     jsBindings.SetObject(bridgeToken, bridge)
     jsBindings.SetObject('console', bridge)

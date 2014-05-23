@@ -11,14 +11,14 @@ from models import Base, createNamedTuple
 # from vendor.sqlalchemy_utils.types.choice import ChoiceType
 
 class Stream(Base):
-    __tablename__ = "streams"
+    __tablename__ = 'streams'
 
     id = Column(Integer, primary_key=True)
     format = Column(Enum(*createNamedTuple("Matroska", "BD")._asdict().values()))
     location = Column(Unicode)
     movieId = Column(Integer, ForeignKey("movies.id"))
 
-    movie = relationship("Movie", backref=backref("streams", order_by=id))
+    movie = relationship('Movie', backref=backref('streams', order_by=id))
 
     def __init__(self, format, location, **kwargs):
         self.format = format

@@ -1,47 +1,45 @@
-'use strict';
+/**
+ *  Application loop.
+ *
+ *  @author Nikola Klaric (nikola@generic.company)
+ *  @copyright Copyright (c) 2013-2014 Nikola Klaric
+ */
+
+function boot() {
+    var dispatcher = new ka.lib.WebSocketDispatcher('wss://127.0.0.1:' + WEBSOCKET_PORT + '/');
 
 
-// Declare app level module which depends on filters, and services
-angular.module('ka', [
-  'ngRoute',
-  'ka.filters',
-  'ka.services',
-  'ka.directives',
-  'ka.controllers'
-]).
-config(['$routeProvider', function($routeProvider) {
-  $routeProvider.when('/view1', {templateUrl: 'partials/partial1.html', controller: 'MovieCtrl'});
-  $routeProvider.when('/view2', {templateUrl: 'partials/partial2.html', controller: 'MyCtrl2'});
-  $routeProvider.otherwise({redirectTo: '/view1'});
-}]);
+            // console.log(navigator.userAgent);
+            // var socket = new WebSocket('wss://127.0.0.1:' + WEBSOCKET_PORT + '/');
 
-
-
-document.oncontextmenu = function (evt) {
-    evt.preventDefault();
-}
-
-document.addEventListener('DOMContentLoaded', function(event) {
-    /* Notify backend that UI is ready. */
-    $.ajax({
-        url: '/ready',
-        type: 'PATCH',
-        success: function (result) {
-            console.log(navigator.userAgent);
-            var socket = new WebSocket('wss://127.0.0.1:' + WEBSOCKET_PORT + '/');
-
+            /*
             $('<div>', {
                     // 'text': 'socket: ' + WEBSOCKET_PORT // socket
                 'text': 'console: ' + console
                 }).appendTo('body');
+            */
 
+            /*
             socket.onopen = function (evt) {
                 // socket.send('test1');
                 // socket.send('test2');
             };
+            */
 
+            // console.log(ka.lib.WebSocketDispatcher);
+            // console.log(dispatcher);
+            // return;
+
+            dispatcher.bind('receive:movie:item', function (record) {
+                $('<div>', {
+                    'text': record
+                }).appendTo('body');
+            });
+
+            /*
             socket.onmessage = function (evt) {
-                var bridge = window[evt.data];
+                // TODO: refactor in order to retrieve actual name of bridge every time
+                bridge = window[evt.data];
                 // bridge.shutdown();
                 // console.log(bridge);
                 $('<div>', {
@@ -49,14 +47,24 @@ document.addEventListener('DOMContentLoaded', function(event) {
                 }).appendTo('body');
 
             };
+            */
+}
 
-        }
-    });
+document.oncontextmenu = function (evt) {
+    evt.preventDefault();
+};
 
+document.addEventListener('DOMContentLoaded', function(event) {
+    /* Notify backend that UI is ready. */
+    $.ajax({url: '/ready', type: 'PATCH', success: boot});
 
-    /* setTimeout(function () {
-        BRIDGE.shutdown();
-    }, 3000); */
+    /*
+    setTimeout(function () {
+        // todo: websocket.close()
+        // https://developer.mozilla.org/en-US/docs/WebSockets/Writing_WebSocket_client_applications
+        bridge.shutdown();
+    }, 3000);
+    */
 
 
     /*

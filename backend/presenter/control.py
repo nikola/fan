@@ -46,6 +46,12 @@ class JavascriptBridge(object):
     def log(self, message):
         print(message)
 
+    def debug(self, message):
+        print(message)
+
+    def warn(self, message):
+        print(message)
+
     def shutdown(self):
         stop()
         # self.shutdownCallback()

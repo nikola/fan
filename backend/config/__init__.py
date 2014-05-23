@@ -14,17 +14,13 @@ APP_VENDOR = 'Generic Company'
 PROJECT_PATH = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..'))
 
 RESOURCES_SCRIPT = [
+
+    # "vendor/lodash/lodash.min.js",
     'vendor/jquery/jquery.min.js',
-    "vendor/lodash/lodash.min.js",
-    "vendor/angular/angular.min.js",
-    "vendor/angular/angular-animate.min.js",
-    "vendor/angular/angular-route.min.js",
-    "app/js/services.js",
-    "app/js/controllers.js",
-    "app/js/filters.js",
-    "app/js/directives.js",
-    "app/js/app.js",
+    'app/js/app.js',
+    'app/js/lib/sockets.js',
 ]
+
 
 RESOURCES_STYLE = [
     "app/css/app.css",

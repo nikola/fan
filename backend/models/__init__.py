@@ -72,8 +72,18 @@ class StreamManager(object):
 
     def shutdown(self):
         print 'StreamManager.shutdown()'
-        if not DEBUG:
-            self._persist()
+        # if not DEBUG:
+        #     self._persist()
+
+
+    def getMovieByUuid(self, identifier):
+        with self._session() as session:
+            try:
+                movie = session.query(Movie).filter(Movie.uuid == identifier).one()
+            except NoResultFound:
+                return None
+            else:
+                return movie
 
 
     def addMovieStream(self, movieRecord, streamLocation):
@@ -127,6 +137,36 @@ class StreamManager(object):
                 return stream.movie
 
 
+    def getImageBlobById(self, identifier):
+        with self._session() as session:
+            try:
+                movie = session.query(Movie).filter(Movie.uuid == identifier).one()
+            except NoResultFound:
+                return None
+            else:
+                if len(movie.images):
+                    return movie.images[0].blob
+                else:
+                    return None
+
+
+    def saveImageData(self, identifier, width, blob):
+        with self._session() as session:
+            try:
+                movie = session.query(Movie).filter(Movie.uuid == identifier).one()
+            except NoResultFound:
+                return None
+            else:
+                image = Image(
+                    movie = movie,
+                    # idTheMovieDb = identifier,
+                    width = width,
+                    blob = blob,
+                )
+                session.add(image)
+                session.commit()
+
+
     def _persist(self):
         compressor = bz2.BZ2Compressor()
         connection = self.engine.raw_connection()
@@ -172,40 +212,25 @@ class ImageManager(object):
                 session.commit()
 
     def __init__(self):
-        self.engine = create_engine(_getSqliteDsn('imgcache'), echo=False, module=sqlite)
+        self.engine = create_engine(_getSqliteDsn('db'), echo=False, module=sqlite)
         self.engine.execute('select 1').scalar()
         self.session_factory = sessionmaker(bind=self.engine, expire_on_commit=False)
-        # Base.metadata.drop_all(self.engine, checkfirst=True)
+        Base.metadata.drop_all(self.engine, checkfirst=True)
+        Base.metadata.create_all(self.engine)
 
-        if not DEBUG and os.path.exists(os.path.join(getAppStoragePathname(), 'data.accdb')):
-            self._restore()
-            # TODO: migrate schema
-            # https://sqlalchemy-migrate.readthedocs.org/en/latest/
-        else:
-            Base.metadata.create_all(self.engine)
+        # if not DEBUG and os.path.exists(os.path.join(getAppStoragePathname(), 'data.accdb')):
+        #     self._restore()
+        # TODO: migrate schema
+        # https://sqlalchemy-migrate.readthedocs.org/en/latest/
+        # else:
 
-    def getImageBlobById(self, identifier):
-        with self._session() as session:
-            try:
-                image = session.query(Image).filter(Image.idTheMovieDb == identifier).one()
-            except NoResultFound:
-                return None
-            else:
-                return image.blob
 
-    def saveImageData(self, identifier, blob):
-        with self._session() as session:
-            image = Image(
-                idTheMovieDb = identifier,
-                blob = blob,
-            )
-            session.add(image)
-            session.commit()
+
 
     def shutdown(self):
         print 'ImageManager.shutdown()'
-        if not DEBUG:
-            self._persist()
+        # if not DEBUG:
+        #     self._persist()
 
 
 

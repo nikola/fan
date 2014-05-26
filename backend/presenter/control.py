@@ -29,7 +29,7 @@ from presenter.hooks import ClientHandler
 from config import PROJECT_PATH
 from settings import DEBUG
 from settings.presenter import *
-from utils.win32 import getNormalizedPathname
+from utils.win32 import getNormalizedPathname, getColorBrush
 
 
 shutdownAll = None
@@ -121,7 +121,7 @@ def handleException(excType, excValue, traceObject):
 
 
 
-def start(userAgent, httpPort, websocketPort, callback, bridgeToken): # , callbacks):
+def start(userAgent, httpPort, websocketPort, callback, bridgeToken, frontendToken):
     global shutdownAll
     shutdownAll = callback
 
@@ -160,7 +160,8 @@ def start(userAgent, httpPort, websocketPort, callback, bridgeToken): # , callba
     wndclass.hInstance = win32api.GetModuleHandle(None)
     wndclass.lpszClassName = className
     wndclass.style = 0 # win32con.CS_NOCLOSE # win32con.CS_VREDRAW | win32con.CS_HREDRAW
-    wndclass.hbrBackground = win32gui.GetStockObject(win32con.WHITE_BRUSH)
+    # wndclass.hbrBackground = win32gui.GetStockObject(win32con.WHITE_BRUSH)
+    wndclass.hbrBackground = getColorBrush()
     wndclass.hCursor = win32gui.LoadCursor(0, win32con.IDC_ARROW)
     wndclass.lpfnWndProc = {
         win32con.WM_CLOSE: CloseWindow,
@@ -229,6 +230,7 @@ def start(userAgent, httpPort, websocketPort, callback, bridgeToken): # , callba
     jsBindings = cefpython.JavascriptBindings(bindToFrames=False, bindToPopups=True) # TODO: set to False
     jsBindings.SetProperty('HTTP_PORT', httpPort)
     jsBindings.SetProperty('WEBSOCKET_PORT', websocketPort)
+    jsBindings.SetProperty('BOOT_TOKEN', frontendToken)
     jsBindings.SetObject(bridgeToken, bridge)
     jsBindings.SetObject('console', bridge)
     jsBindings.SetProperty('navigator', {'userAgent': CEF_REAL_AGENT})

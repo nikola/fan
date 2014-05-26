@@ -14,15 +14,15 @@ class Stream(Base):
     __tablename__ = 'streams'
 
     id = Column(Integer, primary_key=True)
-    format = Column(Enum(*createNamedTuple("Matroska", "BD")._asdict().values()))
+    format = Column(Enum(*createNamedTuple('Matroska', 'BD')._asdict().values()))
     location = Column(Unicode)
-    movieId = Column(Integer, ForeignKey("movies.id"))
+    movieId = Column(Integer, ForeignKey('movies.id'))
 
     movie = relationship('Movie', backref=backref('streams', order_by=id))
 
-    def __init__(self, format, location, **kwargs):
-        self.format = format
-        self.location = location
+    def __init__(self, **kwargs):
+        for key, value in kwargs.iteritems():
+            setattr(self, key, value)
 
     def __repr__(self):
         return "<Stream('%s')>" % self.id

@@ -1,6 +1,8 @@
 # coding: utf-8
 """
 """
+from utils.system import isNtfsFilesystem
+
 __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
@@ -15,7 +17,6 @@ from tempfile import mkstemp
 
 from settings import DEBUG
 from config import CERTIFICATE, PROJECT_PATH
-from utils.win32 import isNtfsFilesystem
 
 
 def getVacantPort():

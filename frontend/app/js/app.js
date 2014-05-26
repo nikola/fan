@@ -15,7 +15,7 @@ function boot() {
         // http://image.tmdb.org/t/p/original/9gZZyQ8XStpUJBFU1ceU4xx1crv.jpg
         // http://image.tmdb.org/t/p/w130/qKkFk9HELmABpcPoc1HHZGIxQ5a.jpg
         $('<img>', {
-            'src': 'https://127.0.0.1:' + HTTP_PORT + '/' + record + '.jpg' // record.replace('http:', 'https:').replace('/original/', '/w150/')
+            'src': 'https://127.0.0.1:' + HTTP_PORT + '/movie/poster/' + record + '.jpg/150' // record.replace('http:', 'https:').replace('/original/', '/w150/')
           , 'width': 150
         }).appendTo('body');
     });
@@ -27,7 +27,7 @@ function boot() {
 
 document.addEventListener('DOMContentLoaded', function(event) {
     /* Notify backend that UI is ready. */
-    $.ajax({url: '/ready', type: 'PATCH', success: boot});
+    $.ajax({url: BOOT_TOKEN, type: 'PATCH', success: boot});
 
     /*
     setTimeout(function () {

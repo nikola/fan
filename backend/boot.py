@@ -9,8 +9,9 @@ import sys
 import os
 from uuid import uuid4
 from multiprocessing import JoinableQueue as InterProcessQueue, freeze_support
+from ctypes import windll
 
-from utils.system import isCompatiblePlatform
+from utils.system import isCompatiblePlatform, isNtfsFilesystem
 from utils.agent import getUserAgent
 from utils.net import getVacantPort, getCertificateLocation
 from collector.control import start as startCollector, stop as stopCollector
@@ -22,6 +23,11 @@ if __name__ == '__main__':
     freeze_support()
 
     if not isCompatiblePlatform():
+        windll.user32.MessageBoxA(0, 'This application is only compatible with Windows Vista or newer!', 'Error', 0)
+        sys.exit()
+
+    if not isNtfsFilesystem():
+        windll.user32.MessageBoxA(0, 'This application must be run from an NTFS partition!', 'Error', 0)
         sys.exit()
 
     def _shutdown():
@@ -48,6 +54,7 @@ if __name__ == '__main__':
 
     try:
         bridgeToken = uuid4().hex
+        frontendToken = uuid4().hex
 
         certificateLocation = getCertificateLocation()
         userAgent = getUserAgent()
@@ -60,10 +67,10 @@ if __name__ == '__main__':
         collector = startCollector(interProcessQueue, websocketPort, certificateLocation, userAgent, bridgeToken) # TODO: not token here
 
         httpPort = getVacantPort()
-        server = startServer(interProcessQueue, httpPort, certificateLocation, userAgent)                       # TODO: token here!
+        server = startServer(interProcessQueue, httpPort, certificateLocation, userAgent, frontendToken)          # TODO: token here!
 
         # Start blocking presenter process.
-        present(userAgent, httpPort, websocketPort, _shutdown, bridgeToken)
+        present(userAgent, httpPort, websocketPort, _shutdown, bridgeToken, frontendToken)
     except (KeyboardInterrupt, SystemError):
         # streamManager.shutdown()
         # stopServer()

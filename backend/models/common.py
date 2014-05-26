@@ -37,4 +37,4 @@ class GUID(TypeDecorator):
                 return '%.32x' % value
 
     def process_result_value(self, value, dialect):
-        return uuid.UUID(value) if value is not None else None
+        return uuid.UUID(value).hex if value is not None else None

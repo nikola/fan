@@ -1,6 +1,10 @@
 # coding: utf-8
 """
 """
+import os
+import win32api
+from config import PROJECT_PATH
+
 __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
@@ -40,3 +44,7 @@ def isCompatiblePlatform():
     return getPlatformToken() in COMPATIBLE_PLATFORMS \
         and not platform.win32_ver()[-1].endswith(" Checked") \
         and platform.architecture()[0] == "32bit"
+
+
+def isNtfsFilesystem():
+    return bool(win32api.GetVolumeInformation(os.path.splitdrive(PROJECT_PATH)[0] + '/')[3] & 0x00040000) # FILE_NAMED_STREAMS

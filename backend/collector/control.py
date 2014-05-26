@@ -80,38 +80,40 @@ def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
     event_handler = LoggingEventHandler()
     streamWatcher = Observer()
     streamWatcher.schedule(event_handler, r'M:\\', recursive=True)
+    collectorStreamManager = None
+    streamGenerator = None
+
+    global publisherInstance
+    publisherInstance = None
 
     sslOptions = dict(do_handshake_on_connect=False, server_side=True, certfile=certificateFile, ssl_version=3, ciphers=ENFORCED_CIPHERS)
     HTTPServer(proxy).startSSL(sslOptions).listen(port)
 
     engine = Engine.instance()
 
-    global publisherInstance
-    publisherInstance = None
-
-    streamGenerator = None
-
     while True:
         try:
             command = queue.get_nowait()
-            if command == 'start:collector':
-                streamManager = StreamManager()
+            if command == 'collector:start':
+                collectorStreamManager = StreamManager()
                 streamGenerator = getMoviePathnames(r'M:\\')
 
                 streamWatcher.start()
 
                 queue.task_done()
-            elif command == 'stop:collector':
-                streamWatcher.stop()
-                streamWatcher.join()
+            elif command == 'collector:stop':
+                if collectorStreamManager is not None:
+                    streamWatcher.stop()
+                    streamWatcher.join()
 
-                if engine is not None:
+                if engine is not None and collectorStreamManager is not None:
                     publisherInstance.close()
                     publisherInstance = None
                     engine.stop()
                     engine = None
 
-                streamManager.shutdown()
+                if collectorStreamManager is not None:
+                    collectorStreamManager.shutdown()
 
                 queue.task_done()
                 break
@@ -130,16 +132,18 @@ def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
                 else:
                     basedata = getBaseDataFromDirName(container)
 
+
+
                     for filename in files:
                         streamLocation = os.path.join(path, filename)
 
-                        if streamManager.isStreamKnown(streamLocation):
-                            movie = streamManager.getMovieFromStreamLocation(streamLocation)
+                        if collectorStreamManager.isStreamKnown(streamLocation):
+                            movie = collectorStreamManager.getMovieFromStreamLocation(streamLocation)
                         else:
                             movieRecord = getMovieFromRawData('en', 'us', basedata.get('title'), basedata.get('year'))
                             if movieRecord is None:
                                 print 'unknown stream:', streamLocation
-                            movie = streamManager.addMovieStream(movieRecord, streamLocation)
+                            movie = collectorStreamManager.addMovieStream(movieRecord, streamLocation)
                             # else:
                             #     movie = None
                             time.sleep(0.35)
@@ -147,10 +151,13 @@ def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
                         # TODO: also create ImageManager() here and write dummy entry containing the GUID of movie
                         # then pass along GUID via web socket
 
+                        # TODO: only push movie to frontend when stream was not known previously
+
                         if movie is not None:
                             # publisherInstance.write(unicode('["receive:movie:item", "%s"]' % movie.titleOriginal))
                             # publisherInstance.write(unicode('["receive:movie:item", "%s"]' % movie.urlPoster))
-                            publisherInstance.write(unicode('["receive:movie:item", "%s"]' % movie.idTheMovieDb))
+                            # publisherInstance.write(unicode('["receive:movie:item", "%s"]' % movie.idTheMovieDb))
+                            publisherInstance.write(unicode('["receive:movie:item", "%s"]' % movie.uuid))
             elif False:
                 pass # TODO: implement here kickoff of filewatcher
             else:
@@ -191,4 +198,4 @@ def start(*args):
 
 def stop():
     global globalInterProcessQueue
-    globalInterProcessQueue.put('stop:collector')
+    globalInterProcessQueue.put('collector:stop')

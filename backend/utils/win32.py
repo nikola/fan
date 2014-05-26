@@ -8,13 +8,8 @@ import sys
 import os
 import re
 import ctypes
-import win32api
 
-from config import APP_VENDOR, APP_NAME, PROJECT_PATH
-
-
-def isNtfsFilesystem():
-    return bool(win32api.GetVolumeInformation(os.path.splitdrive(PROJECT_PATH)[0] + '/')[3] & 0x00040000) # FILE_NAMED_STREAMS
+from config import APP_VENDOR, APP_NAME
 
 
 def isDesktopCompositionEnabled():
@@ -24,14 +19,14 @@ def isDesktopCompositionEnabled():
     return retcode == 0 and b.value
 
 
-def getWhiteBrush():
+def getColorBrush(red=0, green=0, blue=0):
     class _COLORREF(ctypes.Structure):
         _fields_ = [
             ('byRed', ctypes.c_byte),
             ('byGreen', ctypes.c_byte),
             ('byBlue', ctypes.c_byte),
         ]
-    return ctypes.windll.gdi32.CreateSolidBrush(_COLORREF(255, 0, 0))
+    return ctypes.windll.gdi32.CreateSolidBrush(_COLORREF(red, green, blue))
 
 
 def getAppStoragePathname():

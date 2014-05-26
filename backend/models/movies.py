@@ -4,9 +4,9 @@
 __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
-from sqlalchemy import Column, SmallInteger, Integer, BigInteger, String, Unicode
-from sqlalchemy import Table, ForeignKey
+from sqlalchemy import Table, ForeignKey, Column, SmallInteger, Integer, BigInteger, String, Unicode
 from sqlalchemy.orm import relationship
+
 from models import Base, GUID, createUuid
 
 GENRES_EN = (

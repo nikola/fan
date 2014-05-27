@@ -18,7 +18,7 @@ from server.routes import module as appRoutes
 from models import StreamManager
 
 
-def _startHttpServer(queue, port, certificateFile, userAgent, frontendToken):
+def _startHttpServer(queue, httpPort, websocketPort, certificateFile, userAgent, frontendToken):
 
     def proxy(request):
         if DEBUG or (request.is_secure and request.protocol == 'HTTP/1.1' and request.headers.get('User-Agent', None) == userAgent):
@@ -33,12 +33,17 @@ def _startHttpServer(queue, port, certificateFile, userAgent, frontendToken):
     appRoutes.presented = False
     appRoutes.serverStreamManager = serverStreamManager
     appRoutes.frontendToken = frontendToken
+    if DEBUG:
+        appRoutes.userAgent = userAgent
+        appRoutes.httpPort = httpPort
+        appRoutes.websocketPort = websocketPort
+    # END DEBUG
 
     app = Application(debug=DEBUG)
     app.add('', appRoutes)
 
     sslOptions = dict(do_handshake_on_connect=False, server_side=True, certfile=certificateFile, ssl_version=3, ciphers=ENFORCED_CIPHERS)
-    HTTPServer(proxy).startSSL(sslOptions).listen(('', port))
+    HTTPServer(proxy).startSSL(sslOptions).listen(('', httpPort))
 
     engine = HttpServerEngine.instance()
 

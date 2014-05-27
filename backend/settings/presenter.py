@@ -35,7 +35,6 @@ CEF_CMD_LINE_SETTINGS = {
     'no-pings':                             '',
     'no-referrers':                         '',
     'noerrdialogs':                         '',
-
     # locale_pak Load the locale resources from the given path. When running on Mac/Unix the path should point to a locale.pak file.
 }
 

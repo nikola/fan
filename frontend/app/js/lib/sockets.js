@@ -8,7 +8,6 @@
 ; var ka = ka || {}; if (!('lib' in ka)) ka.lib = {};
 
 ka.lib.WebSocketDispatcher = function (url, undefined) {
-
     var callbacks = {};
 
     function dispatch(name, payload) {
@@ -46,5 +45,4 @@ ka.lib.WebSocketDispatcher = function (url, undefined) {
         connection.send(JSON.stringify([name, payload]));
         return this;
     };
-
 };

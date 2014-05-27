@@ -16,6 +16,22 @@ body {
 	-webkit-perspective: 1000;
     }
 
+.boom-movie-grid-page {
+    height: 100%;
+    }
+
+.boom-movie-grid-table {
+    width: 100%;
+    }
+
+.boom-movie-grid-line {
+    height: 100px;
+    }
+
+.boom-movie-grid-item {
+    width: 320px;
+    }
+
 #app-logo {
     width: 100px;
     height: 100px;

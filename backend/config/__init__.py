@@ -19,6 +19,9 @@ RESOURCES_SCRIPT = [
     'vendor/cortex/cortex.min.js',
     'vendor/jquery/jquery.min.js',
     'app/js/lib/sockets.js',
+    'app/js/lib/receiver.js',
+    'app/js/lib/renderer.js',
+    'vendor/jquery/jquery.onepage-scroll.min.js',
     'app/js/app.js',
 ]
 

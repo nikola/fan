@@ -173,12 +173,12 @@ def start(userAgent, httpPort, websocketPort, callback, bridgeToken, frontendTok
     win32gui.RegisterClass(wndclass)
 
     # BUG: only works when /HKEY_CURRENT_USER/Software/Microsoft/Windows/DWM/Composition = 0
-    dwExStyle = win32con.WS_EX_APPWINDOW | win32con.WS_EX_TOPMOST | win32con.WS_EX_LAYERED | win32con.WS_EX_TRANSPARENT
+    dwExStyle = win32con.WS_EX_APPWINDOW | win32con.WS_EX_LAYERED | win32con.WS_EX_TRANSPARENT # | win32con.WS_EX_TOPMOST
     style = win32con.WS_VISIBLE | win32con.WS_POPUP | win32con.WS_CLIPCHILDREN | win32con.WS_CLIPSIBLINGS
 
-    if DEBUG:
-        dwExStyle = win32con.WS_EX_APPWINDOW
-        style = win32con.WS_VISIBLE | win32con.WS_OVERLAPPEDWINDOW | win32con.WS_CLIPCHILDREN | win32con.WS_CLIPSIBLINGS | win32con.WS_MAXIMIZE
+    # if DEBUG:
+    #     dwExStyle = win32con.WS_EX_APPWINDOW
+    #     style = win32con.WS_VISIBLE | win32con.WS_OVERLAPPEDWINDOW | win32con.WS_CLIPCHILDREN | win32con.WS_CLIPSIBLINGS | win32con.WS_MAXIMIZE
     # {END DEBUG}
 
     windowId = win32gui.CreateWindowEx(
@@ -194,8 +194,8 @@ def start(userAgent, httpPort, websocketPort, callback, bridgeToken, frontendTok
         None, # reserved
     )
 
-    if not DEBUG:
-        win32gui.SetLayeredWindowAttributes(windowId, win32api.RGB(255, 255, 255), 0, win32con.LWA_COLORKEY)
+    # if not DEBUG:
+    win32gui.SetLayeredWindowAttributes(windowId, win32api.RGB(255, 255, 255), 0, win32con.LWA_COLORKEY)
     # {END NOT DEBUG}
 
     # To turn off:

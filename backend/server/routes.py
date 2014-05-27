@@ -5,12 +5,13 @@ __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 import os.path
+import json
 
 import requests
 import tmdb3 as themoviedb
 from pants.web.application import Module
-from PIL import Image
-from cStringIO import StringIO
+# from PIL import Image
+# from cStringIO import StringIO
 
 from settings import DEBUG
 from settings.net import SERVER_HEADERS
@@ -49,9 +50,13 @@ def serveRoot(request):
         for pathname in RESOURCES_SCRIPT:
             with open(os.path.join(PROJECT_PATH, 'frontend', pathname), 'rU') as fd:
                 content = fd.read()
-
             scriptContent.append(content)
-        scriptsAmalgamated = "\n".join(scriptContent)
+        scriptsAmalgamated = '\n'.join(scriptContent)
+        if DEBUG and request.headers.get('User-Agent', None) != module.userAgent:
+            scriptsAmalgamated += """
+                ; HTTP_PORT = %d; WEBSOCKET_PORT = %d; BOOT_TOKEN = '%s';
+            """ % (module.httpPort, module.websocketPort, module.frontendToken)
+        # END DEBUG
 
         html = html.replace('</head>', '<script>%s</script><style>%s</style></head>' % (scriptsAmalgamated, stylesheetsAmalgamated))
 
@@ -72,7 +77,7 @@ def serveImage(request, filename):
 
 
 @module.route('/movie/poster/<string(length=32):identifier>.jpg/<int:width>', methods=('GET',), headers=SERVER_HEADERS, content_type='image/jpeg')
-def serveCachedMoviePoster(request, identifier, width):
+def serveMoviePoster(request, identifier, width):
     themoviedb.set_key(THEMOVIEDB_API_KEY)
     themoviedb.set_cache('null')
 
@@ -96,8 +101,22 @@ def serveCachedMoviePoster(request, identifier, width):
 
     return blob, 203
 
+"""
 
-@module.route('<path:pathname>', methods=('GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'TRACE', 'OPTIONS', 'CONNECT'))
+"""
+
+
+@module.route('/movies/all', methods=('GET',), headers=SERVER_HEADERS, content_type='application/json')
+def serveAllMovies(request):
+    movies = module.serverStreamManager.getAllMovies()
+    return json.dumps(movies, separators=(',',':')), 203
+
+
+"""
+# @module.route('<path:pathname>', methods=('GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'TRACE', 'OPTIONS', 'CONNECT'))
+@module.route("<regex('([\s\S]+)'):pathname>", methods=('GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'TRACE', 'OPTIONS', 'CONNECT'))
 def serveAny(request, pathname):
+    print 'catch-all URL', pathname
     request.finish()
     request.connection.close()
+"""

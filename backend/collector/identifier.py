@@ -17,7 +17,7 @@ from utils.win32 import getAppStoragePathname
 
 
 
-def getMovieFromRawData(language, territory, title, year):
+def identifyMovieByTitleYear(language, territory, title, year):
     socket.setdefaulttimeout(5)
 
     themoviedb.set_key(THEMOVIEDB_API_KEY)

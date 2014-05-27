@@ -19,7 +19,7 @@ from settings import DEBUG
 from settings.net import SERVER_HEADERS, ENFORCED_CIPHERS
 from models import StreamManager
 from collector.extractor import getMoviePathnames, getBaseDataFromDirName
-from collector.identifier import getMovieFromRawData
+from collector.identifier import identifyMovieByTitleYear
 
 
 class Publisher(WebSocket):
@@ -95,10 +95,11 @@ def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
         try:
             command = queue.get_nowait()
             if command == 'collector:start':
-                collectorStreamManager = StreamManager()
-                streamGenerator = getMoviePathnames(r'M:\\')
+                if collectorStreamManager is None:
+                    collectorStreamManager = StreamManager()
+                    streamGenerator = getMoviePathnames(r'M:\\')
 
-                streamWatcher.start()
+                    streamWatcher.start()
 
                 queue.task_done()
             elif command == 'collector:stop':
@@ -137,10 +138,11 @@ def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
                     for filename in files:
                         streamLocation = os.path.join(path, filename)
 
-                        if collectorStreamManager.isStreamKnown(streamLocation):
-                            movie = collectorStreamManager.getMovieFromStreamLocation(streamLocation)
-                        else:
-                            movieRecord = getMovieFromRawData('en', 'us', basedata.get('title'), basedata.get('year'))
+                        # if collectorStreamManager.isStreamKnown(streamLocation):
+                        #     movie = collectorStreamManager.getMovieFromStreamLocation(streamLocation)
+                        # else:
+                        if not collectorStreamManager.isStreamKnown(streamLocation):
+                            movieRecord = identifyMovieByTitleYear('en', 'us', basedata.get('title'), basedata.get('year'))
                             if movieRecord is None:
                                 print 'unknown stream:', streamLocation
                             movie = collectorStreamManager.addMovieStream(movieRecord, streamLocation)
@@ -148,16 +150,15 @@ def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
                             #     movie = None
                             time.sleep(0.35)
 
-                        # TODO: also create ImageManager() here and write dummy entry containing the GUID of movie
-                        # then pass along GUID via web socket
+                            # TODO: also create ImageManager() here and write dummy entry containing the GUID of movie
+                            # then pass along GUID via web socket
 
-                        # TODO: only push movie to frontend when stream was not known previously
 
-                        if movie is not None:
-                            # publisherInstance.write(unicode('["receive:movie:item", "%s"]' % movie.titleOriginal))
-                            # publisherInstance.write(unicode('["receive:movie:item", "%s"]' % movie.urlPoster))
-                            # publisherInstance.write(unicode('["receive:movie:item", "%s"]' % movie.idTheMovieDb))
-                            publisherInstance.write(unicode('["receive:movie:item", "%s"]' % movie.uuid))
+                            if movie is not None:
+                                # publisherInstance.write(unicode('["receive:movie:item", "%s"]' % movie.titleOriginal))
+                                # publisherInstance.write(unicode('["receive:movie:item", "%s"]' % movie.urlPoster))
+                                # publisherInstance.write(unicode('["receive:movie:item", "%s"]' % movie.idTheMovieDb))
+                                publisherInstance.write(unicode('["receive:movie:item", "%s"]' % movie.uuid))
             elif False:
                 pass # TODO: implement here kickoff of filewatcher
             else:

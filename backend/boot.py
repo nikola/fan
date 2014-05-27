@@ -11,6 +11,7 @@ from uuid import uuid4
 from multiprocessing import JoinableQueue as InterProcessQueue, freeze_support
 from ctypes import windll
 
+from settings import DEBUG
 from utils.system import isCompatiblePlatform, isNtfsFilesystem
 from utils.agent import getUserAgent
 from utils.net import getVacantPort, getCertificateLocation
@@ -66,8 +67,12 @@ if __name__ == '__main__':
         websocketPort = getVacantPort()
         collector = startCollector(interProcessQueue, websocketPort, certificateLocation, userAgent, bridgeToken) # TODO: not token here
 
-        httpPort = getVacantPort()
-        server = startServer(interProcessQueue, httpPort, certificateLocation, userAgent, frontendToken)          # TODO: token here!
+        if DEBUG:
+            httpPort = 50000
+        else:
+            httpPort = getVacantPort()
+        # END DEBUG
+        server = startServer(interProcessQueue, httpPort, websocketPort, certificateLocation, userAgent, frontendToken)          # TODO: token here!
 
         # Start blocking presenter process.
         present(userAgent, httpPort, websocketPort, _shutdown, bridgeToken, frontendToken)

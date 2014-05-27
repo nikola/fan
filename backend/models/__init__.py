@@ -16,7 +16,7 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from settings import DEBUG
 from utils.win32 import getAppStoragePathname
-from models.common import Base, GUID, createNamedTuple, createUuid
+from models.common import Base, GUID, createNamedTuple, createUuid # , DictSerializable
 from models.streams import Stream
 from models.genres import Genre
 from models.movies import Movie
@@ -167,6 +167,23 @@ class StreamManager(object):
                 session.commit()
 
 
+    def getAllMovies(self):
+        with self._session() as session:
+            movies = []
+            for movie in session.query(Movie).values(Movie.uuid, Movie.titleOriginal, Movie.releaseYear):
+                movies.append({
+                    'uuid': movie[0],
+                    'titleOriginal': movie[1],
+                    'releaseYear': movie[2],
+                })
+            return movies
+            # return list(session.query(Movie).values(
+            #     Movie.uuid,
+            #     Movie.titleOriginal,
+            #     Movie.releaseYear,
+            # ))
+
+
     def _persist(self):
         compressor = bz2.BZ2Compressor()
         connection = self.engine.raw_connection()
@@ -193,44 +210,3 @@ class StreamManager(object):
             connection.commit()
         finally:
             connection.close()
-
-
-class ImageManager(object):
-
-    @contextmanager
-    def _session(self, session=None):
-        if session:
-            yield session
-        else:
-            session = self.session_factory()
-            try:
-                yield session
-            except:
-                session.rollback()
-                raise
-            else:
-                session.commit()
-
-    def __init__(self):
-        self.engine = create_engine(_getSqliteDsn('db'), echo=False, module=sqlite)
-        self.engine.execute('select 1').scalar()
-        self.session_factory = sessionmaker(bind=self.engine, expire_on_commit=False)
-        Base.metadata.drop_all(self.engine, checkfirst=True)
-        Base.metadata.create_all(self.engine)
-
-        # if not DEBUG and os.path.exists(os.path.join(getAppStoragePathname(), 'data.accdb')):
-        #     self._restore()
-        # TODO: migrate schema
-        # https://sqlalchemy-migrate.readthedocs.org/en/latest/
-        # else:
-
-
-
-
-    def shutdown(self):
-        print 'ImageManager.shutdown()'
-        # if not DEBUG:
-        #     self._persist()
-
-
-

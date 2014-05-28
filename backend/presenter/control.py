@@ -173,7 +173,7 @@ def start(userAgent, httpPort, websocketPort, callback, bridgeToken, frontendTok
     win32gui.RegisterClass(wndclass)
 
     # BUG: only works when /HKEY_CURRENT_USER/Software/Microsoft/Windows/DWM/Composition = 0
-    dwExStyle = win32con.WS_EX_APPWINDOW | win32con.WS_EX_LAYERED | win32con.WS_EX_TRANSPARENT # | win32con.WS_EX_TOPMOST
+    dwExStyle = win32con.WS_EX_APPWINDOW # | win32con.WS_EX_LAYERED # | win32con.WS_EX_TRANSPARENT # | win32con.WS_EX_TOPMOST
     style = win32con.WS_VISIBLE | win32con.WS_POPUP | win32con.WS_CLIPCHILDREN | win32con.WS_CLIPSIBLINGS
 
     # if DEBUG:
@@ -195,7 +195,7 @@ def start(userAgent, httpPort, websocketPort, callback, bridgeToken, frontendTok
     )
 
     # if not DEBUG:
-    win32gui.SetLayeredWindowAttributes(windowId, win32api.RGB(255, 255, 255), 0, win32con.LWA_COLORKEY)
+    # win32gui.SetLayeredWindowAttributes(windowId, win32api.RGB(255, 255, 255), 0, win32con.LWA_COLORKEY)
     # {END NOT DEBUG}
 
     # To turn off:

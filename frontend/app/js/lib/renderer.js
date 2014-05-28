@@ -8,11 +8,11 @@
 ; var ka = ka || {}; if (!('lib' in ka)) ka.lib = {};
 
 ka.lib.renderMovieThumbnail = function () {
-    var ITEMS_PER_LINE = 8;
+    var ITEMS_PER_LINE = 7, LINES_PER_PAGE = 3;
 
     var keys = ['123'].concat('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')), key;
 
-    var filledLines = 0, itemsPerLine, startSection = true, tablePerKey;
+    var filledLines = 0, lastFilledLines = null, itemsPerLine, startSection = true, tablePerKey, letterIndicator, indicatorFlipFlop = false;
 
     for (var index = 0; index < 27; index++) {
         key = keys[index];
@@ -23,9 +23,24 @@ ka.lib.renderMovieThumbnail = function () {
                 itemsPerLine = 0;
                 tablePerKey = -1;
                 for (var m = 0; m < movies.values().length; m++) {
+
+                    // if (m == 0) console.log(key, lastFilledLines)
+
+                    if (lastFilledLines !== null && (m == 0 || startSection)) {
+                        // console.log($(letterIndicator.css)
+                        /* Update height of letter indicator. */
+                        letterIndicator.css('height', lastFilledLines * 360);
+
+                        /* if (indicatorFlipFlop) {
+                             letterIndicator.css('background-color', 'red');
+                        } else {
+                            letterIndicator.css('background-color', 'green');
+                        }
+                        indicatorFlipFlop = !indicatorFlipFlop; */
+                    }
+
                     // console.log('    movie # ' + m);
                     if (startSection) {
-
                         // console.log('        creating new <section>');
                         var section = $('<section>', {
                             class: 'boom-movie-grid-page'
@@ -33,12 +48,27 @@ ka.lib.renderMovieThumbnail = function () {
                     }
 
                     if (m == 0 || startSection) {
+
+
                         tablePerKey++;
                         // console.log('        creating new <table>');
+                        letterIndicator = $('<table class="boom-movie-grid-letter-indicator"><tr><td class="boom-movie-grid-letter-cell"></td></tr></table>', {
+                            // class: 'boom-movie-grid-letter-indicator'
+                        }).appendTo(section);
+
+                        $('<span>', {
+                            class: 'boom-movie-grid-letter-indicator-text'
+                          , text: key
+                        }).appendTo(letterIndicator.find('td'));
+
+                        // console.log(letterIndicator.style)
+
                         var table = $('<table>', {
                             id: 'boom-movie-grid-table-' + key + '-' + tablePerKey
                           , class: 'boom-movie-grid-table'
                         }).appendTo(section);
+
+                        lastFilledLines = 0;
                     }
 
                     startSection = false;
@@ -48,6 +78,7 @@ ka.lib.renderMovieThumbnail = function () {
                         var row = $('<tr>', {
                             class: 'boom-movie-grid-line'
                         }).appendTo(table);
+                        lastFilledLines++;
                     }
 
                     // console.log('        creating new <td>');
@@ -58,11 +89,19 @@ ka.lib.renderMovieThumbnail = function () {
                     }).appendTo(row);
 
                     $('<img>', {
-                        src: 'https://127.0.0.1:' + HTTP_PORT + '/movie/poster/' + movies.values()[m].uuid + '.jpg/150'
+                        src: 'https://127.0.0.1:' + HTTP_PORT + '/movie/poster/' + movies.values()[m].uuid + '.jpg/200'
+                      , width: 200
+                      , height: 300
                     }).appendTo(cell);
+                    /* $('<span>', {
+                        class: 'boom-movie-grid-item-title'
+                      , text: movies.values()[m].titleOriginal
+                    }).appendTo(cell); */
 
 
                     itemsPerLine += 1;
+
+
 
                     // console.log('        items per line: ' + itemsPerLine);
 
@@ -74,24 +113,26 @@ ka.lib.renderMovieThumbnail = function () {
                         itemsPerLine = 0;
                     }
 
-                    if (filledLines == 4) {
+                    if (filledLines == LINES_PER_PAGE) {
                         startSection = true;
                         filledLines = 0;
                     }
 
                 }
 
-                for (var c = itemsPerLine; c < ITEMS_PER_LINE; c++) {
-                    $('<td>', {
-                        class: 'boom-movie-grid-item'
-                    }).appendTo(row);
+                if (itemsPerLine) {
+                    for (var c = itemsPerLine; c < ITEMS_PER_LINE; c++) {
+                        $('<td>', {
+                            class: 'boom-movie-grid-item'
+                        }).appendTo(row);
+                    }
                 }
 
 
                 if (itemsPerLine) {
                     filledLines += 1;
 
-                    if (filledLines == 4) {
+                    if (filledLines == LINES_PER_PAGE) {
                         startSection = true;
                         filledLines = 0;
                     }
@@ -100,21 +141,30 @@ ka.lib.renderMovieThumbnail = function () {
         }
     }
 
-$('#content').onepage_scroll({
-   sectionContainer: "section",     // sectionContainer accepts any kind of selector in case you don't want to use section
-   // easing: "cubic-bezier(0.445, 0.050, 0.550, 0.950)",                  // Easing options accepts the CSS3 easing animation such "ease", "linear", "ease-in",
-                                    // "ease-out", "ease-in-out", or even cubic bezier value such as "cubic-bezier(0.175, 0.885, 0.420, 1.310)"
-   easing: 'ease',
-   animationTime: 750,             // AnimationTime let you define how long each section takes to animate
-   pagination: true,                // You can either show or hide the pagination. Toggle true for show, false for hide.
-   updateURL: false,                // Toggle this true if you want the URL to be updated automatically when the user scroll to each page.
-   // beforeMove: function(index) {},  // This option accepts a callback function. The function will be called before the page moves.
-   // afterMove: function(index) {},   // This option accepts a callback function. The function will be called after the page moves.
-   loop: false,                     // You can have the page loop back to the top/bottom when the user navigates at up/down on the first/last page.
-   keyboard: true,                  // You can activate the keyboard controls
-   responsiveFallback: false        // You can fallback to normal page scroll by defining the width of the browser in which
-                                    // you want the responsive fallback to be triggered. For example, set this to 600 and whenever
-                                    // the browser's width is less than 600, the fallback will kick in.
-});
+    /* Set height on last indicator. */
+    letterIndicator.css('height', lastFilledLines * 360);
+
+    /* if (indicatorFlipFlop) {
+         letterIndicator.css('background-color', 'red');
+    } else {
+        letterIndicator.css('background-color', 'green');
+    } */
+
+    $('#content').onepage_scroll({
+       sectionContainer: "section",     // sectionContainer accepts any kind of selector in case you don't want to use section
+       // easing: "cubic-bezier(0.445, 0.050, 0.550, 0.950)",                  // Easing options accepts the CSS3 easing animation such "ease", "linear", "ease-in",
+                                        // "ease-out", "ease-in-out", or even cubic bezier value such as "cubic-bezier(0.175, 0.885, 0.420, 1.310)"
+       easing: 'ease',
+       animationTime: 750,             // AnimationTime let you define how long each section takes to animate
+       pagination: false,                // You can either show or hide the pagination. Toggle true for show, false for hide.
+       updateURL: false,                // Toggle this true if you want the URL to be updated automatically when the user scroll to each page.
+       // beforeMove: function(index) {},  // This option accepts a callback function. The function will be called before the page moves.
+       // afterMove: function(index) {},   // This option accepts a callback function. The function will be called after the page moves.
+       loop: false,                     // You can have the page loop back to the top/bottom when the user navigates at up/down on the first/last page.
+       keyboard: true,                  // You can activate the keyboard controls
+       responsiveFallback: false        // You can fallback to normal page scroll by defining the width of the browser in which
+                                        // you want the responsive fallback to be triggered. For example, set this to 600 and whenever
+                                        // the browser's width is less than 600, the fallback will kick in.
+    });
 
 };

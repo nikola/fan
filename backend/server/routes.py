@@ -76,7 +76,7 @@ def serveImage(request, filename):
 """
 
 
-@module.route('/movie/poster/<string(length=32):identifier>.jpg/<int:width>', methods=('GET',), headers=SERVER_HEADERS, content_type='image/jpeg')
+@module.route("/movie/poster/<regex('[a-z0-9]{32}'):identifier>.jpg/<int:width>", methods=('GET',), headers=SERVER_HEADERS, content_type='image/jpeg')
 def serveMoviePoster(request, identifier, width):
     themoviedb.set_key(THEMOVIEDB_API_KEY)
     themoviedb.set_cache('null')

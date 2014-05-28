@@ -10,7 +10,7 @@
 ka.lib.addMovie = function (movieDict) {
 
     var titleOriginal = movieDict.titleOriginal,
-        titleSortable = titleOriginal.replace(/^the /i, ''),
+        titleSortable = titleOriginal.replace(/^the /i, '').replace('.', '').toLowerCase(),
         firstLetter = /^(?:the )?([\w])/i.exec(titleOriginal)[1].toUpperCase(),
         firstLetterCode = firstLetter.charCodeAt(0),
         releaseYear = movieDict.releaseYear,

@@ -34,6 +34,7 @@ body, .onepage-wrapper, html {
   position: relative;
 }
 
+/*
 .onepage-pagination {
   position: absolute;
   right: 10px;
@@ -73,6 +74,7 @@ body, .onepage-wrapper, html {
   margin-top: -4px;
   left: 8px;
 }
+*/
 
 .disabled-onepage-scroll, .disabled-onepage-scroll .wrapper {
   overflow: auto;
@@ -106,15 +108,17 @@ body.disabled-onepage-scroll, .disabled-onepage-scroll .onepage-wrapper, html {
 html {
       height: 100%;
     }
-    body {
+
+body {
+        color: white;
       background: black;
       padding: 0;
       text-align: center;
-      font-family: 'open sans';
+      font-family: 'Segoe UI', Frutiger, 'Frutiger Linotype', 'Dejavu Sans', 'Helvetica Neue', Arial, sans-serif;
       position: relative;
       margin: 0;
       height: 100%;
-      -webkit-font-smoothing: antialiased;
+      /* -webkit-font-smoothing: antialiased; */
     }
 
     #wrapper {
@@ -200,20 +204,81 @@ html {
 .boom-movie-grid-page {
     /* height: 100%; */
     overflow: hidden;
+    font-size: 0;
+    /* padding-top: 30px; */
+    }
+
+.boom-movie-grid-letter-indicator {
+    display: inline-block;
+    width: 100px;
+    border-collapse: collapse;
+    }
+
+.boom-movie-grid-letter-cell {
+    padding: 0;
+    }
+
+.boom-movie-grid-letter-indicator-text {
+    display: inline-block;
+    margin-top: 30px;
+    width: 64px;
+    font-size: 32px;
+    margin-left: 15px;
+    text-align: center;
+    color: #aaa;
+    border: 2px solid #aaa;
+    height: 48px;
+    line-height: 46px;
+    border-radius: 0 0 8px 8px;
     }
 
 .boom-movie-grid-table {
-    width: 100%;
+    display: inline-block;
+    width: 1820px;
+    border-collapse: collapse;
+    /* margin-top: 30px; */
+
+    /* background-color: darkgreen; */
     }
 
 .boom-movie-grid-line {
-    height: 100px;
+    height: 360px;
+    /*
+    1080
+      30 top
+      30 bottom
+    1020
+      30 between
+      30 between
+     960 = 3 x 320
+
+     30 margin
+
+     30 margin
+    */
+
+    /* background-color: brown; */
     }
+
+/* .boom-movie-grid-line:first-child {
+    border-top: 1px solid #888;
+    } */
 
 .boom-movie-grid-item {
-    width: 320px;
+    padding: 0;
+    width: 260px;
+
+    /* background-color: navy; */
     }
 
+.boom-movie-grid-item img {
+    vertical-align: top;
+    }
+
+.boom-movie-grid-item-title {
+    text-align: center;
+    display: block;
+}
 
 /*
 

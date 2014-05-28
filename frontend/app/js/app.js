@@ -37,8 +37,8 @@ function boot() {
         // http://image.tmdb.org/t/p/original/9gZZyQ8XStpUJBFU1ceU4xx1crv.jpg
         // http://image.tmdb.org/t/p/w130/qKkFk9HELmABpcPoc1HHZGIxQ5a.jpg
         $('<img>', {
-            'src': 'https://127.0.0.1:' + HTTP_PORT + '/movie/poster/' + record + '.jpg/150' // record.replace('http:', 'https:').replace('/original/', '/w150/')
-          , 'width': 150
+            'src': 'https://127.0.0.1:' + HTTP_PORT + '/movie/poster/' + record + '.jpg/300' // record.replace('http:', 'https:').replace('/original/', '/w150/')
+          , 'width': 300
         }).appendTo('body');
     });
 }

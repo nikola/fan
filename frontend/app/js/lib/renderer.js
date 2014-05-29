@@ -88,11 +88,33 @@ ka.lib.renderMovieThumbnail = function () {
                       // , text: movies.values()[m].titleOriginal
                     }).appendTo(row);
 
+                    var title = movies.values()[m].titleOriginal;
+                    if (title.indexOf(':') > 9) {
+                        title = title.substr(0, title.indexOf(':') + 1) + '<br>' + title.substr(title.indexOf(':') + 1);
+                    }
+
+                    var hover = $('<div class="ih-item square effect6 top_to_bottom"><a href="#"><div class="img"></div><div class="info"><h3>' + title + '</h3><p>' + movies.values()[m].releaseYear + '</p></div></a></div>').appendTo(cell);
+
                     $('<img>', {
                         src: 'https://127.0.0.1:' + HTTP_PORT + '/movie/poster/' + movies.values()[m].uuid + '.jpg/200'
                       , width: 200
                       , height: 300
-                    }).appendTo(cell);
+                    // }).appendTo(cell);
+                    }).appendTo(hover.find('.img'));
+
+                    /*
+                    <!-- normal -->
+    <div class="ih-item square effect6 top_to_bottom"><a href="#">
+        <div class="img"><img src="images/assets/rect/5.jpg" alt="img"></div>
+        <div class="info">
+          <h3>Heading here</h3>
+          <p>Description goes here</p>
+        </div></a></div>
+    <!-- end normal -->
+                    */
+
+
+
                     /* $('<span>', {
                         class: 'boom-movie-grid-item-title'
                       , text: movies.values()[m].titleOriginal

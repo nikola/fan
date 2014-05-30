@@ -18,14 +18,20 @@ RESOURCES_SCRIPT = [
     'vendor/bacon/bacon.min.js',
     'vendor/cortex/cortex.min.js',
     'vendor/jquery/jquery.min.js',
+    'vendor/jquery/jquery.swipe-events.js',
+    'vendor/jquery/jquery.velocity.min.js',
+    'vendor/misc/color-thief.min.js',
+    'vendor/misc/keypress.min.js',
     'app/js/lib/sockets.js',
     'app/js/lib/receiver.js',
     'app/js/lib/renderer.js',
-    'vendor/jquery/jquery.onepage-scroll.min.js',
     'app/js/app.js',
 ]
 
 RESOURCES_STYLE = [
+    'app/css/fonts.css',
+    'app/css/ihover.css',
     'app/css/app.css',
+    'app/css/grid.css',
     'app/css/animations.css',
 ]

@@ -1,0 +1,81 @@
+/**
+ *  Movie grid styles.
+ *
+ *  @author Nikola Klaric (nikola@generic.company)
+ *  @copyright Copyright (c) 2013-2014 Nikola Klaric
+ */
+
+.boom-movie-grid-page {
+    font-size: 0;
+    }
+
+.boom-movie-grid-letter-indicator {
+    display: inline-block;
+    width: 100px;
+    border-collapse: collapse;
+    }
+
+.boom-movie-grid-letter-cell {
+    padding: 0;
+    }
+
+.boom-movie-grid-letter-indicator-text {
+    display: inline-block;
+    margin-top: 30px;
+    width: 64px;
+    font-size: 32px;
+    margin-left: 28px;
+    text-align: center;
+    color: #aaa;
+    border: 2px solid #aaa;
+    height: 48px;
+    line-height: 46px;
+    border-radius: 0 0 8px 8px;
+    }
+
+.boom-movie-grid-table {
+    display: inline-block;
+    width: 1820px;
+    border-collapse: collapse;
+    }
+
+.boom-movie-grid-line {
+    height: 360px;
+    /*
+    1080
+      30 top
+      30 bottom
+    1020
+      30 between
+      30 between
+     960 = 3 x 320
+
+     30 margin
+
+     30 margin
+    */
+
+    /* background-color: brown; */
+    }
+
+/* .boom-movie-grid-line:first-child {
+    border-top: 1px solid #888;
+    } */
+
+.boom-movie-grid-item {
+    padding: 0;
+    width: 260px;
+    text-align: center;
+    /* background-color: navy; */
+    }
+
+.boom-movie-grid-item img {
+    /* border: 0px solid transparent;
+    box-sizing: content-box;
+    padding: 6px; */
+    }
+
+.boom-movie-grid-item-title {
+    text-align: center;
+    display: block;
+}

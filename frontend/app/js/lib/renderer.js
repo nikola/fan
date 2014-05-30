@@ -118,7 +118,7 @@ ka.lib.renderMovieThumbnail = function () {
                       , width: 200
                       , height: 300
                       , load: function (evt) {
-                            /* var colorThief = new ColorThief(),
+                            var colorThief = new ColorThief(),
                                 primaryColors = colorThief.getPalette($(this).get(0), 5),
                                 colorLuminance = [
                                     ka.lib.getLuminance(primaryColors[0])
@@ -126,12 +126,12 @@ ka.lib.renderMovieThumbnail = function () {
                                   , ka.lib.getLuminance(primaryColors[2])
                                 ],
                                 primaryColorRGB = primaryColors[colorLuminance.indexOf(Math.min.apply(Math, colorLuminance))];
-                            */
+
 
                             var row = $(this).data('boom.grid-row'),
                                 column = $(this).data('boom.grid-column');
 
-                            // $(this).closest('.square').find('h3').css('backgroundColor', '#' + ((1 << 24) + (primaryColorRGB[0] << 16) + (primaryColorRGB[1] << 8) + primaryColorRGB[2]).toString(16).slice(1));
+                            $(this).closest('.square').find('h3').css('backgroundColor', '#' + ((1 << 24) + (primaryColorRGB[0] << 16) + (primaryColorRGB[1] << 8) + primaryColorRGB[2]).toString(16).slice(1));
 
 
                             ka.state.gridLookup[row][column] = {
@@ -353,6 +353,16 @@ ka.lib.renderMovieThumbnail = function () {
             }
         }
     });
+
+    listener.register_combo({
+        keys: 'space'
+      , on_keydown: function () {
+            var uuid = ka.state.gridLookup[ka.config.gridMaxRows * ka.state.gridPage + ka.state.gridFocusY][ka.state.gridFocusX].uuid;
+            $('#boom-poster-' + uuid).eq(0).closest('.ih-item').toggleClass('active');
+        }
+    });
+
+
 
 };
 

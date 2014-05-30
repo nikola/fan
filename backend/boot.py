@@ -31,6 +31,8 @@ if __name__ == '__main__':
         windll.user32.MessageBoxA(0, 'This application must be run from an NTFS partition!', 'Error', 0)
         sys.exit()
 
+    # TODO: for now, check that screen resolution is 1920x1080
+
     def _shutdown():
         print '_shutdown called'
 

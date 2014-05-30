@@ -102,9 +102,17 @@ def serveMoviePoster(request, identifier, width):
 
     return blob, 203
 
-"""
 
-"""
+@module.route('/<string:identifier>.ttf', methods=('GET',), headers=SERVER_HEADERS, content_type='application/x-font-ttf')
+def serveFont(request, identifier):
+    pathname = os.path.join(PROJECT_PATH, 'frontend', 'fonts', '%s.ttf' % identifier)
+    if os.path.exists(pathname):
+        with open(pathname, 'rb') as fp:
+            ttf = fp.read()
+        return ttf, 203
+    else:
+        request.finish()
+        request.connection.close()
 
 
 @module.route('/movies/all', methods=('GET',), headers=SERVER_HEADERS, content_type='application/json')

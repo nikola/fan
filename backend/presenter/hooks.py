@@ -17,16 +17,16 @@ class ClientHandler(object):
     #     print("  line = %s" % line)
     #     return True # do not output to console
 
-    def OnPreKeyEvent(self, browser, event, eventHandle,
-            isKeyboardShortcutOut):
-        print("KeyboardHandler::OnPreKeyEvent()")
+    # def OnPreKeyEvent(self, browser, event, eventHandle,
+    #         isKeyboardShortcutOut):
+    #     print("KeyboardHandler::OnPreKeyEvent()")
 
     def OnKeyEvent(self, browser, event, eventHandle):
-        print("KeyboardHandler::OnKeyEvent()")
-        print("  windows_key_code = %s" % event["windows_key_code"])
+        # print("KeyboardHandler::OnKeyEvent()")
+        # print("  windows_key_code = %s" % event["windows_key_code"])
         # F5 = VK_F5
         if event["windows_key_code"] == 116: # cefpython.VK_F5:
-            print("  F5 pressed! Reloading page..")
+            # print("  F5 pressed! Reloading page..")
             browser.ReloadIgnoreCache()
 
 

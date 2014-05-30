@@ -198,10 +198,10 @@ ka.lib.renderMovieThumbnail = function () {
       , css: {
             position: 'fixed'
           , border: '6px solid #ffffff'
-          , width: '212px'
-          , height: '312px'
-          , top: '18px'
-          , left: '118px'
+          , width: '216px'
+          , height: '316px'
+          , top: '16px'
+          , left: '116px'
         }
     }).appendTo('body');
 

@@ -170,11 +170,12 @@ class StreamManager(object):
     def getAllMovies(self):
         with self._session() as session:
             movies = []
-            for movie in session.query(Movie).values(Movie.uuid, Movie.titleOriginal, Movie.releaseYear):
+            for movie in session.query(Movie).values(Movie.uuid, Movie.titleOriginal, Movie.releaseYear, Movie.runtime):
                 movies.append({
                     'uuid': movie[0],
                     'titleOriginal': movie[1],
                     'releaseYear': movie[2],
+                    'runtime': movie[3],
                 })
             return movies
             # return list(session.query(Movie).values(

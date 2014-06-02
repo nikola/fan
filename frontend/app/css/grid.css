@@ -5,8 +5,32 @@
  *  @copyright Copyright (c) 2013-2014 Nikola Klaric
  */
 
+/* TODO: set all background-color to black to prevent transparent flicker while scrolling to end of grid */
+
+#boom-poster-focus {
+    position: fixed;
+    border: 6px solid white;
+    width: 216px;
+    height: 316px;
+    top: 16px;
+    left: 116px;
+
+    -webkit-animation: fade-in 2s 1;
+    }
+
+@-webkit-keyframes fade-in {
+    0% {
+        opacity: 0
+    }
+    100% {
+        opacity: 1
+    }
+}
+
 .boom-movie-grid-page {
     font-size: 0;
+
+    background-color: black;
     }
 
 .boom-movie-grid-letter-indicator {
@@ -17,6 +41,8 @@
 
 .boom-movie-grid-letter-cell {
     padding: 0;
+
+    background-color: black;
     }
 
 .boom-movie-grid-letter-indicator-text {
@@ -37,10 +63,14 @@
     display: inline-block;
     width: 1820px;
     border-collapse: collapse;
+
+    background-color: black;
     }
 
 .boom-movie-grid-line {
     height: 360px;
+
+    background-color: black;
     /*
     1080
       30 top
@@ -66,6 +96,8 @@
     padding: 0;
     width: 260px;
     text-align: center;
+
+    background-color: black;
     /* background-color: navy; */
     }
 
@@ -73,9 +105,87 @@
     /* border: 0px solid transparent;
     box-sizing: content-box;
     padding: 6px; */
+
+    display: block;
+    max-width: 200px;
+    max-height: 300px;
+    width: auto;
+    height: auto;
+    margin: 0 auto;
     }
 
 .boom-movie-grid-item-title {
     text-align: center;
     display: block;
 }
+
+/* ================================================================================================================== */
+
+.boom-movie-grid-info-overlay {
+    position: relative;
+    overflow: hidden;
+
+    -webkit-transition: all 0.35s ease-in-out;
+    }
+
+.boom-movie-grid-info-overlay, .boom-movie-grid-info-overlay * {
+    -webkit-box-sizing: border-box;
+    }
+
+.boom-movie-grid-info-overlay-image {
+    -webkit-transition: all 0.35s ease-in-out;
+    -webkit-transform: scale(1);
+    }
+
+.boom-movie-grid-info-overlay-title {
+    color: white;
+    background-color: black;
+
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px 4px;
+    width: 200px;
+    margin: 130px 10px 0 30px;
+
+    -webkit-transform: translateY(-100%);
+    -webkit-transition: all 0.35s ease-in-out;
+    }
+
+.boom-movie-grid-info-overlay-text {
+    visibility: hidden;
+    opacity: 0;
+
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.5);
+
+    -webkit-transition: all 0.35s ease-in-out;
+    -webkit-backface-visibility: hidden;
+    }
+
+.active .boom-movie-grid-info-overlay-text {
+    visibility: visible;
+    opacity: 0.9;
+    }
+
+.boom-movie-grid-info-overlay-text-additional {
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 24px;
+    margin-top: 8px;
+
+    text-shadow: 2px 2px 1px rgba(32, 32, 32, 0.9);
+    text-align: center;
+
+    position: relative;
+
+    -webkit-transform: translateY(-100%);
+    -webkit-transition: all 0.35s 0.1s linear;
+    }
+
+.active .boom-movie-grid-info-overlay-title, .active .boom-movie-grid-info-overlay-text-additional {
+    -webkit-transform: translateY(0);
+    }

@@ -5,15 +5,29 @@
  *  @copyright Copyright (c) 2013-2014 Nikola Klaric
  */
 
-; var ka = ka || {}; if (!('data' in ka)) ka.data = {};
+; var ka = ka || {};
 
-ka.data.cortex = {
-    all: new Cortex([])
-  , byYear: new Cortex({})
-  , byUuid: new Cortex({})
-  , byLetter: new Cortex({})
+ka.data = {
+    cortex: {
+        all: new Cortex([])
+        , byYear: new Cortex({})
+        , byUuid: new Cortex({})
+        , byLetter: new Cortex({})
+    }
 };
-ka.data.cortex.all.on('update', ka.lib.renderMovieThumbnail);
+ka.data.cortex.all.on('update', ka.lib.refreshMovieGrid);
+
+ka.config = {
+    gridMaxRows: 3
+  , gridMaxColumns: 7
+};
+
+ka.state = {
+    gridFocusX: 0
+  , gridFocusY: 0
+  , gridPage: 0
+};
+
 
 function boot() {
     $.ajax({

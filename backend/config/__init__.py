@@ -23,14 +23,16 @@ RESOURCES_SCRIPT = [
     'vendor/misc/color-thief.min.js',
     'vendor/misc/keypress.min.js',
     'app/js/lib/sockets.js',
+    'app/js/lib/colors.js',
     'app/js/lib/receiver.js',
+    'app/js/lib/shortcuts.js',
+    'app/js/lib/grid.js',
     'app/js/lib/renderer.js',
     'app/js/app.js',
 ]
 
 RESOURCES_STYLE = [
     'app/css/fonts.css',
-    'app/css/ihover.css',
     'app/css/app.css',
     'app/css/grid.css',
     'app/css/animations.css',

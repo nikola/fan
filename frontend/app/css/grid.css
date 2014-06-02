@@ -8,6 +8,8 @@
 /* TODO: set all background-color to black to prevent transparent flicker while scrolling to end of grid */
 
 #boom-poster-focus {
+    display: none;
+
     position: fixed;
     border: 6px solid white;
     width: 216px;
@@ -15,23 +17,23 @@
     top: 16px;
     left: 116px;
 
-    -webkit-animation: fade-in 2s 1;
+    /* -webkit-animation: fade-in 2s 1; */
     }
 
-@-webkit-keyframes fade-in {
+/* @-webkit-keyframes fade-in {
     0% {
         opacity: 0
     }
     100% {
         opacity: 1
     }
-}
+} */
 
-.boom-movie-grid-page {
+/* .boom-movie-grid-page {
     font-size: 0;
 
     background-color: black;
-    }
+    } */
 
 .boom-movie-grid-letter-indicator {
     display: inline-block;

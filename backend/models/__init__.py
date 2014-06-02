@@ -185,6 +185,21 @@ class StreamManager(object):
             # ))
 
 
+    def getMovieAsJson(self, identifier):
+        with self._session() as session:
+            try:
+                movie = list(session.query(Movie).filter(Movie.uuid == identifier).values(Movie.uuid, Movie.titleOriginal, Movie.releaseYear, Movie.runtime))[0]
+            except NoResultFound:
+                return None
+            else:
+                return {
+                    'uuid': movie[0],
+                    'titleOriginal': movie[1],
+                    'releaseYear': movie[2],
+                    'runtime': movie[3],
+                }
+
+
     def _persist(self):
         compressor = bz2.BZ2Compressor()
         connection = self.engine.raw_connection()

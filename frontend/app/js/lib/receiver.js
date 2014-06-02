@@ -8,13 +8,15 @@
 if (!('lib' in ka)) ka.lib = {};
 
 
-ka.lib.addMovie = function (movieDict) {
-    var titleOriginal = movieDict.titleOriginal,
+ka.lib.addMovieInCortex = function (movieDict) {
+    if (ka.data.cortex.byUuid.hasKey(movieDict.uuid)) return;
+
+    var uuid = movieDict.uuid,
+        titleOriginal = movieDict.titleOriginal,
         titleSortable = titleOriginal.replace(/^the /i, '').replace('.', '').toLowerCase(),
         firstLetter = /^(?:the )?([\w])/i.exec(titleOriginal)[1].toUpperCase(),
         firstLetterCode = firstLetter.charCodeAt(0),
-        releaseYear = movieDict.releaseYear,
-        uuid = movieDict.uuid;
+        releaseYear = movieDict.releaseYear;
 
     movieDict.titleSortable = titleSortable;
 
@@ -52,6 +54,6 @@ ka.lib.addMovie = function (movieDict) {
 
     }
     ka.data.cortex.byLetter[firstLetter] = byLetterList;
-
+    ka.data.cortex.byUuid.add(uuid, movieDict);
     ka.data.cortex.all.push(movieDict);
 };

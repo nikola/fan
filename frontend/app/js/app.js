@@ -20,6 +20,10 @@ ka.data.cortex.all.on('update', ka.lib.refreshMovieGrid);
 ka.config = {
     gridMaxRows: 3
   , gridMaxColumns: 7
+  , gridSortOrder: 'byLetter'
+  , gridKeys: {
+        byLetter: ['123'].concat('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''))
+    }
 };
 
 ka.state = {
@@ -30,36 +34,34 @@ ka.state = {
 
 
 function boot() {
+    ka.lib.registerShortcuts();
+
+
     $.ajax({
         url: '/movies/all',
         success: function (list) {
             var index = list.length;
             while (index--) {
-                ka.lib.addMovie(list[index]);
+                ka.lib.addMovieInCortex(list[index]);
             }
 
             // ka.data.cortex.all.forEach(function (item, index) { console.log(item.titleOriginal.getValue(), '->', item.titleSortable.getValue())})
         }
     });
 
+
     var dispatcher = new ka.lib.WebSocketDispatcher('wss://127.0.0.1:' + WEBSOCKET_PORT + '/');
     dispatcher.bind('receive:movie:item', function (record) {
-        /* $('<div>', {
-            'text': record
-        }).appendTo('body'); */
+        // ka.lib.addMovieInCortex(record);
         // console.log(record)
-        // http://image.tmdb.org/t/p/original/9gZZyQ8XStpUJBFU1ceU4xx1crv.jpg
-        // http://image.tmdb.org/t/p/w130/qKkFk9HELmABpcPoc1HHZGIxQ5a.jpg
-        $('<img>', {
-            'src': 'https://127.0.0.1:' + HTTP_PORT + '/movie/poster/' + record + '.jpg/300' // record.replace('http:', 'https:').replace('/original/', '/w150/')
-          , 'width': 300
-        }).appendTo('body');
     });
 }
 
-/* document.oncontextmenu = function (evt) {
-    evt.preventDefault();
-}; */
+
+document.oncontextmenu = function (event) {
+    event.preventDefault();
+};
+
 
 document.addEventListener('DOMContentLoaded', function(event) {
     /* Notify backend that UI is ready. */

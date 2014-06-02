@@ -107,8 +107,8 @@ def serveMoviePoster(request, identifier, width):
 def serveFont(request, identifier):
     pathname = os.path.join(PROJECT_PATH, 'frontend', 'fonts', '%s.ttf' % identifier)
     if os.path.exists(pathname):
-        with open(pathname, 'rb') as fp:
-            ttf = fp.read()
+        with open(pathname, 'rb') as fd:
+            ttf = fd.read()
         return ttf, 203
     else:
         request.finish()

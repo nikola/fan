@@ -30,6 +30,7 @@ body {
     -webkit-transition: -webkit-transform 720ms ease;
     -webkit-transform-style: preserve-3d;
 
+    font-size: 0;
     background-color: black;
     }
 

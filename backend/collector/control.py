@@ -7,6 +7,7 @@ __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 import os
 import time
 import logging
+import json
 from Queue import Empty
 from multiprocessing import Process
 
@@ -25,25 +26,25 @@ from collector.identifier import identifyMovieByTitleYear
 class Publisher(WebSocket):
 
     def __init__(self, request, userAgent, bridgeToken, *args):
-        print '__init__', args
+        # print '__init__', args
         self.userAgent = userAgent
         self.bridgeToken = bridgeToken
 
         super(Publisher, self).__init__(request)
 
     def on_handshake(self, request, headers=SERVER_HEADERS):
-        print 'on_handshake'
+        # print 'on_handshake'
 
         return DEBUG or (request.is_secure and request.protocol == 'HTTP/1.1' and request.headers.get('User-Agent', None) == self.userAgent)
 
 
     def on_connect(self, *args):
-        print 'on_connect'
+        # print 'on_connect'
         self.ping() # data=self.bridgeToken)
 
 
     def on_pong(self, data):
-        print 'data ponged:', data
+        # print 'data ponged:', data
         global publisherInstance
         publisherInstance = self
         # print 'sending:', repr(self.bridgeToken)
@@ -51,12 +52,13 @@ class Publisher(WebSocket):
 
 
     def on_read(self, data):
-        print 'on_read'
+        # print 'on_read'
         self.write(data)
 
 
     def on_close(self):
-        print 'on_close'
+        pass
+        # print 'on_close'
         # self.close(flush=True)
         # global publisherInstance
         # publisherInstance = None
@@ -141,7 +143,8 @@ def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
                         # if collectorStreamManager.isStreamKnown(streamLocation):
                         #     movie = collectorStreamManager.getMovieFromStreamLocation(streamLocation)
                         # else:
-                        if not collectorStreamManager.isStreamKnown(streamLocation):
+                        # if not collectorStreamManager.isStreamKnown(streamLocation):
+                        if True:
                             movieRecord = identifyMovieByTitleYear('en', 'us', basedata.get('title'), basedata.get('year'))
                             if movieRecord is None:
                                 print 'unknown stream:', streamLocation
@@ -155,10 +158,14 @@ def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
 
 
                             if movie is not None:
+                                movie = collectorStreamManager.getMovieAsJson(movie.uuid)
                                 # publisherInstance.write(unicode('["receive:movie:item", "%s"]' % movie.titleOriginal))
                                 # publisherInstance.write(unicode('["receive:movie:item", "%s"]' % movie.urlPoster))
                                 # publisherInstance.write(unicode('["receive:movie:item", "%s"]' % movie.idTheMovieDb))
-                                publisherInstance.write(unicode('["receive:movie:item", "%s"]' % movie.uuid))
+
+                                # print unicode('["receive:movie:item", %s]' % json.dumps(movie, separators=(',',':')))
+
+                                publisherInstance.write(unicode('["receive:movie:item", %s]' % json.dumps(movie, separators=(',',':'))))
             elif False:
                 pass # TODO: implement here kickoff of filewatcher
             else:

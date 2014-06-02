@@ -26,12 +26,13 @@ ka.lib.refreshMovieGrid = function () {
     // var previousMovieFragments = $('#content .boom-movie-grid-info-overlay').detach();
     // $('section').remove();
 
-    ka.state.gridLookup = [];
+    ka.state.gridLookupItemsPerLine = [];
+    ka.state.gridLookupLinesByKey = {};
     ka.state.gridTotalPages = 0;
 
-    var filledLines = 0, lastFilledLines = null, totalLines = 0,
-        itemsPerLine, startSection = true, tablesPerKey, 
-        groupNameElement;
+    var filledLines = 0, lastFilledLines = null, totalLines = 0, totalItems = 0,
+        itemsPerLine, startNewPage = true, tablesPerKey;
+        /* groupNameElement */
 
     var keys = ka.config.gridKeys[ka.config.gridSortOrder], keyCount = keys.length;
     for (var key, keyIndex = 0; keyIndex < keyCount; keyIndex++) {
@@ -51,23 +52,18 @@ ka.lib.refreshMovieGrid = function () {
                         movieTitle = movieTitle.substr(0, movieTitle.indexOf(':') + 1) + '<br>' + movieTitle.substr(movieTitle.indexOf(':') + 1);
                     }
 
-                    if (lastFilledLines !== null && (movieIndex == 0 || startSection)) {
+                    if (lastFilledLines !== null && (movieIndex == 0 || startNewPage)) {
                         /* Update height of indicator. */
-                        groupNameElement.css('height', lastFilledLines * 360);
+                        // groupNameElement.css('height', lastFilledLines * 360);
                     }
 
-                    /* if (startSection) {
-                        var section = $('<section class="boom-movie-grid-page"></section>')
-                            .appendTo($('#content'));
-
-                        ka.state.gridTotalPages += 1;
-                    } */
-
-                    if (movieIndex == 0 || startSection) {
+                    if (movieIndex == 0 || startNewPage) {
                         tablesPerKey++;
                         ka.state.gridTotalPages += 1;
 
-                        groupNameElement = $(
+
+
+                        /* groupNameElement = $(
                             '<table class="boom-movie-grid-letter-indicator">'
                                 + '<tr>'
                                     + '<td class="boom-movie-grid-letter-cell">'
@@ -75,32 +71,41 @@ ka.lib.refreshMovieGrid = function () {
                                     + '</td>'
                                 + '</tr>'
                           + '</table>'
-                        // ).appendTo(section);
-                        ).appendTo('#content');
+                        ).appendTo('#content'); */
 
-                        var table = $('<table id="boom-movie-grid-table-' + key + '-' + tablesPerKey + '" class="boom-movie-grid-table"></table>')
-                            // .appendTo(section);
-                            .appendTo('#content');
+                        // var table = $('<table id="boom-movie-grid-table-' + key + '-' + tablesPerKey + '" class="boom-movie-grid-table"></table>')
+                        //     .appendTo('#content');
 
                         lastFilledLines = 0;
                     }
 
-                    startSection = false;
+                    startNewPage = false;
 
                     if (movieIndex % ka.config.gridMaxColumns == 0) {
-                        var row = $('<tr>', {class: 'boom-movie-grid-line'}).appendTo(table);
+                        // var row = $('<tr>', {class: 'boom-movie-grid-line'}).appendTo(table);
                         lastFilledLines++;
 
-                        if (typeof ka.state.gridLookup[totalLines] == 'undefined') {
-                            ka.state.gridLookup[totalLines] = [];
+                        if (typeof ka.state.gridLookupItemsPerLine[totalLines] == 'undefined') {
+                            ka.state.gridLookupItemsPerLine[totalLines] = [];
                             totalLines++;
                         }
                     }
 
-                    ka.state.gridLookup[ka.state.gridLookup.length - 1][itemsPerLine] = movieUuid;
+                    ka.state.gridLookupItemsPerLine[ka.state.gridLookupItemsPerLine.length - 1][itemsPerLine] = movieUuid;
+
+                    var currentLine = Math.floor(totalItems / ka.config.gridMaxColumns);
+                    if (key in ka.state.gridLookupLinesByKey) {
+                        var lines = ka.state.gridLookupLinesByKey[key];
+                        if (lines.indexOf(currentLine) == -1) {
+                            lines.push(currentLine);
+                        }
+                    } else {
+                        var lines = [currentLine];
+                    }
+                    ka.state.gridLookupLinesByKey[key] = lines;
 
                     var cell = $(
-                        '<td class="boom-movie-grid-item">'
+                        '<div class="boom-movie-grid-item">'
                           + '<div id="boom-movie-grid-item-' + movieUuid + '" class="boom-movie-grid-info-overlay">'
                               + '<div class="boom-movie-grid-info-overlay-image">'
                                   + '<img id="boom-poster-' + movieUuid + '" src="/movie/poster/' + movieUuid + '.jpg/200">'
@@ -110,7 +115,9 @@ ka.lib.refreshMovieGrid = function () {
                                   + '<div class="boom-movie-grid-info-overlay-text-additional">' + movieReleaseYear + '<br>' + movieRuntime + ' minutes</div>'
                               + '</div>'
                           + '</div>'
-                        + '</td>').appendTo(row);
+                      + '</div>'
+                    ).appendTo('#content');
+                    totalItems++;
 
                     // cell.find('img').on('load', ka.lib.setPrimaryPosterColor);
 
@@ -122,20 +129,21 @@ ka.lib.refreshMovieGrid = function () {
                     }
 
                     if (filledLines == ka.config.gridMaxRows) {
-                        startSection = true;
+                        startNewPage = true;
                         filledLines = 0;
                     }
                 }
 
                 if (itemsPerLine) {
                     for (var c = itemsPerLine; c < ka.config.gridMaxColumns; c++) {
-                        $('<td class="boom-movie-grid-item"></td>').appendTo(row);
+                        $('<div class="boom-movie-grid-item"></div>').appendTo('#content');
+                        totalItems++;
                     }
 
                     filledLines += 1;
 
                     if (filledLines == ka.config.gridMaxRows) {
-                        startSection = true;
+                        startNewPage = true;
                         filledLines = 0;
                     }
                 }
@@ -144,7 +152,7 @@ ka.lib.refreshMovieGrid = function () {
     }
 
     /* Update height of last indicator. */
-    groupNameElement.css('height', lastFilledLines * 360);
+    // groupNameElement.css('height', lastFilledLines * 360);
 
     // TODO: fade in
     $('#boom-poster-focus').css('display', 'block');

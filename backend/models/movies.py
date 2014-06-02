@@ -7,7 +7,7 @@ __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 from sqlalchemy import Table, ForeignKey, Column, SmallInteger, Integer, BigInteger, String, Unicode
 from sqlalchemy.orm import relationship
 
-from models import Base, GUID, createUuid
+from models import Base, GUID, createUuid # , DictSerializable
 
 GENRES_EN = (
     "Action",
@@ -62,6 +62,10 @@ class Movie(Base):
     def __init__(self, **kwargs):
         for key, value in kwargs.iteritems():
             setattr(self, key, value)
+
+    # def as_dict(self):
+    #     # print 'as_dict'
+    #     return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
     def __repr__(self):
         return "<Movie('%s')>" % self.id

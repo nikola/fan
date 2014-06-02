@@ -5,10 +5,11 @@ __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 import uuid
-from collections import namedtuple
+from collections import namedtuple # , OrderedDict
 
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.types import TypeDecorator, CHAR
+
 
 Base = declarative_base()
 
@@ -38,3 +39,14 @@ class GUID(TypeDecorator):
 
     def process_result_value(self, value, dialect):
         return uuid.UUID(value).hex if value is not None else None
+
+
+"""
+class DictSerializable(object):
+
+    def _asdict(self):
+        result = OrderedDict()
+        for key in self.__mapper__.c.keys():
+            result[key] = getattr(self, key)
+        return result
+"""

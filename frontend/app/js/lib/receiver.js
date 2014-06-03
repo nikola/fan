@@ -8,7 +8,7 @@
 if (!('lib' in ka)) ka.lib = {};
 
 
-ka.lib.addMovieInCortex = function (movieDict) {
+ka.lib.addMovieToCortex = function (movieDict) {
     if (ka.data.cortex.byUuid.hasKey(movieDict.uuid)) return;
 
     var uuid = movieDict.uuid,

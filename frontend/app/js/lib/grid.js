@@ -22,15 +22,75 @@ ka.lib.setPrimaryPosterColor = function () {
 };
 
 
-ka.lib.refreshMovieGrid = function () {
-    // var previousMovieFragments = $('#content .boom-movie-grid-info-overlay').detach();
-    // $('section').remove();
+ka.lib.recalcMovieGrid = function () {
+    ka.state.gridLookupItemsPerLine = [];
+    ka.state.gridLookupLinesByKey = {};
+    ka.state.gridTotalPages = 1;
 
+    var currentRowIndex = 0, currentColumnIndex, currentCellIndex = 0,
+        keys = ka.config.gridKeys[ka.config.gridSortOrder], keyCount = keys.length;
+
+    for (var key, keyIndex = 0; keyIndex < keyCount; keyIndex++) {
+        key = keys[keyIndex];
+        if (key in ka.data.cortex[ka.config.gridSortOrder]) {
+            var items = ka.data.cortex[ka.config.gridSortOrder][key], count = items.count();
+            if (count) {
+                currentColumnIndex = 0;
+                for (var movieIndex = 0; movieIndex < count; movieIndex++) {
+                    if (movieIndex % ka.config.gridMaxColumns == 0) {
+                        ka.state.gridLookupItemsPerLine.push([]);
+                    }
+
+                    ka.state.gridLookupItemsPerLine[ka.state.gridLookupItemsPerLine.length - 1][currentColumnIndex] = items.values()[movieIndex].uuid;
+
+                    var currentLine = Math.floor(currentCellIndex / ka.config.gridMaxColumns);
+                    if (key in ka.state.gridLookupLinesByKey) {
+                        var lines = ka.state.gridLookupLinesByKey[key];
+                        if (lines.indexOf(currentLine) == -1) {
+                            lines.push(currentLine);
+                        }
+                    } else {
+                        var lines = [currentLine];
+                    }
+                    ka.state.gridLookupLinesByKey[key] = lines;
+
+                    currentCellIndex++;
+                    currentColumnIndex++;
+
+                    if (currentColumnIndex == ka.config.gridMaxColumns) {
+                        currentRowIndex++;
+                        currentColumnIndex = 0;
+                    }
+
+                    if (currentRowIndex == ka.config.gridMaxRows) {
+                        ka.state.gridTotalPages += 1;
+                        currentRowIndex = 0;
+                    }
+                }
+
+                if (currentColumnIndex) {
+                    currentCellIndex += (ka.config.gridMaxColumns - currentColumnIndex);
+
+                    currentRowIndex++;
+
+                    if (currentRowIndex == ka.config.gridMaxRows) {
+                        ka.state.gridTotalPages += 1;
+                        currentRowIndex = 0;
+                    }
+                }
+            }
+        }
+    }
+};
+
+
+ka.lib.redrawMovieGrid = function () {
     ka.state.gridLookupItemsPerLine = [];
     ka.state.gridLookupLinesByKey = {};
     ka.state.gridTotalPages = 0;
 
-    var filledLines = 0, lastFilledLines = null, totalLines = 0, totalItems = 0,
+    var filledLines = 0, lastFilledLines = null, totalLines = 0,
+        currentCellIndex = 0,
         itemsPerLine, startNewPage = true, tablesPerKey;
         /* groupNameElement */
 
@@ -44,13 +104,7 @@ ka.lib.refreshMovieGrid = function () {
                 tablesPerKey = -1;
                 for (var movie, movieIndex = 0; movieIndex < count; movieIndex++) {
                     var movie = items.values()[movieIndex],
-                        movieUuid =  movie.uuid,
-                        movieTitle = movie.titleOriginal,
-                        movieReleaseYear = movie.releaseYear,
-                        movieRuntime = movie.runtime;
-                    if (movieTitle.indexOf(':') > 9) {
-                        movieTitle = movieTitle.substr(0, movieTitle.indexOf(':') + 1) + '<br>' + movieTitle.substr(movieTitle.indexOf(':') + 1);
-                    }
+                        movieUuid =  movie.uuid;
 
                     if (lastFilledLines !== null && (movieIndex == 0 || startNewPage)) {
                         /* Update height of indicator. */
@@ -60,8 +114,6 @@ ka.lib.refreshMovieGrid = function () {
                     if (movieIndex == 0 || startNewPage) {
                         tablesPerKey++;
                         ka.state.gridTotalPages += 1;
-
-
 
                         /* groupNameElement = $(
                             '<table class="boom-movie-grid-letter-indicator">'
@@ -93,7 +145,9 @@ ka.lib.refreshMovieGrid = function () {
 
                     ka.state.gridLookupItemsPerLine[ka.state.gridLookupItemsPerLine.length - 1][itemsPerLine] = movieUuid;
 
-                    var currentLine = Math.floor(totalItems / ka.config.gridMaxColumns);
+                    // console.log(currentCellIndex)
+
+                    var currentLine = Math.floor(currentCellIndex / ka.config.gridMaxColumns);
                     if (key in ka.state.gridLookupLinesByKey) {
                         var lines = ka.state.gridLookupLinesByKey[key];
                         if (lines.indexOf(currentLine) == -1) {
@@ -104,22 +158,15 @@ ka.lib.refreshMovieGrid = function () {
                     }
                     ka.state.gridLookupLinesByKey[key] = lines;
 
-                    var cell = $(
-                        '<div class="boom-movie-grid-item">'
-                          + '<div id="boom-movie-grid-item-' + movieUuid + '" class="boom-movie-grid-info-overlay">'
-                              + '<div class="boom-movie-grid-info-overlay-image">'
-                                  + '<img id="boom-poster-' + movieUuid + '" src="/movie/poster/' + movieUuid + '.jpg/200">'
-                              + '</div>'
-                              + '<div class="boom-movie-grid-info-overlay-text">'
-                                  + '<div class="boom-movie-grid-info-overlay-title">' + movieTitle + '</div>'
-                                  + '<div class="boom-movie-grid-info-overlay-text-additional">' + movieReleaseYear + '<br>' + movieRuntime + ' minutes</div>'
-                              + '</div>'
-                          + '</div>'
-                      + '</div>'
-                    ).appendTo('#content');
-                    totalItems++;
+                    if ($('.boom-movie-grid-item').length > currentCellIndex) {
+                        ka.lib.renderMovieGridCell(movie, $('.boom-movie-grid-item').eq(currentCellIndex));
+                    } else {
+                        ka.lib.renderMovieGridCell(movie);
+                    }
 
-                    // cell.find('img').on('load', ka.lib.setPrimaryPosterColor);
+                    // ka.lib.renderMovieGridCell(movie);
+
+                    currentCellIndex++;
 
                     itemsPerLine += 1;
 
@@ -136,8 +183,8 @@ ka.lib.refreshMovieGrid = function () {
 
                 if (itemsPerLine) {
                     for (var c = itemsPerLine; c < ka.config.gridMaxColumns; c++) {
-                        $('<div class="boom-movie-grid-item"></div>').appendTo('#content');
-                        totalItems++;
+                        $('<div class="boom-movie-grid-item empty"></div>').appendTo('#content');
+                        currentCellIndex++;
                     }
 
                     filledLines += 1;
@@ -156,6 +203,35 @@ ka.lib.refreshMovieGrid = function () {
 
     // TODO: fade in
     $('#boom-poster-focus').css('display', 'block');
+};
+
+
+ka.lib.renderMovieGridCell = function (movie, target) {
+    var movieTitle = movie.titleOriginal;
+    if (movieTitle.indexOf(':') > 9) {
+        movieTitle = movieTitle.substr(0, movieTitle.indexOf(':') + 1) + '<br>' + movieTitle.substr(movieTitle.indexOf(':') + 1);
+    }
+    var cell = $(
+        '<div class="boom-movie-grid-item">'
+          + '<div id="boom-movie-grid-item-' + movie.uuid + '" class="boom-movie-grid-info-overlay">'
+              + '<div class="boom-movie-grid-info-overlay-image">'
+                  + '<img id="boom-poster-' + movie.uuid + '" src="/movie/poster/' + movie.uuid + '.jpg/200">'
+              + '</div>'
+              + '<div class="boom-movie-grid-info-overlay-text">'
+                  + '<div class="boom-movie-grid-info-overlay-title">' + movieTitle + '</div>'
+                  + '<div class="boom-movie-grid-info-overlay-text-additional">' + movie.releaseYear + '<br>' + movie.runtime + ' minutes</div>'
+              + '</div>'
+          + '</div>'
+      + '</div>'
+    );
+
+    if (typeof target != 'undefined') {
+        cell.insertBefore(target);
+    } else {
+        cell.appendTo('#content');
+    }
+
+    // cell.find('img').on('load', ka.lib.setPrimaryPosterColor);
 };
 
 

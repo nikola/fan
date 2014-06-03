@@ -15,7 +15,7 @@ ka.data = {
         , byLetter: new Cortex({})
     }
 };
-ka.data.cortex.all.on('update', ka.lib.refreshMovieGrid);
+// ka.data.cortex.all.on('update', ka.lib.refreshMovieGrid);
 
 ka.config = {
     gridMaxRows: 3
@@ -42,9 +42,10 @@ function boot() {
         success: function (list) {
             var index = list.length;
             while (index--) {
-                ka.lib.addMovieInCortex(list[index]);
+                ka.lib.addMovieToCortex(list[index]);
             }
-
+            ka.lib.recalcMovieGrid();
+            // ka.lib.redrawMovieGrid();
             // ka.data.cortex.all.forEach(function (item, index) { console.log(item.titleOriginal.getValue(), '->', item.titleSortable.getValue())})
         }
     });

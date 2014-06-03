@@ -30,6 +30,11 @@ ka.state = {
     gridFocusX: 0
   , gridFocusY: 0
   , gridPage: 0
+  , gridTotalPages: 0
+  , detachedGridCells: {}
+  , gridLookupMatrix: {}
+  , gridLookupItemsPerLine: []
+  , gridLookupLinesByKey: {}
 };
 
 
@@ -41,16 +46,31 @@ function boot() {
         success: function (list) {
             var index = list.length;
             while (index--) {
+                var movie = list[index];
+                /* if (movie.titleOriginal == 'A Good Day to Die Hard') {
+                    console.log(movie);
+                    continue
+                } */
                 ka.lib.addMovieToCortex(list[index]);
             }
             ka.lib.recalcMovieGrid();
-            ka.lib.redrawMovieGridFull();
+            ka.lib.updateMovieGrid();
 
             ka.state.socketDispatcher = new ka.lib.WebSocketDispatcher('wss://127.0.0.1:' + WEBSOCKET_PORT + '/');
             ka.state.socketDispatcher.bind('receive:movie:item', function (movie) {
-                /* ka.lib.addMovieToCortex(movie);
+                // console.log('item received: ' + movie.titleOriginal)
+                // console.log('adding ' + movie.titleOriginal + ' to cortex ...')
+                ka.lib.addMovieToCortex(movie);
+                // console.log('added ' + movie.titleOriginal)
+                // console.log('recalcing ' + movie.titleOriginal + ' ...')
                 ka.lib.recalcMovieGrid();
-                ka.lib.redrawMovieGridPartial() */
+                // console.log('recalced ' + movie.titleOriginal)
+
+                // console.log(ka.state.gridLookupMatrix)
+
+                // console.log('updating grid with ' + movie.titleOriginal)
+                ka.lib.updateMovieGrid();
+                // console.log('updated ' + movie.titleOriginal)
             });
         }
     });

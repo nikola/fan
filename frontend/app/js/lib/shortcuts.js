@@ -73,7 +73,7 @@ ka.lib.registerShortcuts = function () {
                 notFirstPage = ka.state.gridPage > 0;
 
             if (notFirstRow || notFirstPage > 0) {
-                if (ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY - 1].length > ka.state.gridFocusX) { /* Focus can stay in same column. */
+                if (ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY - 1] > ka.state.gridFocusX) { /* Focus can stay in same column. */
                     if (notFirstRow) {
                         ka.state.gridFocusY -= 1;
                         $('#boom-poster-focus').velocity({top: '-=360'}, {duration: 360});
@@ -84,8 +84,8 @@ ka.lib.registerShortcuts = function () {
                         ka.lib.scrollToPage(ka.state.gridPage);
                     }
                 } else { /* Focus must drift to the left. */
-                    var driftLeft = '-=' + (ka.state.gridFocusX - (ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY - 1].length - 1)) * 260;
-                    ka.state.gridFocusX = ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY - 1].length - 1;
+                    var driftLeft = '-=' + (ka.state.gridFocusX - (ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY - 1] - 1)) * 260;
+                    ka.state.gridFocusX = ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY - 1] - 1;
                     if (notFirstRow) {
                         ka.state.gridFocusY -= 1;
                         $('#boom-poster-focus').velocity({top: '-=360', left: driftLeft}, {duration: 360});
@@ -108,7 +108,7 @@ ka.lib.registerShortcuts = function () {
                 notLastPage = ka.state.gridPage + 1 < ka.state.gridTotalPages;
 
             if (notLastRow || notLastPage) {
-                if (ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY + 1].length > ka.state.gridFocusX) {  /* Focus can stay in same column. */
+                if (ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY + 1] > ka.state.gridFocusX) {  /* Focus can stay in same column. */
                     if (notLastRow) {
                         ka.state.gridFocusY += 1;
                         $('#boom-poster-focus').velocity({top: '+=360'}, {duration: 360});
@@ -119,8 +119,8 @@ ka.lib.registerShortcuts = function () {
                         ka.lib.scrollToPage(ka.state.gridPage);
                     }
                 } else { /* Focus must drift to the left. */
-                    var driftLeft = '-=' + (ka.state.gridFocusX - (ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY + 1].length - 1)) * 260;
-                    ka.state.gridFocusX = ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY + 1].length - 1;
+                    var driftLeft = '-=' + (ka.state.gridFocusX - (ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY + 1] - 1)) * 260;
+                    ka.state.gridFocusX = ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY + 1] - 1;
                     if (notLastRow) {
                         ka.state.gridFocusY += 1;
                         $('#boom-poster-focus').velocity({top: '+=360', left: driftLeft}, {duration: 360});
@@ -154,7 +154,7 @@ ka.lib.registerShortcuts = function () {
         keys: 'right'
       , on_keydown: function () {
             // console.log('page: ' + ka.state.gridPage)
-            if (ka.state.gridFocusX < ka.config.gridMaxColumns - 1  && ka.state.gridLookupItemsPerLine[ka.config.gridMaxRows * ka.state.gridPage + ka.state.gridFocusY].length > ka.state.gridFocusX + 1) {
+            if (ka.state.gridFocusX < ka.config.gridMaxColumns - 1  && ka.state.gridLookupItemsPerLine[ka.config.gridMaxRows * ka.state.gridPage + ka.state.gridFocusY] > ka.state.gridFocusX + 1) {
                 ka.state.gridFocusX += 1;
 
                 $('#boom-poster-focus').css('display', 'block');
@@ -169,7 +169,7 @@ ka.lib.registerShortcuts = function () {
     listener.register_combo({
         keys: 'space'
       , on_keydown: function () {
-            var uuid = ka.state.gridLookupItemsPerLine[ka.config.gridMaxRows * ka.state.gridPage + ka.state.gridFocusY][ka.state.gridFocusX];
+            var uuid = ka.state.gridLookupMatrix[ka.config.gridMaxRows * ka.state.gridPage + ka.state.gridFocusY][ka.state.gridFocusX].uuid;
             $('#boom-poster-' + uuid).eq(0).closest('.boom-movie-grid-info-overlay').toggleClass('active');
         }
     });

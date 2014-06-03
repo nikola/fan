@@ -117,6 +117,23 @@ class StreamManager(object):
         return movie
 
 
+    def deleteStreams(self):
+        with self._session() as session:
+            session.query(Stream).delete()
+            session.query(Movie).delete()
+
+
+    def deleteMovie(self, identifier):
+        with self._session() as session:
+            try:
+                movie = session.query(Movie).filter(Movie.uuid == identifier).one()
+            except NoResultFound:
+                return None
+            else:
+                movie.delete()
+                session.commit()
+
+
     def isStreamKnown(self, streamLocation):
         with self._session() as session:
             try:

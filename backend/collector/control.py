@@ -99,6 +99,11 @@ def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
             if command == 'collector:start':
                 if collectorStreamManager is None:
                     collectorStreamManager = StreamManager()
+
+                    # TODO: remove !!!
+                    # collectorStreamManager.deleteStreams()
+
+
                     streamGenerator = getMoviePathnames(r'M:\\')
 
                     streamWatcher.start()
@@ -143,8 +148,8 @@ def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
                         # if collectorStreamManager.isStreamKnown(streamLocation):
                         #     movie = collectorStreamManager.getMovieFromStreamLocation(streamLocation)
                         # else:
-                        # if not collectorStreamManager.isStreamKnown(streamLocation):
-                        if True:
+                        if not collectorStreamManager.isStreamKnown(streamLocation):
+                        # if True:
                             movieRecord = identifyMovieByTitleYear('en', 'us', basedata.get('title'), basedata.get('year'))
                             if movieRecord is None:
                                 print 'unknown stream:', streamLocation
@@ -166,7 +171,9 @@ def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
                                 # print unicode('["receive:movie:item", %s]' % json.dumps(movie, separators=(',',':')))
 
                                 publisherInstance.write(unicode('["receive:movie:item", %s]' % json.dumps(movie, separators=(',',':'))))
-            elif False:
+
+                                # collectorStreamManager.deleteMovie(movie.uuid)
+            elif False: # elif ... all files collected in above generator loop
                 pass # TODO: implement here kickoff of filewatcher
             else:
                 # only 30 requests every 10 seconds per IP

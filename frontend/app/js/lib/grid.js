@@ -41,7 +41,7 @@ ka.lib.recalcMovieGrid = function () {
                         ka.state.gridLookupItemsPerLine.push([]);
                     }
 
-                    ka.state.gridLookupItemsPerLine[ka.state.gridLookupItemsPerLine.length - 1][currentColumnIndex] = items.values()[movieIndex].uuid;
+                    ka.state.gridLookupItemsPerLine[ka.state.gridLookupItemsPerLine.length - 1][currentColumnIndex] = items.values()[movieIndex];
 
                     var currentLine = Math.floor(currentCellIndex / ka.config.gridMaxColumns);
                     if (key in ka.state.gridLookupLinesByKey) {
@@ -84,7 +84,28 @@ ka.lib.recalcMovieGrid = function () {
 };
 
 
-ka.lib.redrawMovieGrid = function () {
+ka.lib.redrawMovieGridFull = function () {
+    for (var row = 0, matrix = ka.state.gridLookupItemsPerLine, rows = matrix.length; row < rows; row++) {
+        for (var column = 0, line = matrix[row], columns = line.length; column < columns; column++) {
+            ka.lib.renderMovieGridCell(ka.state.gridLookupItemsPerLine[row][column]);
+        }
+        for (; column < ka.config.gridMaxColumns; column++) {
+            ka.lib.renderMovieGridCell();
+        }
+    }
+
+    if (ka.state.gridLookupItemsPerLine.length) {
+        $('#boom-poster-focus').velocity('fadeIn', 1440);
+    }
+};
+
+
+ka.lib.redrawMovieGridPartial = function () {
+
+};
+
+
+function disabled() {
     ka.state.gridLookupItemsPerLine = [];
     ka.state.gridLookupLinesByKey = {};
     ka.state.gridTotalPages = 0;
@@ -207,23 +228,27 @@ ka.lib.redrawMovieGrid = function () {
 
 
 ka.lib.renderMovieGridCell = function (movie, target) {
-    var movieTitle = movie.titleOriginal;
-    if (movieTitle.indexOf(':') > 9) {
-        movieTitle = movieTitle.substr(0, movieTitle.indexOf(':') + 1) + '<br>' + movieTitle.substr(movieTitle.indexOf(':') + 1);
-    }
-    var cell = $(
-        '<div class="boom-movie-grid-item">'
-          + '<div id="boom-movie-grid-item-' + movie.uuid + '" class="boom-movie-grid-info-overlay">'
-              + '<div class="boom-movie-grid-info-overlay-image">'
-                  + '<img id="boom-poster-' + movie.uuid + '" src="/movie/poster/' + movie.uuid + '.jpg/200">'
-              + '</div>'
-              + '<div class="boom-movie-grid-info-overlay-text">'
-                  + '<div class="boom-movie-grid-info-overlay-title">' + movieTitle + '</div>'
-                  + '<div class="boom-movie-grid-info-overlay-text-additional">' + movie.releaseYear + '<br>' + movie.runtime + ' minutes</div>'
+    if (typeof movie != 'undefined') {
+        var movieTitle = movie.titleOriginal;
+        if (movieTitle.indexOf(':') > 9) {
+            movieTitle = movieTitle.substr(0, movieTitle.indexOf(':') + 1) + '<br>' + movieTitle.substr(movieTitle.indexOf(':') + 1);
+        }
+        var cell = $(
+            '<div class="boom-movie-grid-item">'
+              + '<div id="boom-movie-grid-item-' + movie.uuid + '" class="boom-movie-grid-info-overlay">'
+                  + '<div class="boom-movie-grid-info-overlay-image">'
+                      + '<img id="boom-poster-' + movie.uuid + '" src="/movie/poster/' + movie.uuid + '.jpg/200">'
+                  + '</div>'
+                  + '<div class="boom-movie-grid-info-overlay-text">'
+                      + '<div class="boom-movie-grid-info-overlay-title">' + movieTitle + '</div>'
+                      + '<div class="boom-movie-grid-info-overlay-text-additional">' + movie.releaseYear + '<br>' + movie.runtime + ' minutes</div>'
+                  + '</div>'
               + '</div>'
           + '</div>'
-      + '</div>'
-    );
+        );
+    } else {
+        var cell = $('<div class="boom-movie-grid-item"></div>');
+    }
 
     if (typeof target != 'undefined') {
         cell.insertBefore(target);

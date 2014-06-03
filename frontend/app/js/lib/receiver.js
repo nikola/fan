@@ -7,6 +7,7 @@
 ; var ka = ka || {};
 if (!('lib' in ka)) ka.lib = {};
 
+// ka.data.cortex.all.forEach(function (item, index) { console.log(item.titleOriginal.getValue(), '->', item.titleSortable.getValue())})
 
 ka.lib.addMovieToCortex = function (movieDict) {
     if (ka.data.cortex.byUuid.hasKey(movieDict.uuid)) return;
@@ -15,7 +16,7 @@ ka.lib.addMovieToCortex = function (movieDict) {
         titleOriginal = movieDict.titleOriginal,
         titleSortable = titleOriginal.replace(/^the /i, '').replace('.', '').toLowerCase(),
         firstLetter = /^(?:the )?([\w])/i.exec(titleOriginal)[1].toUpperCase(),
-        firstLetterCode = firstLetter.charCodeAt(0),
+        // firstLetterCode = firstLetter.charCodeAt(0),
         releaseYear = movieDict.releaseYear;
 
     movieDict.titleSortable = titleSortable;

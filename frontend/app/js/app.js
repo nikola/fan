@@ -36,7 +36,6 @@ ka.state = {
 function boot() {
     ka.lib.registerShortcuts();
 
-
     $.ajax({
         url: '/movies/all',
         success: function (list) {
@@ -45,16 +44,15 @@ function boot() {
                 ka.lib.addMovieToCortex(list[index]);
             }
             ka.lib.recalcMovieGrid();
-            // ka.lib.redrawMovieGrid();
-            // ka.data.cortex.all.forEach(function (item, index) { console.log(item.titleOriginal.getValue(), '->', item.titleSortable.getValue())})
+            ka.lib.redrawMovieGridFull();
+
+            ka.state.socketDispatcher = new ka.lib.WebSocketDispatcher('wss://127.0.0.1:' + WEBSOCKET_PORT + '/');
+            ka.state.socketDispatcher.bind('receive:movie:item', function (movie) {
+                /* ka.lib.addMovieToCortex(movie);
+                ka.lib.recalcMovieGrid();
+                ka.lib.redrawMovieGridPartial() */
+            });
         }
-    });
-
-
-    var dispatcher = new ka.lib.WebSocketDispatcher('wss://127.0.0.1:' + WEBSOCKET_PORT + '/');
-    dispatcher.bind('receive:movie:item', function (record) {
-        // ka.lib.addMovieInCortex(record);
-        // console.log(record)
     });
 }
 
@@ -67,8 +65,6 @@ document.oncontextmenu = function (event) {
 document.addEventListener('DOMContentLoaded', function(event) {
     /* Notify backend that UI is ready. */
     $.ajax({url: BOOT_TOKEN, type: 'PATCH', success: boot});
-
-
 
     /*
     setTimeout(function () {

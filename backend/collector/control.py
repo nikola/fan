@@ -156,7 +156,7 @@ def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
                             movie = collectorStreamManager.addMovieStream(movieRecord, streamLocation)
                             # else:
                             #     movie = None
-                            time.sleep(0.35)
+
 
                             # TODO: also create ImageManager() here and write dummy entry containing the GUID of movie
                             # then pass along GUID via web socket

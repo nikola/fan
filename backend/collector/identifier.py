@@ -69,6 +69,7 @@ def identifyMovieByTitleYear(language, territory, title, year):
         if not len(results):
             time.sleep(0.35)
             results = themoviedb.searchMovie(query=title.encode('utf-8'), locale=locale)
+        time.sleep(0.35)
 
         if len(results):
             result = results[0]

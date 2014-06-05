@@ -159,10 +159,11 @@ def start(userAgent, httpPort, websocketPort, callback, bridgeToken, frontendTok
     wndclass = win32gui.WNDCLASS()
     wndclass.hInstance = win32api.GetModuleHandle(None)
     wndclass.lpszClassName = className
-    wndclass.style = 0 # win32con.CS_NOCLOSE # win32con.CS_VREDRAW | win32con.CS_HREDRAW
+    wndclass.style = win32con.CS_NOCLOSE | win32con.CS_VREDRAW | win32con.CS_HREDRAW
     # wndclass.hbrBackground = win32gui.GetStockObject(win32con.WHITE_BRUSH)
     wndclass.hbrBackground = getColorBrush()
-    wndclass.hCursor = win32gui.LoadCursor(0, win32con.IDC_ARROW)
+    # wndclass.hCursor = win32gui.LoadCursor(0, win32con.IDC_ARROW)
+    wndclass.hCursor = win32gui.SetCursor(None)
     wndclass.lpfnWndProc = {
         win32con.WM_CLOSE: CloseWindow,
         win32con.WM_DESTROY: QuitApplication,

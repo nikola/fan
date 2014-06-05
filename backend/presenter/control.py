@@ -216,7 +216,8 @@ def start(userAgent, httpPort, websocketPort, callback, bridgeToken, frontendTok
     browser = cefpython.CreateBrowserSync(
         windowInfo,
         CEF_BROWSER_SETTINGS,
-        navigateUrl='https://127.0.0.1:%d/' % httpPort,
+        # navigateUrl='https://127.0.0.1:%d/' % httpPort,
+        navigateUrl='http://127.0.0.1:%d/' % httpPort,
     )
 
     clientHandler = ClientHandler()

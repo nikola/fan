@@ -43,7 +43,8 @@ def _startHttpServer(queue, httpPort, websocketPort, certificateFile, userAgent,
     app.add('', appRoutes)
 
     sslOptions = dict(do_handshake_on_connect=False, server_side=True, certfile=certificateFile, ssl_version=3, ciphers=ENFORCED_CIPHERS)
-    HTTPServer(proxy).startSSL(sslOptions).listen(('', httpPort))
+    # HTTPServer(proxy).startSSL(sslOptions).listen(('', httpPort))
+    HTTPServer(proxy).listen(('', httpPort))
 
     engine = HttpServerEngine.instance()
 

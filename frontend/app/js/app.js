@@ -34,7 +34,7 @@ ka.state = {
   , detachedGridCells: {}
   , gridLookupMatrix: {}
   , gridLookupItemsPerLine: []
-  , gridLookupLinesByKey: {}
+  , gridLookupLinesByKey: {} // TODO: needed?
 };
 
 
@@ -47,10 +47,6 @@ function boot() {
             var index = list.length;
             while (index--) {
                 var movie = list[index];
-                /* if (movie.titleOriginal == 'A Good Day to Die Hard') {
-                    console.log(movie);
-                    continue
-                } */
                 ka.lib.addMovieToCortex(list[index]);
             }
             ka.lib.recalcMovieGrid();
@@ -58,19 +54,9 @@ function boot() {
 
             ka.state.socketDispatcher = new ka.lib.WebSocketDispatcher('wss://127.0.0.1:' + WEBSOCKET_PORT + '/');
             ka.state.socketDispatcher.bind('receive:movie:item', function (movie) {
-                // console.log('item received: ' + movie.titleOriginal)
-                // console.log('adding ' + movie.titleOriginal + ' to cortex ...')
                 ka.lib.addMovieToCortex(movie);
-                // console.log('added ' + movie.titleOriginal)
-                // console.log('recalcing ' + movie.titleOriginal + ' ...')
                 ka.lib.recalcMovieGrid();
-                // console.log('recalced ' + movie.titleOriginal)
-
-                // console.log(ka.state.gridLookupMatrix)
-
-                // console.log('updating grid with ' + movie.titleOriginal)
                 ka.lib.updateMovieGrid();
-                // console.log('updated ' + movie.titleOriginal)
             });
         }
     });

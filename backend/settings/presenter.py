@@ -43,20 +43,24 @@ CEF_APP_SETTINGS = {
     'multi_threaded_message_loop': False,
     'ignore_certificate_errors':   True,
     'log_file':                    '',
-    'locale':                      'he',
+    'locale':                      'blink',
 }
 
 CEF_BROWSER_SETTINGS = dict(
     # default_encoding = "",
-    universal_access_from_file_urls_allowed = True,
-    file_access_from_file_urls_allowed = True,
+    universal_access_from_file_urls_allowed = False,
+    file_access_from_file_urls_allowed = False,
     javascript_open_windows_disallowed = True,
     javascript_close_windows_disallowed = True,
     javascript_access_clipboard_disallowed = True,
+    dom_paste_disabled = True,
     java_disabled = True,
     plugins_disabled = True,
     text_area_resize_disabled = True,
     application_cache_disabled = True,
+    databases_disabled = True,
+    local_storage_disabled = True,
+    tab_to_links_disabled = True,
     # pack_loading_disabled = True,
 )
 

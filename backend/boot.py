@@ -82,7 +82,7 @@ if __name__ == '__main__':
         # END DEBUG
         server = startServer(interProcessQueue, httpPort, websocketPort, certificateLocation, userAgent, frontendToken)          # TODO: token here!
 
-        # Start blocking presenter process.
+        # Start the blocking presenter process.
         present(userAgent, httpPort, websocketPort, _shutdown, bridgeToken, frontendToken)
     except (KeyboardInterrupt, SystemError):
         # streamManager.shutdown()

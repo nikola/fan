@@ -4,21 +4,22 @@
 __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
-from sqlalchemy import ForeignKey, Column, Integer, SmallInteger, LargeBinary, String
+from sqlalchemy import ForeignKey, Column, Integer, SmallInteger, LargeBinary, String, Enum
 from sqlalchemy.orm import relationship, backref
 
-from models import Base
+from models import Base, createNamedTuple
 
 
 class Image(Base):
     __tablename__ = 'images'
 
     id = Column(Integer, primary_key=True)
+    imageType = Column(Enum(*createNamedTuple('Poster', 'Backdrop')._asdict().values()), nullable=False)
     idTheMovieDb = Column(Integer)
+    movieId = Column(Integer, ForeignKey('movies.id'))
     width = Column(SmallInteger)
     primaryColor = Column(String(length=6, convert_unicode=False))
     blob = Column(LargeBinary)
-    movieId = Column(Integer, ForeignKey('movies.id'))
 
     movie = relationship('Movie', backref=backref('images', order_by=id))
 

@@ -63,26 +63,12 @@ def serveRoot(request):
         return html, 203
 
 
-"""
-@module.route('<string:filename>.png', methods=('GET',), headers=SERVER_HEADERS, content_type='image/png')
-def serveImage(request, filename):
-    pathname = os.path.join(PROJECT_PATH, 'frontend', 'app', 'img', '%s.png' % filename)
-    if os.path.exists(pathname):
-        with open(pathname, 'rb') as fp: content = fp.read()
-        return content, 203
-    else:
-        request.finish()
-        request.connection.close()
-"""
-
-
-# @module.route("/movie/poster/<regex('([a-z0-9]{32})'):identifier>.jpg/<int:width>", methods=('GET',), headers=SERVER_HEADERS, content_type='image/jpeg')
-@module.route("/movie/poster/<string(length=32):identifier>.jpg/<int:width>", methods=('GET',), headers=SERVER_HEADERS, content_type='image/jpeg')
+@module.route('/movie/poster/<string(length=32):identifier>.jpg/<int:width>', methods=('GET',), headers=SERVER_HEADERS, content_type='image/jpeg')
 def serveMoviePoster(request, identifier, width):
     themoviedb.set_key(THEMOVIEDB_API_KEY)
     themoviedb.set_cache('null')
 
-    blob = module.serverStreamManager.getImageBlobById(identifier)
+    blob = module.serverStreamManager.getImageBlobByUuid(identifier)
     if blob is None:
         movie = themoviedb.Movie(module.serverStreamManager.getMovieByUuid(identifier).idTheMovieDb)
         poster = movie.poster
@@ -93,12 +79,22 @@ def serveMoviePoster(request, identifier, width):
         if int(size[1:]) < width:
             size = sizes[sizes.index(size) + 1]
         blob = requests.get(poster.geturl(size), headers={'User-agent': CEF_REAL_AGENT}).content
-        module.serverStreamManager.saveImageData(identifier, size[1:], blob)
+        module.serverStreamManager.saveImageData(identifier, size[1:], blob, 'Poster')
 
     # image = Image.open(StringIO(blob))
     # image.thumbnail(200, Image.ANTIALIAS) -> maximum height of 200px
     # blob = StringIO()
     # image.save(blob, 'JPEG')
+
+    return blob, 203
+
+
+@module.route('/movie/backdrop/<string(length=32):identifier>.jpg', methods=('GET',), headers=SERVER_HEADERS, content_type='image/jpeg')
+def serveMoviebackdrop(request, identifier):
+    blob = module.serverStreamManager.getImageBlobByUuid(identifier, 'Backdrop')
+    if blob is None:
+        blob = requests.get(module.serverStreamManager.getMovieByUuid(identifier).urlBackdrop, headers={'User-agent': CEF_REAL_AGENT}).content
+        module.serverStreamManager.saveImageData(identifier, 1920, blob, 'Backdrop')
 
     return blob, 203
 

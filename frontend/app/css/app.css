@@ -23,16 +23,8 @@ body {
     }
 
 #content {
-    margin-left: 100px;
-
     width: 1920px; height: 1080px;
 
-    position: absolute; top: 0; left: 0;
-
-    -webkit-transition: -webkit-transform 720ms ease-out;
-    -webkit-transform-style: preserve-3d;
-
-    font-size: 0;
     background-color: black;
     }
 

@@ -105,7 +105,7 @@ ka.lib.updateMovieGrid = function () {
                 ka.state.gridLookupItemsPerLine[row] = column + 1;
             }
             if (!hasCells || currentCellIndex >= renderedCells.length) {
-                ka.lib.renderMovieGridCell(movie, 'appendTo', $('#content'));
+                ka.lib.renderMovieGridCell(movie, 'appendTo', $('#boom-movie-grid-container'));
             } else {
                 if (renderedCells.eq(currentCellIndex).hasClass('empty')) {
                     ka.lib.renderMovieGridCell(movie, 'replaceWith', renderedCells.eq(currentCellIndex));
@@ -122,8 +122,11 @@ ka.lib.updateMovieGrid = function () {
         }
     }
 
-    if (ka.state.gridLookupMatrix.length && $('#boom-poster-focus').css('display') == 'none') {
-        $('#boom-poster-focus').velocity('fadeIn', 1440);
+    if (ka.state.gridLookupMatrix.length) {
+        ka.lib.updateDetailPage();
+        if ($('#boom-poster-focus').css('display') == 'none') {
+            $('#boom-poster-focus').velocity('fadeIn', 720);
+        }
     }
 };
 
@@ -172,10 +175,10 @@ function disabled() {
                                     + '</td>'
                                 + '</tr>'
                           + '</table>'
-                        ).appendTo('#content'); */
+                        ).appendTo('#boom-movie-grid-container'); */
 
                         // var table = $('<table id="boom-movie-grid-table-' + key + '-' + tablesPerKey + '" class="boom-movie-grid-table"></table>')
-                        //     .appendTo('#content');
+                        //     .appendTo('#boom-movie-grid-container');
 
                         lastFilledLines = 0;
                     }
@@ -232,7 +235,7 @@ function disabled() {
 
                 if (itemsPerLine) {
                     for (var c = itemsPerLine; c < ka.config.gridMaxColumns; c++) {
-                        $('<div class="boom-movie-grid-item empty"></div>').appendTo('#content');
+                        $('<div class="boom-movie-grid-item empty"></div>').appendTo('#boom-movie-grid-container');
                         currentCellIndex++;
                     }
 
@@ -297,5 +300,5 @@ ka.lib.renderMovieGridCell = function (movie, operation, context) {
 
 
 ka.lib.scrollToPage = function (page) {
-    $('#content').css('-webkit-transform', 'translate3d(0, -' + page + '00%, 0)');
+    $('#boom-movie-grid-container').css('-webkit-transform', 'translate3d(0, -' + page + '00%, 0)');
 };

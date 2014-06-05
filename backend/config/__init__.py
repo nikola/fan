@@ -27,6 +27,7 @@ RESOURCES_SCRIPT = [
     'app/js/lib/receiver.js',
     'app/js/lib/shortcuts.js',
     'app/js/lib/grid.js',
+    'app/js/lib/detail.js',
     'app/js/lib/renderer.js',
     'app/js/app.js',
 ]
@@ -35,5 +36,6 @@ RESOURCES_STYLE = [
     'app/css/fonts.css',
     'app/css/app.css',
     'app/css/grid.css',
+    'app/css/detail.css',
     'app/css/animations.css',
 ]

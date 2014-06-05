@@ -7,6 +7,19 @@
 
 /* TODO: set all background-color to black to prevent transparent flicker while scrolling to end of grid */
 
+#boom-movie-grid-container {
+    width: 1920px; height: 1080px;
+
+    position: absolute; top: 0; left: 0;
+
+    margin-left: 100px;
+
+    -webkit-transition: -webkit-transform 720ms ease-out;
+    -webkit-transform-style: preserve-3d;
+
+    font-size: 0;
+    }
+
 #boom-poster-focus {
     display: none;
 

@@ -13,22 +13,12 @@ ka.lib.registerShortcuts = function () {
         var listener = new window.keypress.Listener();
 
     listener.register_combo({
-        keys: 'enter'
-      , on_keyup: function () {
-            var pages = $('section'),
-                notVisible = pages.not(pages.eq(ka.state.gridPage));
-            notVisible.css('display', 'none');
-            $('#content').css('-webkit-transform', 'translate3d(0, 0%, 0)');
-            $('#content').velocity({left: '-=1920'}, 1000);
-        }
-    });
-
-    listener.register_combo({
         keys: 'home'
       , on_keyup: function () {
             if (ka.state.gridPage > 0) {
                 ka.state.gridPage = 0;
                 ka.lib.scrollToPage(ka.state.gridPage);
+                ka.lib.updateDetailPage();
             }
         }
     });
@@ -39,6 +29,7 @@ ka.lib.registerShortcuts = function () {
             if (ka.state.gridPage + 1 < ka.state.gridTotalPages) {
                 ka.state.gridPage = ka.state.gridTotalPages - 1;
                 ka.lib.scrollToPage(ka.state.gridPage);
+                ka.lib.updateDetailPage();
             }
         }
     });
@@ -49,6 +40,7 @@ ka.lib.registerShortcuts = function () {
             if (ka.state.gridPage > 0) {
                 ka.state.gridPage -= 1;
                 ka.lib.scrollToPage(ka.state.gridPage);
+                ka.lib.updateDetailPage();
             }
         }
     });
@@ -59,6 +51,7 @@ ka.lib.registerShortcuts = function () {
             if (ka.state.gridPage + 1 < ka.state.gridTotalPages) {
                 ka.state.gridPage += 1;
                 ka.lib.scrollToPage(ka.state.gridPage);
+                ka.lib.updateDetailPage();
             }
         }
     });
@@ -72,7 +65,7 @@ ka.lib.registerShortcuts = function () {
                 notFirstRow = ka.state.gridFocusY > 0,
                 notFirstPage = ka.state.gridPage > 0;
 
-            if (notFirstRow || notFirstPage > 0) {
+            if (notFirstRow || notFirstPage) {
                 if (ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY - 1] > ka.state.gridFocusX) { /* Focus can stay in same column. */
                     if (notFirstRow) {
                         ka.state.gridFocusY -= 1;
@@ -96,6 +89,7 @@ ka.lib.registerShortcuts = function () {
                         ka.lib.scrollToPage(ka.state.gridPage);
                     }
                 }
+                ka.lib.updateDetailPage();
             }
         }
     });
@@ -132,6 +126,7 @@ ka.lib.registerShortcuts = function () {
                     }
                 }
             }
+            ka.lib.updateDetailPage();
         }
     });
 
@@ -146,6 +141,7 @@ ka.lib.registerShortcuts = function () {
                 $('#boom-poster-focus').velocity({left: '-=260'}, {
                     duration: 260
                 });
+                ka.lib.updateDetailPage();
             }
         }
     });
@@ -162,6 +158,7 @@ ka.lib.registerShortcuts = function () {
                 $('#boom-poster-focus').velocity({left: '+=260'}, {
                     duration: 260
                 });
+                ka.lib.updateDetailPage();
             }
         }
     });
@@ -171,6 +168,15 @@ ka.lib.registerShortcuts = function () {
       , on_keydown: function () {
             var uuid = ka.state.gridLookupMatrix[ka.config.gridMaxRows * ka.state.gridPage + ka.state.gridFocusY][ka.state.gridFocusX].uuid;
             $('#boom-poster-' + uuid).eq(0).closest('.boom-movie-grid-info-overlay').toggleClass('active');
+        }
+    });
+
+    listener.register_combo({
+        keys: 'enter'
+      , on_keyup: function () {
+            // var uuid = ka.state.gridLookupMatrix[ka.config.gridMaxRows * ka.state.gridPage + ka.state.gridFocusY][ka.state.gridFocusX].uuid;
+
+            $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({left: '-=1920'}, 1000);
         }
     });
 

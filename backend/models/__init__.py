@@ -154,20 +154,20 @@ class StreamManager(object):
                 return stream.movie
 
 
-    def getImageBlobById(self, identifier):
+    def getImageBlobByUuid(self, identifier, imageType='Poster'):
         with self._session() as session:
             try:
-                movie = session.query(Movie).filter(Movie.uuid == identifier).one()
+                image = session.query(Image).filter(Image.movie.has(Movie.uuid == identifier), Image.imageType == imageType).first()
             except NoResultFound:
                 return None
             else:
-                if len(movie.images):
-                    return movie.images[0].blob
+                if image is not None:
+                    return image.blob
                 else:
                     return None
 
 
-    def saveImageData(self, identifier, width, blob):
+    def saveImageData(self, identifier, width, blob, imageType='Poster'):
         with self._session() as session:
             try:
                 movie = session.query(Movie).filter(Movie.uuid == identifier).one()
@@ -175,8 +175,8 @@ class StreamManager(object):
                 return None
             else:
                 image = Image(
+                    imageType = imageType,
                     movie = movie,
-                    # idTheMovieDb = identifier,
                     width = width,
                     blob = blob,
                 )

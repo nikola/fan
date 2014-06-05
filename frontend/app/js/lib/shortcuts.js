@@ -80,7 +80,7 @@ ka.lib.registerShortcuts = function () {
                     } else {
                         ka.state.gridFocusY = ka.config.gridMaxRows - 1;
                         ka.state.gridPage -= 1;
-                        $('#boom-poster-focus').velocity({top: '+=720'}, {duration: 720, easing: 'ease'});
+                        $('#boom-poster-focus').velocity({top: '+=720'}, {duration: 720, easing: 'ease-out'});
                         ka.lib.scrollToPage(ka.state.gridPage);
                     }
                 } else { /* Focus must drift to the left. */
@@ -115,7 +115,7 @@ ka.lib.registerShortcuts = function () {
                     } else {
                         ka.state.gridFocusY = 0;
                         ka.state.gridPage += 1;
-                        $('#boom-poster-focus').velocity({top: '-=720'}, {duration: 720, easing: 'ease'});
+                        $('#boom-poster-focus').velocity({top: '-=720'}, {duration: 720, easing: 'ease-out'});
                         ka.lib.scrollToPage(ka.state.gridPage);
                     }
                 } else { /* Focus must drift to the left. */

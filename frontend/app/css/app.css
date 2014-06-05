@@ -29,7 +29,7 @@ body {
 
     position: absolute; top: 0; left: 0;
 
-    -webkit-transition: -webkit-transform 720ms ease;
+    -webkit-transition: -webkit-transform 720ms ease-out;
     -webkit-transform-style: preserve-3d;
 
     font-size: 0;

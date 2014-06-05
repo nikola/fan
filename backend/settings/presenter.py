@@ -13,6 +13,7 @@ CEF_CMD_LINE_SETTINGS = {
     'disable-text-area-resize':             '',
     'disable-tab-to-links':                 '',
     # http://peter.sh/experiments/chromium-command-line-switches/
+    'no-proxy-server':                      '',
     'disable-breakpad':                     '',
     'disable-extensions':                   '',
     'disable-google-now-integration':       '',

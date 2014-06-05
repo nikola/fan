@@ -174,9 +174,14 @@ ka.lib.registerShortcuts = function () {
     listener.register_combo({
         keys: 'enter'
       , on_keyup: function () {
-            // var uuid = ka.state.gridLookupMatrix[ka.config.gridMaxRows * ka.state.gridPage + ka.state.gridFocusY][ka.state.gridFocusX].uuid;
+            $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({left: '-=1920'}, 720);
+        }
+    });
 
-            $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({left: '-=1920'}, 1000);
+    listener.register_combo({
+        keys: 'escape'
+      , on_keyup: function () {
+            $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({left: '+=1920'}, 720);
         }
     });
 

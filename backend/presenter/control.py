@@ -125,20 +125,16 @@ def start(userAgent, httpPort, websocketPort, callback, bridgeToken, frontendTok
     global shutdownAll
     shutdownAll = callback
 
-    # Import CEF Python library.
     global cefpython
     cefpython = imp.load_dynamic('cefpython_py27', os.path.join(PROJECT_PATH, 'backend', 'presenter', 'cef', 'libgfx.dll'))
 
-    # Memorize callback functions that must be executed before shutting down the CEF container.
-    # global onCloseCallbacks
-    # onCloseCallbacks = callbacks
-
     appSettings = CEF_APP_SETTINGS
     appSettings.update({
+        'cache_path':              r'C:\Users\Niko\AppData\Local\Generic Company\ka-boom\cache', # TODO: refactor to make this variable
         'log_severity':            cefpython.LOGSEVERITY_DISABLE,
-        'browser_subprocess_path': os.path.join(cefpython.GetModuleDirectory(), 'iexplore'),
+        'browser_subprocess_path': os.path.join(r'C:\Users\Niko\Documents\GitHub\ka-BOOM\backend\presenter\cef', 'iexplore'),
         'user_agent':              userAgent,
-        'locales_dir_path':        os.path.join(cefpython.GetModuleDirectory()), # TODO: replace this with known directory
+        'locales_dir_path':        r'C:\Users\Niko\Documents\GitHub\ka-BOOM\backend\presenter\cef', # TODO: replace this with known directory
     })
     if DEBUG:
         appSettings.update({

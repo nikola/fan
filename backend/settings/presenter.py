@@ -40,7 +40,6 @@ CEF_CMD_LINE_SETTINGS = {
 }
 
 CEF_APP_SETTINGS = {
-    'cache_path':                  '',
     'multi_threaded_message_loop': False,
     'ignore_certificate_errors':   True,
     'log_file':                    '',

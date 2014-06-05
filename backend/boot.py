@@ -16,6 +16,7 @@ from utils.system import isCompatiblePlatform, isNtfsFilesystem, getScreenResolu
 from utils.agent import getUserAgent
 from utils.net import getVacantPort, getCertificateLocation
 from collector.control import start as startCollector, stop as stopCollector
+from downloader.control import start as startDownloader, stop as stopDownloader
 from server.control import start as startServer, stop as stopServer
 from presenter.control import start as present
 
@@ -41,6 +42,7 @@ if __name__ == '__main__':
         # Presenter has been closed, now kick off clean-up tasks.
         stopServer()
         stopCollector()
+        stopDownloader()
 
         # Block until all queue items have been processed.
         interProcessQueue.join()
@@ -66,6 +68,8 @@ if __name__ == '__main__':
 
         # Omni-directional message queue between boot process, collector process and server process.
         interProcessQueue = InterProcessQueue()
+
+        downloader = startDownloader(interProcessQueue)
 
         # Start process, but spawn file watcher and stream manager only after receiving a kick off event from the presenter.
         websocketPort = getVacantPort()

@@ -12,7 +12,7 @@ from multiprocessing import JoinableQueue as InterProcessQueue, freeze_support
 from ctypes import windll
 
 from settings import DEBUG
-from utils.system import isCompatiblePlatform, isNtfsFilesystem
+from utils.system import isCompatiblePlatform, isNtfsFilesystem, getScreenResolution
 from utils.agent import getUserAgent
 from utils.net import getVacantPort, getCertificateLocation
 from collector.control import start as startCollector, stop as stopCollector
@@ -31,7 +31,9 @@ if __name__ == '__main__':
         windll.user32.MessageBoxA(0, 'This application must be run from an NTFS partition!', 'Error', 0)
         sys.exit()
 
-    # TODO: for now, check that screen resolution is 1920x1080
+    if getScreenResolution() != (1920, 1080):
+        windll.user32.MessageBoxA(0, 'This application must be run at 1920x1080 screen resolution!', 'Error', 0)
+        sys.exit()
 
     def _shutdown():
         print '_shutdown called'

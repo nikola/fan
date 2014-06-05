@@ -48,3 +48,7 @@ def isCompatiblePlatform():
 
 def isNtfsFilesystem():
     return bool(win32api.GetVolumeInformation(os.path.splitdrive(PROJECT_PATH)[0] + '/')[3] & 0x00040000) # FILE_NAMED_STREAMS
+
+
+def getScreenResolution():
+    return win32api.GetSystemMetrics(0), win32api.GetSystemMetrics(1)

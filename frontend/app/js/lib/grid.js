@@ -123,10 +123,13 @@ ka.lib.updateMovieGrid = function () {
     }
 
     if (ka.state.gridLookupMatrix.length) {
-        ka.lib.updateDetailPage();
-        if ($('#boom-poster-focus').css('display') == 'none') {
-            $('#boom-poster-focus').velocity('fadeIn', 720);
-        }
+        $('#content').waitForImages(function () {
+            $('#content').css('visibility', 'visible');
+            ka.lib.updateDetailPage();
+            // if ($('#boom-poster-focus').css('display') == 'none') {
+                $('#boom-poster-focus').velocity('fadeIn', 720);
+            // }
+        });
     }
 };
 

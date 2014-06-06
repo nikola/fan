@@ -13,4 +13,70 @@
     position: absolute; top: 0; left: 1920px;
 
     background-size: cover;
+
+    padding: 30px;
+    }
+
+#boom-movie-detail-shade {
+    width: 1920px; height: 1080px;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* position: absolute; */
+    margin: -30px 0 0 -30px;
+    z-index: 0;
+    }
+
+#boom-movie-detail-left {
+    z-index: 1000;
+    position: absolute;
+    }
+
+#boom-movie-detail-poster img {
+    display: block;
+    max-width: 300px;
+    max-height: 450px;
+    width: auto;
+    height: auto;
+
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 22px 70px 4px rgba(0,0,0,0.56), 0 0 0 1px rgba(0, 0, 0, 0.3);
+    }
+
+#boom-movie-detail-play-button {
+    margin: 30px 0 0 -2px;
+    width: 300px;
+    height: 45px;
+    border: 1px solid rgba(0,0,0,0.5);
+    border-radius: 2px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.5),
+                inset 1px 1px rgba(255,255,255,0.2),
+                inset 0 1px rgba(255,255,255,0.2),
+                inset 0 10px 20px rgba(255,255,255,0.25),
+                inset 0 -15px 30px rgba(0,0,0,0.3);
+    background: rgba(0,0,0,0.25);
+    text-align: center;
+    font-size: 30px;
+    line-height: 45px;
+    letter-spacing: 4px;
+    }
+
+#boom-movie-detail-right {
+    z-index: 1000;
+    position: absolute;
+
+    margin-left: 330px;
+    width: 1530px;
+    }
+
+#boom-movie-detail-title {
+    height: 90px;
+    font: 60px/90px Ka Boom;
+    text-shadow: 3px 3px 4px rgba(0, 0, 0, 0.75);
+    margin-left: -1px;
+    /* -webkit-text-stroke: 0.75px rgba(0, 0, 0, 0.25); */
+    }
+
+#boom-movie-detail-description {
+    font-size: 30px;
+    text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.75);
+    width: 1200px;
+    text-align: justify;
     }

@@ -22,11 +22,11 @@ class Variant(Base):
     movieId = Column(Integer, ForeignKey("movies.id"))
     movie = relationship("Movie", backref=backref("variants", order_by=id))
 
-    def __init__(self, locale, titleLocal, taglineLocal, overviewLocal, **kwargs):
+    def __init__(self, locale, titleLocal, taglineLocal, overview, **kwargs):
         self.locale = locale
         self.title = titleLocal
         self.tagline = taglineLocal
-        self.overview = overviewLocal
+        self.overview = overview
 
     def __repr__(self):
         return "<Variant('%s')>" % (self.id)

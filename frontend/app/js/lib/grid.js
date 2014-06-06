@@ -25,7 +25,6 @@ ka.lib.setPrimaryPosterColor = function () {
 ka.lib.recalcMovieGrid = function () {
     ka.state.gridLookupMatrix = [];
     ka.state.gridLookupLinesByKey = {};
-    // ka.state.gridTotalPages = 1;
 
     var currentRowIndex = 0, currentColumnIndex, currentCellIndex = 0,
         keys = ka.config.gridKeys[ka.config.gridSortOrder], keyCount = keys.length;
@@ -63,24 +62,18 @@ ka.lib.recalcMovieGrid = function () {
                     }
 
                     if (currentRowIndex == ka.config.gridMaxRows) {
-                        // ka.state.gridTotalPages += 1;
                         currentRowIndex = 0;
                     }
                 }
-
-
 
                 if (currentColumnIndex) {
                     for (; currentColumnIndex < ka.config.gridMaxColumns; currentColumnIndex++) {
                         ka.state.gridLookupMatrix[ka.state.gridLookupMatrix.length - 1][currentColumnIndex] = null;
                         currentCellIndex++;
                     }
-                    // currentCellIndex += (ka.config.gridMaxColumns - currentColumnIndex);
-
                     currentRowIndex++;
 
                     if (currentRowIndex == ka.config.gridMaxRows) {
-                        // ka.state.gridTotalPages += 1;
                         currentRowIndex = 0;
                     }
                 }
@@ -123,17 +116,13 @@ ka.lib.updateMovieGrid = function () {
     }
 
     if (ka.state.gridLookupMatrix.length) {
-        $('#content').waitForImages(function () {
+        // $('#content').waitForImages(function () { // TODO: crap, will wait forever when new movies have been detected !!!
+            $('.spinner').remove();
             $('#content').css('visibility', 'visible');
             ka.lib.updateDetailPage();
             $('#boom-poster-focus').velocity('fadeIn', 720);
-        });
+        // });
     }
-};
-
-
-ka.lib.redrawMovieGridPartial = function () {
-
 };
 
 
@@ -253,9 +242,6 @@ function disabled() {
 
     /* Update height of last indicator. */
     // groupNameElement.css('height', lastFilledLines * 360);
-
-    // TODO: fade in
-    $('#boom-poster-focus').css('display', 'block');
 };
 
 

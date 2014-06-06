@@ -17,6 +17,7 @@ from utils.agent import getUserAgent
 from utils.net import getVacantPort, getCertificateLocation
 from collector.control import start as startCollector, stop as stopCollector
 from downloader.control import start as startDownloader, stop as stopDownloader
+from player.control import start as startPlayer, stop as stopPlayer
 from server.control import start as startServer, stop as stopServer
 from presenter.control import start as present
 
@@ -43,6 +44,7 @@ if __name__ == '__main__':
         stopServer()
         stopCollector()
         stopDownloader()
+        stopPlayer()
 
         # Block until all queue items have been processed.
         interProcessQueue.join()
@@ -51,6 +53,8 @@ if __name__ == '__main__':
         # Gracefully stop processes.
         server.join()
         collector.join()
+        downloader.join()
+        player.join()
 
         os.remove(certificateLocation)
 
@@ -68,6 +72,8 @@ if __name__ == '__main__':
 
         # Omni-directional message queue between boot process, collector process and server process.
         interProcessQueue = InterProcessQueue()
+
+        player = startPlayer(interProcessQueue)
 
         downloader = startDownloader(interProcessQueue)
 

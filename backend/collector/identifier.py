@@ -82,7 +82,7 @@ def identifyMovieByTitleYear(language, territory, title, year):
                 idImdb        = result.imdb,
                 idTheMovieDb  = result.id,
                 taglineLocal  = result.tagline,
-                overviewLocal = result.overview,
+                overview      = result.overview,
                 runtime       = result.runtime or None,
                 budget        = result.budget or None,
                 revenue       = result.revenue or None,

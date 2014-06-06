@@ -154,10 +154,74 @@ class StreamManager(object):
                 return stream.movie
 
 
+    def startPosterDownload(self, identifier):
+         with self._session() as session:
+            try:
+                movie = session.query(Movie).filter(Movie.uuid == identifier).one()
+            except NoResultFound:
+                pass
+            else:
+                movie.isPosterDownloading = True
+                session.commit()
+
+
+    def isPosterDownloading(self, identifier):
+         with self._session() as session:
+            try:
+                movie = session.query(Movie).filter(Movie.uuid == identifier).one()
+            except NoResultFound:
+                return None
+            else:
+                return movie.isPosterDownloading
+
+
+    def endPosterDownload(self, identifier):
+         with self._session() as session:
+            try:
+                movie = session.query(Movie).filter(Movie.uuid == identifier).one()
+            except NoResultFound:
+                pass
+            else:
+                movie.isPosterDownloading = False
+                session.commit()
+
+
+    def startBackdropDownload(self, identifier):
+         with self._session() as session:
+            try:
+                movie = session.query(Movie).filter(Movie.uuid == identifier).one()
+            except NoResultFound:
+                pass
+            else:
+                movie.isBackdropDownloading = True
+                session.commit()
+
+
+    def isBackdropDownloading(self, identifier):
+         with self._session() as session:
+            try:
+                movie = session.query(Movie).filter(Movie.uuid == identifier).one()
+            except NoResultFound:
+                return None
+            else:
+                return movie.isBackdropDownloading
+
+
+    def endBackdropDownload(self, identifier):
+         with self._session() as session:
+            try:
+                movie = session.query(Movie).filter(Movie.uuid == identifier).one()
+            except NoResultFound:
+                pass
+            else:
+                movie.isBackdropDownloading = False
+                session.commit()
+
+
     def getImageBlobByUuid(self, identifier, imageType='Poster'):
         with self._session() as session:
             try:
-                image = session.query(Image).filter(Image.movie.has(Movie.uuid == identifier), Image.imageType == imageType).first()
+                image = session.query(Image).filter(Image.movie.has(Movie.uuid == identifier), Image.imageType == imageType).one()
             except NoResultFound:
                 return None
             else:
@@ -174,25 +238,32 @@ class StreamManager(object):
             except NoResultFound:
                 return None
             else:
-                image = Image(
-                    imageType = imageType,
-                    movie = movie,
-                    width = width,
-                    blob = blob,
-                )
-                session.add(image)
-                session.commit()
+                try:
+                    duplicate = session.query(Image).filter(Image.movie.has(Movie.uuid == identifier), Image.imageType == imageType).one()
+                except NoResultFound:
+                    print 'no duplicate found in DB'
+                    image = Image(
+                        imageType = imageType,
+                        movie = movie,
+                        width = width,
+                        blob = blob,
+                    )
+                    session.add(image)
+                    session.commit()
+                else:
+                    print 'duplicate found in DB'
 
 
     def getAllMovies(self):
         with self._session() as session:
             movies = []
-            for movie in session.query(Movie).values(Movie.uuid, Movie.titleOriginal, Movie.releaseYear, Movie.runtime):
+            for movie in session.query(Movie).values(Movie.uuid, Movie.titleOriginal, Movie.releaseYear, Movie.runtime, Movie.overview):
                 movies.append({
                     'uuid': movie[0],
                     'titleOriginal': movie[1],
                     'releaseYear': movie[2],
                     'runtime': movie[3],
+                    'overview': movie[4],
                 })
             return movies
             # return list(session.query(Movie).values(
@@ -215,6 +286,15 @@ class StreamManager(object):
                     'releaseYear': movie[2],
                     'runtime': movie[3],
                 }
+
+    def getStreamLocationByMovie(self, identifier):
+        with self._session() as session:
+            try:
+                movie = session.query(Movie).filter(Movie.uuid == identifier).one()
+            except NoResultFound:
+                return None
+            else:
+                return movie.streams[0].location
 
 
     def _persist(self):

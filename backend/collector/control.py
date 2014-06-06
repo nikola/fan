@@ -25,51 +25,40 @@ from collector.identifier import identifyMovieByTitleYear
 
 class Publisher(WebSocket):
 
-    def __init__(self, request, userAgent, bridgeToken, *args):
-        # print '__init__', args
+    def __init__(self, queue, request, userAgent, bridgeToken, *args):
+        self.queue = queue
         self.userAgent = userAgent
         self.bridgeToken = bridgeToken
 
         super(Publisher, self).__init__(request)
 
     def on_handshake(self, request, headers=SERVER_HEADERS):
-        # print 'on_handshake'
-
         return DEBUG or (request.is_secure and request.protocol == 'HTTP/1.1' and request.headers.get('User-Agent', None) == self.userAgent)
 
-
     def on_connect(self, *args):
-        # print 'on_connect'
         self.ping() # data=self.bridgeToken)
 
-
     def on_pong(self, data):
-        # print 'data ponged:', data
         global publisherInstance
         publisherInstance = self
         # print 'sending:', repr(self.bridgeToken)
         # self.write(unicode(self.bridgeToken), flush=True)
 
-
     def on_read(self, data):
-        # print 'on_read'
-        self.write(data)
-
+        command, payload = json.loads(data)
+        if command == 'movie:play':
+            self.queue.put('player:play:%s' % payload)
 
     def on_close(self):
         pass
         # print 'on_close'
         # self.close(flush=True)
-        # global publisherInstance
-        # publisherInstance = None
 
 
 def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
 
-    # streamManager = StreamManager()
-
     def proxy(request):
-        Publisher(request, userAgent, bridgeToken)
+        Publisher(queue, request, userAgent, bridgeToken)
 
     logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s - %(message)s',
@@ -98,6 +87,7 @@ def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
             command = queue.get_nowait()
             if command == 'collector:start':
                 if collectorStreamManager is None:
+                    # print 'is publisher ready?', publisherInstance
                     collectorStreamManager = StreamManager()
 
                     # TODO: remove !!!

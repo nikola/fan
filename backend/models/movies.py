@@ -4,7 +4,7 @@
 __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
-from sqlalchemy import Table, ForeignKey, Column, SmallInteger, Integer, BigInteger, String, Unicode
+from sqlalchemy import Table, ForeignKey, Column, SmallInteger, Integer, BigInteger, String, Unicode, Boolean
 from sqlalchemy.orm import relationship
 
 from models import Base, GUID, createUuid # , DictSerializable
@@ -48,13 +48,16 @@ class Movie(Base):
     idImdb = Column(String)
     idTheMovieDb = Column(Integer)
     titleOriginal = Column(Unicode)
+    overview = Column(Unicode)
     runtime = Column(SmallInteger)
     budget = Column(Integer)
     revenue = Column(BigInteger)
     homepage = Column(String)
     releaseYear = Column(SmallInteger)
     urlBackdrop = Column(String)
+    isBackdropDownloading = Column(Boolean, default=False)
     urlPoster = Column(String)
+    isPosterDownloading = Column(Boolean, default=False)
 
     # Many-to-many Movies <-> Genres.
     genres = relationship('Genre', secondary=movie_genres, backref='movies')

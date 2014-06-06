@@ -27,7 +27,8 @@ ka.config = {
 };
 
 ka.state = {
-    gridFocusX: 0
+    currentPageMode: 'grid'
+  , gridFocusX: 0
   , gridFocusY: 0
   , gridPage: 0
   , gridTotalPages: 0

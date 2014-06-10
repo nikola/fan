@@ -69,7 +69,9 @@ document.oncontextmenu = function (event) {
 };
 
 
-document.addEventListener('DOMContentLoaded', function(event) {
+$(document).ready(function () {
+    ka.state.maxDetailButton = $('.boom-detail-button').length;
+
     /* Notify backend that UI is ready. */
     $.ajax({url: BOOT_TOKEN, type: 'PATCH', success: boot});
 

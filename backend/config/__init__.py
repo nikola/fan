@@ -23,6 +23,7 @@ RESOURCES_SCRIPT = [
     'vendor/jquery/jquery.waitforimages.min.js',
     'vendor/misc/color-thief.min.js',
     'vendor/misc/keypress.min.js',
+    'vendor/velocity/velocity.ui.js',
     'app/js/lib/sockets.js',
     'app/js/lib/colors.js',
     'app/js/lib/receiver.js',

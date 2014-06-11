@@ -21,6 +21,7 @@ from settings.net import SERVER_HEADERS, ENFORCED_CIPHERS
 from models import StreamManager
 from collector.extractor import getMoviePathnames, getBaseDataFromDirName
 from collector.identifier import identifyMovieByTitleYear
+from utils.net import getLongUncPathname
 
 
 class Publisher(WebSocket):
@@ -70,7 +71,11 @@ def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
 
     event_handler = LoggingEventHandler()
     streamWatcher = Observer()
-    streamWatcher.schedule(event_handler, r'M:\\', recursive=True)
+    # try:
+    streamWatcher.schedule(event_handler, getLongUncPathname(r'\\DiskStation\Movies'), recursive=True) # TODO: make this safer
+    # except WindowsError:
+    #     pass
+
     collectorStreamManager = None
     streamGenerator = None
 
@@ -82,9 +87,12 @@ def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
 
     engine = Engine.instance()
 
+
+
     while True:
         try:
             command = queue.get_nowait()
+
             if command == 'collector:start':
                 if collectorStreamManager is None:
                     # print 'is publisher ready?', publisherInstance
@@ -93,25 +101,32 @@ def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
                     # TODO: remove !!!
                     # collectorStreamManager.deleteStreams()
 
-
-                    streamGenerator = getMoviePathnames(r'M:\\')
+                    # TODO: refer to pathname as \\Server\Share
+                    streamGenerator = getMoviePathnames(getLongUncPathname(r'\\Diskstation\Movies'))
 
                     streamWatcher.start()
 
                 queue.task_done()
             elif command == 'collector:stop':
+                print 'collector:stop received'
                 if collectorStreamManager is not None:
+                    print 'stopping streamWatcher'
                     streamWatcher.stop()
                     streamWatcher.join()
+                    print 'stopped streamWatcher!'
 
                 if engine is not None and collectorStreamManager is not None:
+                    print 'attempting to close publisherInstance'
                     publisherInstance.close()
                     publisherInstance = None
                     engine.stop()
                     engine = None
+                    print 'closed publisherInstance'
 
                 if collectorStreamManager is not None:
+                    print 'attempting to shut down collector stream manager ...'
                     collectorStreamManager.shutdown()
+                    print '... shut down collector stream manager!'
 
                 queue.task_done()
                 break
@@ -133,6 +148,7 @@ def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
 
 
                     for filename in files:
+                        # print 'processing file'
                         streamLocation = os.path.join(path, filename)
 
                         # if collectorStreamManager.isStreamKnown(streamLocation):
@@ -203,4 +219,5 @@ def start(*args):
 
 def stop():
     global globalInterProcessQueue
+    print 'putting collector:stop ...'
     globalInterProcessQueue.put('collector:stop')

@@ -57,7 +57,9 @@ def _startHttpServer(queue, httpPort, websocketPort, certificateFile, userAgent,
                     engine.stop()
                     engine = None
 
+                print 'attempting to shut down server stream manager ...'
                 serverStreamManager.shutdown()
+                print '... shut down server stream manager!'
 
                 queue.task_done()
                 break

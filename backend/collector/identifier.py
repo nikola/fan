@@ -1,30 +1,7 @@
 # coding: utf-8
 """
-"""
-__author__ = 'Nikola Klaric (nikola@generic.company)'
-__copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
-
-import os
-import time
-import httplib
-import socket
-
-import tmdb3 as themoviedb
-from babel import Locale as BabelLocale
-
-from settings.collector import THEMOVIEDB_API_KEY
-from utils.win32 import getAppStoragePathname
 
 
-
-def identifyMovieByTitleYear(language, territory, title, year):
-    socket.setdefaulttimeout(5)
-
-    themoviedb.set_key(THEMOVIEDB_API_KEY)
-    themoviedb.set_cache('null') # filename=os.path.join(getAppStoragePathname(), 'tmdb3.cache'))
-
-
-    """
 
 
     https://github.com/ahmetabdi/themoviedb
@@ -59,37 +36,105 @@ def identifyMovieByTitleYear(language, territory, title, year):
     studios = Datalist('production_companies', handler=Studio)
     countries = Datalist('production_countries', handler=Country)
     languages = Datalist('spoken_languages', handler=Language)
-    """
+
+"""
+__author__ = 'Nikola Klaric (nikola@generic.company)'
+__copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
+
+# import os
+import time
+# import httplib
+# import socket
+import datetime
+import logging
+
+# import requests
+# import tmdb3 as themoviedb
+# from babel import Locale as BabelLocale
+
+from settings.collector import THEMOVIEDB_API_KEY
+from utils.net import makeThrottledGetRequest
+# from utils.win32 import getAppStoragePathname
+
+# IMAGE_BASE_URL = None
+
+# LAST_TMDB_ACCESS = time.clock()
+
+# Don't be too chatty on the console.
+# REQUESTS_LOGGER = logging.getLogger('urllib3')
+# REQUESTS_LOGGER.setLevel(logging.CRITICAL)
+# REQUESTS_LOGGER = logging.getLogger('requests.packages.urllib3')
+# REQUESTS_LOGGER.setLevel(logging.CRITICAL)
+# REQUESTS_LOGGER.propagate = True
+
+
+def getImageBaseUrl():
+    print 'called getImageBaseUrl()'
+
+    # global IMAGE_BASE_URL
+    # if IMAGE_BASE_URL is None:
+    url = 'https://api.themoviedb.org/3/configuration'
+    # response = requests.get(url, params={'api_key': THEMOVIEDB_API_KEY}, timeout=5)
+    response = makeThrottledGetRequest(url, params={'api_key': THEMOVIEDB_API_KEY})
+    configuration = response.json()
+    return configuration.get('images').get('secure_base_url')
+    # return IMAGE_BASE_URL
+
+
+def identifyMovieByTitleYear(language, territory, title, year):
     record = None
 
-    try:
-        # Search movie by title and year. Omit year in retry.
-        locale = themoviedb.locales.Locale(language, territory, encoding='iso-8859-1')
-        results = themoviedb.searchMovie(query=title.encode('utf-8'), locale=locale, year=year)
-        if not len(results):
-            time.sleep(0.35)
-            results = themoviedb.searchMovie(query=title.encode('utf-8'), locale=locale)
-        time.sleep(0.35)
+    # try:
+    url = 'https://api.themoviedb.org/3/search/movie'
+    params = {
+        'api_key': THEMOVIEDB_API_KEY,
+        'query': title.encode('utf-8'),
+        'page': 1,
+        'language': 'en',
+        'include_adult': False,
+        'primary_release_year': year,
+    }
+    # response = requests.get(url, params=params, timeout=5).json()
+    response = makeThrottledGetRequest(url, params).json()
+    if response['total_results'] == 0:
+        print 'movie %s not found at tmdb, retrying' % title
+        del params['primary_release_year']
+        # time.sleep(0.35)
+        # response = requests.get(url, params=params, timeout=5).json()
+        response = makeThrottledGetRequest(url, params).json()
+    # time.sleep(0.35)
 
-        if len(results):
-            result = results[0]
-            record = dict(
-                titleOriginal = result.originaltitle,
-                titleLocal    = result.title,
-                releaseYear   = result.releasedate.year,
-                urlBackdrop   = result.backdrop.geturl(),
-                urlPoster     = result.poster.geturl(),
-                idImdb        = result.imdb,
-                idTheMovieDb  = result.id,
-                taglineLocal  = result.tagline,
-                overview      = result.overview,
-                runtime       = result.runtime or None,
-                budget        = result.budget or None,
-                revenue       = result.revenue or None,
-                homepage      = result.homepage,
-                locale        = BabelLocale(language, territory),
+    # global LAST_TMDB_ACCESS
+    # print 'last TMDB access:', LAST_TMDB_ACCESS
+    # LAST_TMDB_ACCESS = time.clock()
+
+    if response['total_results'] > 0:
+        movieId = response['results'][0]['id']
+        print 'movie %s found at tmdb, id = %d' % (title, movieId)
+
+        url = 'https://api.themoviedb.org/3/movie/%d' % movieId
+        params = {
+            'api_key': THEMOVIEDB_API_KEY,
+            'language': 'en',
+        }
+        # response = requests.get(url, params=params, timeout=5).json()
+        response = makeThrottledGetRequest(url, params).json()
+
+        record = dict(
+                idTheMovieDb  = movieId,
+                titleOriginal = response['original_title'],
+                titleLocal    = response['title'],
+                releaseYear   = datetime.datetime.strptime(response['release_date'], '%Y-%m-%d').year,
+                urlBackdrop   = response['backdrop_path'],
+                urlPoster     = response['poster_path'],
+                idImdb        = response['imdb_id'],
+                taglineLocal  = response['tagline'],
+                overview      = response['overview'],
+                runtime       = response['runtime'] or None,
+                budget        = response['budget'] or None,
+                revenue       = response['revenue'] or None,
+                homepage      = response['homepage'],
+                # locale        = BabelLocale(language, territory),
             )
-    except (themoviedb.TMDBHTTPError, httplib.BadStatusLine, socket.timeout):
-        print "error"
 
     return record

@@ -68,6 +68,7 @@ if __name__ == '__main__':
         frontendToken = uuid4().hex
 
         certificateLocation = getCertificateLocation()
+
         userAgent = getUserAgent()
 
         # Omni-directional message queue between boot process, collector process and server process.
@@ -86,7 +87,7 @@ if __name__ == '__main__':
         else:
             httpPort = getVacantPort()
         # END DEBUG
-        server = startServer(interProcessQueue, httpPort, websocketPort, certificateLocation, userAgent, frontendToken)          # TODO: token here!
+        server = startServer(interProcessQueue, httpPort, websocketPort, certificateLocation, userAgent, frontendToken) # TODO: token here!
 
         # Start the blocking presenter process.
         present(userAgent, httpPort, websocketPort, _shutdown, bridgeToken, frontendToken)

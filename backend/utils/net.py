@@ -10,13 +10,42 @@ import os
 import socket
 import bz2
 import base64
-import win32file
+import time
+import logging
 from os import fdopen
 from uuid import uuid4
 from tempfile import mkstemp
 
+import requests
+import win32file
+
 from settings import DEBUG
 from config import CERTIFICATE, PROJECT_PATH
+
+
+REQUESTS_LOGGER = logging.getLogger('requests.packages.urllib3')
+REQUESTS_LOGGER.setLevel(logging.CRITICAL)
+REQUESTS_LOGGER.propagate = True
+
+LAST_TMDB_ACCESS = time.clock()
+
+
+def makeThrottledGetRequest(url, params):
+    global LAST_TMDB_ACCESS
+    now = time.clock()
+    diff = now - LAST_TMDB_ACCESS
+
+    if diff < 0.34:
+        print '...'
+        time.sleep(0.34 - diff)
+
+    LAST_TMDB_ACCESS = time.clock()
+
+    return requests.get(url, params=params, timeout=5)
+
+
+def getLongUncPathname(pathname):
+    return pathname.replace(u'\\\\', u'\\\\?\\UNC\\')
 
 
 def getVacantPort():

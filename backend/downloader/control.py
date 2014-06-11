@@ -18,7 +18,9 @@ def _startDownloader(queue):
         try:
             command = queue.get_nowait()
             if command == 'downloader:stop':
+                print 'attempting to shut down downloader stream manager ...'
                 downloaderStreamManager.shutdown()
+                print '... shut down downloader stream manager!'
 
                 queue.task_done()
                 break
@@ -26,7 +28,7 @@ def _startDownloader(queue):
                 queue.put(command)
                 queue.task_done()
         except Empty:
-            time.sleep(0.5)
+            time.sleep(0.015)
 
 
 def start(*args):

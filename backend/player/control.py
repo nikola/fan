@@ -20,7 +20,9 @@ def _startPlayer(queue):
         try:
             command = queue.get_nowait()
             if command == 'player:stop':
+                print 'attempting to shut down player stream manager ...'
                 playerStreamManager.shutdown()
+                print '... shut down player stream manager!'
 
                 queue.task_done()
                 break
@@ -44,7 +46,7 @@ def _startPlayer(queue):
                 queue.put(command)
                 queue.task_done()
         except Empty:
-            time.sleep(0.5)
+            time.sleep(0.015)
 
 
 def start(*args):

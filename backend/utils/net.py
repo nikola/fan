@@ -20,6 +20,7 @@ import requests
 import win32file
 
 from settings import DEBUG
+from settings.presenter import CEF_REAL_AGENT
 from config import CERTIFICATE, PROJECT_PATH
 
 
@@ -35,13 +36,14 @@ def makeThrottledGetRequest(url, params):
     now = time.clock()
     diff = now - LAST_TMDB_ACCESS
 
+    # Only 30 requests every 10 seconds per IP.
     if diff < 0.34:
         print '...'
         time.sleep(0.34 - diff)
 
     LAST_TMDB_ACCESS = time.clock()
 
-    return requests.get(url, params=params, timeout=5)
+    return requests.get(url, params=params, headers={'User-agent': CEF_REAL_AGENT}, timeout=5) # TODO: use custom user agent indicating ka-BOOM !!!
 
 
 def getLongUncPathname(pathname):

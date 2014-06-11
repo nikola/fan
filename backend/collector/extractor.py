@@ -108,6 +108,10 @@ def getBaseDataFromDirName(pathname):
     # Remove extraneous whitespace.
     extractedTitle = RE_MULTI_SPACE.sub(' ', extractedTitle).strip()
 
+    # Special cases.
+    if extractedTitle.startswith('Aeon Flux'):
+        extractedTitle = u'Æon Flux'
+
     return {'title': extractedTitle, 'year': releaseYear}
 
 

@@ -68,17 +68,6 @@ from utils.net import makeThrottledGetRequest
 # REQUESTS_LOGGER.propagate = True
 
 
-def getImageBaseUrl():
-    print 'called getImageBaseUrl()'
-
-    # global IMAGE_BASE_URL
-    # if IMAGE_BASE_URL is None:
-    url = 'https://api.themoviedb.org/3/configuration'
-    # response = requests.get(url, params={'api_key': THEMOVIEDB_API_KEY}, timeout=5)
-    response = makeThrottledGetRequest(url, params={'api_key': THEMOVIEDB_API_KEY})
-    configuration = response.json()
-    return configuration.get('images').get('secure_base_url')
-    # return IMAGE_BASE_URL
 
 
 def identifyMovieByTitleYear(language, territory, title, year):
@@ -92,7 +81,7 @@ def identifyMovieByTitleYear(language, territory, title, year):
         'page': 1,
         'language': 'en',
         'include_adult': False,
-        'primary_release_year': year,
+        'primary_release_year': year, # TODO: change to use year instead so that Planet Earth is identified correctly ???
     }
     # response = requests.get(url, params=params, timeout=5).json()
     response = makeThrottledGetRequest(url, params).json()
@@ -103,6 +92,8 @@ def identifyMovieByTitleYear(language, territory, title, year):
         # response = requests.get(url, params=params, timeout=5).json()
         response = makeThrottledGetRequest(url, params).json()
     # time.sleep(0.35)
+
+    # TODO: retry with different query mode parameter, e.g. for Aeon Flux
 
     # global LAST_TMDB_ACCESS
     # print 'last TMDB access:', LAST_TMDB_ACCESS

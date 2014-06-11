@@ -87,7 +87,7 @@ def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
 
     engine = Engine.instance()
 
-
+    syncFinished = False
 
     while True:
         try:
@@ -104,8 +104,12 @@ def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
                     # TODO: refer to pathname as \\Server\Share
                     streamGenerator = getMoviePathnames(getLongUncPathname(r'\\Diskstation\Movies'))
 
-                    streamWatcher.start()
 
+
+                queue.task_done()
+            elif command == 'collector:watch':
+                print 'starting to watch filesystem'
+                streamWatcher.start()
                 queue.task_done()
             elif command == 'collector:stop':
                 print 'collector:stop received'
@@ -142,10 +146,9 @@ def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
                     (path, container, files) = streamGenerator.next()
                 except StopIteration:
                     streamGenerator = None
+                    syncFinished = True
                 else:
                     basedata = getBaseDataFromDirName(container)
-
-
 
                     for filename in files:
                         # print 'processing file'
@@ -155,34 +158,28 @@ def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
                         #     movie = collectorStreamManager.getMovieFromStreamLocation(streamLocation)
                         # else:
                         if not collectorStreamManager.isStreamKnown(streamLocation):
-                        # if True:
                             movieRecord = identifyMovieByTitleYear('en', 'us', basedata.get('title'), basedata.get('year'))
                             if movieRecord is None:
                                 print 'unknown stream:', streamLocation
+
+                            # TODO: call def getEditVersionFromFilename(filename, year)
+
                             movie = collectorStreamManager.addMovieStream(movieRecord, streamLocation)
                             # else:
                             #     movie = None
 
-
-                            # TODO: also create ImageManager() here and write dummy entry containing the GUID of movie
-                            # then pass along GUID via web socket
-
-
                             if movie is not None:
-                                movie = collectorStreamManager.getMovieAsJson(movie.uuid)
-                                # publisherInstance.write(unicode('["receive:movie:item", "%s"]' % movie.titleOriginal))
-                                # publisherInstance.write(unicode('["receive:movie:item", "%s"]' % movie.urlPoster))
-                                # publisherInstance.write(unicode('["receive:movie:item", "%s"]' % movie.idTheMovieDb))
-
-                                # print unicode('["receive:movie:item", %s]' % json.dumps(movie, separators=(',',':')))
-
-                                publisherInstance.write(unicode('["receive:movie:item", %s]' % json.dumps(movie, separators=(',',':'))))
+                                publisherInstance.write(unicode('["receive:movie:item", %s]'
+                                    % collectorStreamManager.getMovieAsJson(movie.uuid)))
 
                                 # collectorStreamManager.deleteMovie(movie.uuid)
-            elif False: # elif ... all files collected in above generator loop
-                pass # TODO: implement here kickoff of filewatcher
+
+            elif syncFinished is True:
+                syncFinished = None
+
+                queue.put('collector:watch')
+                queue.put('downloader:start')
             else:
-                # only 30 requests every 10 seconds per IP
                 time.sleep(0.015)
 
 

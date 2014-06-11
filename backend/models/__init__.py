@@ -6,13 +6,13 @@ __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 import os
 import bz2
+import json
 from contextlib import contextmanager
 from sqlite3 import dbapi2 as sqlite
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import NoResultFound
-
 
 from settings import DEBUG
 from utils.win32 import getAppStoragePathname
@@ -155,6 +155,28 @@ class StreamManager(object):
                 return stream.movie
 
 
+    def getUnscaledPosterImage(self):
+        with self._session() as session:
+            try:
+                image = session.query(Image).filter(Image.isScaled == False, Image.imageType == 'Poster').first()
+            except NoResultFound:
+                return None
+            else:
+                if image is not None:
+                    return image.id
+
+
+    def getMissingBackdropMovie(self):
+        with self._session() as session:
+            try:
+                movie = session.query(Movie).join(Image).filter(Movie.images.any(Image.imageType == 'Poster')).group_by(Movie.id).having(func.count(Movie.images) == 1).first()
+            except NoResultFound:
+                return None
+            else:
+                if movie is not None:
+                    return movie.uuid
+
+
     def startPosterDownload(self, identifier):
          with self._session() as session:
             try:
@@ -232,7 +254,7 @@ class StreamManager(object):
                     return None
 
 
-    def saveImageData(self, identifier, width, blob, imageType='Poster'):
+    def saveImageData(self, identifier, width, blob, isScaled=False, imageType='Poster'):
         with self._session() as session:
             try:
                 movie = session.query(Movie).filter(Movie.uuid == identifier).one()
@@ -247,6 +269,7 @@ class StreamManager(object):
                         imageType = imageType,
                         movie = movie,
                         width = width,
+                        isScaled = isScaled,
                         blob = blob,
                     )
                     session.add(image)
@@ -281,13 +304,13 @@ class StreamManager(object):
             except NoResultFound:
                 return None
             else:
-                return {
+                return json.dumps({
                     'uuid': movie[0],
                     'titleOriginal': movie[1],
                     'releaseYear': movie[2],
                     'runtime': movie[3],
                     'overview': movie[4],
-                }
+                }, separators=(',',':'))
 
     def getStreamLocationByMovie(self, identifier):
         with self._session() as session:

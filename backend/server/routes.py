@@ -9,7 +9,6 @@ import time
 import json
 
 import requests
-import tmdb3 as themoviedb
 from pants.web.application import Module
 # from PIL import Image
 # from cStringIO import StringIO
@@ -17,16 +16,17 @@ from pants.web.application import Module
 from settings import DEBUG
 from settings.net import SERVER_HEADERS
 from settings.presenter import CEF_REAL_AGENT
-from settings.collector import THEMOVIEDB_API_KEY
 from config import PROJECT_PATH, RESOURCES_SCRIPT, RESOURCES_STYLE
-from collector.identifier import getImageBaseUrl
+from collector import getImageConfiguration
+from downloader.images import downloadBackdrop
 
 module = Module()
 
 @module.route('/<path:pathname>', methods=('PATCH',), headers=SERVER_HEADERS, content_type='text/plain')
 def presenterReady(request, pathname):
     if DEBUG or pathname == module.frontendToken:
-        module.imageBaseUrl = getImageBaseUrl()
+        module.imageBaseUrl, module.imageClosestSize = getImageConfiguration()
+        module.interProcessQueue.put('configuration:image-base-url:%s' % module.imageBaseUrl)
 
         module.interProcessQueue.put('collector:start')
         return '', 203
@@ -68,65 +68,46 @@ def serveRoot(request):
 
 
 @module.route('/movie/poster/<string(length=32):identifier>.jpg/<int:width>', methods=('GET',), headers=SERVER_HEADERS, content_type='image/jpeg')
-def serveMoviePoster(request, identifier, width):
-    themoviedb.set_key(THEMOVIEDB_API_KEY)
-    themoviedb.set_cache('null')
-
-    blob = module.serverStreamManager.getImageBlobByUuid(identifier)
+def serveMoviePoster(request, movieId, width):
+    blob = module.serverStreamManager.getImageBlobByUuid(movieId)
     if blob is None:
-        movie = themoviedb.Movie(module.serverStreamManager.getMovieByUuid(identifier).idTheMovieDb)
-        poster = movie.poster
-        sizes = poster.sizes()
-        if 'original' in sizes: sizes.remove('original')
-
-        size = min(sizes, key=lambda x: abs(int(x[1:]) - width))
-        if int(size[1:]) < width:
-            size = sizes[sizes.index(size) + 1]
-        url = poster.geturl(size).replace('http:', 'https:')
+        url = '%s%s%s' % (module.imageBaseUrl, module.imageClosestSize, module.serverStreamManager.getMovieByUuid(movieId).urlPoster)
         blob = requests.get(url, headers={'User-agent': CEF_REAL_AGENT}).content
-        module.serverStreamManager.saveImageData(identifier, size[1:], blob, 'Poster')
+        module.serverStreamManager.saveImageData(movieId, width, blob, False, 'Poster')
 
-    # image = Image.open(StringIO(blob))
-    # image.thumbnail(200, Image.ANTIALIAS) -> maximum height of 200px
-    # blob = StringIO()
-    # image.save(blob, 'JPEG')
+    # TODO: send correct cache headers
 
     return blob, 203
 
 
 @module.route('/movie/backdrop/<string(length=32):identifier>.jpg', methods=('GET',), headers=SERVER_HEADERS, content_type='image/jpeg')
-def serveMoviebackdrop(request, movieId):
-    blob = module.serverStreamManager.getImageBlobByUuid(movieId, 'Backdrop')
-    # print 'backdrop found in DB'
-    if blob is None:
-        print 'backdrop not found in DB, must be downloaded'
-        if module.serverStreamManager.isBackdropDownloading(movieId) is False:
+def serveMoviebackdrop(request, movieUuid):
+    blob = module.serverStreamManager.getImageBlobByUuid(movieUuid, 'Backdrop')
+    if blob is not None:
+        pass
+    else:
+        blob = downloadBackdrop(module.serverStreamManager, module.imageBaseUrl, movieUuid)
 
-            module.serverStreamManager.startBackdropDownload(movieId)
+        if blob is None:
+            pass
+        """
+        isBackdropDownloading = module.serverStreamManager.isBackdropDownloading(movieUuid)
+        if isBackdropDownloading is False:
+            module.serverStreamManager.startBackdropDownload(movieUuid)
 
-            url = '%sw%d%s' % (module.imageBaseUrl, 1920, module.serverStreamManager.getMovieByUuid(movieId).urlBackdrop)
-
-            print 'backdrop is not already downloading, downloading ' + url
-
+            url = '%soriginal%s' % (module.imageBaseUrl, module.serverStreamManager.getMovieByUuid(movieUuid).urlBackdrop)
             blob = requests.get(url, headers={'User-agent': CEF_REAL_AGENT}).content
-            module.serverStreamManager.saveImageData(movieId, 1920, blob, 'Backdrop')
+            module.serverStreamManager.saveImageData(movieUuid, 1920, blob, False, 'Backdrop')
 
-            print '+' * 20
-
-            module.serverStreamManager.endBackdropDownload(movieId)
-        elif module.serverStreamManager.isBackdropDownloading(movieId) is True:
-            print 'backdrop is already downloading'
+            module.serverStreamManager.endBackdropDownload(movieUuid)
+        elif isBackdropDownloading is True:
             while True:
-                print 'waiting for backdrop download to finish'
-                blob = module.serverStreamManager.getImageBlobByUuid(movieId, 'Backdrop')
+                blob = module.serverStreamManager.getImageBlobByUuid(movieUuid, 'Backdrop')
                 if blob is None:
                     time.sleep(0.5)
-            print '-' * 20
-            print 'backdrop download finished'
-        else:
-            print 'asking server for backdrop for movie with id %s, but not found in DB' % movieId
-            request.finish()
-            request.connection.close()
+                else:
+                    break
+        """
 
     return blob, 203
 

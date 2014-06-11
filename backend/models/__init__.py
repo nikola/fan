@@ -106,9 +106,10 @@ class StreamManager(object):
                     movie = session.query(Movie).filter("titleOriginal=:title and releaseYear=:year").params(title=movieRecord["titleOriginal"], year=movieRecord["releaseYear"]).one()
                 except NoResultFound:
                     movie = Movie(**movieRecord)
-                    variant = Variant(**movieRecord)
-                    variant.movie = movie
-                    session.add_all([movie, variant])
+                    # variant = Variant(**movieRecord)
+                    # variant.movie = movie
+                    # session.add_all([movie, variant])
+                    session.add(movie)
 
                 stream.movie = movie
 
@@ -276,7 +277,7 @@ class StreamManager(object):
     def getMovieAsJson(self, identifier):
         with self._session() as session:
             try:
-                movie = list(session.query(Movie).filter(Movie.uuid == identifier).values(Movie.uuid, Movie.titleOriginal, Movie.releaseYear, Movie.runtime))[0]
+                movie = list(session.query(Movie).filter(Movie.uuid == identifier).values(Movie.uuid, Movie.titleOriginal, Movie.releaseYear, Movie.runtime, Movie.overview))[0]
             except NoResultFound:
                 return None
             else:
@@ -285,6 +286,7 @@ class StreamManager(object):
                     'titleOriginal': movie[1],
                     'releaseYear': movie[2],
                     'runtime': movie[3],
+                    'overview': movie[4],
                 }
 
     def getStreamLocationByMovie(self, identifier):

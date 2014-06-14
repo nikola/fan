@@ -258,7 +258,7 @@ ka.lib.renderMovieGridCell = function (movie, operation, context) {
                 '<div class="boom-movie-grid-item">'
                   + '<div id="boom-movie-grid-item-' + movie.uuid + '" class="boom-movie-grid-info-overlay">'
                       + '<div class="boom-movie-grid-info-overlay-image">'
-                          + '<img id="boom-poster-' + movie.uuid + '" src="/movie/poster/' + movie.uuid + '.jpg/200">'
+                          + '<img id="boom-poster-' + movie.uuid + '" src="/movie/poster/' + movie.uuid + '-200">'
                       + '</div>'
                       + '<div class="boom-movie-grid-info-overlay-text">'
                           + '<div class="boom-movie-grid-info-overlay-title">' + movieTitle + '</div>'

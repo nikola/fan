@@ -8,7 +8,7 @@ import time
 from multiprocessing import Process
 from Queue import Empty
 
-from downloader.images import downloadBackdrop
+from downloader.images import downloadBackdrop, downscalePoster
 from models import StreamManager
 
 
@@ -20,6 +20,7 @@ def _startDownloader(queue):
         try:
             command = queue.get_nowait()
             if command == 'downloader:start':
+                # TODO: only launch this when all poster images have been downloaded in frontend
                 print 'starting downloader'
                 isStarted = True
 
@@ -40,13 +41,14 @@ def _startDownloader(queue):
                 queue.task_done()
         except Empty:
             if isStarted:
-                movieUuid = downloaderStreamManager.getMissingBackdropMovie()
-                if movieUuid is not None:
-                    print '%s needs a backdrop' % movieUuid
-                    downloadBackdrop(downloaderStreamManager, imageBaseUrl, movieUuid, True)
-                else:
-                    imageId = downloaderStreamManager.getUnscaledPosterImage()
-                    print '%d must be scaled' % imageId
+                # movieUuid = downloaderStreamManager.getMissingBackdropMovie()
+                # if movieUuid is not None:
+                #     print '%s needs a backdrop' % movieUuid
+                #     downloadBackdrop(downloaderStreamManager, imageBaseUrl, movieUuid, True)
+                # else:
+                #     image = downloaderStreamManager.getUnscaledPosterImage()
+                #     if image is not None:
+                #         downscalePoster(downloaderStreamManager, image)
 
                 time.sleep(0.5)
             else:

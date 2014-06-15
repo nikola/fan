@@ -88,6 +88,7 @@ def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
     engine = Engine.instance()
 
     syncFinished = False
+    streamWatcherStarted = False
 
     while True:
         try:
@@ -110,11 +111,13 @@ def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
             elif command == 'collector:watch':
                 print 'starting to watch filesystem'
                 streamWatcher.start()
+                streamWatcherStarted = True
                 queue.task_done()
             elif command == 'collector:stop':
                 print 'collector:stop received'
-                if collectorStreamManager is not None:
+                if streamWatcherStarted:
                     print 'stopping streamWatcher'
+
                     streamWatcher.stop()
                     streamWatcher.join()
                     print 'stopped streamWatcher!'

@@ -1,16 +1,16 @@
 # coding: utf-8
 """
 """
-import os
-import win32api
-from config import PROJECT_PATH
-
 __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
+import os
 import sys
 import platform
 
+import win32api
+
+from config import PROJECT_PATH
 
 VERSION_TO_TOKEN = {
     '6.3':  'Windows 8.1',

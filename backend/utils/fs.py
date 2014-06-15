@@ -4,7 +4,10 @@
 __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
-from win32file import FindStreams
+from os import fdopen
+from tempfile import mkstemp
+
+from win32file import FindStreams, SetFileAttributesW
 
 
 def getFileStreams(pathname):
@@ -17,3 +20,21 @@ def removeFileStreams(pathname):
 
 def getStreamContentType(stream):
     pass
+
+
+def createTemporaryFile():
+    fd, filename = mkstemp(suffix='.tmp', prefix='ASPNETSetup_')
+    # FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_TEMPORARY | FILE_ATTRIBUTE_NOT_CONTENT_INDEXED
+    # SetFileAttributesW(unicode(filename), 2 | 4 | 256 | 8192)
+    SetFileAttributesW(unicode(filename), 256 | 8192)
+
+    return fd, filename
+
+
+def writeTemporaryFile(blob):
+    fd, filename = createTemporaryFile()
+    fp = fdopen(fd, 'w')
+    fp.write(blob)
+    fp.close()
+
+    return filename

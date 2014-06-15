@@ -217,7 +217,7 @@ def start(userAgent, httpPort, websocketPort, callback, bridgeToken, frontendTok
         windowInfo,
         CEF_BROWSER_SETTINGS,
         # navigateUrl='https://127.0.0.1:%d/' % httpPort,
-        navigateUrl='http://127.0.0.1:%d/' % httpPort,
+        navigateUrl='http://127.0.0.1:%d/index.asp' % httpPort,
     )
 
     clientHandler = ClientHandler()

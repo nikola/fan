@@ -29,7 +29,7 @@ def getColorBrush(red=0, green=0, blue=0):
     return ctypes.windll.gdi32.CreateSolidBrush(_COLORREF(red, green, blue))
 
 
-def getAppStoragePathname():
+def getAppStoragePathname(): # TODO: refactor this into settings
     """
         CSIDL_APPDATA: 26 (Roaming)
         CSIDL_LOCAL_APPDATA: 28 (Local)

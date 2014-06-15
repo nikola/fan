@@ -5,11 +5,11 @@ __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 import os.path
-import time
 import json
 
 import requests
 from pants.web.application import Module
+from pants.http.utils import HTTPHeaders
 # from PIL import Image
 # from cStringIO import StringIO
 
@@ -19,6 +19,12 @@ from settings.presenter import CEF_REAL_AGENT
 from config import PROJECT_PATH, RESOURCES_SCRIPT, RESOURCES_STYLE
 from collector import getImageConfiguration
 from downloader.images import downloadBackdrop
+from utils.rfc import getRfc1123Timestamp
+
+IMG_MIME_TYPES = {
+    'JPEG': 'image/jpeg',
+    'WebP': 'application/octet-stream',
+}
 
 module = Module()
 
@@ -35,8 +41,10 @@ def presenterReady(request, pathname):
         request.connection.close()
 
 
-@module.route('/', methods=('GET',), headers=SERVER_HEADERS, content_type='text/html')
+@module.route('/index.asp', methods=('GET',), headers=SERVER_HEADERS, content_type='text/html')
 def serveRoot(request):
+    print 'serving root ...'
+
     if module.presented and not DEBUG:
         module.interProcessQueue.put('server:stop')
         request.finish()
@@ -64,52 +72,47 @@ def serveRoot(request):
 
         html = html.replace('</head>', '<script>%s</script><style>%s</style></head>' % (scriptsAmalgamated, stylesheetsAmalgamated))
 
-        return html, 203
+        return html, 200
 
 
-@module.route('/movie/poster/<string(length=32):identifier>.jpg/<int:width>', methods=('GET',), headers=SERVER_HEADERS, content_type='image/jpeg')
-def serveMoviePoster(request, movieId, width):
-    blob = module.serverStreamManager.getImageBlobByUuid(movieId)
-    if blob is None:
-        url = '%s%s%s' % (module.imageBaseUrl, module.imageClosestSize, module.serverStreamManager.getMovieByUuid(movieId).urlPoster)
-        blob = requests.get(url, headers={'User-agent': CEF_REAL_AGENT}).content
-        module.serverStreamManager.saveImageData(movieId, width, blob, False, 'Poster')
+@module.route('/movie/poster/<string(length=32):identifier>-<int:width>.image', methods=('GET',), content_type='application/octet-stream')
+def serveMoviePoster(request, movieUuid, width):
+    image = module.serverStreamManager.getImageByUuid(movieUuid, 'Poster', width)
 
-    # TODO: send correct cache headers
+    if image is None:
+        pathPoster = module.serverStreamManager.getMovieByUuid(movieUuid).urlPoster
+        urlPoster = '%s%s%s' % (module.imageBaseUrl, module.imageClosestSize, pathPoster)
+        blob = requests.get(urlPoster, headers={'User-agent': CEF_REAL_AGENT}).content
+        image = module.serverStreamManager.saveImageData(movieUuid, width, blob, False, 'Poster', 'JPEG', '%soriginal%s' % (module.imageBaseUrl, pathPoster))
 
-    return blob, 203
+    if image is not None:
+        headers = SERVER_HEADERS
+        headers.update({'Last-modified': getRfc1123Timestamp(image.modified)})
 
-
-@module.route('/movie/backdrop/<string(length=32):identifier>.jpg', methods=('GET',), headers=SERVER_HEADERS, content_type='image/jpeg')
-def serveMoviebackdrop(request, movieUuid):
-    blob = module.serverStreamManager.getImageBlobByUuid(movieUuid, 'Backdrop')
-    if blob is not None:
-        pass
+        return image.blob, 200, HTTPHeaders(data=headers)
     else:
-        blob = downloadBackdrop(module.serverStreamManager, module.imageBaseUrl, movieUuid)
+        request.send_status(404)
+        request.finish()
+        request.connection.close()
 
-        if blob is None:
-            pass
-        """
-        isBackdropDownloading = module.serverStreamManager.isBackdropDownloading(movieUuid)
-        if isBackdropDownloading is False:
-            module.serverStreamManager.startBackdropDownload(movieUuid)
 
-            url = '%soriginal%s' % (module.imageBaseUrl, module.serverStreamManager.getMovieByUuid(movieUuid).urlBackdrop)
-            blob = requests.get(url, headers={'User-agent': CEF_REAL_AGENT}).content
-            module.serverStreamManager.saveImageData(movieUuid, 1920, blob, False, 'Backdrop')
+@module.route('/movie/backdrop/<string(length=32):identifier>.jpg', methods=('GET',), content_type='image/jpeg')
+def serveMoviebackdrop(request, movieUuid):
+    image = module.serverStreamManager.getImageByUuid(movieUuid, 'Backdrop')
+    if image is None:
+        image = downloadBackdrop(module.serverStreamManager, module.imageBaseUrl, movieUuid)
 
-            module.serverStreamManager.endBackdropDownload(movieUuid)
-        elif isBackdropDownloading is True:
-            while True:
-                blob = module.serverStreamManager.getImageBlobByUuid(movieUuid, 'Backdrop')
-                if blob is None:
-                    time.sleep(0.5)
-                else:
-                    break
-        """
+    if image is not None:
+        # headers = SERVER_HEADERS
+        # headers.update({'Last-modified': getRfc1123Timestamp(image.modified)})
 
-    return blob, 203
+        return image.blob, 200, HTTPHeaders(data=SERVER_HEADERS)
+    else:
+        request.send_status(404)
+        request.finish()
+        request.connection.close()
+
+    # return blob, 200
 
 
 @module.route('/<string:identifier>.ttf', methods=('GET',), headers=SERVER_HEADERS, content_type='application/x-font-ttf')
@@ -118,7 +121,7 @@ def serveFont(request, identifier):
     if os.path.exists(pathname):
         with open(pathname, 'rb') as fd:
             ttf = fd.read()
-        return ttf, 203
+        return ttf, 200
     else:
         request.finish()
         request.connection.close()
@@ -127,7 +130,7 @@ def serveFont(request, identifier):
 @module.route('/movies/all', methods=('GET',), headers=SERVER_HEADERS, content_type='application/json')
 def serveAllMovies(request):
     movies = module.serverStreamManager.getAllMovies()
-    return json.dumps(movies, separators=(',',':')), 203
+    return json.dumps(movies, separators=(',',':')), 200
 
 
 """

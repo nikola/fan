@@ -16,7 +16,7 @@ ka.lib.updateDetailPage = function () {
     $('#boom-movie-detail').css('backgroundImage', 'none');
     setTimeout(function () {
         $('#boom-movie-detail-poster img')
-            .attr('src', '/movie/poster/' + movie.uuid + '-300')
+            .attr('src', '/movie/poster/' + movie.uuid + '-300.image')
             .on('load', function () {
                 $('#boom-movie-detail').css('backgroundImage', 'url(/movie/backdrop/' + movie.uuid + '.jpg)');
             });

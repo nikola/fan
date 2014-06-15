@@ -46,10 +46,12 @@ def _startDownloader(queue):
                 #     print '%s needs a backdrop' % movieUuid
                 #     downloadBackdrop(downloaderStreamManager, imageBaseUrl, movieUuid, True)
                 # else:
-                #     image = downloaderStreamManager.getUnscaledPosterImage()
-                #     if image is not None:
-                #         downscalePoster(downloaderStreamManager, image)
-
+                image = downloaderStreamManager.getUnscaledPosterImage()
+                if image is not None:
+                    downscalePoster(downloaderStreamManager, image)
+                else:
+                    # print 'nothing to downscale'
+                    pass
                 time.sleep(0.5)
             else:
                 time.sleep(0.015)

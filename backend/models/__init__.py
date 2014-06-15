@@ -163,7 +163,7 @@ class StreamManager(object):
                 return None
             else:
                 if image is not None:
-                    return image.id
+                    return image # .movie.uuid
 
 
     def getMissingBackdropMovie(self):
@@ -241,20 +241,20 @@ class StreamManager(object):
                 session.commit()
 
 
-    def getImageBlobByUuid(self, identifier, imageType='Poster'):
+    def getImageByUuid(self, identifier, imageType='Poster', width=1920):
         with self._session() as session:
             try:
-                image = session.query(Image).filter(Image.movie.has(Movie.uuid == identifier), Image.imageType == imageType).one()
+                image = session.query(Image).filter(Image.movie.has(Movie.uuid == identifier), Image.imageType == imageType, Image.width == width).one()
             except NoResultFound:
                 return None
             else:
                 if image is not None:
-                    return image.blob
+                    return image
                 else:
                     return None
 
 
-    def saveImageData(self, identifier, width, blob, isScaled=False, imageType='Poster'):
+    def saveImageData(self, identifier, width, blob, isScaled=False, imageType='Poster', imageFormat='JPEG', urlOriginal=None):
         with self._session() as session:
             try:
                 movie = session.query(Movie).filter(Movie.uuid == identifier).one()
@@ -262,20 +262,28 @@ class StreamManager(object):
                 return None
             else:
                 try:
-                    duplicate = session.query(Image).filter(Image.movie.has(Movie.uuid == identifier), Image.imageType == imageType).one()
+                    image = session.query(Image).filter(Image.movie.has(Movie.uuid == identifier), Image.imageType == imageType, Image.width == width).one()
                 except NoResultFound:
-                    print 'no duplicate found in DB'
                     image = Image(
                         imageType = imageType,
+                        imageFormat = imageFormat,
                         movie = movie,
                         width = width,
                         isScaled = isScaled,
                         blob = blob,
+                        urlOriginal = urlOriginal,
                     )
-                    session.add(image)
-                    session.commit()
                 else:
-                    print 'duplicate found in DB'
+                    image.blob = blob
+                    image.isScaled = isScaled
+                    image.imageFormat = imageFormat
+
+                session.add(image)
+                session.commit()
+
+                # lastModified = image.modified
+
+                return image
 
 
     def getAllMovies(self):

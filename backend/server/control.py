@@ -53,13 +53,13 @@ def _startHttpServer(queue, httpPort, websocketPort, certificateFile, userAgent,
             command = queue.get_nowait()
             if command == 'server:stop':
                 if engine is not None:
-                    print 'stopping server'
+                    # print 'stopping server'
                     engine.stop()
                     engine = None
 
-                print 'attempting to shut down server stream manager ...'
+                # print 'attempting to shut down server stream manager ...'
                 serverStreamManager.shutdown()
-                print '... shut down server stream manager!'
+                # print '... shut down server stream manager!'
 
                 queue.task_done()
                 break

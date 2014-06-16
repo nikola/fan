@@ -286,5 +286,5 @@ ka.lib.renderMovieGridCell = function (movie, operation, context) {
 
 
 ka.lib.scrollToPage = function (page) {
-    $('#boom-movie-grid-container').css('-webkit-transform', 'translate3d(0, -' + page + '00%, 0)');
+        $('#boom-movie-grid-container').css('-webkit-transform', 'translate3d(0, -' + page + '00%, 0)');
 };

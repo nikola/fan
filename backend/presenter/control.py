@@ -254,12 +254,12 @@ def CloseWindow(windowHandle, message, wparam, lparam):
     browser = cefpython.GetBrowserByWindowHandle(windowHandle)
     browser.CloseBrowser()
 
-    print 'CloseWindow'
+    # print 'CloseWindow'
 
     return win32gui.DefWindowProc(windowHandle, message, wparam, lparam)
 
 
 def QuitApplication(*args, **kwargs):
-    print 'QuitApplication'
+    # print 'QuitApplication'
     win32gui.PostQuitMessage(0)
     return 0

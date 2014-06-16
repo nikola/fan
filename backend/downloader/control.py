@@ -21,7 +21,7 @@ def _startDownloader(queue):
             command = queue.get_nowait()
             if command == 'downloader:start':
                 # TODO: only launch this when all poster images have been downloaded in frontend
-                print 'starting downloader'
+
                 isStarted = True
 
                 queue.task_done()
@@ -30,9 +30,9 @@ def _startDownloader(queue):
 
                 queue.task_done()
             elif command == 'downloader:stop':
-                print 'attempting to shut down downloader stream manager ...'
+                # print 'attempting to shut down downloader stream manager ...'
                 downloaderStreamManager.shutdown()
-                print '... shut down downloader stream manager!'
+                # print '... shut down downloader stream manager!'
 
                 queue.task_done()
                 break

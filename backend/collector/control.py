@@ -101,31 +101,31 @@ def _startCollector(queue, port, certificateFile, userAgent):
 
                 queue.task_done()
             elif command == 'collector:watch':
-                print 'starting to watch filesystem'
+                # print 'starting to watch filesystem'
                 streamWatcher.start()
                 streamWatcherStarted = True
                 queue.task_done()
             elif command == 'collector:stop':
-                print 'collector:stop received'
+                # print 'collector:stop received'
                 if streamWatcherStarted:
-                    print 'stopping streamWatcher'
+                    # print 'stopping streamWatcher'
 
                     streamWatcher.stop()
                     streamWatcher.join()
-                    print 'stopped streamWatcher!'
+                    # print 'stopped streamWatcher!'
 
                 if engine is not None and collectorStreamManager is not None:
-                    print 'attempting to close publisherInstance'
+                    # print 'attempting to close publisherInstance'
                     publisherInstance.close()
                     publisherInstance = None
                     engine.stop()
                     engine = None
-                    print 'closed publisherInstance'
+                    # print 'closed publisherInstance'
 
                 if collectorStreamManager is not None:
-                    print 'attempting to shut down collector stream manager ...'
+                    # print 'attempting to shut down collector stream manager ...'
                     collectorStreamManager.shutdown()
-                    print '... shut down collector stream manager!'
+                    # print '... shut down collector stream manager!'
 
                 queue.task_done()
                 break
@@ -178,27 +178,6 @@ def _startCollector(queue, port, certificateFile, userAgent):
                 time.sleep(0.015)
 
 
-def _dummy():
-    """
-        for (path, container, files) in getMoviePathnames(r"M:\\"):
-            basedata = getBasedataFromPathname(container)
-
-            for filename in files:
-                streamLocation = os.path.join(path, filename)
-                print streamLocation
-                continue
-
-                print "processing %s" % streamLocation
-                movieRecord = getMovieFromRawData("de", "de", basedata["title"], basedata["year"])
-                if movieRecord is None: continue
-
-                print "adding %s from %s" % (movieRecord["titleOriginal"], streamLocation)
-                streamManager.addMovieStream(movieRecord, streamLocation)
-
-                time.sleep(0.5)
-    """
-
-
 def start(*args):
     global globalInterProcessQueue
     globalInterProcessQueue = args[0]
@@ -211,5 +190,5 @@ def start(*args):
 
 def stop():
     global globalInterProcessQueue
-    print 'putting collector:stop ...'
+    # print 'putting collector:stop ...'
     globalInterProcessQueue.put('collector:stop')

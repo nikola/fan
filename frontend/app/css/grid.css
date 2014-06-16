@@ -5,8 +5,6 @@
  *  @copyright Copyright (c) 2013-2014 Nikola Klaric
  */
 
-/* TODO: set all background-color to black to prevent transparent flicker while scrolling to end of grid */
-
 #boom-movie-grid-container {
     width: 1920px; height: 1080px;
 

@@ -10,8 +10,6 @@ import json
 import requests
 from pants.web.application import Module
 from pants.http.utils import HTTPHeaders
-# from PIL import Image
-# from cStringIO import StringIO
 
 from settings import DEBUG
 from settings.net import SERVER_HEADERS
@@ -35,7 +33,7 @@ def presenterReady(request, pathname):
         module.interProcessQueue.put('configuration:image-base-url:%s' % module.imageBaseUrl)
 
         module.interProcessQueue.put('collector:start')
-        return '', 203
+        return '', 200
     else:
         request.finish()
         request.connection.close()
@@ -43,8 +41,6 @@ def presenterReady(request, pathname):
 
 @module.route('/index.asp', methods=('GET',), headers=SERVER_HEADERS, content_type='text/html')
 def serveRoot(request):
-    print 'serving root ...'
-
     if module.presented and not DEBUG:
         module.interProcessQueue.put('server:stop')
         request.finish()

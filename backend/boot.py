@@ -38,7 +38,7 @@ if __name__ == '__main__':
         sys.exit()
 
     def _shutdown():
-        print '_shutdown called'
+        # print '_shutdown called'
 
         # Presenter has been closed, now kick off clean-up tasks.
         stopServer()

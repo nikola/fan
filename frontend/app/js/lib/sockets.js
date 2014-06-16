@@ -7,8 +7,8 @@
 
 ; var ka = ka || {}; if (!('lib' in ka)) ka.lib = {};
 
-ka.lib.WebSocketDispatcher = function (url, undefined) {
-    var callbacks = {};
+ka.lib.WebSocketDispatcher = function (url) {
+    var connection = new WebSocket(url), callbacks = {};
 
     function dispatch(name, payload) {
         if (name in callbacks) {
@@ -17,8 +17,6 @@ ka.lib.WebSocketDispatcher = function (url, undefined) {
             }
         }
     }
-
-    var connection = new WebSocket(url);
 
     connection.onopen = function () {
         dispatch('open', null);
@@ -32,7 +30,7 @@ ka.lib.WebSocketDispatcher = function (url, undefined) {
     };
 
     connection.onclose = function () {
-        dispatch('close',null)
+        dispatch('close', null);
     };
 
     this.bind = function (name, callback) {

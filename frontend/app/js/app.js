@@ -15,7 +15,6 @@ ka.data = {
         , byLetter: new Cortex({})
     }
 };
-// ka.data.cortex.all.on('update', ka.lib.refreshMovieGrid);
 
 ka.config = {
     gridMaxRows: 3
@@ -75,23 +74,4 @@ $(document).ready(function () {
     /* Notify backend that UI is ready. */
     $.ajax({url: BOOT_TOKEN, type: 'PATCH', success: boot});
 
-    /*
-    setTimeout(function () {
-        // todo: websocket.close()
-        // https://developer.mozilla.org/en-US/docs/WebSockets/Writing_WebSocket_client_applications
-        bridge.shutdown();
-    }, 3000);
-    */
-
-
-    /*
-    setTimeout(function () {
-        $('#app-logo').animate({opacity: 0}, 500, 'linear');
-        $('#app-info').animate({opacity: 0}, 500, 'linear');
-        $('.spinner').animate({borderRadius: 0, padding: 0, width: '100%', height: '100%'}, 1000, 'linear');
-        $('.spinner div').animate({marginLeft: 256, marginRight: 256, opacity: 0}, 1000, 'linear');
-        $('.spinner .container').animate({marginTop: 512, opacity: 0}, 1000, 'linear', function () {
-
-        });
-    }, 3000); */
 });

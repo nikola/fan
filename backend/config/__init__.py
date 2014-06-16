@@ -18,7 +18,7 @@ RESOURCES_SCRIPT = [
     'vendor/bacon/bacon.min.js',
     'vendor/cortex/cortex.min.js',
     'vendor/jquery/jquery.min.js',
-    'vendor/jquery/jquery.swipe-events.js',
+    # 'vendor/jquery/jquery.swipe-events.js',
     'vendor/jquery/jquery.velocity.min.js',
     'vendor/jquery/jquery.waitforimages.min.js',
     'vendor/misc/color-thief.min.js',
@@ -27,10 +27,9 @@ RESOURCES_SCRIPT = [
     'app/js/lib/sockets.js',
     'app/js/lib/colors.js',
     'app/js/lib/receiver.js',
-    'app/js/lib/shortcuts.js',
+    'app/js/lib/hotkeys.js',
     'app/js/lib/grid.js',
     'app/js/lib/detail.js',
-    'app/js/lib/renderer.js',
     'app/js/app.js',
 ]
 

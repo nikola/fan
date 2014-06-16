@@ -1,11 +1,10 @@
 /**
- *  ...
+ *  Receive movie details over WebSockets.
  *
  *  @author Nikola Klaric (nikola@generic.company)
  *  @copyright Copyright (c) 2013-2014 Nikola Klaric
  */
-; var ka = ka || {};
-if (!('lib' in ka)) ka.lib = {};
+; var ka = ka || {}; if (!('lib' in ka)) ka.lib = {};
 
 // ka.data.cortex.all.forEach(function (item, index) { console.log(item.titleOriginal.getValue(), '->', item.titleSortable.getValue())})
 

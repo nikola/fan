@@ -1,11 +1,10 @@
 /**
- *  ...
+ *  Render movie detail page items.
  *
  *  @author Nikola Klaric (nikola@generic.company)
  *  @copyright Copyright (c) 2013-2014 Nikola Klaric
  */
-; var ka = ka || {};
-if (!('lib' in ka)) ka.lib = {};
+; var ka = ka || {}; if (!('lib' in ka)) ka.lib = {};
 
 
 ka.lib.updateDetailPage = function () {

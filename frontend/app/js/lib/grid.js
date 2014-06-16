@@ -24,8 +24,9 @@ ka.lib.setPrimaryPosterColor = function () {
 ka.lib.recalcMovieGrid = function () {
     ka.state.gridLookupMatrix = [];
     ka.state.gridLookupLinesByKey = {};
+    ka.state.gridLookupKeyByLine = [];
 
-    var currentRowIndex = 0, currentColumnIndex, currentCellIndex = 0,
+    var currentRowIndex = 0, currentColumnIndex, currentCellIndex = 0, currentLineIndex,
         keys = ka.config.gridKeys[ka.config.gridSortOrder], keyCount = keys.length;
 
     for (var key, keyIndex = 0; keyIndex < keyCount; keyIndex++) {
@@ -39,7 +40,9 @@ ka.lib.recalcMovieGrid = function () {
                         ka.state.gridLookupMatrix.push([]);
                     }
 
-                    ka.state.gridLookupMatrix[ka.state.gridLookupMatrix.length - 1][currentColumnIndex] = items.values()[movieIndex];
+                    currentLineIndex =  ka.state.gridLookupMatrix.length - 1;
+                    ka.state.gridLookupMatrix[currentLineIndex][currentColumnIndex] = items.values()[movieIndex];
+                    ka.state.gridLookupKeyByLine[currentLineIndex] = key;
 
                     var currentLine = Math.floor(currentCellIndex / ka.config.gridMaxColumns);
                     if (key in ka.state.gridLookupLinesByKey) {
@@ -90,7 +93,24 @@ ka.lib.updateMovieGrid = function () {
         hasCells = renderedCells.length > 0,
         movie;
 
+    var color = true;
+
     for (var row = 0, matrix = ka.state.gridLookupMatrix, rows = matrix.length; row < rows; row++) {
+        var keyIndicator = $('<span>', {
+            css: {
+                padding: 0
+              , width: '100px'
+              , height: '360px'
+              , display: 'inline'
+              , float: 'left'
+                // margin: 30px 0;
+              // , backgroundColor: color ? 'red' : 'green'
+            }
+        }).appendTo('#boom-movie-grid-container');
+        $('<span class="boom-movie-grid-letter-indicator-text">' + ka.state.gridLookupKeyByLine[row] + '</span>').appendTo(keyIndicator);
+
+        color = !color;
+
         for (var column = 0, line = matrix[row], columns = line.length; column < columns; column++) {
             movie = ka.state.gridLookupMatrix[row][column];
             if (movie !== null) {

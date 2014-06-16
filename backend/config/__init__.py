@@ -28,6 +28,7 @@ RESOURCES_SCRIPT = [
     'app/js/lib/colors.js',
     'app/js/lib/receiver.js',
     'app/js/lib/hotkeys.js',
+    'app/js/lib/lang.js',
     'app/js/lib/grid.js',
     'app/js/lib/detail.js',
     'app/js/app.js',

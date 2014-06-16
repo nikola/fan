@@ -35,11 +35,16 @@ ka.state = {
   , gridLookupMatrix: {}
   , gridLookupItemsPerLine: []
   , gridLookupLinesByKey: {} // TODO: needed?
+  , gridLookupKeyByLine: []
 };
 
 
 function boot() {
-    ka.lib.registerShortcuts();
+    /* ... */
+    ka.lib.registerShortcuts(); // TODO: rename to Hotkeys
+
+    /* ... */
+    ka.lib.setupCollator();
 
     $.ajax({
         url: '/movies/all',

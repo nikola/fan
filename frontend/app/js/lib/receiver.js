@@ -33,7 +33,9 @@ ka.lib.addMovieToCortex = function (movieDict) {
     if (byLetterList.count() == 0) {
         byLetterList.push(movieDict);
     } else if (byLetterList.count() == 1) {
-        if (byLetterList[0].titleSortable.getValue() < titleSortable) {
+
+        // if (byLetterList[0].titleSortable.getValue() < titleSortable) {
+        if (ka.state.collator.compare(byLetterList[0].titleSortable.getValue(), titleSortable) < 0) {
             byLetterList.push(movieDict);
         } else {
             byLetterList.unshift(movieDict);
@@ -41,9 +43,11 @@ ka.lib.addMovieToCortex = function (movieDict) {
     } else {
         var index = byLetterList.findIndex(function (wrapperElement, index, wrapperArray) {
             if (index == 0 || index == byLetterList.count() - 1) {
-                return titleSortable < byLetterList[index].titleSortable.getValue();
+                // return titleSortable < byLetterList[index].titleSortable.getValue();
+                return ka.state.collator.compare(titleSortable, byLetterList[index].titleSortable.getValue()) < 0;
             } else {
-                return titleSortable < byLetterList[index].titleSortable.getValue() && titleSortable > byLetterList[index -1].titleSortable.getValue();
+                // return titleSortable < byLetterList[index].titleSortable.getValue() && titleSortable > byLetterList[index -1].titleSortable.getValue();
+                return ka.state.collator.compare(titleSortable, byLetterList[index].titleSortable.getValue()) < 0 && ka.state.collator.compare(titleSortable, byLetterList[index -1].titleSortable.getValue()) > 0;
             }
         });
         if (index == -1) {

@@ -10,7 +10,7 @@
 
     position: absolute; top: 0; left: 0;
 
-    margin-left: 100px;
+    /* margin-left: 100px; */
 
     -webkit-transition: -webkit-transform 720ms ease-out;
     -webkit-transform-style: preserve-3d;
@@ -46,6 +46,7 @@
     background-color: black;
     } */
 
+/*
 .boom-movie-grid-letter-indicator {
     display: inline-block;
     width: 100px;
@@ -57,6 +58,7 @@
 
     background-color: black;
     }
+*/
 
 .boom-movie-grid-letter-indicator-text {
     display: inline-block;

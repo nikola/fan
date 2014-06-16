@@ -121,7 +121,7 @@ def handleException(excType, excValue, traceObject):
 
 
 
-def start(userAgent, httpPort, websocketPort, callback, bridgeToken, frontendToken):
+def start(userAgent, httpPort, websocketPort, callback, bridgeToken, bootToken):
     global shutdownAll
     shutdownAll = callback
 
@@ -228,7 +228,7 @@ def start(userAgent, httpPort, websocketPort, callback, bridgeToken, frontendTok
     jsBindings = cefpython.JavascriptBindings(bindToFrames=False, bindToPopups=True) # TODO: set to False
     jsBindings.SetProperty('HTTP_PORT', httpPort)
     jsBindings.SetProperty('WEBSOCKET_PORT', websocketPort)
-    jsBindings.SetProperty('BOOT_TOKEN', frontendToken)
+    jsBindings.SetProperty('BOOT_TOKEN', bootToken)
     jsBindings.SetObject(bridgeToken, bridge)
     jsBindings.SetObject('console', bridge)
     jsBindings.SetProperty('navigator', {'userAgent': CEF_REAL_AGENT})

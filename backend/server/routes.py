@@ -30,7 +30,7 @@ module = Module()
 
 @module.route('/<path:pathname>', methods=('PATCH',), headers=SERVER_HEADERS, content_type='text/plain')
 def presenterReady(request, pathname):
-    if DEBUG or pathname == module.frontendToken:
+    if DEBUG or pathname == module.bootToken:
         module.imageBaseUrl, module.imageClosestSize = getImageConfiguration()
         module.interProcessQueue.put('configuration:image-base-url:%s' % module.imageBaseUrl)
 
@@ -67,7 +67,7 @@ def serveRoot(request):
         if DEBUG and request.headers.get('User-Agent', None) != module.userAgent:
             scriptsAmalgamated += """
                 ; HTTP_PORT = %d; WEBSOCKET_PORT = %d; BOOT_TOKEN = '%s';
-            """ % (module.httpPort, module.websocketPort, module.frontendToken)
+            """ % (module.httpPort, module.websocketPort, module.bootToken)
         # END DEBUG
 
         html = html.replace('</head>', '<script>%s</script><style>%s</style></head>' % (scriptsAmalgamated, stylesheetsAmalgamated))

@@ -65,7 +65,7 @@ if __name__ == '__main__':
 
     try:
         bridgeToken = uuid4().hex
-        frontendToken = uuid4().hex
+        bootToken = uuid4().hex
 
         certificateLocation = getCertificateLocation()
 
@@ -80,17 +80,17 @@ if __name__ == '__main__':
 
         # Start process, but spawn file watcher and stream manager only after receiving a kick off event from the presenter.
         websocketPort = getVacantPort()
-        collector = startCollector(interProcessQueue, websocketPort, certificateLocation, userAgent, bridgeToken) # TODO: not token here
+        collector = startCollector(interProcessQueue, websocketPort, certificateLocation, userAgent)
 
         if DEBUG:
             httpPort = 50000
         else:
             httpPort = getVacantPort()
         # END DEBUG
-        server = startServer(interProcessQueue, httpPort, websocketPort, certificateLocation, userAgent, frontendToken) # TODO: token here!
+        server = startServer(interProcessQueue, httpPort, websocketPort, certificateLocation, userAgent, bootToken)
 
         # Start the blocking presenter process.
-        present(userAgent, httpPort, websocketPort, _shutdown, bridgeToken, frontendToken)
+        present(userAgent, httpPort, websocketPort, _shutdown, bridgeToken, bootToken)
     except (KeyboardInterrupt, SystemError):
         # streamManager.shutdown()
         # stopServer()

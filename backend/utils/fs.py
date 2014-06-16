@@ -4,6 +4,7 @@
 __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
+import re
 from os import fdopen
 from tempfile import mkstemp
 
@@ -20,6 +21,15 @@ def removeFileStreams(pathname):
 
 def getStreamContentType(stream):
     pass
+
+
+def getLongPathname(pathname):
+    if pathname.startswith('\\\\'):
+        return pathname.replace(u'\\\\', u'\\\\?\\UNC\\')
+    elif re.search('^[a-z]]:\\\\', pathname, re.I) is not None:
+        return u'\\\\?\\' + pathname
+    else:
+        return pathname
 
 
 def createTemporaryFile():

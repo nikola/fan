@@ -21,15 +21,14 @@ from settings.net import SERVER_HEADERS, ENFORCED_CIPHERS
 from models import StreamManager
 from collector.extractor import getMoviePathnames, getBaseDataFromDirName
 from collector.identifier import identifyMovieByTitleYear
-from utils.net import getLongUncPathname
+from utils.fs import getLongPathname
 
 
 class Publisher(WebSocket):
 
-    def __init__(self, queue, request, userAgent, bridgeToken, *args):
+    def __init__(self, queue, request, userAgent, *args):
         self.queue = queue
         self.userAgent = userAgent
-        self.bridgeToken = bridgeToken
 
         super(Publisher, self).__init__(request)
 
@@ -37,13 +36,11 @@ class Publisher(WebSocket):
         return DEBUG or (request.is_secure and request.protocol == 'HTTP/1.1' and request.headers.get('User-Agent', None) == self.userAgent)
 
     def on_connect(self, *args):
-        self.ping() # data=self.bridgeToken)
+        self.ping()
 
     def on_pong(self, data):
         global publisherInstance
         publisherInstance = self
-        # print 'sending:', repr(self.bridgeToken)
-        # self.write(unicode(self.bridgeToken), flush=True)
 
     def on_read(self, data):
         command, payload = json.loads(data)
@@ -52,14 +49,12 @@ class Publisher(WebSocket):
 
     def on_close(self):
         pass
-        # print 'on_close'
-        # self.close(flush=True)
 
 
-def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
+def _startCollector(queue, port, certificateFile, userAgent):
 
     def proxy(request):
-        Publisher(queue, request, userAgent, bridgeToken)
+        Publisher(queue, request, userAgent)
 
     logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s - %(message)s',
@@ -71,10 +66,8 @@ def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
 
     event_handler = LoggingEventHandler()
     streamWatcher = Observer()
-    # try:
-    streamWatcher.schedule(event_handler, getLongUncPathname(r'\\DiskStation\Movies'), recursive=True) # TODO: make this safer
-    # except WindowsError:
-    #     pass
+
+    streamWatcher.schedule(event_handler, getLongPathname(r'\\DiskStation\Movies'), recursive=True)
 
     collectorStreamManager = None
     streamGenerator = None
@@ -102,8 +95,7 @@ def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
                     # TODO: remove !!!
                     # collectorStreamManager.deleteStreams()
 
-                    # TODO: refer to pathname as \\Server\Share
-                    streamGenerator = getMoviePathnames(getLongUncPathname(r'\\Diskstation\Movies'))
+                    streamGenerator = getMoviePathnames(getLongPathname(r'\\Diskstation\Movies'))
 
 
 
@@ -165,7 +157,7 @@ def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
                             if movieRecord is None:
                                 print 'unknown stream:', streamLocation
 
-                            # TODO: call def getEditVersionFromFilename(filename, year)
+                            # TODO: call getEditVersionFromFilename(filename, year)
 
                             movie = collectorStreamManager.addMovieStream(movieRecord, streamLocation)
                             # else:

@@ -43,11 +43,7 @@ def makeThrottledGetRequest(url, params):
 
     LAST_TMDB_ACCESS = time.clock()
 
-    return requests.get(url, params=params, headers={'User-agent': CEF_REAL_AGENT}, timeout=5) # TODO: use custom user agent indicating ka-BOOM !!!
-
-
-def getLongUncPathname(pathname):
-    return pathname.replace(u'\\\\', u'\\\\?\\UNC\\')
+    return requests.get(url, params=params, headers={'User-agent': CEF_REAL_AGENT}, timeout=5)
 
 
 def getVacantPort():

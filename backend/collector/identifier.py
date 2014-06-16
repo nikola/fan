@@ -1,79 +1,18 @@
 # coding: utf-8
 """
-
-
-
-
-    https://github.com/ahmetabdi/themoviedb
-
-
-
-    id = Datapoint('id', initarg=1)
-    title = Datapoint('title')
-    originaltitle = Datapoint('original_title')
-    tagline = Datapoint('tagline')
-    overview = Datapoint('overview')
-    runtime = Datapoint('runtime')
-    budget = Datapoint('budget')
-    revenue = Datapoint('revenue')
-    releasedate = Datapoint('release_date', handler=process_date)
-    homepage = Datapoint('homepage')
-    imdb = Datapoint('imdb_id')
-
-    backdrop = Datapoint('backdrop_path', handler=Backdrop,
-                         raw=False, default=None)
-    poster = Datapoint('poster_path', handler=Poster,
-                       raw=False, default=None)
-
-    popularity = Datapoint('popularity')
-    userrating = Datapoint('vote_average')
-    votes = Datapoint('vote_count')
-
-    adult = Datapoint('adult')
-    collection = Datapoint('belongs_to_collection', handler=lambda x: \
-                                                        Collection(raw=x))
-    genres = Datalist('genres', handler=Genre)
-    studios = Datalist('production_companies', handler=Studio)
-    countries = Datalist('production_countries', handler=Country)
-    languages = Datalist('spoken_languages', handler=Language)
-
 """
 __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
-# import os
-import time
-# import httplib
-# import socket
 import datetime
-import logging
-
-# import requests
-# import tmdb3 as themoviedb
-# from babel import Locale as BabelLocale
 
 from settings.collector import THEMOVIEDB_API_KEY
 from utils.net import makeThrottledGetRequest
-# from utils.win32 import getAppStoragePathname
-
-# IMAGE_BASE_URL = None
-
-# LAST_TMDB_ACCESS = time.clock()
-
-# Don't be too chatty on the console.
-# REQUESTS_LOGGER = logging.getLogger('urllib3')
-# REQUESTS_LOGGER.setLevel(logging.CRITICAL)
-# REQUESTS_LOGGER = logging.getLogger('requests.packages.urllib3')
-# REQUESTS_LOGGER.setLevel(logging.CRITICAL)
-# REQUESTS_LOGGER.propagate = True
-
-
 
 
 def identifyMovieByTitleYear(language, territory, title, year):
     record = None
 
-    # try:
     url = 'https://api.themoviedb.org/3/search/movie'
     params = {
         'api_key': THEMOVIEDB_API_KEY,
@@ -83,21 +22,14 @@ def identifyMovieByTitleYear(language, territory, title, year):
         'include_adult': False,
         'primary_release_year': year, # TODO: change to use year instead so that Planet Earth is identified correctly ???
     }
-    # response = requests.get(url, params=params, timeout=5).json()
     response = makeThrottledGetRequest(url, params).json()
+
     if response['total_results'] == 0:
         print 'movie %s not found at tmdb, retrying' % title
         del params['primary_release_year']
-        # time.sleep(0.35)
-        # response = requests.get(url, params=params, timeout=5).json()
         response = makeThrottledGetRequest(url, params).json()
-    # time.sleep(0.35)
 
     # TODO: retry with different query mode parameter, e.g. for Aeon Flux
-
-    # global LAST_TMDB_ACCESS
-    # print 'last TMDB access:', LAST_TMDB_ACCESS
-    # LAST_TMDB_ACCESS = time.clock()
 
     if response['total_results'] > 0:
         movieId = response['results'][0]['id']
@@ -108,7 +40,6 @@ def identifyMovieByTitleYear(language, territory, title, year):
             'api_key': THEMOVIEDB_API_KEY,
             'language': 'en',
         }
-        # response = requests.get(url, params=params, timeout=5).json()
         response = makeThrottledGetRequest(url, params).json()
 
         record = dict(

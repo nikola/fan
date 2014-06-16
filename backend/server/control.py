@@ -18,7 +18,7 @@ from server.routes import module as appRoutes
 from models import StreamManager
 
 
-def _startHttpServer(queue, httpPort, websocketPort, certificateFile, userAgent, frontendToken):
+def _startHttpServer(queue, httpPort, websocketPort, certificateFile, userAgent, bootToken):
 
     def proxy(request):
         if DEBUG or (request.is_secure and request.protocol == 'HTTP/1.1' and request.headers.get('User-Agent', None) == userAgent):
@@ -32,7 +32,7 @@ def _startHttpServer(queue, httpPort, websocketPort, certificateFile, userAgent,
     appRoutes.interProcessQueue = queue
     appRoutes.presented = False
     appRoutes.serverStreamManager = serverStreamManager
-    appRoutes.frontendToken = frontendToken
+    appRoutes.bootToken = bootToken
     if DEBUG:
         appRoutes.userAgent = userAgent
         appRoutes.httpPort = httpPort

@@ -5,7 +5,7 @@ __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 import os
-import bz2
+# import bz2
 import json
 from contextlib import contextmanager
 from sqlite3 import dbapi2 as sqlite
@@ -60,20 +60,17 @@ class StreamManager(object):
         self.engine = create_engine(_getSqliteDsn('db'), echo=False, module=sqlite)
         self.engine.execute('select 1').scalar()
         self.session_factory = sessionmaker(bind=self.engine, expire_on_commit=False)
-        # Base.metadata.drop_all(self.engine, checkfirst=True)
 
-        if not DEBUG and os.path.exists(os.path.join(getAppStoragePathname(), 'data.accdb')):
-            self._restore()
-            # TODO: migrate schema
-            # https://sqlalchemy-migrate.readthedocs.org/en/latest/
-        else:
-            Base.metadata.create_all(self.engine)
+        # if not DEBUG and os.path.exists(os.path.join(getAppStoragePathname(), 'data.accdb')):
+        #     self._restore()
+        #     # TODO: migrate schema by dumping all data to JSON, then drop_all, then read JSON back in
+        # else:
+        # Base.metadata.drop_all(self.engine, checkfirst=True)
+        Base.metadata.create_all(self.engine)
 
 
     def shutdown(self):
-        print 'StreamManager.shutdown()'
-        # if not DEBUG:
-        #     self._persist()
+        pass
 
 
     def getMovieByUuid(self, identifier):
@@ -163,7 +160,7 @@ class StreamManager(object):
                 return None
             else:
                 if image is not None:
-                    return image # .movie.uuid
+                    return image
 
 
     def getMissingBackdropMovie(self):
@@ -281,28 +278,21 @@ class StreamManager(object):
                 session.add(image)
                 session.commit()
 
-                # lastModified = image.modified
-
-                return image
+                return image # TODO: correct return type ?
 
 
     def getAllMovies(self):
         with self._session() as session:
-            movies = []
+            movieList = []
             for movie in session.query(Movie).values(Movie.uuid, Movie.titleOriginal, Movie.releaseYear, Movie.runtime, Movie.overview):
-                movies.append({
+                movieList.append({
                     'uuid': movie[0],
                     'titleOriginal': movie[1],
                     'releaseYear': movie[2],
                     'runtime': movie[3],
                     'overview': movie[4],
                 })
-            return movies
-            # return list(session.query(Movie).values(
-            #     Movie.uuid,
-            #     Movie.titleOriginal,
-            #     Movie.releaseYear,
-            # ))
+            return movieList
 
 
     def getMovieAsJson(self, identifier):
@@ -320,6 +310,7 @@ class StreamManager(object):
                     'overview': movie[4],
                 }, separators=(',',':'))
 
+
     def getStreamLocationByMovie(self, identifier):
         with self._session() as session:
             try:
@@ -330,6 +321,7 @@ class StreamManager(object):
                 return movie.streams[0].location
 
 
+    """
     def _persist(self):
         compressor = bz2.BZ2Compressor()
         connection = self.engine.raw_connection()
@@ -356,3 +348,4 @@ class StreamManager(object):
             connection.commit()
         finally:
             connection.close()
+    """

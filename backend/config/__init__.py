@@ -37,6 +37,7 @@ RESOURCES_SCRIPT = [
 RESOURCES_STYLE = [
     'app/css/fonts.css',
     'app/css/app.css',
+    'app/css/buttons.css',
     'app/css/config.css',
     'app/css/grid.css',
     'app/css/detail.css',

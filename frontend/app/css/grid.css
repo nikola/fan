@@ -135,6 +135,21 @@
     margin: 0 auto;
     }
 
+.boom-movie-grid-item img.desaturate {
+    -webkit-animation: fx-desaturate 0.36s 1 normal linear forwards;
+    }
+
+@-webkit-keyframes fx-desaturate {
+    from {
+        -webkit-filter: grayscale(0%);
+    }
+    to {
+        -webkit-filter: grayscale(100%);
+    }
+}
+
+
+
 .boom-movie-grid-item-title {
     text-align: center;
     display: block;

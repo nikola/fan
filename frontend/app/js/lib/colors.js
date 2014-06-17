@@ -17,3 +17,22 @@ ka.lib.getLuminance = function (color) {
         luminanceBlue = (channelBlue <= 0.03928) ? channelBlue / 12.92 : Math.pow(((channelBlue + 0.055) / 1.055), 2.4);
     return 0.2126 * luminanceRed + 0.7152 * luminanceGreen + 0.0722 * luminanceBlue;
 };
+
+ka.lib.desaturateVisiblePosters = function () {
+    ka.state.desaturationImageCache = [];
+
+    var start = ka.state.gridPage * ka.config.gridMaxRows, end = (ka.state.gridPage + 1) * ka.config.gridMaxRows;
+    for (var row = start; row < end; row++) {
+        for (var item, i = 0; item = ka.state.gridLookupMatrix[row][i]; i++) {
+            var element = $('#boom-poster-' + item.uuid);
+            ka.state.desaturationImageCache.push(element);
+            element.addClass('desaturate');
+        }
+    }
+};
+
+ka.lib.undesaturateVisiblePosters = function () {
+    for (var element, e = 0; element = ka.state.desaturationImageCache[e]; e++) {
+        element.removeClass('desaturate');
+    }
+};

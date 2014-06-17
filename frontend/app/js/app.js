@@ -76,7 +76,7 @@ document.oncontextmenu = function (event) {
 
 
 $(document).ready(function () {
-    ka.state.maxDetailButton = $('.boom-detail-button').length;
+    ka.state.maxDetailButton = $('#boom-detail-button-group .boom-button').length;
 
     /* Notify backend that UI is ready. */
     $.ajax({url: BOOT_TOKEN, type: 'PATCH', success: boot});

@@ -25,7 +25,7 @@ ka.lib.updateDetailPage = function () {
 
 ka.lib.updateDetailButtonSelection = function () {
     $('#boom-detail-button-group .boom-active').removeClass('boom-active');
-    $('#boom-detail-button-group .boom-detail-button').eq(ka.state.currentDetailButton).addClass('boom-active');
+    $('#boom-detail-button-group .boom-button').eq(ka.state.currentDetailButton).addClass('boom-active');
     if (ka.state.currentDetailButton > 0) {
         $('#boom-movie-detail-shade').velocity({opacity: 0.75}, {duration: 360});
         $('#boom-movie-detail-description').velocity('transition.expandIn', {duration: 360, display: 'flex'});

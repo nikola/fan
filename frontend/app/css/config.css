@@ -4,3 +4,12 @@
  *  @author Nikola Klaric (nikola@generic.company)
  *  @copyright Copyright (c) 2013-2014 Nikola Klaric
  */
+
+#boom-movie-config {
+    display: block;
+
+    width: 780px; height: 1080px;
+
+    position: absolute; top: 0; left: -780px;
+
+    }

@@ -6,6 +6,7 @@ __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 import os.path
 import json
+import re
 
 import requests
 from pants.web.application import Module
@@ -51,6 +52,7 @@ def serveRoot(request):
         pathname = os.path.join(PROJECT_PATH, "frontend", "app", "index.html")
         with open(pathname, "rb") as fp:
             html = fp.read()
+        html = re.sub(r'>\s*<', '><', html)
 
         stylesheetsAmalgamated = "\n".join([open(os.path.join(PROJECT_PATH, "frontend", pathname)).read() for pathname in RESOURCES_STYLE])
 

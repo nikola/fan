@@ -209,7 +209,7 @@ ka.lib.registerHotkeys = function () {
 
                 $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({left: '-=1920'}, 720);
             } else if (ka.state.currentPageMode == 'detail') {
-                ka.state.currentPageMode = 'play';
+                // ka.state.currentPageMode = 'play';
 
                 ka.state.socketDispatcher.push('movie:play',
                     ka.state.gridLookupMatrix[ka.config.gridMaxRows * ka.state.gridPage + ka.state.gridFocusY][ka.state.gridFocusX].uuid);
@@ -223,7 +223,11 @@ ka.lib.registerHotkeys = function () {
             if (ka.state.currentPageMode == 'config') {
                 ka.state.currentPageMode = 'grid';
 
-                $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({left: '-=780', opacity: '+=0.5'}, 360);
+                $('#boom-movie-grid-container, #boom-movie-detail').velocity({left: '-=780', opacity: '+=0.5'}, 360);
+                $('#boom-poster-focus').velocity({left: '-=780', opacity: '+=1'}, 360);
+                $('#boom-movie-config').velocity({left: '-=780'}, 360);
+
+                ka.lib.undesaturateVisiblePosters();
             } else if (ka.state.currentPageMode == 'detail') {
                 ka.state.currentPageMode = 'grid';
 
@@ -231,7 +235,11 @@ ka.lib.registerHotkeys = function () {
             } else if (ka.state.currentPageMode == 'grid') {
                 ka.state.currentPageMode = 'config';
 
-                $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({left: '+=780', opacity: '-=0.5'}, 360);
+                $('#boom-movie-grid-container, #boom-movie-detail').velocity({left: '+=780', opacity: '-=0.5'}, 360);
+                $('#boom-poster-focus').velocity({left: '+=780', opacity: '-=1'}, 360);
+                $('#boom-movie-config').velocity({left: '+=780'}, 360);
+
+                ka.lib.desaturateVisiblePosters();
             }
         }
     });

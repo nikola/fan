@@ -36,14 +36,14 @@ ka.state = {
   , detachedGridCells: {}
   , gridLookupMatrix: {}
   , gridLookupItemsPerLine: []
-  , gridLookupLinesByKey: {} // TODO: needed?
+  , gridLookupLinesByKey: {} // TODO: needed for focusing via hotkey
   , gridLookupKeyByLine: []
 };
 
 
 function boot() {
     /* ... */
-    ka.lib.registerShortcuts(); // TODO: rename to Hotkeys
+    ka.lib.registerHotkeys();
 
     /* ... */
     ka.lib.setupCollator();

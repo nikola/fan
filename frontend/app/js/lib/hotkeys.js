@@ -7,13 +7,13 @@
 ; var ka = ka || {}; if (!('lib' in ka)) ka.lib = {};
 
 
-ka.lib.registerShortcuts = function () {
+ka.lib.registerHotkeys = function () {
 
     var listener = new keypress.Listener();
 
     listener.register_combo({
         keys: 'home'
-      , on_keyup: function () {
+      , on_keydown: function () {
             if (ka.state.currentPageMode == 'grid') {
                 if (ka.state.gridPage > 0) {
                     ka.state.gridPage = 0;
@@ -26,7 +26,7 @@ ka.lib.registerShortcuts = function () {
 
     listener.register_combo({
         keys: 'end'
-      , on_keyup: function () {
+      , on_keydown: function () {
             if (ka.state.currentPageMode == 'grid') {
                 if (ka.state.gridPage + 1 < ka.state.gridTotalPages) {
                     ka.state.gridPage = ka.state.gridTotalPages - 1;
@@ -39,7 +39,7 @@ ka.lib.registerShortcuts = function () {
 
     listener.register_combo({
         keys: 'pageup'
-      , on_keyup: function () {
+      , on_keydown: function () {
             if (ka.state.currentPageMode == 'grid') {
                 if (ka.state.gridPage > 0) {
                     ka.state.gridPage -= 1;
@@ -52,7 +52,7 @@ ka.lib.registerShortcuts = function () {
 
     listener.register_combo({
         keys: 'pagedown'
-      , on_keyup: function () {
+      , on_keydown: function () {
             if (ka.state.currentPageMode == 'grid') {
                 if (ka.state.gridPage + 1 < ka.state.gridTotalPages) {
                     ka.state.gridPage += 1;
@@ -199,7 +199,7 @@ ka.lib.registerShortcuts = function () {
 
     listener.register_combo({
         keys: 'enter'
-      , on_keyup: function () {
+      , on_keydown: function () {
             if (ka.state.currentPageMode == 'grid') {
                 ka.state.currentPageMode = 'detail';
                 ka.state.currentDetailButton = 0;
@@ -209,6 +209,8 @@ ka.lib.registerShortcuts = function () {
 
                 $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({left: '-=1920'}, 720);
             } else if (ka.state.currentPageMode == 'detail') {
+                ka.state.currentPageMode = 'play';
+
                 ka.state.socketDispatcher.push('movie:play',
                     ka.state.gridLookupMatrix[ka.config.gridMaxRows * ka.state.gridPage + ka.state.gridFocusY][ka.state.gridFocusX].uuid);
             }
@@ -217,10 +219,19 @@ ka.lib.registerShortcuts = function () {
 
     listener.register_combo({
         keys: 'escape'
-      , on_keyup: function () {
-            if (ka.state.currentPageMode == 'detail') {
+      , on_keydown: function () {
+            if (ka.state.currentPageMode == 'config') {
                 ka.state.currentPageMode = 'grid';
+
+                $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({left: '-=780', opacity: '+=0.5'}, 360);
+            } else if (ka.state.currentPageMode == 'detail') {
+                ka.state.currentPageMode = 'grid';
+
                 $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({left: '+=1920'}, 720);
+            } else if (ka.state.currentPageMode == 'grid') {
+                ka.state.currentPageMode = 'config';
+
+                $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({left: '+=780', opacity: '-=0.5'}, 360);
             }
         }
     });

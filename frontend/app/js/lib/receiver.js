@@ -16,7 +16,8 @@ ka.lib.addMovieToCortex = function (movieDict) {
             var criterion = movieDict.titleOriginal.replace(/^the /i, '').replace('.', '').toLowerCase(),
                 key = /^(?:the )?([\w])/i.exec(movieDict.titleOriginal)[1].toUpperCase().replace(/[0-9]/, '123');
         } else if (order == 'byYear') {
-            var criterion = key = movieDict.releaseYear;
+            var criterion = movieDict.titleOriginal.replace(/^the /i, '').replace('.', '').toLowerCase(),
+                key = movieDict.releaseYear;
         }
 
         if (key in ka.data.cortex[order]) {

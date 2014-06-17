@@ -10,16 +10,17 @@
 ka.data = {
     cortex: {
         all: new Cortex([])
-        , byYear: new Cortex({})
         , byUuid: new Cortex({})
-        , byLetter: new Cortex({})
+        , byYear: {} // new Cortex({})
+        , byLetter: {} // new Cortex({})
     }
 };
 
 ka.config = {
     gridMaxRows: 3
   , gridMaxColumns: 7
-  , gridSortOrder: 'byLetter'
+  // , gridSortOrder: 'byLetter'
+  , gridSortOrder: 'byYear'
   , gridKeys: {
         byLetter: ['123'].concat('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''))
     }

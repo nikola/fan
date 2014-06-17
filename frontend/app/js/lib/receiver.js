@@ -6,58 +6,59 @@
  */
 ; var ka = ka || {}; if (!('lib' in ka)) ka.lib = {};
 
-// ka.data.cortex.all.forEach(function (item, index) { console.log(item.titleOriginal.getValue(), '->', item.titleSortable.getValue())})
+// ka.data.cortex.all.forEach(function (item, index) { console.log(item.titleOriginal.getValue(), '->', item.criterion.getValue())})
 
 ka.lib.addMovieToCortex = function (movieDict) {
     if (ka.data.cortex.byUuid.hasKey(movieDict.uuid)) return;
 
-    var uuid = movieDict.uuid,
-        titleOriginal = movieDict.titleOriginal,
-        titleSortable = titleOriginal.replace(/^the /i, '').replace('.', '').toLowerCase(),
-        firstLetter = /^(?:the )?([\w])/i.exec(titleOriginal)[1].toUpperCase(),
-        // firstLetterCode = firstLetter.charCodeAt(0),
-        releaseYear = movieDict.releaseYear;
+    for (var orders = ['byLetter', 'byYear'], order, o = 0; order = orders[o]; o++) {
+        if (order == 'byLetter') {
+            var criterion = movieDict.titleOriginal.replace(/^the /i, '').replace('.', '').toLowerCase(),
+                key = /^(?:the )?([\w])/i.exec(movieDict.titleOriginal)[1].toUpperCase().replace(/[0-9]/, '123');
+        } else if (order == 'byYear') {
+            var criterion = key = movieDict.releaseYear;
+        }
 
-    movieDict.titleSortable = titleSortable;
-
-    if (/[0-9]/.test(firstLetter)) {
-        firstLetter = '123';
-    }
-
-    if (firstLetter in ka.data.cortex.byLetter) {
-        var byLetterList = ka.data.cortex.byLetter[firstLetter];
-    } else {
-        var byLetterList = new Cortex([]);
-    }
-
-    if (byLetterList.count() == 0) {
-        byLetterList.push(movieDict);
-    } else if (byLetterList.count() == 1) {
-
-        // if (byLetterList[0].titleSortable.getValue() < titleSortable) {
-        if (ka.state.collator.compare(byLetterList[0].titleSortable.getValue(), titleSortable) < 0) {
-            byLetterList.push(movieDict);
+        if (key in ka.data.cortex[order]) {
+            var sortedList = ka.data.cortex[order][key];
         } else {
-            byLetterList.unshift(movieDict);
+            var sortedList = new Cortex([]);
+        }
+
+        ka.lib._insertSorted(sortedList, movieDict, criterion, order);
+        ka.data.cortex[order][key] = sortedList;
+    }
+
+    ka.data.cortex.byUuid.add(movieDict.uuid, movieDict);
+    ka.data.cortex.all.push(movieDict);
+};
+
+
+ka.lib._insertSorted  = function (sortedListRef, item, primaryCriterion, field) {
+    item[field] = primaryCriterion;
+
+    var compare = ka.state.collator.compare;
+
+    if (sortedListRef.count() == 0) {
+        sortedListRef.push(item);
+    } else if (sortedListRef.count() == 1) {
+        if (compare(sortedListRef[0][field].getValue(), primaryCriterion) < 0) {
+            sortedListRef.push(item);
+        } else {
+            sortedListRef.unshift(item);
         }
     } else {
-        var index = byLetterList.findIndex(function (wrapperElement, index, wrapperArray) {
-            if (index == 0 || index == byLetterList.count() - 1) {
-                // return titleSortable < byLetterList[index].titleSortable.getValue();
-                return ka.state.collator.compare(titleSortable, byLetterList[index].titleSortable.getValue()) < 0;
+        var index = sortedListRef.findIndex(function (wrapperElement, index) {
+            if (index == 0 || index == sortedListRef.count() - 1) {
+                return compare(primaryCriterion, sortedListRef[index][field].getValue()) < 0;
             } else {
-                // return titleSortable < byLetterList[index].titleSortable.getValue() && titleSortable > byLetterList[index -1].titleSortable.getValue();
-                return ka.state.collator.compare(titleSortable, byLetterList[index].titleSortable.getValue()) < 0 && ka.state.collator.compare(titleSortable, byLetterList[index -1].titleSortable.getValue()) > 0;
+                return compare(primaryCriterion, sortedListRef[index][field].getValue()) < 0 && compare(primaryCriterion, sortedListRef[index -1][field].getValue()) > 0;
             }
         });
         if (index == -1) {
-            byLetterList.push(movieDict);
+            sortedListRef.push(item);
         } else {
-            byLetterList.insertAt(index, movieDict);
+            sortedListRef.insertAt(index, item);
         }
-
-    }
-    ka.data.cortex.byLetter[firstLetter] = byLetterList;
-    ka.data.cortex.byUuid.add(uuid, movieDict);
-    ka.data.cortex.all.push(movieDict);
+    }    
 };

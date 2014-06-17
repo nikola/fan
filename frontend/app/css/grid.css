@@ -63,15 +63,16 @@
 .boom-movie-grid-letter-indicator-text {
     display: inline-block;
     margin-top: 30px;
-    width: 64px;
+    min-width: 44px;
     font-size: 32px;
-    margin-left: 28px;
+    /* margin-left: 28px; */
     text-align: center;
     color: #aaa;
     border: 2px solid #aaa;
     height: 48px;
     line-height: 46px;
     border-radius: 0 0 8px 8px;
+    padding: 0 8px;
     }
 
 .boom-movie-grid-table {

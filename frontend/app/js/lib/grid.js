@@ -27,12 +27,15 @@ ka.lib.recalcMovieGrid = function () {
     ka.state.gridLookupKeyByLine = [];
 
     var currentRowIndex = 0, currentColumnIndex, currentCellIndex = 0, currentLineIndex,
-        keys = Object.getOwnPropertyNames(ka.data.cortex[ka.config.gridSortOrder]).sort(), keyCount = keys.length;
+        keys = Object.getOwnPropertyNames(ka.data.cortex[ka.config.gridSortCriterion]).sort(), keyCount = keys.length;
+    if (ka.config.gridSortOrder == 'desc') {
+        keys.reverse();
+    }
 
     for (var key, keyIndex = 0; keyIndex < keyCount; keyIndex++) {
         key = keys[keyIndex];
-        if (key in ka.data.cortex[ka.config.gridSortOrder]) {
-            var items = ka.data.cortex[ka.config.gridSortOrder][key], count = items.count();
+        if (key in ka.data.cortex[ka.config.gridSortCriterion]) {
+            var items = ka.data.cortex[ka.config.gridSortCriterion][key], count = items.count();
             if (count) {
                 currentColumnIndex = 0;
                 for (var movieIndex = 0; movieIndex < count; movieIndex++) {

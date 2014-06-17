@@ -20,7 +20,8 @@ ka.config = {
     gridMaxRows: 3
   , gridMaxColumns: 7
   // , gridSortOrder: 'byLetter'
-  , gridSortOrder: 'byYear'
+  , gridSortCriterion: 'byYear'
+  , gridSortOrder: 'desc'
   , gridKeys: {
         byLetter: ['123'].concat('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''))
     }

@@ -26,9 +26,10 @@ from utils.fs import getLongPathname
 
 class Publisher(WebSocket):
 
-    def __init__(self, queue, request, userAgent, *args):
+    def __init__(self, queue, request, userAgent, bridgeToken, *args):
         self.queue = queue
         self.userAgent = userAgent
+        self.bridgeToken = bridgeToken
 
         super(Publisher, self).__init__(request)
 
@@ -46,15 +47,17 @@ class Publisher(WebSocket):
         command, payload = json.loads(data)
         if command == 'movie:play':
             self.queue.put('player:play:%s' % payload)
+        elif command == 'loopback:command':
+            self.write(unicode('["receive:command:token", "__%s__.%s()"]'% (self.bridgeToken, payload)))
 
     def on_close(self):
         pass
 
 
-def _startCollector(queue, port, certificateFile, userAgent):
+def _startCollector(queue, port, certificateFile, userAgent, bridgeToken):
 
     def proxy(request):
-        Publisher(queue, request, userAgent)
+        Publisher(queue, request, userAgent, bridgeToken)
 
     logging.basicConfig(level=logging.INFO,
                         format='%(asctime)s - %(message)s',

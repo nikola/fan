@@ -229,7 +229,7 @@ def start(userAgent, httpPort, websocketPort, callback, bridgeToken, bootToken):
     jsBindings.SetProperty('HTTP_PORT', httpPort)
     jsBindings.SetProperty('WEBSOCKET_PORT', websocketPort)
     jsBindings.SetProperty('BOOT_TOKEN', bootToken)
-    jsBindings.SetObject(bridgeToken, bridge)
+    jsBindings.SetObject('__%s__' % bridgeToken, bridge)
     jsBindings.SetObject('console', bridge)
     jsBindings.SetProperty('navigator', {'userAgent': CEF_REAL_AGENT})
     browser.SetJavascriptBindings(jsBindings)

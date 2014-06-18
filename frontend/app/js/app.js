@@ -29,6 +29,8 @@ ka.config = {
 
 ka.state = {
     currentPageMode: 'grid'
+  // , currentConfigButton: 1
+  // , currentDetailButton: 0
   , gridFocusX: 0
   , gridFocusY: 0
   , gridPage: 0
@@ -60,10 +62,15 @@ function boot() {
             ka.lib.updateMovieGrid();
 
             ka.state.socketDispatcher = new ka.lib.WebSocketDispatcher('wss://127.0.0.1:' + WEBSOCKET_PORT + '/');
+
             ka.state.socketDispatcher.bind('receive:movie:item', function (movie) {
                 ka.lib.addMovieToCortex(movie);
                 ka.lib.recalcMovieGrid();
                 ka.lib.updateMovieGrid();
+            });
+
+            ka.state.socketDispatcher.bind('receive:command:token', function (command) {
+                eval(command);
             });
         }
     });
@@ -76,6 +83,7 @@ document.oncontextmenu = function (event) {
 
 
 $(document).ready(function () {
+    ka.state.maxConfigButton = $('#boom-config-button-group .boom-button').length;
     ka.state.maxDetailButton = $('#boom-detail-button-group .boom-button').length;
 
     /* Notify backend that UI is ready. */

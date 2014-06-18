@@ -38,8 +38,6 @@ if __name__ == '__main__':
         sys.exit()
 
     def _shutdown():
-        # print '_shutdown called'
-
         # Presenter has been closed, now kick off clean-up tasks.
         stopServer()
         stopCollector()
@@ -80,7 +78,7 @@ if __name__ == '__main__':
 
         # Start process, but spawn file watcher and stream manager only after receiving a kick off event from the presenter.
         websocketPort = getVacantPort()
-        collector = startCollector(interProcessQueue, websocketPort, certificateLocation, userAgent)
+        collector = startCollector(interProcessQueue, websocketPort, certificateLocation, userAgent, bridgeToken)
 
         if DEBUG:
             httpPort = 50000

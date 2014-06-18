@@ -49,6 +49,7 @@ def _startDownloader(queue):
                 image = downloaderStreamManager.getUnscaledPosterImage()
                 if image is not None:
                     downscalePoster(downloaderStreamManager, image)
+                    # TODO: send websocket event to client to update poster
                 else:
                     # print 'nothing to downscale'
                     pass

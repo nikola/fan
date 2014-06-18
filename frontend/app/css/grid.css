@@ -148,6 +148,18 @@
     }
 }
 
+.boom-movie-grid-item img.undesaturate {
+    -webkit-animation: fx-undesaturate 0.36s 1 normal linear forwards;
+    }
+
+@-webkit-keyframes fx-undesaturate {
+    from {
+        -webkit-filter: grayscale(100%);
+    }
+    to {
+        -webkit-filter: grayscale(0%);
+    }
+}
 
 
 .boom-movie-grid-item-title {

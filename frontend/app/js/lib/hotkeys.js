@@ -68,7 +68,12 @@ ka.lib.registerHotkeys = function () {
     listener.register_combo({
         keys: 'up'
       , on_keydown: function () {
-            if (ka.state.currentPageMode == 'detail') {
+            if (ka.state.currentPageMode == 'config') {
+                if (ka.state.currentConfigButton > 0) {
+                    ka.state.currentConfigButton -= 1;
+                    ka.lib.updateConfigButtonSelection();
+                }
+            } else if (ka.state.currentPageMode == 'detail') {
                 if (ka.state.currentDetailButton > 0) {
                     ka.state.currentDetailButton -= 1;
                     ka.lib.updateDetailButtonSelection();
@@ -111,7 +116,12 @@ ka.lib.registerHotkeys = function () {
     listener.register_combo({
         keys: 'down'
       , on_keydown: function () {
-            if (ka.state.currentPageMode == 'detail') {
+            if (ka.state.currentPageMode == 'config') {
+                if (ka.state.currentConfigButton + 1 < ka.state.maxConfigButton) {
+                    ka.state.currentConfigButton += 1;
+                    ka.lib.updateConfigButtonSelection();
+                }
+            } else if (ka.state.currentPageMode == 'detail') {
                 if (ka.state.currentDetailButton + 1 < ka.state.maxDetailButton) {
                     ka.state.currentDetailButton += 1;
                     ka.lib.updateDetailButtonSelection();
@@ -200,7 +210,11 @@ ka.lib.registerHotkeys = function () {
     listener.register_combo({
         keys: 'enter'
       , on_keydown: function () {
-            if (ka.state.currentPageMode == 'grid') {
+            if (ka.state.currentPageMode == 'config') {
+                if (ka.state.currentConfigButton == 0) {
+                    ka.state.socketDispatcher.push('loopback:command', 'shutdown');
+                }
+            } else if (ka.state.currentPageMode == 'grid') {
                 ka.state.currentPageMode = 'detail';
                 ka.state.currentDetailButton = 0;
 
@@ -234,6 +248,9 @@ ka.lib.registerHotkeys = function () {
                 $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({left: '+=1920'}, 720);
             } else if (ka.state.currentPageMode == 'grid') {
                 ka.state.currentPageMode = 'config';
+
+                ka.state.currentConfigButton = 1;
+                ka.lib.updateConfigButtonSelection();
 
                 $('#boom-movie-grid-container, #boom-movie-detail').velocity({left: '+=780', opacity: '-=0.5'}, 360);
                 $('#boom-poster-focus').velocity({left: '+=780', opacity: '-=1'}, 360);

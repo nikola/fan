@@ -8,8 +8,9 @@
 #boom-movie-config {
     display: block;
 
-    width: 780px; height: 1080px;
+    width: 750px; height: 1080px;
 
     position: absolute; top: 0; left: -780px;
 
+    padding-left: 30px;
     }

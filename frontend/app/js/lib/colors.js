@@ -26,13 +26,13 @@ ka.lib.desaturateVisiblePosters = function () {
         for (var item, i = 0; item = ka.state.gridLookupMatrix[row][i]; i++) {
             var element = $('#boom-poster-' + item.uuid);
             ka.state.desaturationImageCache.push(element);
-            element.addClass('desaturate');
+            element.removeClass('undesaturate').addClass('desaturate');
         }
     }
 };
 
 ka.lib.undesaturateVisiblePosters = function () {
     for (var element, e = 0; element = ka.state.desaturationImageCache[e]; e++) {
-        element.removeClass('desaturate');
+        element.removeClass('desaturate').addClass('undesaturate');
     }
 };

@@ -18,6 +18,7 @@ from utils.net import getVacantPort, getCertificateLocation
 from orchestrator.control import start as startOrchestrator, stop as stopOrchestrator
 from downloader.control import start as startDownloader, stop as stopDownloader
 from player.control import start as startPlayer, stop as stopPlayer
+from analyzer.control import start as startAnalyzer, stop as stopAnalyzer
 from presenter.control import start as present
 
 
@@ -40,6 +41,7 @@ if __name__ == '__main__':
         # Presenter has been closed, now kick off clean-up tasks.
         stopOrchestrator()
         stopDownloader()
+        stopAnalyzer()
         stopPlayer()
 
         # Block until all queue items have been processed.
@@ -49,6 +51,7 @@ if __name__ == '__main__':
         # Gracefully stop processes.
         orchestrator.join()
         downloader.join()
+        analyzer.join()
         player.join()
 
         os.remove(certificateLocation)
@@ -69,9 +72,9 @@ if __name__ == '__main__':
         # Omni-directional message queue between boot process, collector process and server process.
         interProcessQueue = InterProcessQueue()
 
-        player = startPlayer(interProcessQueue)
-
         downloader = startDownloader(interProcessQueue)
+        analyzer = startAnalyzer(interProcessQueue)
+        player = startPlayer(interProcessQueue)
 
         if DEBUG:
             serverPort = 50000

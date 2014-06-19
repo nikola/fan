@@ -93,34 +93,37 @@ ka.lib.recalcMovieGrid = function () {
 ka.lib.updateMovieGrid = function () {
     var currentCellIndex = 0,
         renderedCells = $('.boom-movie-grid-item'), detachedCell,
+        renderedKeyContainers = $('.boom-movie-grid-key'), renderedKeyLabels = $('.boom-movie-grid-key-label'),
         hasCells = renderedCells.length > 0,
         lastKey = null, currentKey,
         movie;
 
-    // var color = true;
-
     for (var row = 0, matrix = ka.state.gridLookupMatrix, rows = matrix.length; row < rows; row++) {
-        var keyIndicator = $('<span>', {
-            css: {
-                padding: 0
-              , width: '110px'
-              , marginRight: '-10px'
-              , height: '360px'
-              , display: 'inline'
-              , float: 'left'
-              , textAlign: 'center'
-                // margin: 30px 0;
-              // , backgroundColor: color ? 'red' : 'green'
-            }
-        }).appendTo('#boom-movie-grid-container');
+        var keyContainer = renderedKeyContainers.eq(row);
+        if (!keyContainer.size()) {
+            keyContainer = $('<span class="boom-movie-grid-key"></span>').appendTo('#boom-movie-grid-container');
+        }
 
         currentKey = ka.state.gridLookupKeyByLine[row];
         if (currentKey != lastKey || row % ka.config.gridMaxRows == 0) {
-            $('<span class="boom-movie-grid-letter-indicator-text">' + currentKey + '</span>').appendTo(keyIndicator);
-            lastKey = currentKey;
-        }
+            keyContainer.css('visibility', 'visible');
 
-        // color = !color;
+            var keyLabel = renderedKeyLabels.eq(row);
+            if (keyLabel.size()) {
+               keyLabel.text(currentKey);
+            } else{
+                $('<span class="boom-movie-grid-key-label">' + currentKey + '</span>').appendTo(keyContainer);
+            }
+
+            lastKey = currentKey;
+        } else {
+            // if (renderedKeyContainers.length >= rows) {
+                keyContainer.css('visibility', 'hidden');
+                // renderedKeyLabels.eq(row).text('');
+            /* } else {
+                $('<span class="boom-movie-grid-key-label"></span>').appendTo(keyIndicator);
+            } */
+        }
 
         for (var column = 0, line = matrix[row], columns = line.length; column < columns; column++) {
             movie = ka.state.gridLookupMatrix[row][column];
@@ -150,7 +153,9 @@ ka.lib.updateMovieGrid = function () {
             $('.spinner').remove();
             $('#content').css('visibility', 'visible');
             ka.lib.updateDetailPage();
-            $('#boom-poster-focus').velocity('fadeIn', 720);
+            if (ka.state.currentPageMode == 'grid') {
+                $('#boom-poster-focus').velocity('fadeIn', 720);
+            }
         // });
     }
 };

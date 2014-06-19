@@ -97,8 +97,9 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                 #     streamWatcher.join()
 
                 if engine is not None:
-                    pubSubReference.close()
-                    pubSubReference = None
+                    if pubSubReference is not None:
+                        pubSubReference.close()
+                        pubSubReference = None
                     engine.stop()
                     engine = None
 

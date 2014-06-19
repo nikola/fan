@@ -1,6 +1,5 @@
 # coding: utf-8
-""" TODO: implement SIGINT handler
-        http://stackoverflow.com/a/1112350
+"""
 """
 __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
@@ -88,6 +87,9 @@ if __name__ == '__main__':
 
         # Start the blocking presenter process.
         present(_shutdown, *arguments)
+
+        # TODO: implement SIGINT handler
+        # http://stackoverflow.com/a/1112350
     except (KeyboardInterrupt, SystemError):
         # streamManager.shutdown()
         # stopServer()

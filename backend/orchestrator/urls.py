@@ -127,8 +127,7 @@ def serveFont(request, identifier):
 
 @module.route('/movies/all', methods=('GET',), headers=SERVER_HEADERS, content_type='application/json')
 def serveAllMovies(request):
-    movies = module.streamManager.getAllMovies()
-    return json.dumps(movies, separators=(',',':')), 200
+    return module.streamManager.getAllMoviesAsJson(), 200
 
 
 """

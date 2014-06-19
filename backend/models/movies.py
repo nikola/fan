@@ -34,10 +34,10 @@ GENRES_EN = (
 
 
 # Association table.
-movie_genres = Table('movie_genres', Base.metadata,
-    Column('movie_id', Integer, ForeignKey('movies.id')),
-    Column('genre_id', Integer, ForeignKey('genres.id')),
-)
+# movie_genres = Table('movie_genres', Base.metadata,
+#     Column('movie_id', Integer, ForeignKey('movies.id')),
+#     Column('genre_id', Integer, ForeignKey('genres.id')),
+# )
 
 
 class Movie(Base):
@@ -60,7 +60,7 @@ class Movie(Base):
     isPosterDownloading = Column(Boolean, default=False)
 
     # Many-to-many Movies <-> Genres.
-    genres = relationship('Genre', secondary=movie_genres, backref='movies')
+    # genres = relationship('Genre', secondary=movie_genres, backref='movies')
 
     def __init__(self, **kwargs):
         for key, value in kwargs.iteritems():

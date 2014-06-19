@@ -22,9 +22,9 @@ ka.config = {
   // , gridSortOrder: 'byLetter'
   , gridSortCriterion: 'byYear'
   , gridSortOrder: 'desc'
-  , gridKeys: {
-        byLetter: ['123'].concat('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''))
-    }
+  // , gridKeys: {
+  //       byLetter: ['123'].concat('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''))
+  //   }
 };
 
 ka.state = {

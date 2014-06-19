@@ -18,10 +18,11 @@ from settings import DEBUG
 from utils.win32 import getAppStoragePathname
 from models.common import Base, GUID, createNamedTuple, createUuid # , DictSerializable
 from models.streams import Stream
-from models.genres import Genre
+# from models.genres import Genre
 from models.movies import Movie
-from models.variants import Variant
+# from models.variants import Variant
 from models.images import Image
+# from models.tracks import Track
 
 
 # TODO: use named tuples ?
@@ -66,7 +67,7 @@ class StreamManager(object):
         #     # TODO: migrate schema by dumping all data to JSON, then drop_all, then read JSON back in
         # else:
         # Base.metadata.drop_all(self.engine, checkfirst=True)
-        Base.metadata.create_all(self.engine)
+        Base.metadata.create_all(self.engine, checkfirst=True)
 
 
     def shutdown(self):
@@ -281,7 +282,7 @@ class StreamManager(object):
                 return image # TODO: correct return type ?
 
 
-    def getAllMovies(self):
+    def getAllMoviesAsJson(self):
         with self._session() as session:
             movieList = []
             for movie in session.query(Movie).values(Movie.uuid, Movie.titleOriginal, Movie.releaseYear, Movie.runtime, Movie.overview):
@@ -292,7 +293,7 @@ class StreamManager(object):
                     'runtime': movie[3],
                     'overview': movie[4],
                 })
-            return movieList
+            return json.dumps(movieList, separators=(',',':'))
 
 
     def getMovieAsJson(self, identifier):
@@ -320,6 +321,16 @@ class StreamManager(object):
             else:
                 return movie.streams[0].location
 
+
+    def getUnidentifiedTracksMovie(self):
+        with self._session() as session:
+            try:
+                movie = session.query(Movie).join(Track).group_by(Movie.id).having(~Movie.tracks.any()).first()
+            except NoResultFound:
+                return None
+            else:
+                if movie is not None:
+                    return movie.uuid
 
     """
     def _persist(self):

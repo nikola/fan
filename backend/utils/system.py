@@ -7,6 +7,7 @@ __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 import os
 import sys
 import platform
+import ctypes
 
 import win32api
 
@@ -52,3 +53,10 @@ def isNtfsFilesystem():
 
 def getScreenResolution():
     return win32api.GetSystemMetrics(0), win32api.GetSystemMetrics(1)
+
+
+def isDesktopCompositionEnabled():
+    # dwm.DwmEnableComposition(0|1)
+    b = ctypes.c_bool()
+    retcode = ctypes.windll.dwmapi.DwmIsCompositionEnabled(ctypes.byref(b))
+    return retcode == 0 and b.value

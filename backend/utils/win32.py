@@ -12,13 +12,6 @@ import ctypes
 from config import APP_VENDOR, APP_NAME
 
 
-def isDesktopCompositionEnabled():
-    # dwm.DwmEnableComposition(0|1)
-    b = ctypes.c_bool()
-    retcode = ctypes.windll.dwmapi.DwmIsCompositionEnabled(ctypes.byref(b))
-    return retcode == 0 and b.value
-
-
 def getColorBrush(red=0, green=0, blue=0):
     class _COLORREF(ctypes.Structure):
         _fields_ = [

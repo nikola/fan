@@ -12,7 +12,7 @@ from multiprocessing import JoinableQueue as InterProcessQueue, freeze_support
 from ctypes import windll
 
 from settings import DEBUG
-from utils.system import isCompatiblePlatform, isNtfsFilesystem, getScreenResolution
+from utils.system import isCompatiblePlatform, isNtfsFilesystem, getScreenResolution, isDesktopCompositionEnabled
 from utils.agent import getUserAgent
 from utils.net import getVacantPort, getCertificateLocation
 from orchestrator.control import start as startOrchestrator, stop as stopOrchestrator
@@ -26,15 +26,19 @@ if __name__ == '__main__':
     freeze_support()
 
     if not isCompatiblePlatform():
-        windll.user32.MessageBoxA(0, 'This application is only compatible with Windows Vista or newer!', 'Error', 0)
+        windll.user32.MessageBoxA(0, 'This application is only compatible with Windows Vista or newer.', 'Error', 0)
         sys.exit()
 
     if not isNtfsFilesystem():
-        windll.user32.MessageBoxA(0, 'This application must be run from an NTFS partition!', 'Error', 0)
+        windll.user32.MessageBoxA(0, 'This application must be run from an NTFS partition.', 'Error', 0)
         sys.exit()
 
     if getScreenResolution() != (1920, 1080):
-        windll.user32.MessageBoxA(0, 'This application must be run at 1920x1080 screen resolution!', 'Error', 0)
+        windll.user32.MessageBoxA(0, 'This application must be run at 1920x1080 screen resolution.', 'Error', 0)
+        sys.exit()
+
+    if not isDesktopCompositionEnabled():
+        windll.user32.MessageBoxA(0, 'This application requires that the Desktop Window Manager (DWM) is enabled.', 'Error', 0)
         sys.exit()
 
     def _shutdown():

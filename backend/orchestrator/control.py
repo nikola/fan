@@ -107,6 +107,11 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
 
                 queue.task_done()
                 break
+            elif command.startswith('orchestrator:poster-refresh:'):
+                movieUuid = command.replace('orchestrator:poster-refresh:', '')
+                pubSubReference.write(unicode('["movie:poster:refresh", "%s"]' %movieUuid))
+
+                queue.task_done()
             else:
                 queue.put(command)
                 queue.task_done()

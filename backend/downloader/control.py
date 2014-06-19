@@ -30,9 +30,7 @@ def _startDownloader(queue):
 
                 queue.task_done()
             elif command == 'downloader:stop':
-                # print 'attempting to shut down downloader stream manager ...'
                 downloaderStreamManager.shutdown()
-                # print '... shut down downloader stream manager!'
 
                 queue.task_done()
                 break
@@ -48,7 +46,8 @@ def _startDownloader(queue):
                 # else:
                 image = downloaderStreamManager.getUnscaledPosterImage()
                 if image is not None:
-                    downscalePoster(downloaderStreamManager, image)
+                    movieUuid = downscalePoster(downloaderStreamManager, image)
+                    queue.put('orchestrator:poster-refresh:%s' % movieUuid)
                     # TODO: send websocket event to client to update poster
                 else:
                     # print 'nothing to downscale'

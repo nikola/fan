@@ -85,7 +85,10 @@ def serveMoviePoster(request, movieUuid, width):
 
     if image is not None:
         headers = SERVER_HEADERS
-        headers.update({'Last-modified': getRfc1123Timestamp(image.modified)})
+        headers.update({
+            'Last-modified': getRfc1123Timestamp(image.modified),
+            'Cache-Control': 'max-age=0, must-revalidate',
+        })
 
         return image.blob, 200, HTTPHeaders(data=headers)
     else:

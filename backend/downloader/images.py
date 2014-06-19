@@ -63,8 +63,10 @@ def downscalePoster(streamManager, image):
         streamManager.saveImageData(movieUuid, 300, blobAtWidth300, True, 'Poster', 'WebP', image.urlOriginal)
 
         streamManager.endPosterDownload(movieUuid)
+
+        return movieUuid
     else:
-        return
+        return # TODO: complete this
     # elif isPosterDownloading is True:
     #     while True:
     #         blob = streamManager.getImageBlobByUuid(movieUuid, 'Backdrop')

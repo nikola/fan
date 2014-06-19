@@ -15,7 +15,7 @@ from pants.web import Application
 
 from settings import DEBUG
 from settings.net import ENFORCED_CIPHERS
-from orchestrator.routes import module as appRoutes
+from orchestrator.urls import module as appModule
 from orchestrator.pubsub import PubSub
 from models import StreamManager
 from identifier import getMoviePathnames, getBaseDataFromDirName, identifyMovieByTitleYear
@@ -61,19 +61,17 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
     syncFinished = False
     streamWatcherStarted = False
 
-    appRoutes.interProcessQueue = queue
-    appRoutes.presented = False
-    appRoutes.streamManager = streamManager
-    appRoutes.bootToken = bootToken
+    appModule.interProcessQueue = queue
+    appModule.presented = False
+    appModule.streamManager = streamManager
+    appModule.bootToken = bootToken
     if DEBUG:
-        appRoutes.userAgent = userAgent
-        appRoutes.serverPort = serverPort
-        # appRoutes.httpPort = httpPort
-        # appRoutes.websocketPort = websocketPort
+        appModule.userAgent = userAgent
+        appModule.serverPort = serverPort
     # END DEBUG
 
     app = Application(debug=DEBUG)
-    app.add('', appRoutes)
+    app.add('', appModule)
 
     sslOptions = dict(do_handshake_on_connect=False, server_side=True, certfile=certificateLocation, ssl_version=3, ciphers=ENFORCED_CIPHERS)
     HTTPServer(_proxy).startSSL(sslOptions).listen(('', serverPort))
@@ -85,8 +83,6 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
             command = queue.get_nowait()
 
             if command == 'orchestrator:start:scan':
-                # if streamManager is None:
-                #     streamManager = StreamManager()
 
                 streamGenerator = getMoviePathnames(getLongPathname(r'\\Diskstation\Movies'))
 
@@ -100,14 +96,12 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                 #     streamWatcher.stop()
                 #     streamWatcher.join()
 
-                if engine is not None: #  and collectorStreamManager is not None:
+                if engine is not None:
                     pubSubReference.close()
                     pubSubReference = None
                     engine.stop()
                     engine = None
 
-                # if collectorStreamManager is not None:
-                #     collectorStreamManager.shutdown()
                 streamManager.shutdown()
 
                 queue.task_done()

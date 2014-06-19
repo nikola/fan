@@ -27,6 +27,7 @@ ka.lib.desaturateVisiblePosters = function () {
             var element = $('#boom-poster-' + item.uuid);
             ka.state.desaturationImageCache.push(element);
             element.removeClass('undesaturate').addClass('desaturate');
+            // TODO: use same logic to display: none posters when scrolling to details page
         }
     }
 };

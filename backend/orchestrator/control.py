@@ -113,7 +113,7 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
             if engine is not None:
                 engine.poll(poll_timeout=0.015)
 
-            if pubSubReference is not None and pubSubReference.connected and streamGenerator is not None:
+            if streamGenerator is not None and pubSubReference is not None and pubSubReference.connected:
                 try:
                     (path, container, files) = streamGenerator.next()
                 except StopIteration:
@@ -123,13 +123,8 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                     basedata = getBaseDataFromDirName(container)
 
                     for filename in files:
-                        # print 'processing file'
                         streamLocation = os.path.join(path, filename)
 
-                        # if collectorStreamManager.isStreamKnown(streamLocation):
-                        #     movie = collectorStreamManager.getMovieFromStreamLocation(streamLocation)
-                        # else:
-                        # if not collectorStreamManager.isStreamKnown(streamLocation):
                         if not streamManager.isStreamKnown(streamLocation):
                             movieRecord = identifyMovieByTitleYear('en', 'us', basedata.get('title'), basedata.get('year'))
                             if movieRecord is None:
@@ -138,8 +133,6 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                             # TODO: call getEditVersionFromFilename(filename, year)
 
                             movie = streamManager.addMovieStream(movieRecord, streamLocation)
-                            # else:
-                            #     movie = None
 
                             if movie is not None:
                                 pubSubReference.write(unicode('["receive:movie:item", %s]' % streamManager.getMovieAsJson(movie.uuid)))

@@ -15,10 +15,9 @@ from settings import DEBUG
 from utils.system import isCompatiblePlatform, isNtfsFilesystem, getScreenResolution
 from utils.agent import getUserAgent
 from utils.net import getVacantPort, getCertificateLocation
-from collector.control import start as startCollector, stop as stopCollector
+from orchestrator.control import start as startOrchestrator, stop as stopOrchestrator
 from downloader.control import start as startDownloader, stop as stopDownloader
 from player.control import start as startPlayer, stop as stopPlayer
-from server.control import start as startServer, stop as stopServer
 from presenter.control import start as present
 
 
@@ -39,8 +38,7 @@ if __name__ == '__main__':
 
     def _shutdown():
         # Presenter has been closed, now kick off clean-up tasks.
-        stopServer()
-        stopCollector()
+        stopOrchestrator()
         stopDownloader()
         stopPlayer()
 
@@ -49,8 +47,7 @@ if __name__ == '__main__':
         interProcessQueue.close()
 
         # Gracefully stop processes.
-        server.join()
-        collector.join()
+        orchestrator.join()
         downloader.join()
         player.join()
 
@@ -76,19 +73,17 @@ if __name__ == '__main__':
 
         downloader = startDownloader(interProcessQueue)
 
-        # Start process, but spawn file watcher and stream manager only after receiving a kick off event from the presenter.
-        websocketPort = getVacantPort()
-        collector = startCollector(interProcessQueue, websocketPort, certificateLocation, userAgent, bridgeToken)
-
         if DEBUG:
-            httpPort = 50000
+            serverPort = 50000
         else:
-            httpPort = getVacantPort()
+            serverPort = getVacantPort()
         # END DEBUG
-        server = startServer(interProcessQueue, httpPort, websocketPort, certificateLocation, userAgent, bootToken)
+
+        # Start process, but spawn file scanner and watcher only after receiving a kick off event from the presenter.
+        orchestrator = startOrchestrator(interProcessQueue, certificateLocation, userAgent, serverPort, bridgeToken, bootToken)
 
         # Start the blocking presenter process.
-        present(userAgent, httpPort, websocketPort, _shutdown, bridgeToken, bootToken)
+        present(_shutdown, userAgent, serverPort, bridgeToken, bootToken) # TODO: refactor last arguments into reusable tuple
     except (KeyboardInterrupt, SystemError):
         # streamManager.shutdown()
         # stopServer()

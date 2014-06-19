@@ -121,7 +121,8 @@ def handleException(excType, excValue, traceObject):
 
 
 
-def start(userAgent, httpPort, websocketPort, callback, bridgeToken, bootToken):
+# def start(userAgent, httpPort, websocketPort, callback, bridgeToken, bootToken):
+def start(callback, userAgent, serverPort, bridgeToken, bootToken):
     global shutdownAll
     shutdownAll = callback
 
@@ -217,7 +218,7 @@ def start(userAgent, httpPort, websocketPort, callback, bridgeToken, bootToken):
         windowInfo,
         CEF_BROWSER_SETTINGS,
         # navigateUrl='https://127.0.0.1:%d/' % httpPort,
-        navigateUrl='http://127.0.0.1:%d/index.asp' % httpPort,
+        navigateUrl='https://127.0.0.1:%d/index.asp' % serverPort,
     )
 
     clientHandler = ClientHandler()
@@ -226,8 +227,8 @@ def start(userAgent, httpPort, websocketPort, callback, bridgeToken, bootToken):
     bridge = JavascriptBridge(browser)
 
     jsBindings = cefpython.JavascriptBindings(bindToFrames=False, bindToPopups=True) # TODO: set to False
-    jsBindings.SetProperty('HTTP_PORT', httpPort)
-    jsBindings.SetProperty('WEBSOCKET_PORT', websocketPort)
+    jsBindings.SetProperty('HTTP_PORT', serverPort)
+    jsBindings.SetProperty('WEBSOCKET_PORT', serverPort)
     jsBindings.SetProperty('BOOT_TOKEN', bootToken)
     jsBindings.SetObject('__%s__' % bridgeToken, bridge)
     jsBindings.SetObject('console', bridge)

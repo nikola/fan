@@ -28,8 +28,9 @@ class Image(Base):
     movie = relationship('Movie', backref=backref('images', order_by=id))
 
     def __init__(self, **kwargs):
-        for key, value in kwargs.iteritems():
-            setattr(self, key, value)
+        vars(self).update(kwargs)
+        # for key, value in kwargs.iteritems():
+        #     setattr(self, key, value)
 
     def __repr__(self):
         return "<Image('%s')>" % self.id

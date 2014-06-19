@@ -66,12 +66,13 @@ if __name__ == '__main__':
     # sys.excepthook = handleException
 
     try:
-        bridgeToken = uuid4().hex
-        bootToken = uuid4().hex
+        if DEBUG:
+            serverPort = 50000
+        else:
+            serverPort = getVacantPort()
+        # END DEBUG
 
         certificateLocation = getCertificateLocation()
-
-        userAgent = getUserAgent()
 
         # Omni-directional message queue between boot process, collector process and server process.
         interProcessQueue = InterProcessQueue()
@@ -80,17 +81,13 @@ if __name__ == '__main__':
         analyzer = startAnalyzer(interProcessQueue)
         player = startPlayer(interProcessQueue)
 
-        if DEBUG:
-            serverPort = 50000
-        else:
-            serverPort = getVacantPort()
-        # END DEBUG
+        arguments = (getUserAgent(), serverPort, uuid4().hex, uuid4().hex)
 
-        # Start process, but spawn file scanner and watcher only after receiving a kick off event from the presenter.
-        orchestrator = startOrchestrator(interProcessQueue, certificateLocation, userAgent, serverPort, bridgeToken, bootToken)
+        # Start process, but spawn file scanner and watcher only after receiving a kick-off event from the presenter.
+        orchestrator = startOrchestrator(interProcessQueue, certificateLocation, *arguments)
 
         # Start the blocking presenter process.
-        present(_shutdown, userAgent, serverPort, bridgeToken, bootToken) # TODO: refactor last arguments into reusable tuple
+        present(_shutdown, *arguments)
     except (KeyboardInterrupt, SystemError):
         # streamManager.shutdown()
         # stopServer()
@@ -101,8 +98,3 @@ if __name__ == '__main__':
         # stopServer()
         # sys.exit(1)
         raise
-
-    # os._exit(1)
-    # else:
-    #     streamManager.shutdown()
-    #     stopServer()

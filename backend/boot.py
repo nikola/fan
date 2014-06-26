@@ -43,9 +43,9 @@ if __name__ == '__main__':
     def _shutdown():
         # Presenter has been closed, now kick off clean-up tasks.
         stopOrchestrator()
-        stopDownloader()
-        stopAnalyzer()
         stopPlayer()
+        stopAnalyzer()
+        stopDownloader()
 
         # Block until all queue items have been processed.
         interProcessQueue.join()
@@ -53,9 +53,9 @@ if __name__ == '__main__':
 
         # Gracefully stop processes.
         orchestrator.join()
-        downloader.join()
-        analyzer.join()
         player.join()
+        analyzer.join()
+        downloader.join()
 
         os.remove(certificateLocation)
 

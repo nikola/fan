@@ -25,10 +25,10 @@ def _startDownloader(queue):
                 isStarted = True
 
                 queue.task_done()
-            elif command.startswith('configuration:image-base-url:'):
-                imageBaseUrl = command.replace('configuration:image-base-url:', '')
+            # elif command.startswith('configuration:image-base-url:'):
+            #     imageBaseUrl = command.replace('configuration:image-base-url:', '')
 
-                queue.task_done()
+            #     queue.task_done()
             elif command == 'downloader:stop':
                 downloaderStreamManager.shutdown()
 

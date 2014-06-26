@@ -81,7 +81,7 @@
     border: 2px solid #aaa;
     height: 48px;
     line-height: 46px;
-    border-radius: 0 0 8px 8px;
+    border-radius: 8px; /* 0 0 8px 8px; */
     padding: 0 8px;
     }
 

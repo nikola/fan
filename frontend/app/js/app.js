@@ -12,14 +12,14 @@ ka.data = {
         all: new Cortex([])
         , byUuid: new Cortex({})
         , byYear: {} // new Cortex({})
-        , byLetter: {} // new Cortex({})
+        , byTitleOriginal: {} // new Cortex({})
     }
 };
 
 ka.config = {
     gridMaxRows: 3
   , gridMaxColumns: 7
-  , gridSortCriterion: 'byLetter'
+  , gridSortCriterion: 'byTitleOriginal'
   , gridSortOrder: 'asc'
 };
 

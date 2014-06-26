@@ -13,8 +13,8 @@ ka.lib.addMovieToCortex = function (movieDict) {
 
     var alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''), compare = ka.state.collator.compare;
 
-    for (var orders = ['byLetter', 'byYear'], order, o = 0; order = orders[o]; o++) {
-        if (order == 'byLetter') {
+    for (var orders = ['byTitleOriginal', 'byYear'], order, o = 0; order = orders[o]; o++) {
+        if (order == 'byTitleOriginal') {
             var criterion = movieDict.titleOriginal.replace(/^the /i, '').replace('.', '').toLowerCase(),
                 key = /^(?:the )?([\S])/i.exec(movieDict.titleOriginal)[1].toUpperCase().replace(/[0-9]/, '123');
 

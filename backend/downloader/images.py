@@ -14,7 +14,7 @@ import requests
 from config import PROJECT_PATH
 from settings import APP_STORAGE_PATH
 from settings.presenter import CEF_REAL_AGENT
-from utils.fs import createTemporaryFile, writeTemporaryFile
+# from utils.fs import createTemporaryFile, writeTemporaryFile
 # from utils.win32 import getAppStoragePathname
 
 

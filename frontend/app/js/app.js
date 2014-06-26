@@ -79,7 +79,7 @@ function boot() {
 
 
 function registerHotkeys() {
-    var listener = new keypress.Listener(),
+    var listener = new keypress.Listener(document.body, {prevent_repeat: true}),
         _key = ka.lib.getConfiguredKeyByCommand;
 
      listener.register_many([
@@ -95,6 +95,8 @@ function registerHotkeys() {
       , {keys: _key('select'),          on_keydown: ka.lib.handleKeypressSelect}
       , {keys: _key('back'),            on_keydown: ka.lib.handleKeypressBack}
     ]);
+
+    document.body.addEventListener('keypress', ka.lib.handleKeypressLetter);
 }
 
 

@@ -233,6 +233,13 @@ ka.lib.handleKeypressBack = function () {
 };
 
 
+ka.lib.handleKeypressLetter = function (evt) {
+    var character = String.fromCharCode(evt.keyCode);
+    if (/^[a-z]$/.test(character)) {
+        // console.log(character);
+    }
+};
+
 /*
 		el.swipeEvents().bind("swipeDown",  function(event){
 			event.preventDefault();

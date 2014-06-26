@@ -19,18 +19,12 @@ ka.data = {
 ka.config = {
     gridMaxRows: 3
   , gridMaxColumns: 7
-  // , gridSortOrder: 'byLetter'
   , gridSortCriterion: 'byYear'
   , gridSortOrder: 'desc'
-  // , gridKeys: {
-  //       byLetter: ['123'].concat('ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''))
-  //   }
 };
 
 ka.state = {
     currentPageMode: 'grid'
-  // , currentConfigButton: 1
-  // , currentDetailButton: 0
   , gridFocusX: 0
   , gridFocusY: 0
   , gridPage: 0
@@ -45,7 +39,7 @@ ka.state = {
 
 function boot() {
     /* ... */
-    ka.lib.registerHotkeys();
+    registerHotkeys();
 
     /* ... */
     ka.lib.setupCollator();
@@ -81,6 +75,26 @@ function boot() {
             });
         }
     });
+}
+
+
+function registerHotkeys() {
+    var listener = new keypress.Listener(),
+        _key = ka.lib.getConfiguredKeyByCommand;
+
+     listener.register_many([
+        {keys: _key('firstItem'),       on_keydown: ka.lib.handleKeypressFirstItem}
+      , {keys: _key('lastItem'),        on_keydown: ka.lib.handleKeypressLastItem}
+      , {keys: _key('previousPage'),    on_keydown: ka.lib.handleKeypressPreviousPage}
+      , {keys: _key('nextPage'),        on_keydown: ka.lib.handleKeypressNextPage}
+      , {keys: _key('up'),              on_keydown: ka.lib.handleKeypressUp}
+      , {keys: _key('down'),            on_keydown: ka.lib.handleKeypressDown}
+      , {keys: _key('left'),            on_keydown: ka.lib.handleKeypressLeft}
+      , {keys: _key('right'),           on_keydown: ka.lib.handleKeypressRight}
+      , {keys: _key('toggle'),          on_keydown: ka.lib.handleKeypressToggle}
+      , {keys: _key('select'),          on_keydown: ka.lib.handleKeypressSelect}
+      , {keys: _key('back'),            on_keydown: ka.lib.handleKeypressBack}
+    ]);
 }
 
 

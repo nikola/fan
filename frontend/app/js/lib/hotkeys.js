@@ -185,9 +185,7 @@ ka.lib.handleKeypressToggle = function () {
 
 ka.lib.handleKeypressSelect = function () {
     if (ka.state.currentPageMode == 'config') {
-        if (ka.state.currentConfigButton == 0) {
-            ka.state.socketDispatcher.push('loopback:command', 'shutdown');
-        }
+        ka.lib.executeConfigSelection();
     } else if (ka.state.currentPageMode == 'grid') {
         ka.state.currentPageMode = 'detail';
         ka.state.currentDetailButton = 0;

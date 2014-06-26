@@ -11,14 +11,22 @@
 ka.lib.addMovieToCortex = function (movieDict) {
     if (ka.data.cortex.byUuid.hasKey(movieDict.uuid)) return;
 
+    var alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''), compare = ka.state.collator.compare;
+
     for (var orders = ['byLetter', 'byYear'], order, o = 0; order = orders[o]; o++) {
         if (order == 'byLetter') {
-            // try {
-                var criterion = movieDict.titleOriginal.replace(/^the /i, '').replace('.', '').toLowerCase(),
-                    key = /^(?:the )?([\S])/i.exec(movieDict.titleOriginal)[1].toUpperCase().replace(/[0-9]/, '123');
-            // } catch (e) {
-            //     console.log(movieDict.titleOriginal)
-            // }
+            var criterion = movieDict.titleOriginal.replace(/^the /i, '').replace('.', '').toLowerCase(),
+                key = /^(?:the )?([\S])/i.exec(movieDict.titleOriginal)[1].toUpperCase().replace(/[0-9]/, '123');
+
+            /* Fix keys that are not Latin. */
+            if (key !== '123' && /^[^A-Z]$/.test(key)) {
+                for (var index = 0; index < 26; index++) {
+                    if (compare(key, alphabet[index]) > -1) {
+                        key = alphabet[index];
+                        break;
+                    }
+                }
+            }
         } else if (order == 'byYear') {
             var criterion = movieDict.titleOriginal.replace(/^the /i, '').replace('.', '').toLowerCase(),
                 key = movieDict.releaseYear;

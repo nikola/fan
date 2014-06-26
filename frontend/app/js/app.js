@@ -19,8 +19,8 @@ ka.data = {
 ka.config = {
     gridMaxRows: 3
   , gridMaxColumns: 7
-  , gridSortCriterion: 'byYear'
-  , gridSortOrder: 'desc'
+  , gridSortCriterion: 'byLetter'
+  , gridSortOrder: 'asc'
 };
 
 ka.state = {

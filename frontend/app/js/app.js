@@ -64,7 +64,7 @@ function boot() {
             ka.lib.recalcMovieGrid();
             ka.lib.updateMovieGrid();
 
-            ka.state.socketDispatcher = new ka.lib.WebSocketDispatcher('wss://127.0.0.1:' + WEBSOCKET_PORT + '/');
+            ka.state.socketDispatcher = new ka.lib.WebSocketDispatcher('ws://127.0.0.1:' + ᴠ + '/');
 
             ka.state.socketDispatcher.bind('receive:movie:item', function (movie) {
                 ka.lib.addMovieToCortex(movie);

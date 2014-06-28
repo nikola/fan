@@ -32,7 +32,8 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
 
     def _proxy(request):
         if DEBUG or (request.is_secure and request.protocol == 'HTTP/1.1' and request.headers.get('User-Agent', None) == userAgent):
-            if request.headers.get('Sec-WebSocket-Version', None) == 13:
+            # if request.headers.get('Sec-WebSocket-Version', None) == 13:
+            if request.headers.get('Upgrade', None) == 'websocket': # 'Sec-WebSocket-Extensions': 'x-webkit-deflate-frame', 'Sec-WebSocket-Version': 13
                 PubSub(queue, request, userAgent, bridgeToken, _getPubSubReference)
             else:
                 app(request)
@@ -73,8 +74,9 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
     app = Application(debug=DEBUG)
     app.add('', appModule)
 
-    sslOptions = dict(do_handshake_on_connect=False, server_side=True, certfile=certificateLocation, ssl_version=3, ciphers=ENFORCED_CIPHERS)
-    HTTPServer(_proxy).startSSL(sslOptions).listen(('', serverPort))
+    # sslOptions = dict(do_handshake_on_connect=False, server_side=True, certfile=certificateLocation, ssl_version=3, ciphers=ENFORCED_CIPHERS)
+    # HTTPServer(_proxy).startSSL(sslOptions).listen(('', serverPort))
+    HTTPServer(_proxy).listen(('', serverPort))
 
     engine = HttpServerEngine.instance()
 

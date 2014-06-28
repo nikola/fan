@@ -217,8 +217,8 @@ def start(callback, userAgent, serverPort, bridgeToken, bootToken):
     browser = cefpython.CreateBrowserSync(
         windowInfo,
         CEF_BROWSER_SETTINGS,
-        # navigateUrl='https://127.0.0.1:%d/' % httpPort,
-        navigateUrl='https://127.0.0.1:%d/index.asp' % serverPort,
+        # navigateUrl='https://127.0.0.1:%d/index.asp' % serverPort,
+        navigateUrl='http://127.0.0.1:%d/index.asp' % serverPort,
     )
 
     clientHandler = ClientHandler()
@@ -227,8 +227,7 @@ def start(callback, userAgent, serverPort, bridgeToken, bootToken):
     bridge = JavascriptBridge(browser)
 
     jsBindings = cefpython.JavascriptBindings(bindToFrames=False, bindToPopups=True) # TODO: set to False
-    jsBindings.SetProperty('HTTP_PORT', serverPort)
-    jsBindings.SetProperty('WEBSOCKET_PORT', serverPort)
+    jsBindings.SetProperty('ᴠ', serverPort)
     jsBindings.SetProperty('BOOT_TOKEN', bootToken)
     jsBindings.SetObject('__%s__' % bridgeToken, bridge)
     jsBindings.SetObject('console', bridge)

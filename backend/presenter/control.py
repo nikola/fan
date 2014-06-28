@@ -226,8 +226,8 @@ def start(callback, userAgent, serverPort, bridgeToken, bootToken):
 
     bridge = JavascriptBridge(browser)
 
-    jsBindings = cefpython.JavascriptBindings(bindToFrames=False, bindToPopups=True) # TODO: set to False
-    jsBindings.SetProperty('ᴠ', serverPort)
+    jsBindings = cefpython.JavascriptBindings(bindToFrames=False, bindToPopups=True)
+    jsBindings.SetProperty('ᴠ', serverPort)     # http://www.unicode.org/Public/security/revision-06/confusables.txt
     jsBindings.SetProperty('BOOT_TOKEN', bootToken)
     jsBindings.SetObject('__%s__' % bridgeToken, bridge)
     jsBindings.SetObject('console', bridge)

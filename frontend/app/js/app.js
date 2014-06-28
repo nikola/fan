@@ -48,6 +48,8 @@ function boot() {
     /* ... */
     ka.lib.setupCollator();
 
+    ka.lib.localizeButtons();
+
     /* Reset config button selection to default. */
     ka.lib.updateConfigButtonSelection();
 

@@ -51,7 +51,6 @@ def downscalePoster(streamManager, image):
     if isPosterDownloading is False:
         streamManager.startPosterDownload(movieUuid)
 
-        # url = '%soriginal%s' % (imageBaseUrl, streamManager.getMovieByUuid(movieUuid).urlBackdrop)
         blobOriginal = requests.get(image.urlOriginal, headers={'User-agent': CEF_REAL_AGENT}).content
 
         blobAtWidth200 = _downscaleImage(blobOriginal, 200, 300)

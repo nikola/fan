@@ -18,13 +18,13 @@ ka.lib.addMovieToCortex = function (movieDict) {
         var field = 'by' + order[0].toUpperCase() + order.slice(1);
 
         if (order == 'titleOriginal' || order == 'titleLocalized') {
-                var criterion = movieDict[order].replace(new RegExp('^' + localizedArticles + ' ', 'i'), '').replace('.', '').toLowerCase(),
-                    key = new RegExp('^(?:' + localizedArticles + ' )?([\\S])', 'i').exec(movieDict[order])[1].toUpperCase().replace(/[0-9]/, '123');
+            var criterion = movieDict[order].replace(new RegExp('^' + localizedArticles + ' ', 'i'), '').replace('.', '').toLocaleLowerCase(),
+                key = new RegExp('^(?:' + localizedArticles + ' )?([\\S])', 'i').exec(movieDict[order])[1].toLocaleUpperCase().replace(/[0-9]/, '123');
 
             /* Fix keys that are not Latin. */
             if (key !== '123' && /^[^A-Z]$/.test(key)) {
                 for (var index = 0; index < 26; index++) {
-                    if (compare(key, alphabet[index]) > -1) {
+                    if (compare(key, alphabet[index]) >= 0) { // TODO: fix comparison for e.g. die ueblichen verdaechtigen
                         key = alphabet[index];
                         break;
                     }

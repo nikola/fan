@@ -11,6 +11,7 @@ from multiprocessing import JoinableQueue as InterProcessQueue, freeze_support
 from ctypes import windll
 
 from settings import DEBUG
+from models import StreamManager
 from utils.system import isCompatiblePlatform, isNtfsFilesystem, getScreenResolution, isDesktopCompositionEnabled
 from utils.agent import getUserAgent
 from utils.net import getVacantPort, getCertificateLocation
@@ -63,6 +64,11 @@ if __name__ == '__main__':
         os._exit(1)
 
     # sys.excepthook = handleException
+
+    # Create DB connection here to initialize models.
+    streamManager = StreamManager()
+    streamManager.shutdown()
+    del streamManager
 
     try:
         if DEBUG:

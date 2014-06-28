@@ -11,15 +11,16 @@ ka.lib.updateDetailPage = function () {
     var movie = ka.state.gridLookupMatrix[ka.config.gridMaxRows * ka.state.gridPage + ka.state.gridFocusY][ka.state.gridFocusX];
     $('#boom-movie-detail-title').text(ka.lib.getLocalizedTitleByUuid(movie.uuid));
     $('#boom-movie-detail-description').text(movie.storyline);
-    $('#boom-movie-detail-poster img').attr('src', '');
+
+    $('#boom-movie-detail-poster img').css('visibility', 'hidden');
     $('#boom-movie-detail').css('backgroundImage', 'none');
-    setTimeout(function () {
-        $('#boom-movie-detail-poster img')
-            .attr('src', '/movie/poster/' + movie.uuid + '-300.image')
-            .on('load', function () {
-                $('#boom-movie-detail').css('backgroundImage', 'url(/movie/backdrop/' + movie.uuid + '.jpg)');
-            });
-    }, 0);
+
+    $('#boom-movie-detail-poster img')
+        .attr('src', '/movie/poster/' + movie.uuid + '-300.image')
+        .load(function () {
+            $(this).css('visibility', 'visible');
+            $('#boom-movie-detail').css('backgroundImage', 'url(/movie/backdrop/' + movie.uuid + '.jpg)');
+        });
 };
 
 

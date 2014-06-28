@@ -26,6 +26,7 @@ RESOURCES_SCRIPT = [
     'vendor/velocity/velocity.ui.js',
     'app/js/lib/sockets.js',
     'app/js/lib/colors.js',
+    'app/js/lib/l10n.js',
     'app/js/lib/receiver.js',
     'app/js/lib/hotkeys.js',
     'app/js/lib/lang.js',

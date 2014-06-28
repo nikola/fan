@@ -133,7 +133,7 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                         streamLocation = os.path.join(path, filename)
 
                         if not streamManager.isStreamKnown(streamLocation):
-                            movieRecord = identifyMovieByTitleYear('en', 'us', basedata.get('title'), basedata.get('year'))
+                            movieRecord = identifyMovieByTitleYear('de', basedata.get('title'), basedata.get('year')) # TODO: make language configurable
                             if movieRecord is None:
                                 print 'unknown stream:', streamLocation
 

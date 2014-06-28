@@ -14,13 +14,10 @@ ka.lib.addMovieToCortex = function (movieDict) {
     var alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''), compare = ka.state.collator.compare;
 
     for (var orders = ['titleOriginal', 'titleLocalized', 'year'], order, o = 0; order = orders[o]; o++) {
-    // for (var orders = ['titleOriginal', 'year'], order, o = 0; order = orders[o]; o++) {
         var field = 'by' + order[0].toUpperCase() + order.slice(1);
 
         if (order == 'titleOriginal' || order == 'titleLocalized') {
-            // var criterion = movieDict.titleOriginal.replace(/^the /i, '').replace('.', '').toLowerCase(),
-            var criterion = movieDict[order].replace(/^the /i, '').replace('.', '').toLowerCase(),
-                // key = /^(?:the )?([\S])/i.exec(movieDict.titleOriginal)[1].toUpperCase().replace(/[0-9]/, '123');
+            var criterion = movieDict[order].replace(/^the /i, '').replace('.', '').toLowerCase(),// TODO: use 'der' for German locale, etc.
                 key = /^(?:the )?([\S])/i.exec(movieDict[order])[1].toUpperCase().replace(/[0-9]/, '123');
 
             /* Fix keys that are not Latin. */
@@ -32,9 +29,7 @@ ka.lib.addMovieToCortex = function (movieDict) {
                     }
                 }
             }
-        // } else if (order == 'byYear') {
         } else if (order == 'year') {
-            // var criterion = movieDict.titleOriginal.replace(/^the /i, '').replace('.', '').toLowerCase(),
             var criterion = movieDict.titleLocalized.replace(/^the /i, '').replace('.', '').toLowerCase(),
                 key = movieDict.releaseYear;
         }

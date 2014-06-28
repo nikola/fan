@@ -69,6 +69,7 @@ class StreamManager(object):
         # if not DEBUG and os.path.exists(os.path.join(getAppStoragePathname(), 'data.accdb')):
         #     self._restore()
         #     # TODO: migrate schema by dumping all data to JSON, then drop_all, then read JSON back in
+        #       which might not work for images !!!
         # else:
         # Base.metadata.drop_all(self.engine, checkfirst=True)
         Base.metadata.create_all(self.engine, checkfirst=True)
@@ -307,18 +308,17 @@ class StreamManager(object):
     def getMovieAsJson(self, identifier):
         with self._session() as session:
             try:
-                # movie = list(session.query(Movie).filter(Movie.uuid == identifier).values(Movie.uuid, Movie.titleOriginal, Movie.releaseYear, Movie.runtime, Movie.overview))[0]
-                movie = list(session.query(Movie).filter(Movie.uuid == identifier).values(Movie.uuid, Movie.titleOriginal, Movie.releaseYear, Movie.runtime))[0]
+                movie = list(session.query(Movie, Localization).filter(Movie.uuid == identifier, Movie.id == Localization.movieId).values(Movie.uuid, Movie.titleOriginal, Localization.title, Movie.releaseYear, Movie.runtime, Localization.storyline))[0]
             except NoResultFound:
                 return None
             else:
                 return json.dumps({
                     'uuid': movie[0],
                     'titleOriginal': movie[1],
-                    'releaseYear': movie[2],
-                    'runtime': movie[3],
-                    'overview': '',
-                    # 'overview': movie[4],
+                    'titleLocalized': movie[2],
+                    'releaseYear': movie[3],
+                    'runtime': movie[4],
+                    'storyline': movie[5],
                 }, separators=(',',':'))
 
 

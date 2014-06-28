@@ -20,7 +20,7 @@ ka.data = {
 ka.config = {
     gridMaxRows: 3
   , gridMaxColumns: 7
-  , locale: 'en'
+  , locale: 'de'
 };
 
 ka.state = {

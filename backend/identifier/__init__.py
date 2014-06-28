@@ -159,7 +159,7 @@ def getEditVersionFromFilename(filename, year):
     return editVersion
 
 
-def identifyMovieByTitleYear(language, territory, title, year):
+def identifyMovieByTitleYear(language, title, year):
     record = None
 
     try:
@@ -168,7 +168,7 @@ def identifyMovieByTitleYear(language, territory, title, year):
             'api_key': THEMOVIEDB_API_KEY,
             'query': title.encode('utf-8'),
             'page': 1,
-            'language': 'en',
+            'language': language,
             'include_adult': False,
             'year': year,
         }
@@ -191,7 +191,7 @@ def identifyMovieByTitleYear(language, territory, title, year):
             url = 'https://api.themoviedb.org/3/movie/%d' % movieId
             params = {
                 'api_key': THEMOVIEDB_API_KEY,
-                'language': 'en',
+                'language': language,
             }
             response = makeThrottledGetRequest(url, params).json()
 
@@ -216,7 +216,7 @@ def identifyMovieByTitleYear(language, territory, title, year):
                 budget        = response['budget'] or None,
                 revenue       = response['revenue'] or None,
 
-                locale        = 'en',
+                locale        = language,
                 title         = response['title'] or response['original_title'],
                 storyline     = overview,
             )

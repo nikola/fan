@@ -178,7 +178,10 @@ ka.lib.handleKeypressRight = function () {
 ka.lib.handleKeypressToggle = function () {
     if (ka.state.currentPageMode == 'grid') {
         var uuid = ka.state.gridLookupMatrix[ka.config.gridMaxRows * ka.state.gridPage + ka.state.gridFocusY][ka.state.gridFocusX].uuid;
-        $('#boom-poster-' + uuid).eq(0).closest('.boom-movie-grid-info-overlay').toggleClass('active');
+
+        $('#boom-movie-grid-item-' + uuid)
+            .toggleClass('active')
+            .find('.boom-movie-grid-info-overlay-title').text(ka.lib.getLocalizedTitleByUuid(uuid));
     }
 };
 
@@ -219,8 +222,7 @@ ka.lib.handleKeypressBack = function () {
     } else if (ka.state.currentPageMode == 'grid') {
         ka.state.currentPageMode = 'config';
 
-        ka.state.currentConfigButton = 1;
-        ka.lib.updateConfigButtonSelection();
+        // ka.lib.updateConfigButtonSelection();
 
         $('#boom-movie-grid-container, #boom-movie-detail').velocity({left: '+=780', opacity: '-=0.5'}, 360);
         $('#boom-poster-focus').velocity({left: '+=780', opacity: '-=1'}, 360);

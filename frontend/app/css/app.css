@@ -16,10 +16,6 @@ body {
     margin: 0; padding: 0;
     overflow: hidden;
     font-family: 'Ka Boom', sans-serif;
-
-    -webkit-transform: translate3d(0, 0, 0);
-    -webkit-backface-visibility: hidden;
-	-webkit-perspective: 1000;
     }
 
 #content {
@@ -28,6 +24,10 @@ body {
     background-color: black;
 
     visibility: hidden;
+
+    -webkit-transform: translate3d(0, 0, 0);
+    -webkit-backface-visibility: hidden;
+    -webkit-perspective: 1000;
     }
 
 .spinner {

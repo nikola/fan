@@ -8,7 +8,7 @@
 
 ka.lib.setupCollator = function () {
     ka.state.collator = new Intl.Collator(
-        ['en', 'de', 'fr', 'es', 'it']
+        ['en-US', 'de-DE', 'fr-FR', 'es-ES', 'it-IT']
       , {
             usage: 'sort'
           , sensitivity: 'base'

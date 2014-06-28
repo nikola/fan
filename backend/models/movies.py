@@ -7,7 +7,10 @@ __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 from sqlalchemy import Table, ForeignKey, Column, SmallInteger, Integer, BigInteger, String, Unicode, Boolean
 from sqlalchemy.orm import relationship
 
+
 from models import Base, GUID, createUuid # , DictSerializable
+
+
 
 GENRES_EN = (
     "Action",
@@ -45,17 +48,21 @@ class Movie(Base):
 
     id = Column(Integer, primary_key=True)
     uuid = Column(GUID, default=createUuid)
-    idImdb = Column(String)
+
     idTheMovieDb = Column(Integer)
+    idImdb = Column(String)
+
     titleOriginal = Column(Unicode)
-    overview = Column(Unicode)
+    releaseYear = Column(SmallInteger)
     runtime = Column(SmallInteger)
+
+    homepage = Column(String)
     budget = Column(Integer)
     revenue = Column(BigInteger)
-    homepage = Column(String)
-    releaseYear = Column(SmallInteger)
+
     urlBackdrop = Column(String)
     isBackdropDownloading = Column(Boolean, default=False)
+
     urlPoster = Column(String)
     isPosterDownloading = Column(Boolean, default=False)
 
@@ -64,11 +71,8 @@ class Movie(Base):
 
     def __init__(self, **kwargs):
         for key, value in kwargs.iteritems():
-            setattr(self, key, value)
-
-    # def as_dict(self):
-    #     # print 'as_dict'
-    #     return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+            if hasattr(self, key):
+                setattr(self, key, value)
 
     def __repr__(self):
         return "<Movie('%s')>" % self.id

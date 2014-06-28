@@ -13,18 +13,22 @@ ka.data = {
         , byUuid: new Cortex({})
         , byYear: {} // new Cortex({})
         , byTitleOriginal: {} // new Cortex({})
+        , byTitleLocalized: {}
     }
 };
 
 ka.config = {
     gridMaxRows: 3
   , gridMaxColumns: 7
-  , gridSortCriterion: 'byTitleOriginal'
-  , gridSortOrder: 'asc'
+  , locale: 'en'
 };
 
 ka.state = {
     currentPageMode: 'grid'
+  , currentConfigButton: 1
+  , gridSortCriterion: 'byTitleLocalized'
+  , gridSortDisplayLanguage: 'localized'
+  , gridSortOrder: 'asc'
   , gridFocusX: 0
   , gridFocusY: 0
   , gridPage: 0
@@ -43,6 +47,9 @@ function boot() {
 
     /* ... */
     ka.lib.setupCollator();
+
+    /* Reset config button selection to default. */
+    ka.lib.updateConfigButtonSelection();
 
     $.ajax({
         url: '/movies/all',

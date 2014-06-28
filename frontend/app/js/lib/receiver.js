@@ -13,10 +13,15 @@ ka.lib.addMovieToCortex = function (movieDict) {
 
     var alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''), compare = ka.state.collator.compare;
 
-    for (var orders = ['byTitleOriginal', 'byYear'], order, o = 0; order = orders[o]; o++) {
-        if (order == 'byTitleOriginal') {
-            var criterion = movieDict.titleOriginal.replace(/^the /i, '').replace('.', '').toLowerCase(),
-                key = /^(?:the )?([\S])/i.exec(movieDict.titleOriginal)[1].toUpperCase().replace(/[0-9]/, '123');
+    for (var orders = ['titleOriginal', 'titleLocalized', 'year'], order, o = 0; order = orders[o]; o++) {
+    // for (var orders = ['titleOriginal', 'year'], order, o = 0; order = orders[o]; o++) {
+        var field = 'by' + order[0].toUpperCase() + order.slice(1);
+
+        if (order == 'titleOriginal' || order == 'titleLocalized') {
+            // var criterion = movieDict.titleOriginal.replace(/^the /i, '').replace('.', '').toLowerCase(),
+            var criterion = movieDict[order].replace(/^the /i, '').replace('.', '').toLowerCase(),
+                // key = /^(?:the )?([\S])/i.exec(movieDict.titleOriginal)[1].toUpperCase().replace(/[0-9]/, '123');
+                key = /^(?:the )?([\S])/i.exec(movieDict[order])[1].toUpperCase().replace(/[0-9]/, '123');
 
             /* Fix keys that are not Latin. */
             if (key !== '123' && /^[^A-Z]$/.test(key)) {
@@ -27,19 +32,21 @@ ka.lib.addMovieToCortex = function (movieDict) {
                     }
                 }
             }
-        } else if (order == 'byYear') {
-            var criterion = movieDict.titleOriginal.replace(/^the /i, '').replace('.', '').toLowerCase(),
+        // } else if (order == 'byYear') {
+        } else if (order == 'year') {
+            // var criterion = movieDict.titleOriginal.replace(/^the /i, '').replace('.', '').toLowerCase(),
+            var criterion = movieDict.titleLocalized.replace(/^the /i, '').replace('.', '').toLowerCase(),
                 key = movieDict.releaseYear;
         }
 
-        if (key in ka.data.cortex[order]) {
-            var sortedList = ka.data.cortex[order][key];
+        if (key in ka.data.cortex[field]) {
+            var sortedList = ka.data.cortex[field][key];
         } else {
             var sortedList = new Cortex([]);
         }
 
-        ka.lib._insertSorted(sortedList, movieDict, criterion, order);
-        ka.data.cortex[order][key] = sortedList;
+        ka.lib._insertSorted(sortedList, movieDict, criterion, field);
+        ka.data.cortex[field][key] = sortedList;
     }
 
     ka.data.cortex.byUuid.add(movieDict.uuid, movieDict);

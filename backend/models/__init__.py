@@ -11,8 +11,9 @@ from contextlib import contextmanager
 from sqlite3 import dbapi2 as sqlite
 
 from sqlalchemy import create_engine, func
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, joinedload
 from sqlalchemy.orm.exc import NoResultFound
+
 
 from settings import DEBUG
 from utils.win32 import getAppStoragePathname
@@ -20,9 +21,12 @@ from models.common import Base, GUID, createNamedTuple, createUuid # , DictSeria
 from models.streams import Stream
 # from models.genres import Genre
 from models.movies import Movie
-# from models.variants import Variant
 from models.images import Image
+from models.localizations import Localization
 # from models.tracks import Track
+
+
+
 
 
 # TODO: use named tuples ?
@@ -71,7 +75,7 @@ class StreamManager(object):
 
 
     def shutdown(self):
-        pass
+        self.engine.dispose()
 
 
     def getMovieByUuid(self, identifier):
@@ -103,11 +107,14 @@ class StreamManager(object):
                 try:
                     movie = session.query(Movie).filter("titleOriginal=:title and releaseYear=:year").params(title=movieRecord["titleOriginal"], year=movieRecord["releaseYear"]).one()
                 except NoResultFound:
+                    localization = Localization(
+                        locale = movieRecord['locale'],
+                        title = movieRecord['title'],
+                        storyline = movieRecord['storyline'],
+                    )
                     movie = Movie(**movieRecord)
-                    # variant = Variant(**movieRecord)
-                    # variant.movie = movie
-                    # session.add_all([movie, variant])
-                    session.add(movie)
+                    localization.movie = movie
+                    session.add_all([movie, localization])
 
                 stream.movie = movie
 
@@ -285,13 +292,14 @@ class StreamManager(object):
     def getAllMoviesAsJson(self):
         with self._session() as session:
             movieList = []
-            for movie in session.query(Movie).values(Movie.uuid, Movie.titleOriginal, Movie.releaseYear, Movie.runtime, Movie.overview):
+            for movie in session.query(Movie, Localization).filter(Movie.id == Localization.movieId).values(Movie.uuid, Movie.titleOriginal, Localization.title, Movie.releaseYear, Movie.runtime, Localization.storyline):
                 movieList.append({
                     'uuid': movie[0],
                     'titleOriginal': movie[1],
-                    'releaseYear': movie[2],
-                    'runtime': movie[3],
-                    'overview': movie[4],
+                    'titleLocalized': movie[2],
+                    'releaseYear': movie[3],
+                    'runtime': movie[4],
+                    'storyline': movie[5],
                 })
             return json.dumps(movieList, separators=(',',':'))
 
@@ -299,7 +307,8 @@ class StreamManager(object):
     def getMovieAsJson(self, identifier):
         with self._session() as session:
             try:
-                movie = list(session.query(Movie).filter(Movie.uuid == identifier).values(Movie.uuid, Movie.titleOriginal, Movie.releaseYear, Movie.runtime, Movie.overview))[0]
+                # movie = list(session.query(Movie).filter(Movie.uuid == identifier).values(Movie.uuid, Movie.titleOriginal, Movie.releaseYear, Movie.runtime, Movie.overview))[0]
+                movie = list(session.query(Movie).filter(Movie.uuid == identifier).values(Movie.uuid, Movie.titleOriginal, Movie.releaseYear, Movie.runtime))[0]
             except NoResultFound:
                 return None
             else:
@@ -308,7 +317,8 @@ class StreamManager(object):
                     'titleOriginal': movie[1],
                     'releaseYear': movie[2],
                     'runtime': movie[3],
-                    'overview': movie[4],
+                    'overview': '',
+                    # 'overview': movie[4],
                 }, separators=(',',':'))
 
 

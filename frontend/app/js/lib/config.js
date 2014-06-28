@@ -20,26 +20,31 @@ ka.lib.executeConfigSelection = function () {
     if (id == 'boom-config-button-exit') {
         ka.state.socketDispatcher.push('loopback:command', 'shutdown');
     } else {
-        var lastCriterion = ka.config.gridSortCriterion, lastOrder = ka.config.gridSortOrder;
+        var lastCriterion = ka.state.gridSortCriterion, lastOrder = ka.state.gridSortOrder;
 
         if (id == 'boom-config-button-sort-title-original-asc') {
-            ka.config.gridSortCriterion = 'byTitleOriginal';
-            ka.config.gridSortOrder = 'asc';
+            ka.state.gridSortCriterion = 'byTitleOriginal';
+            ka.state.gridSortDisplayLanguage = 'original';
+            ka.state.gridSortOrder = 'asc';
         } else if (id == 'boom-config-button-sort-title-localized-asc') {
-            ka.config.gridSortCriterion = 'byTitleOriginal';
-            ka.config.gridSortOrder = 'asc';
+            ka.state.gridSortCriterion = 'byTitleLocalized';
+            ka.state.gridSortDisplayLanguage = 'localized';
+            ka.state.gridSortOrder = 'asc';
         } else if (id == 'boom-config-button-sort-year-desc') {
-            ka.config.gridSortCriterion = 'byYear';
-            ka.config.gridSortOrder = 'desc';
+            ka.state.gridSortCriterion = 'byYear';
+            ka.state.gridSortDisplayLanguage = 'localized';
+            ka.state.gridSortOrder = 'desc';
         } else if (id == 'boom-config-button-sort-year-asc') {
-            ka.config.gridSortCriterion = 'byYear';
-            ka.config.gridSortOrder = 'asc';
+            ka.state.gridSortCriterion = 'byYear';
+            ka.state.gridSortDisplayLanguage = 'localized';
+            ka.state.gridSortOrder = 'asc';
         } else if (id == 'boom-config-button-sort-rating-desc') {
-            ka.config.gridSortCriterion = 'byTitleOriginal';
-            ka.config.gridSortOrder = 'asc';
+            ka.state.gridSortCriterion = 'byTitleLocalized';
+            ka.state.gridSortDisplayLanguage = 'localized';
+            ka.state.gridSortOrder = 'asc';
         }
 
-        if (ka.config.gridSortCriterion != lastCriterion || ka.config.gridSortOrder != lastOrder) {
+        if (ka.state.gridSortCriterion != lastCriterion || ka.state.gridSortOrder != lastOrder) {
             ka.lib.recalcMovieGrid();
             ka.lib.updateMovieGrid();
         }

@@ -50,9 +50,13 @@ def _startDownloader(queue):
                     if image is not None:
                         movieUuid = downscalePoster(downloaderStreamManager, image)
 
-
-                        # TODO: possibly we are already in shutdown state, so only put item in queue if we are still live
-                        queue.put('orchestrator:poster-refresh:%s' % movieUuid)
+                        try:
+                            command = queue.get_nowait()
+                        except Empty:
+                            queue.put('orchestrator:poster-refresh:%s' % movieUuid)
+                        else:
+                            queue.put(command)
+                            queue.task_done()
                     else:
                         # print 'nothing to downscale'
                         pass

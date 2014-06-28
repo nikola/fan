@@ -172,7 +172,7 @@ class StreamManager(object):
                     return image
 
 
-    def getMissingBackdropMovie(self):
+    def getMissingBackdropMovieUuid(self):
         with self._session() as session:
             try:
                 movie = session.query(Movie).join(Image).filter(Movie.images.any(Image.imageType == 'Poster')).group_by(Movie.id).having(func.count(Movie.images) == 1).first()

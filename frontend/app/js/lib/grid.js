@@ -26,16 +26,16 @@ ka.lib.recalcMovieGrid = function () {
     ka.state.gridLookupLinesByKey = {};
     ka.state.gridLookupKeyByLine = [];
 
-    var keys = Object.getOwnPropertyNames(ka.data.cortex[ka.config.gridSortCriterion]).sort(), keyCount = keys.length;
-    if (ka.config.gridSortOrder == 'desc') {
+    var keys = Object.getOwnPropertyNames(ka.data.cortex[ka.state.gridSortCriterion]).sort(), keyCount = keys.length;
+    if (ka.state.gridSortOrder == 'desc') {
         keys.reverse();
     }
 
     var currentRowIndex = 0, currentColumnIndex, currentCellIndex = 0, currentLineIndex;
     for (var key, keyIndex = 0; keyIndex < keyCount; keyIndex++) {
         key = keys[keyIndex];
-        if (key in ka.data.cortex[ka.config.gridSortCriterion]) {
-            var items = ka.data.cortex[ka.config.gridSortCriterion][key], count = items.count();
+        if (key in ka.data.cortex[ka.state.gridSortCriterion]) {
+            var items = ka.data.cortex[ka.state.gridSortCriterion][key], count = items.count();
             if (count) {
                 currentColumnIndex = 0;
                 for (var movieIndex = 0; movieIndex < count; movieIndex++) {
@@ -108,21 +108,16 @@ ka.lib.updateMovieGrid = function () {
         if (currentKey != lastKey || row % ka.config.gridMaxRows == 0) {
             keyContainer.css('visibility', 'visible');
 
-            var keyLabel = renderedKeyLabels.eq(row);
+            var keyLabel = keyContainer.find('.boom-movie-grid-key-label'); // renderedKeyLabels.eq(row);
             if (keyLabel.size()) {
-               keyLabel.text(currentKey);
+                keyLabel.text(currentKey);
             } else{
                 $('<span class="boom-movie-grid-key-label">' + currentKey + '</span>').appendTo(keyContainer);
             }
 
             lastKey = currentKey;
         } else {
-            // if (renderedKeyContainers.length >= rows) {
-                keyContainer.css('visibility', 'hidden');
-                // renderedKeyLabels.eq(row).text('');
-            /* } else {
-                $('<span class="boom-movie-grid-key-label"></span>').appendTo(keyIndicator);
-            } */
+            keyContainer.css('visibility', 'hidden');
         }
 
         for (var column = 0, line = matrix[row], columns = line.length; column < columns; column++) {

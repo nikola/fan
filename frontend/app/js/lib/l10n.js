@@ -14,3 +14,10 @@ ka.lib.getLocalizedTitleByUuid = function (uuid) {
     return title;
 };
 
+
+ka.lib.getLocalizedArticles = function () {
+    return {
+        'en': 'the'
+      , 'de': '(?:der|die|das)'
+    }[ka.config.language];
+};

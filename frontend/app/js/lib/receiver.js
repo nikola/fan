@@ -11,14 +11,15 @@
 ka.lib.addMovieToCortex = function (movieDict) {
     if (ka.data.cortex.byUuid.hasKey(movieDict.uuid)) return;
 
-    var alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''), compare = ka.state.collator.compare;
+    var alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''), compare = ka.state.collator.compare,
+        localizedArticles = ka.lib.getLocalizedArticles();
 
     for (var orders = ['titleOriginal', 'titleLocalized', 'year'], order, o = 0; order = orders[o]; o++) {
         var field = 'by' + order[0].toUpperCase() + order.slice(1);
 
         if (order == 'titleOriginal' || order == 'titleLocalized') {
-            var criterion = movieDict[order].replace(/^the /i, '').replace('.', '').toLowerCase(),// TODO: use 'der' for German locale, etc.
-                key = /^(?:the )?([\S])/i.exec(movieDict[order])[1].toUpperCase().replace(/[0-9]/, '123');
+                var criterion = movieDict[order].replace(new RegExp('^' + localizedArticles + ' ', 'i'), '').replace('.', '').toLowerCase(),
+                    key = new RegExp('^(?:' + localizedArticles + ' )?([\\S])', 'i').exec(movieDict[order])[1].toUpperCase().replace(/[0-9]/, '123');
 
             /* Fix keys that are not Latin. */
             if (key !== '123' && /^[^A-Z]$/.test(key)) {

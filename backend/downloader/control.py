@@ -44,11 +44,16 @@ def _startDownloader(queue):
                 #     print '%s needs a backdrop' % movieUuid
                 #     downloadBackdrop(downloaderStreamManager, imageBaseUrl, movieUuid, True)
                 # else:
+
+
+
                 image = downloaderStreamManager.getUnscaledPosterImage()
                 if image is not None:
                     movieUuid = downscalePoster(downloaderStreamManager, image)
+
+
+                    # TODO: possibly we are already in shutdown state, so only put item in queue if we are still live
                     queue.put('orchestrator:poster-refresh:%s' % movieUuid)
-                    # TODO: send websocket event to client to update poster
                 else:
                     # print 'nothing to downscale'
                     pass

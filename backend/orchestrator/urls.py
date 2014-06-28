@@ -31,7 +31,7 @@ module = Module()
 def presenterReady(request, pathname):
     if DEBUG or pathname == module.bootToken:
         module.imageBaseUrl, module.imageClosestSize = getImageConfiguration()
-        # module.interProcessQueue.put('configuration:image-base-url:%s' % module.imageBaseUrl)
+        module.interProcessQueue.put('configuration:image-base-url:%s' % module.imageBaseUrl)
 
         module.interProcessQueue.put('orchestrator:start:scan')
         return '', 200

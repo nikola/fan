@@ -15,6 +15,7 @@ from models import StreamManager
 def _startDownloader(queue):
     downloaderStreamManager = StreamManager()
     isStarted = False
+    imageBaseUrl = None
 
     while True:
         try:
@@ -25,10 +26,10 @@ def _startDownloader(queue):
                 isStarted = True
 
                 queue.task_done()
-            # elif command.startswith('configuration:image-base-url:'):
-            #     imageBaseUrl = command.replace('configuration:image-base-url:', '')
+            elif command.startswith('configuration:image-base-url:'):
+                imageBaseUrl = command.replace('configuration:image-base-url:', '')
 
-            #     queue.task_done()
+                queue.task_done()
             elif command == 'downloader:stop':
                 downloaderStreamManager.shutdown()
 
@@ -39,24 +40,22 @@ def _startDownloader(queue):
                 queue.task_done()
         except Empty:
             if isStarted:
-                # movieUuid = downloaderStreamManager.getMissingBackdropMovie()
-                # if movieUuid is not None:
-                #     print '%s needs a backdrop' % movieUuid
-                #     downloadBackdrop(downloaderStreamManager, imageBaseUrl, movieUuid, True)
-                # else:
-
-
-
-                image = downloaderStreamManager.getUnscaledPosterImage()
-                if image is not None:
-                    movieUuid = downscalePoster(downloaderStreamManager, image)
-
-
-                    # TODO: possibly we are already in shutdown state, so only put item in queue if we are still live
-                    queue.put('orchestrator:poster-refresh:%s' % movieUuid)
+                movieUuid = downloaderStreamManager.getMissingBackdropMovieUuid()
+                if movieUuid is not None:
+                    if imageBaseUrl is not None:
+                        print '%s needs a backdrop' % movieUuid
+                        downloadBackdrop(downloaderStreamManager, imageBaseUrl, movieUuid, True)
                 else:
-                    # print 'nothing to downscale'
-                    pass
+                    image = downloaderStreamManager.getUnscaledPosterImage()
+                    if image is not None:
+                        movieUuid = downscalePoster(downloaderStreamManager, image)
+
+
+                        # TODO: possibly we are already in shutdown state, so only put item in queue if we are still live
+                        queue.put('orchestrator:poster-refresh:%s' % movieUuid)
+                    else:
+                        # print 'nothing to downscale'
+                        pass
                 time.sleep(0.5)
             else:
                 time.sleep(0.015)

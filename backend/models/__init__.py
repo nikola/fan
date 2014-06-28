@@ -61,7 +61,7 @@ class StreamManager(object):
                 session.commit()
 
 
-    def __init__(self):
+    def __init__(self, cleanUp=False):
         self.engine = create_engine(_getSqliteDsn('db'), echo=False, module=sqlite)
         self.engine.execute('select 1').scalar()
         self.session_factory = sessionmaker(bind=self.engine, expire_on_commit=False)
@@ -73,6 +73,11 @@ class StreamManager(object):
         # else:
         # Base.metadata.drop_all(self.engine, checkfirst=True)
         Base.metadata.create_all(self.engine, checkfirst=True)
+
+        if cleanUp:
+            with self._session() as session:
+                session.query(Movie).filter(Movie.isPosterDownloading == True).update({'isPosterDownloading': False})
+                session.query(Movie).filter(Movie.isBackdropDownloading == True).update({'isBackdropDownloading': False})
 
 
     def shutdown(self):
@@ -268,7 +273,7 @@ class StreamManager(object):
                 return None
             else:
                 try:
-                    image = session.query(Image).filter(Image.movie.has(Movie.uuid == identifier), Image.imageType == imageType, Image.width == width).one()
+                    image = session.query(Image).join(Movie).filter(Movie.uuid == identifier, Movie.id == Image.movieId, Image.imageType == imageType, Image.width == width).one()
                 except NoResultFound:
                     image = Image(
                         imageType = imageType,

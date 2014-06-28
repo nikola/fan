@@ -66,7 +66,7 @@ if __name__ == '__main__':
     # sys.excepthook = handleException
 
     # Create DB connection here to initialize models.
-    streamManager = StreamManager()
+    streamManager = StreamManager(cleanUp=True)
     streamManager.shutdown()
     del streamManager
 

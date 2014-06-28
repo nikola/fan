@@ -38,7 +38,6 @@ def makeThrottledGetRequest(url, params):
 
     # Only 30 requests every 10 seconds per IP.
     if diff < 0.34:
-        print '...'
         time.sleep(0.34 - diff)
 
     LAST_TMDB_ACCESS = time.clock()

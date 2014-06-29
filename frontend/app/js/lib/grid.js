@@ -248,9 +248,9 @@ ka.lib.moveFocusUp = function () {
         var props = {}, options = {};
 
         if (ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY - 1] <= ka.state.gridFocusX) {
-            props.left = '-=' + 260 * (ka.state.gridFocusX - (ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY - 1] - 1));
+            props.left = ka.lib.repositionFocusX(gridFocusAbsoluteY - 1);
+
             options.easing = 'easeOutSine';
-            ka.state.gridFocusX = ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY - 1] - 1;
         } else {
             options.easing = 'ease-out';
         }
@@ -283,9 +283,9 @@ ka.lib.moveFocusDown = function () {
         var props = {}, options = {};
 
         if (ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY + 1] <= ka.state.gridFocusX) {
-            props.left = '-=' + 260 * (ka.state.gridFocusX - (ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY + 1] - 1));
+            props.left = ka.lib.repositionFocusX(gridFocusAbsoluteY + 1);
+
             options.easing = 'easeOutSine';
-            ka.state.gridFocusX = ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY + 1] - 1;
         } else {
             options.easing = 'ease-out';
         }
@@ -349,4 +349,12 @@ ka.lib.selectFocus = function () {
 
 ka.lib.getGridFocusAbsoluteY = function () {
     return ka.config.gridMaxRows * ka.state.gridPage + ka.state.gridFocusY;
+};
+
+
+ka.lib.repositionFocusX = function (targetY) {
+    var targetX = ka.state.gridLookupItemsPerLine[targetY] - 1,
+        driftLeft = '-=' + 260 * (ka.state.gridFocusX - targetX);
+    ka.state.gridFocusX = targetX;
+    return driftLeft;
 };

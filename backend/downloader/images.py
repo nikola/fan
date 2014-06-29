@@ -51,19 +51,22 @@ def downscalePoster(streamManager, image):
     if isPosterDownloading is False:
         streamManager.startPosterDownload(movieUuid)
 
-        blobOriginal = requests.get(image.urlOriginal, headers={'User-agent': CEF_REAL_AGENT}).content
+        try:
+            blobOriginal = requests.get(image.urlOriginal, headers={'User-agent': CEF_REAL_AGENT}).content
+        except requests.ConnectionError:
+            return None
+        else:
+            blobAtWidth200 = _downscaleImage(blobOriginal, 200, 300)
+            streamManager.saveImageData(movieUuid, 200, blobAtWidth200, True, 'Poster', 'WebP', image.urlOriginal)
+            del blobAtWidth200
+            time.sleep(0.0001)
 
-        blobAtWidth200 = _downscaleImage(blobOriginal, 200, 300)
-        streamManager.saveImageData(movieUuid, 200, blobAtWidth200, True, 'Poster', 'WebP', image.urlOriginal)
-        del blobAtWidth200
-        time.sleep(0.0001)
+            blobAtWidth300 = _downscaleImage(blobOriginal, 300, 450)
+            streamManager.saveImageData(movieUuid, 300, blobAtWidth300, True, 'Poster', 'WebP', image.urlOriginal)
 
-        blobAtWidth300 = _downscaleImage(blobOriginal, 300, 450)
-        streamManager.saveImageData(movieUuid, 300, blobAtWidth300, True, 'Poster', 'WebP', image.urlOriginal)
+            streamManager.endPosterDownload(movieUuid)
 
-        streamManager.endPosterDownload(movieUuid)
-
-        return movieUuid
+            return movieUuid
     else:
         return # TODO: complete this
     # elif isPosterDownloading is True:

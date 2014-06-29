@@ -9,10 +9,15 @@
 
 ka.lib.handleKeypressFirstItem = function () {
     if (ka.state.currentPageMode == 'grid') {
-        if (ka.state.gridPage > 0) {
-            ka.state.gridPage = 0;
-            ka.lib.scrollToPage(ka.state.gridPage);
-            // ka.lib.updateDetailPage();
+        if (ka.state.gridFocusX > 0) {
+            var distance = 260 * ka.state.gridFocusX;
+            ka.state.gridFocusX = 0;
+
+            $('#boom-poster-focus').css('display', 'block');
+
+            $('#boom-poster-focus').velocity({left: '-=' + distance}, {
+                duration: 260
+            });
         }
     }
 };
@@ -20,10 +25,16 @@ ka.lib.handleKeypressFirstItem = function () {
 
 ka.lib.handleKeypressLastItem = function () {
     if (ka.state.currentPageMode == 'grid') {
-        if (ka.state.gridPage + 1 < ka.state.gridTotalPages) {
-            ka.state.gridPage = ka.state.gridTotalPages - 1;
-            ka.lib.scrollToPage(ka.state.gridPage);
-            // ka.lib.updateDetailPage();
+        var items = ka.state.gridLookupItemsPerLine[ka.config.gridMaxRows * ka.state.gridPage + ka.state.gridFocusY];
+        if (ka.state.gridFocusX < items - 1) {
+            var distance = 260 * (items - ka.state.gridFocusX - 1);
+            ka.state.gridFocusX = items - 1;
+
+            $('#boom-poster-focus').css('display', 'block');
+
+            $('#boom-poster-focus').velocity({left: '+=' + distance}, {
+                duration: 260
+            });
         }
     }
 };

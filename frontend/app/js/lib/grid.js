@@ -200,3 +200,144 @@ ka.lib.renderMovieGridCell = function (movie, operation, context) {
 ka.lib.scrollToPage = function (page) {
     $('#boom-movie-grid-container').css('-webkit-transform', 'translate3d(0, -' + page + '00%, 0)');
 };
+
+
+ka.lib.moveFocusFirstItem = function () {
+    if (ka.state.gridFocusX > 0) {
+        var distance = 260 * ka.state.gridFocusX;
+        ka.state.gridFocusX = 0;
+
+        $('#boom-poster-focus').css('display', 'block').velocity({left: '-=' + distance}, 260);
+    }
+};
+
+
+ka.lib.moveFocusLastItem = function () {
+    var items = ka.state.gridLookupItemsPerLine[ka.config.gridMaxRows * ka.state.gridPage + ka.state.gridFocusY];
+    if (ka.state.gridFocusX < items - 1) {
+        var distance = 260 * (items - ka.state.gridFocusX - 1);
+        ka.state.gridFocusX = items - 1;
+
+        $('#boom-poster-focus').css('display', 'block').velocity({left: '+=' + distance}, 260);
+    }
+};
+
+
+ka.lib.moveFocusPageUp = function () {
+    if (ka.state.gridPage > 0) {
+        ka.state.gridPage -= 1;
+        ka.lib.scrollToPage(ka.state.gridPage);
+    }
+};
+
+
+ka.lib.moveFocusPageDown = function () {
+    if (ka.state.gridPage + 1 < ka.state.gridTotalPages) {
+        ka.state.gridPage += 1;
+        ka.lib.scrollToPage(ka.state.gridPage);
+    }
+};
+
+
+ka.lib.moveFocusUp = function () {
+    var gridFocusAbsoluteY = ka.config.gridMaxRows * ka.state.gridPage + ka.state.gridFocusY,
+        notFirstRow = ka.state.gridFocusY > 0,
+        notFirstPage = ka.state.gridPage > 0;
+
+    if (notFirstRow || notFirstPage) {
+        if (ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY - 1] > ka.state.gridFocusX) { /* Focus can stay in same column. */
+            if (notFirstRow) {
+                ka.state.gridFocusY -= 1;
+                $('#boom-poster-focus').velocity({top: '-=360'}, {duration: 360});
+            } else {
+                ka.state.gridFocusY = ka.config.gridMaxRows - 1;
+                ka.state.gridPage -= 1;
+                $('#boom-poster-focus').velocity({top: '+=720'}, {duration: 720, easing: 'ease-out'});
+                ka.lib.scrollToPage(ka.state.gridPage);
+            }
+        } else { /* Focus must drift to the left. */
+            var driftLeft = '-=' + (ka.state.gridFocusX - (ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY - 1] - 1)) * 260;
+            ka.state.gridFocusX = ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY - 1] - 1;
+            if (notFirstRow) {
+                ka.state.gridFocusY -= 1;
+                $('#boom-poster-focus').velocity({top: '-=360', left: driftLeft}, {duration: 360});
+            } else {
+                ka.state.gridFocusY = ka.config.gridMaxRows - 1;
+                ka.state.gridPage -= 1;
+                $('#boom-poster-focus').velocity({top: '+=720', left: driftLeft}, {duration: 720, easing: 'easeOutSine'});
+                ka.lib.scrollToPage(ka.state.gridPage);
+            }
+        }
+    }
+};
+
+
+ka.lib.moveFocusDown = function () {
+    var gridFocusAbsoluteY = ka.config.gridMaxRows * ka.state.gridPage + ka.state.gridFocusY,
+        notLastRow = ka.state.gridFocusY + 1 < ka.config.gridMaxRows,
+        notLastPage = ka.state.gridPage + 1 < ka.state.gridTotalPages;
+
+    if (notLastRow || notLastPage) {
+        if (ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY + 1] > ka.state.gridFocusX) {  /* Focus can stay in same column. */
+            if (notLastRow) {
+                ka.state.gridFocusY += 1;
+                $('#boom-poster-focus').velocity({top: '+=360'}, {duration: 360});
+            } else {
+                ka.state.gridFocusY = 0;
+                ka.state.gridPage += 1;
+                $('#boom-poster-focus').velocity({top: '-=720'}, {duration: 720, easing: 'ease-out'});
+                ka.lib.scrollToPage(ka.state.gridPage);
+            }
+        } else { /* Focus must drift to the left. */
+            var driftLeft = '-=' + (ka.state.gridFocusX - (ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY + 1] - 1)) * 260;
+            ka.state.gridFocusX = ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY + 1] - 1;
+            if (notLastRow) {
+                ka.state.gridFocusY += 1;
+                $('#boom-poster-focus').velocity({top: '+=360', left: driftLeft}, {duration: 360});
+            } else {
+                ka.state.gridFocusY = 0;
+                ka.state.gridPage += 1;
+                $('#boom-poster-focus').velocity({top: '-=720', left: driftLeft}, {duration: 720, easing: 'easeOutSine'});
+                ka.lib.scrollToPage(ka.state.gridPage);
+            }
+        }
+    }
+};
+
+
+ka.lib.moveFocusLeft = function () {
+    if (ka.state.gridFocusX > 0) {
+        ka.state.gridFocusX -= 1;
+
+        $('#boom-poster-focus').css('display', 'block').velocity({left: '-=260'}, 260);
+    }
+};
+
+
+ka.lib.moveFocusRight = function () {
+    if (ka.state.gridFocusX < ka.config.gridMaxColumns - 1 && ka.state.gridLookupItemsPerLine[ka.config.gridMaxRows * ka.state.gridPage + ka.state.gridFocusY] > ka.state.gridFocusX + 1) {
+        ka.state.gridFocusX += 1;
+
+        $('#boom-poster-focus').css('display', 'block').velocity({left: '+=260'}, 260);
+    }
+};
+
+
+ka.lib.toggleFocus = function () {
+    var uuid = ka.state.gridLookupMatrix[ka.config.gridMaxRows * ka.state.gridPage + ka.state.gridFocusY][ka.state.gridFocusX].uuid;
+
+    $('#boom-movie-grid-item-' + uuid)
+        .toggleClass('active')
+        .find('.boom-movie-grid-info-overlay-title').text(ka.lib.getLocalizedTitleByUuid(uuid));
+};
+
+
+ka.lib.selectFocus = function () {
+    ka.state.currentPageMode = 'detail';
+    ka.state.currentDetailButton = 0;
+
+    ka.lib.updateDetailPage();
+    ka.lib.updateDetailButtonSelection();
+
+    $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({left: '-=1920'}, 720);
+};

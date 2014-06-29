@@ -8,7 +8,7 @@
 
 
 ka.lib.updateDetailPage = function () {
-    var movie = ka.state.gridLookupMatrix[ka.config.gridMaxRows * ka.state.gridPage + ka.state.gridFocusY][ka.state.gridFocusX];
+    var movie = ka.lib.getMovieFromGridFocus();
     $('#boom-movie-detail-title').text(ka.lib.getLocalizedTitleByUuid(movie.uuid));
     $('#boom-movie-detail-description').text(movie.storyline);
 

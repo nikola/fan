@@ -100,8 +100,7 @@ ka.lib.handleKeypressSelect = function () {
     } else if (ka.state.currentPageMode == 'detail') {
         // ka.state.currentPageMode = 'play';
 
-        ka.state.socketDispatcher.push('movie:play',
-            ka.state.gridLookupMatrix[ka.config.gridMaxRows * ka.state.gridPage + ka.state.gridFocusY][ka.state.gridFocusX].uuid);
+        ka.state.socketDispatcher.push('movie:play', ka.lib.getMovieFromGridFocus().uuid);
     }
 };
 

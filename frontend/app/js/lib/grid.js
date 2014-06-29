@@ -213,7 +213,7 @@ ka.lib.moveFocusFirstItem = function () {
 
 
 ka.lib.moveFocusLastItem = function () {
-    var items = ka.state.gridLookupItemsPerLine[ka.config.gridMaxRows * ka.state.gridPage + ka.state.gridFocusY];
+    var items = ka.lib.getItemsPerLineAtFocus();
     if (ka.state.gridFocusX < items - 1) {
         var distance = 260 * (items - ka.state.gridFocusX - 1);
         ka.state.gridFocusX = items - 1;
@@ -319,7 +319,7 @@ ka.lib.moveFocusLeft = function () {
 
 
 ka.lib.moveFocusRight = function () {
-    if (ka.state.gridFocusX < ka.config.gridMaxColumns - 1 && ka.state.gridLookupItemsPerLine[ka.config.gridMaxRows * ka.state.gridPage + ka.state.gridFocusY] > ka.state.gridFocusX + 1) {
+    if (ka.state.gridFocusX < ka.config.gridMaxColumns - 1 && ka.state.gridFocusX + 1 < ka.lib.getItemsPerLineAtFocus()) {
         ka.state.gridFocusX += 1;
 
         $('#boom-poster-focus').css('display', 'block').velocity({left: '+=260'}, 260);
@@ -328,7 +328,7 @@ ka.lib.moveFocusRight = function () {
 
 
 ka.lib.toggleFocus = function () {
-    var uuid = ka.state.gridLookupMatrix[ka.config.gridMaxRows * ka.state.gridPage + ka.state.gridFocusY][ka.state.gridFocusX].uuid;
+    var uuid = ka.state.gridLookupMatrix[ka.lib.getGridFocusAbsoluteY()][ka.state.gridFocusX].uuid;
 
     $('#boom-movie-grid-item-' + uuid)
         .toggleClass('active')
@@ -352,9 +352,19 @@ ka.lib.getGridFocusAbsoluteY = function () {
 };
 
 
+ka.lib.getItemsPerLineAtFocus = function () {
+    return ka.state.gridLookupItemsPerLine[ka.lib.getGridFocusAbsoluteY()];
+};
+
+
 ka.lib.repositionFocusX = function (targetY) {
     var targetX = ka.state.gridLookupItemsPerLine[targetY] - 1,
         driftLeft = '-=' + 260 * (ka.state.gridFocusX - targetX);
     ka.state.gridFocusX = targetX;
     return driftLeft;
+};
+
+
+ka.lib.getMovieFromGridFocus = function () {
+    return ka.state.gridLookupMatrix[ka.lib.getGridFocusAbsoluteY()][ka.state.gridFocusX];
 };

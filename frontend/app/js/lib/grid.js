@@ -240,65 +240,71 @@ ka.lib.moveFocusPageDown = function () {
 
 
 ka.lib.moveFocusUp = function () {
-    var gridFocusAbsoluteY = ka.config.gridMaxRows * ka.state.gridPage + ka.state.gridFocusY,
+    var gridFocusAbsoluteY = ka.lib.getGridFocusAbsoluteY(),
         notFirstRow = ka.state.gridFocusY > 0,
         notFirstPage = ka.state.gridPage > 0;
 
     if (notFirstRow || notFirstPage) {
+        var props = {}, options = {};
+
         if (ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY - 1] <= ka.state.gridFocusX) {
-            var left = '-=' + (ka.state.gridFocusX - (ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY - 1] - 1)) * 260, easing = 'easeOutSine';
+            props.left = '-=' + 260 * (ka.state.gridFocusX - (ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY - 1] - 1));
+            options.easing = 'easeOutSine';
             ka.state.gridFocusX = ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY - 1] - 1;
         } else {
-            var left = null, easing = 'ease-out';
+            options.easing = 'ease-out';
         }
 
         if (notFirstRow) {
-            var props = {top: '-=360'}, options = {duration: 360};
+            props.top = '-=360';
+            options.duration = 360;
+
             ka.state.gridFocusY -= 1;
         } else {
-            var props = {top: '+=720'}, options = {duration: 720, easing: easing};
+            props.top = '+=720';
+            options.duration = 720;
+
             ka.state.gridFocusY = ka.config.gridMaxRows - 1;
             ka.state.gridPage -= 1;
             ka.lib.scrollToPage(ka.state.gridPage);
         }
 
-        if (left !== null) {
-            props.left = left;
-        }
         $('#boom-poster-focus').velocity(props, options);
     }
 };
 
 
 ka.lib.moveFocusDown = function () {
-    var gridFocusAbsoluteY = ka.config.gridMaxRows * ka.state.gridPage + ka.state.gridFocusY,
+    var gridFocusAbsoluteY = ka.lib.getGridFocusAbsoluteY(),
         notLastRow = ka.state.gridFocusY + 1 < ka.config.gridMaxRows,
         notLastPage = ka.state.gridPage + 1 < ka.state.gridTotalPages;
 
     if (notLastRow || notLastPage) {
-        if (ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY + 1] > ka.state.gridFocusX) {
-            if (notLastRow) {
-                ka.state.gridFocusY += 1;
-                $('#boom-poster-focus').velocity({top: '+=360'}, {duration: 360});
-            } else {
-                ka.state.gridFocusY = 0;
-                ka.state.gridPage += 1;
-                $('#boom-poster-focus').velocity({top: '-=720'}, {duration: 720, easing: 'ease-out'});
-                ka.lib.scrollToPage(ka.state.gridPage);
-            }
-        } else {
-            var driftLeft = '-=' + (ka.state.gridFocusX - (ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY + 1] - 1)) * 260;
+        var props = {}, options = {};
+
+        if (ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY + 1] <= ka.state.gridFocusX) {
+            props.left = '-=' + 260 * (ka.state.gridFocusX - (ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY + 1] - 1));
+            options.easing = 'easeOutSine';
             ka.state.gridFocusX = ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY + 1] - 1;
-            if (notLastRow) {
-                ka.state.gridFocusY += 1;
-                $('#boom-poster-focus').velocity({top: '+=360', left: driftLeft}, {duration: 360});
-            } else {
-                ka.state.gridFocusY = 0;
-                ka.state.gridPage += 1;
-                $('#boom-poster-focus').velocity({top: '-=720', left: driftLeft}, {duration: 720, easing: 'easeOutSine'});
-                ka.lib.scrollToPage(ka.state.gridPage);
-            }
+        } else {
+            options.easing = 'ease-out';
         }
+
+        if (notLastRow) {
+            props.top = '+=360';
+            options.duration = 360;
+
+            ka.state.gridFocusY += 1;
+        } else {
+            props.top = '-=720';
+            options.duration = 720;
+
+            ka.state.gridFocusY = 0;
+            ka.state.gridPage += 1;
+            ka.lib.scrollToPage(ka.state.gridPage);
+        }
+
+        $('#boom-poster-focus').velocity(props, options);
     }
 };
 
@@ -338,4 +344,9 @@ ka.lib.selectFocus = function () {
     ka.lib.updateDetailButtonSelection();
 
     $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({left: '-=1920'}, 720);
+};
+
+
+ka.lib.getGridFocusAbsoluteY = function () {
+    return ka.config.gridMaxRows * ka.state.gridPage + ka.state.gridFocusY;
 };

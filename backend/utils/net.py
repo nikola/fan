@@ -46,7 +46,7 @@ def makeThrottledGetRequest(url, params):
 
 
 def getVacantPort():
-    s = socket.socket()
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
     s.bind(('', 0))
     port = s.getsockname()[1]
     s.close()

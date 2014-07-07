@@ -174,6 +174,7 @@ def start(callback, userAgent, serverPort, bridgeToken, bootToken):
     dwExStyle = win32con.WS_EX_APPWINDOW # | win32con.WS_EX_LAYERED # | win32con.WS_EX_TRANSPARENT # | win32con.WS_EX_TOPMOST
     style = win32con.WS_VISIBLE | win32con.WS_POPUP | win32con.WS_CLIPCHILDREN | win32con.WS_CLIPSIBLINGS
 
+    # TODO: re-enable this to prevent blueish solid color from showing when closing application
     # if DEBUG:
     #     dwExStyle = win32con.WS_EX_APPWINDOW
     #     style = win32con.WS_VISIBLE | win32con.WS_OVERLAPPEDWINDOW | win32con.WS_CLIPCHILDREN | win32con.WS_CLIPSIBLINGS | win32con.WS_MAXIMIZE

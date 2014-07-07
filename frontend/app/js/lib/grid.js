@@ -244,7 +244,7 @@ ka.lib.moveFocusUp = function () {
         notFirstRow = ka.state.gridFocusY > 0,
         notFirstPage = ka.state.gridPage > 0;
 
-    if (notFirstRow || notFirstPage) {
+    if (gridFocusAbsoluteY > 0 && (notFirstRow || notFirstPage)) {
         var props = {}, options = {};
 
         if (ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY - 1] <= ka.state.gridFocusX) {
@@ -279,7 +279,7 @@ ka.lib.moveFocusDown = function () {
         notLastRow = ka.state.gridFocusY + 1 < ka.config.gridMaxRows,
         notLastPage = ka.state.gridPage + 1 < ka.state.gridTotalPages;
 
-    if (notLastRow || notLastPage) {
+    if (gridFocusAbsoluteY + 1 < ka.state.gridLookupMatrix.length && (notLastRow || notLastPage)) {
         var props = {}, options = {};
 
         if (ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY + 1] <= ka.state.gridFocusX) {

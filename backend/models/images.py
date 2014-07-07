@@ -25,7 +25,7 @@ class Image(Base):
     modified = Column(TIMESTAMP, server_default=func.now(), onupdate=func.current_timestamp())
     blob = Column(LargeBinary)
 
-    movie = relationship('Movie', backref=backref('images', order_by=id))
+    movie = relationship('Movie', backref=backref('images', order_by=id), lazy='joined')
 
     def __init__(self, **kwargs):
         # vars(self).update(kwargs)

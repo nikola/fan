@@ -93,7 +93,7 @@ ka.lib.recalcMovieGrid = function () {
 ka.lib.updateMovieGrid = function () {
     var currentCellIndex = 0,
         renderedCells = $('.boom-movie-grid-item'), detachedCell,
-        renderedKeyContainers = $('.boom-movie-grid-key'), renderedKeyLabels = $('.boom-movie-grid-key-label'),
+        renderedKeyContainers = $('.boom-movie-grid-key'),
         hasCells = renderedCells.length > 0,
         lastKey = null, currentKey,
         movie;
@@ -108,7 +108,7 @@ ka.lib.updateMovieGrid = function () {
         if (currentKey != lastKey || row % ka.config.gridMaxRows == 0) {
             keyContainer.css('visibility', 'visible');
 
-            var keyLabel = keyContainer.find('.boom-movie-grid-key-label'); // renderedKeyLabels.eq(row);
+            var keyLabel = keyContainer.find('.boom-movie-grid-key-label');
             if (keyLabel.size()) {
                 keyLabel.text(currentKey);
             } else{
@@ -142,6 +142,10 @@ ka.lib.updateMovieGrid = function () {
             currentCellIndex++;
         }
     }
+
+    /* After changing the sort order, superfluous items might still be rendered at the tail of the grid. */
+    $('.boom-movie-grid-item').slice(currentCellIndex).remove();
+    $('.boom-movie-grid-key').slice(ka.state.gridLookupMatrix.length).remove();
 
     if (ka.state.gridLookupMatrix.length) {
         // $('#content').waitForImages(function () { // TODO: crap, will wait forever when new movies have been detected !!!

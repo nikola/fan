@@ -22,23 +22,38 @@ from analyzer.control import start as startAnalyzer, stop as stopAnalyzer
 from presenter.control import start as present
 
 
+# Setup logging.
+import logging
+
+from settings import LOG_CONFIG
+from utils.fs import getLogFileHandler
+
+logging.basicConfig(**LOG_CONFIG)
+logger = logging.getLogger('application')
+logger.addHandler(getLogFileHandler('application'))
+
+
 if __name__ == '__main__':
     freeze_support()
 
     if not isCompatiblePlatform():
         windll.user32.MessageBoxA(0, 'This application is only compatible with Windows Vista or newer.', 'Error', 0)
+        logger.critical('Aborting because system is not Windows Vista or newer.')
         sys.exit()
 
     if not isNtfsFilesystem():
         windll.user32.MessageBoxA(0, 'This application must be run from an NTFS partition.', 'Error', 0)
+        logger.critical('Aborting because system is not on NTFS partition.')
         sys.exit()
 
     if getScreenResolution() != (1920, 1080):
         windll.user32.MessageBoxA(0, 'This application must be run at 1920x1080 screen resolution.', 'Error', 0)
+        logger.critical('Aborting because screen resolution is not 1920x1080.')
         sys.exit()
 
     if not isDesktopCompositionEnabled():
         windll.user32.MessageBoxA(0, 'This application requires that the Desktop Window Manager (DWM) is enabled.', 'Error', 0)
+        logger.critical('Aborting because DWM is disabled.')
         sys.exit()
 
     def _shutdown():
@@ -51,24 +66,36 @@ if __name__ == '__main__':
         # Block until all queue items have been processed.
         interProcessQueue.join()
         interProcessQueue.close()
+        logger.info('Pending IPC items successfully processed.')
 
         # Gracefully stop processes.
         orchestrator.join()
         player.join()
         analyzer.join()
         downloader.join()
+        logger.info('All processes gracefully terminated.')
 
         os.remove(certificateLocation)
+
+        logger.info('Closing application.')
+        logger.info('<' * 80)
+        logger.info('')
 
         # Circumvent SystemExit exception handler.
         os._exit(1)
 
     # sys.excepthook = handleException
 
+    # TODO: create all sub-folders in APP_STORAGE_PATH !!!
+
+    logger.info('>' * 80)
+    logger.info('Starting application.')
+
     # Create DB connection here to initialize models.
     streamManager = StreamManager(cleanUp=True)
     streamManager.shutdown()
     del streamManager
+    logger.info('Normalized database.')
 
     try:
         if DEBUG:
@@ -83,16 +110,25 @@ if __name__ == '__main__':
         interProcessQueue = InterProcessQueue()
 
         downloader = startDownloader(interProcessQueue)
+        logger.info('Downloader process successfully started.')
+
         analyzer = startAnalyzer(interProcessQueue)
+        logger.info('Analyzer process successfully started.')
+
         player = startPlayer(interProcessQueue)
+        logger.info('Player process successfully started.')
 
         arguments = (getUserAgent(), serverPort, uuid4().hex, uuid4().hex)
 
         # Start process, but spawn file scanner and watcher only after receiving a kick-off event from the presenter.
         orchestrator = startOrchestrator(interProcessQueue, certificateLocation, *arguments)
 
+        logger.info('Orchestrator process successfully started.')
+
         # Start the blocking presenter process.
         present(_shutdown, *arguments)
+
+
 
         # TODO: implement SIGINT handler
         # http://stackoverflow.com/a/1112350

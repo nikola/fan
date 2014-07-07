@@ -11,6 +11,8 @@ from Queue import Empty
 from downloader.images import downloadBackdrop, downscalePoster
 from models import StreamManager
 
+from . import logger
+
 
 def _startDownloader(queue):
     downloaderStreamManager = StreamManager()
@@ -24,13 +26,17 @@ def _startDownloader(queue):
                 # TODO: only launch this when all poster images have been downloaded in frontend
 
                 isStarted = True
+                logger.info('Downloader main loop started.')
 
                 queue.task_done()
             elif command.startswith('configuration:image-base-url:'):
                 imageBaseUrl = command.replace('configuration:image-base-url:', '')
+                logger.info('Base URL for images received by downloader: %s.' % imageBaseUrl)
 
                 queue.task_done()
             elif command == 'downloader:stop':
+                logger.info('Downloader received STOP command.')
+
                 downloaderStreamManager.shutdown()
 
                 queue.task_done()
@@ -43,11 +49,12 @@ def _startDownloader(queue):
                 movieUuid = downloaderStreamManager.getMissingBackdropMovieUuid()
                 if movieUuid is not None:
                     if imageBaseUrl is not None:
-                        print '%s needs a backdrop' % movieUuid
+                        logger.info('Must downloaded backdrop for "%s".' % downloaderStreamManager.getMovieTitleByUuid(movieUuid))
                         downloadBackdrop(downloaderStreamManager, imageBaseUrl, movieUuid, True)
                 else:
                     image = downloaderStreamManager.getUnscaledPosterImage()
                     if image is not None:
+                        logger.info('Must downscale original poster image for "%s".' % downloaderStreamManager.getMovieTitleById(image.movieId))
                         movieUuid = downscalePoster(downloaderStreamManager, image)
 
                         if movieUuid is not None:

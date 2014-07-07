@@ -17,6 +17,10 @@ from settings.presenter import CEF_REAL_AGENT
 # from utils.fs import createTemporaryFile, writeTemporaryFile
 # from utils.win32 import getAppStoragePathname
 
+from . import logger
+
+
+
 
 def downloadBackdrop(streamManager, imageBaseUrl, movieUuid, discard=False):
     isBackdropDownloading = streamManager.isBackdropDownloading(movieUuid)
@@ -51,22 +55,38 @@ def downscalePoster(streamManager, image):
     if isPosterDownloading is False:
         streamManager.startPosterDownload(movieUuid)
 
+        logger.info('Downloading image data from %s ...' % image.urlOriginal)
         try:
             blobOriginal = requests.get(image.urlOriginal, headers={'User-agent': CEF_REAL_AGENT}).content
         except requests.ConnectionError:
+            logger.error('Could not connect to image host!')
             return None
         else:
-            blobAtWidth200 = _downscaleImage(blobOriginal, 200, 300)
-            streamManager.saveImageData(movieUuid, 200, blobAtWidth200, True, 'Poster', 'WebP', image.urlOriginal)
-            del blobAtWidth200
-            time.sleep(0.0001)
+            logger.info('... done.')
 
+            logger.info('Downscaling image to 200x300 ...')
+            blobAtWidth200 = _downscaleImage(blobOriginal, 200, 300)
+
+            if blobAtWidth200 is not None:
+                logger.info('... done.')
+                streamManager.saveImageData(movieUuid, 200, blobAtWidth200, True, 'Poster', 'WebP', image.urlOriginal)
+            else:
+                logger.error('Could not downscale image!')
+                # del blobAtWidth200
+                # time.sleep(0.0001)
+
+            logger.info('Downscaling image to 300x450 ...')
             blobAtWidth300 = _downscaleImage(blobOriginal, 300, 450)
-            streamManager.saveImageData(movieUuid, 300, blobAtWidth300, True, 'Poster', 'WebP', image.urlOriginal)
+            if blobAtWidth300 is not None:
+                logger.info('... done.')
+                streamManager.saveImageData(movieUuid, 300, blobAtWidth300, True, 'Poster', 'WebP', image.urlOriginal)
+            else:
+                logger.error('Could not downscale image!')
 
             streamManager.endPosterDownload(movieUuid)
 
-            return movieUuid
+            if blobAtWidth200 is not None:
+                return movieUuid
     else:
         return # TODO: complete this
     # elif isPosterDownloading is True:
@@ -81,25 +101,31 @@ def downscalePoster(streamManager, image):
 
 
 def _downscaleImage(blob, width, height):
+    blobOut = None
+
     convertExe = os.path.join(PROJECT_PATH, 'tools', 'convert.exe')
     convertProcess = Popen([convertExe, 'jpg:-', '-resize', '%dx%d' % (width, height), 'png:-'], stdout=PIPE, stdin=PIPE)
-    convertProcess.stdin.write(blob)
-    convertProcess.stdin.close()
-    resizedImage = convertProcess.stdout.read()
-    convertProcess.wait()
-
-    filenameIn = os.path.join(APP_STORAGE_PATH, uuid4().hex)
-    filenameOut = os.path.join(APP_STORAGE_PATH, uuid4().hex)
-    with open(filenameIn, 'wb') as fd: fd.write(resizedImage)
-
-    blobOut = None
     try:
-        encodeExe = os.path.join(PROJECT_PATH, 'tools', 'cwebp.exe')
-        call([encodeExe, '-preset', 'icon', '-sns', '0', '-f', '0', '-m', '0', '-mt', '-lossless', '-noalpha', '-quiet', filenameIn, '-o', filenameOut])
-        with open(filenameOut, 'rb') as fp:
-            blobOut = fp.read()
-    finally:
-        os.remove(filenameIn)
-        os.remove(filenameOut)
+        convertProcess.stdin.write(blob)
+    except IOError:
+        logger.error('Could not execute image downscaler!')
+    else:
+        convertProcess.stdin.close()
+        resizedImage = convertProcess.stdout.read()
+        convertProcess.wait()
+
+        filenameIn = os.path.join(APP_STORAGE_PATH, uuid4().hex)
+        filenameOut = os.path.join(APP_STORAGE_PATH, uuid4().hex)
+        with open(filenameIn, 'wb') as fd: fd.write(resizedImage)
+
+
+        try:
+            encodeExe = os.path.join(PROJECT_PATH, 'tools', 'cwebp.exe')
+            call([encodeExe, '-preset', 'icon', '-sns', '0', '-f', '0', '-m', '0', '-mt', '-lossless', '-noalpha', '-quiet', filenameIn, '-o', filenameOut])
+            with open(filenameOut, 'rb') as fp:
+                blobOut = fp.read()
+        finally:
+            os.remove(filenameIn)
+            os.remove(filenameOut)
 
     return blobOut

@@ -9,7 +9,7 @@ import os
 import re
 import ctypes
 
-from config import APP_VENDOR, APP_NAME
+# from config import APP_VENDOR, APP_NAME
 
 
 def getColorBrush(red=0, green=0, blue=0):
@@ -22,7 +22,7 @@ def getColorBrush(red=0, green=0, blue=0):
     return ctypes.windll.gdi32.CreateSolidBrush(_COLORREF(red, green, blue))
 
 
-def getAppStoragePathname(): # TODO: refactor this into settings
+def getAppStoragePathname():
     """
         CSIDL_APPDATA: 26 (Roaming)
         CSIDL_LOCAL_APPDATA: 28 (Local)
@@ -34,7 +34,7 @@ def getAppStoragePathname(): # TODO: refactor this into settings
     if ctypes.windll.kernel32.GetShortPathNameW(bufferUnicode.value, bufferCanonical, 1024):
         bufferUnicode = bufferCanonical
 
-    pathname = os.path.join(os.path.normpath(bufferUnicode.value), APP_VENDOR, APP_NAME)
+    pathname = os.path.join(os.path.normpath(bufferUnicode.value), 'ka-BOOM')
 
     return pathname
 

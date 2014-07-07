@@ -131,7 +131,7 @@ def start(callback, userAgent, serverPort, bridgeToken, bootToken):
 
     appSettings = CEF_APP_SETTINGS
     appSettings.update({
-        'cache_path':              r'C:\Users\Niko\AppData\Local\Generic Company\ka-boom\cache', # TODO: refactor to make this variable
+        'cache_path':              r'C:\Users\Niko\AppData\Local\ka-BOOM\cache', # TODO: refactor to make this variable
         'log_severity':            cefpython.LOGSEVERITY_DISABLE,
         'browser_subprocess_path': os.path.join(r'C:\Users\Niko\Documents\GitHub\ka-BOOM\backend\presenter\cef', 'iexplore'),
         'user_agent':              userAgent,

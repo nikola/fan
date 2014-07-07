@@ -8,8 +8,6 @@ import os
 
 from cert import *
 
-APP_NAME = 'ka-BOOM'
-APP_VENDOR = 'Generic Company'
 
 PROJECT_PATH = os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..'))
 

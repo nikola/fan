@@ -94,6 +94,26 @@ class StreamManager(object):
                 return movie
 
 
+    def getMovieTitleById(self, identifier):
+        with self._session() as session:
+            try:
+                movie = session.query(Movie).filter(Movie.id == identifier).one()
+            except NoResultFound:
+                return None
+            else:
+                return movie.titleOriginal
+
+
+    def getMovieTitleByUuid(self, identifier):
+        with self._session() as session:
+            try:
+                movie = session.query(Movie).filter(Movie.uuid == identifier).one()
+            except NoResultFound:
+                return None
+            else:
+                return movie.titleOriginal
+
+
     def addMovieStream(self, movieRecord, streamLocation):
         if not streamLocation: return
 

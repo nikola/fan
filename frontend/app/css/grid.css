@@ -12,7 +12,9 @@
 
     /* margin-left: 100px; */
 
-    -webkit-transition: -webkit-transform 720ms ease-out;
+    -webkit-transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    -webkit-perspective: 1000;
     -webkit-transform-style: preserve-3d;
 
     font-size: 0;

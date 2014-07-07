@@ -4,11 +4,21 @@
 __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
+import os
 import re
+import logging
 from os import fdopen
 from tempfile import mkstemp
-
 from win32file import FindStreams, SetFileAttributesW
+
+from settings import APP_STORAGE_PATH
+
+
+def getLogFileHandler(name):
+    handler = logging.FileHandler(os.path.join(APP_STORAGE_PATH, 'log', '%(name)s.log' % locals()))
+    handler.setFormatter(logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s', '%Y-%m-%d %H:%M'))
+    handler.setLevel(logging.INFO)
+    return handler
 
 
 def getFileStreams(pathname):

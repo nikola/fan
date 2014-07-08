@@ -47,6 +47,10 @@ def makeThrottledGetRequest(url, params):
     return requests.get(url, params=params, headers={'User-agent': CEF_REAL_AGENT}, timeout=5)
 
 
+def makeUnthrottledGetRequest(url):
+    return requests.get(url, headers={'User-agent': CEF_REAL_AGENT}, timeout=5)
+
+
 def getVacantPort():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
     s.bind(('', 0))

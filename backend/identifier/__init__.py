@@ -10,7 +10,7 @@ import datetime
 from simplejson import JSONDecodeError
 
 from settings.collector import THEMOVIEDB_API_KEY
-from utils.net import makeThrottledGetRequest
+from utils.net import makeThrottledGetRequest, makeUnthrottledGetRequest
 
 
 STREAM_SIZE_THRESHOLD = 1024 * 1024 * 10 # 10 MiB
@@ -201,14 +201,19 @@ def identifyMovieByTitleYear(language, title, year):
                 params['language'] = 'en'
                 response = makeThrottledGetRequest(url, params).json()
 
-            # TODO: fetch rating from IMDB !!!
-            voteAverage = response['vote_average']
-            if voteAverage is not None:
-                voteAverage *= 10
+            # Fetch rating from IMDB instead of TheMovieDB.
+            rating = None
+            idImdb = response['imdb_id']
+            if idImdb is not None:
+                url = 'http://www.imdb.com/title/%s/' % idImdb
+                html = makeUnthrottledGetRequest(url).text
+                ratingSearch = re.search('<span itemprop="ratingValue">\s*([^<]+)', html)
+                if ratingSearch is not None:
+                    rating = float(ratingSearch.group(1)) * 10
 
             record = dict(
                 idTheMovieDb  = movieId,
-                idImdb        = response['imdb_id'],
+                idImdb        = idImdb,
 
                 titleOriginal = response['original_title'],
                 releaseYear   = datetime.datetime.strptime(response['release_date'], '%Y-%m-%d').year,
@@ -221,7 +226,7 @@ def identifyMovieByTitleYear(language, title, year):
                 budget        = response['budget'] or None,
                 revenue       = response['revenue'] or None,
 
-                rating        = voteAverage,
+                rating        = rating,
 
                 locale        = language,
                 title         = response['title'] or response['original_title'],

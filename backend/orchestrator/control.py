@@ -140,7 +140,7 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
 
                             movieRecord = identifyMovieByTitleYear('de', basedata.get('title'), basedata.get('year')) # TODO: make language configurable
                             if movieRecord is None:
-                                print 'unknown stream:', streamLocation
+                                print 'unknown stream:', streamLocation # TODO: handle this! perhaps try again when app is re-launched?
 
                             if engine is not None: engine.poll(poll_timeout=0.015)
 

@@ -238,3 +238,5 @@ out/
 
 ## PyInstaller artifact
 *.spec
+
+frontend/app/blob/

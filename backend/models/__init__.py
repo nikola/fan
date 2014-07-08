@@ -101,7 +101,7 @@ class StreamManager(object):
             except NoResultFound:
                 return None
             else:
-                return movie.titleOriginal
+                return '%s (%d)' % (movie.titleOriginal, movie.releaseYear)
 
 
     def getMovieTitleByUuid(self, identifier):
@@ -111,7 +111,7 @@ class StreamManager(object):
             except NoResultFound:
                 return None
             else:
-                return movie.titleOriginal
+                return '%s (%d)' % (movie.titleOriginal, movie.releaseYear)
 
 
     def addMovieStream(self, movieRecord, streamLocation):

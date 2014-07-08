@@ -20,7 +20,7 @@ class Localization(Base):
     title = Column(Unicode)
     storyline = Column(Unicode)
 
-    movie = relationship('Movie', backref=backref('localizations', order_by=id))
+    movie = relationship('Movie', backref=backref('localizations', order_by=id), cascade='all, delete, delete-orphan', single_parent=True)
 
     def __repr__(self):
         return "<Localization('%s')>" % self.id

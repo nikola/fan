@@ -14,11 +14,12 @@ class Stream(Base):
     __tablename__ = 'streams'
 
     id = Column(Integer, primary_key=True)
-    format = Column(Enum(*createNamedTuple('Matroska', 'BD')._asdict().values()))
-    location = Column(Unicode)
     movieId = Column(Integer, ForeignKey('movies.id'))
 
-    movie = relationship('Movie', backref=backref('streams', order_by=id))
+    format = Column(Enum(*createNamedTuple('Matroska', 'BD')._asdict().values()))
+    location = Column(Unicode)
+
+    movie = relationship('Movie', backref=backref('streams', order_by=id), cascade='all, delete, delete-orphan', single_parent=True)
 
     def __init__(self, **kwargs):
         for key, value in kwargs.iteritems():

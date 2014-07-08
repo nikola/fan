@@ -60,6 +60,8 @@ class Movie(Base):
     budget = Column(Integer)
     revenue = Column(BigInteger)
 
+    rating = Column(SmallInteger)
+
     urlBackdrop = Column(String)
     isBackdropDownloading = Column(Boolean, default=False)
 

@@ -14,7 +14,7 @@ ka.lib.addMovieToCortex = function (movieDict) {
     var alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''), compare = ka.state.collator.compare,
         localizedArticles = ka.lib.getLocalizedArticles();
 
-    for (var orders = ['titleOriginal', 'titleLocalized', 'year'], order, o = 0; order = orders[o]; o++) {
+    for (var orders = ['titleOriginal', 'titleLocalized', 'year', 'rating'], order, o = 0; order = orders[o]; o++) {
         var field = 'by' + order[0].toUpperCase() + order.slice(1);
 
         if (order == 'titleOriginal' || order == 'titleLocalized') {
@@ -33,6 +33,36 @@ ka.lib.addMovieToCortex = function (movieDict) {
         } else if (order == 'year') {
             var criterion = movieDict.titleLocalized.replace(/^the /i, '').replace('.', '').toLowerCase(),
                 key = movieDict.releaseYear;
+        } else if (order == 'rating') {
+            var criterion = movieDict.titleLocalized.replace(/^the /i, '').replace('.', '').toLowerCase(),
+                rating = movieDict.rating / 10, key;
+            if (rating < 2) {
+                key = '< 2';
+            } else if (rating < 3) {
+                key = '> 2';
+            } else if (rating < 4) {
+                key = '> 3';
+            } else if (rating < 5) {
+                key = '> 4';
+            } else if (rating < 6) {
+                key = '> 5';
+            } else if (rating < 6.5) {
+                key = '> 6';
+            } else if (rating > 9) {
+                key = '> 9';
+            } else if (rating > 8.5) {
+                key = '> 8.5';
+            } else if (rating > 8) {
+                key = '> 8';
+            } else if (rating > 7.5) {
+                key = '> 7.5';
+            } else if (rating > 7) {
+                key = '> 7';
+            } else if (rating >= 6.5) {
+                key = '> 6.5';
+            } else {
+                key = '?';
+            }
         }
 
         if (key in ka.data.cortex[field]) {

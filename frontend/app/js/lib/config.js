@@ -39,9 +39,9 @@ ka.lib.executeConfigSelection = function () {
             ka.state.gridSortDisplayLanguage = 'localized';
             ka.state.gridSortOrder = 'asc';
         } else if (id == 'boom-config-button-sort-rating-desc') {
-            ka.state.gridSortCriterion = 'byTitleLocalized';
+            ka.state.gridSortCriterion = 'byRating';
             ka.state.gridSortDisplayLanguage = 'localized';
-            ka.state.gridSortOrder = 'asc';
+            ka.state.gridSortOrder = 'desc';
         }
 
         if (ka.state.gridSortCriterion != lastCriterion || ka.state.gridSortOrder != lastOrder) {

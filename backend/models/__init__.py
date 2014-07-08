@@ -318,7 +318,7 @@ class StreamManager(object):
     def getAllMoviesAsJson(self):
         with self._session() as session:
             movieList = []
-            for movie in session.query(Movie, Localization).filter(Movie.id == Localization.movieId).values(Movie.uuid, Movie.titleOriginal, Localization.title, Movie.releaseYear, Movie.runtime, Localization.storyline):
+            for movie in session.query(Movie, Localization).filter(Movie.id == Localization.movieId).values(Movie.uuid, Movie.titleOriginal, Localization.title, Movie.releaseYear, Movie.runtime, Localization.storyline, Movie.rating):
                 movieList.append({
                     'uuid': movie[0],
                     'titleOriginal': movie[1],
@@ -326,6 +326,7 @@ class StreamManager(object):
                     'releaseYear': movie[3],
                     'runtime': movie[4],
                     'storyline': movie[5],
+                    'rating': movie[6],
                 })
             return json.dumps(movieList, separators=(',',':'))
 
@@ -333,7 +334,7 @@ class StreamManager(object):
     def getMovieAsJson(self, identifier):
         with self._session() as session:
             try:
-                movie = list(session.query(Movie, Localization).filter(Movie.uuid == identifier, Movie.id == Localization.movieId).values(Movie.uuid, Movie.titleOriginal, Localization.title, Movie.releaseYear, Movie.runtime, Localization.storyline))[0]
+                movie = list(session.query(Movie, Localization).filter(Movie.uuid == identifier, Movie.id == Localization.movieId).values(Movie.uuid, Movie.titleOriginal, Localization.title, Movie.releaseYear, Movie.runtime, Localization.storyline, Movie.rating))[0]
             except NoResultFound:
                 return None
             else:
@@ -344,6 +345,7 @@ class StreamManager(object):
                     'releaseYear': movie[3],
                     'runtime': movie[4],
                     'storyline': movie[5],
+                    'rating': movie[6],
                 }, separators=(',',':'))
 
 

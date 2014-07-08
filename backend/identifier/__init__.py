@@ -201,6 +201,11 @@ def identifyMovieByTitleYear(language, title, year):
                 params['language'] = 'en'
                 response = makeThrottledGetRequest(url, params).json()
 
+            # TODO: fetch rating from IMDB !!!
+            voteAverage = response['vote_average']
+            if voteAverage is not None:
+                voteAverage *= 10
+
             record = dict(
                 idTheMovieDb  = movieId,
                 idImdb        = response['imdb_id'],
@@ -215,6 +220,8 @@ def identifyMovieByTitleYear(language, title, year):
                 homepage      = response['homepage'],
                 budget        = response['budget'] or None,
                 revenue       = response['revenue'] or None,
+
+                rating        = voteAverage,
 
                 locale        = language,
                 title         = response['title'] or response['original_title'],

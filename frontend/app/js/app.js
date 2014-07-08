@@ -14,6 +14,7 @@ ka.data = {
         , byYear: {} // new Cortex({})
         , byTitleOriginal: {} // new Cortex({})
         , byTitleLocalized: {}
+        , byRating: {}
     }
 };
 

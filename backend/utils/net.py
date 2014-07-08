@@ -23,6 +23,14 @@ from settings import DEBUG
 from settings.presenter import CEF_REAL_AGENT
 from config import CERTIFICATE, PROJECT_PATH
 
+import logging
+
+from settings import LOG_CONFIG
+from utils.fs import getLogFileHandler
+
+logging.basicConfig(**LOG_CONFIG)
+logger = logging.getLogger('utils-net')
+logger.addHandler(getLogFileHandler('utils-net'))
 
 REQUESTS_LOGGER = logging.getLogger('requests.packages.urllib3')
 REQUESTS_LOGGER.setLevel(logging.CRITICAL)
@@ -44,7 +52,13 @@ def makeThrottledGetRequest(url, params):
 
     LAST_TMDB_ACCESS = time.clock()
 
-    return requests.get(url, params=params, headers={'User-agent': CEF_REAL_AGENT}, timeout=5)
+    try:
+        response = requests.get(url, params=params, headers={'User-agent': CEF_REAL_AGENT}, timeout=5)
+    except requests.ConnectionError:
+        logger.error('Could not GET %s' % url)
+        response = None
+
+    return response
 
 
 def makeUnthrottledGetRequest(url):

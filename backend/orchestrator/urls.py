@@ -18,7 +18,7 @@ from pants.http.utils import HTTPHeaders
 from settings import DEBUG
 from settings.net import SERVER_HEADERS
 from settings.presenter import CEF_REAL_AGENT
-from config import PROJECT_PATH, RESOURCES_SCRIPT, RESOURCES_STYLE
+from config import PROJECT_PATH
 from identifier import getImageConfiguration
 from downloader.images import downloadBackdrop
 from utils.rfc import getRfc1123Timestamp

@@ -58,6 +58,7 @@ def run():
         html = fp.read()
     html = re.sub(r'>\s*<', '><', html)
 
+    # TODO: compress stylesheets, too
     stylesheetsAmalgamated = '\n'.join([open(os.path.join(RESOURCES_PATH, pathname)).read() for pathname in RESOURCES_STYLE])
 
     scriptContent = []

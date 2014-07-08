@@ -8,6 +8,7 @@ import os.path
 import re
 import bz2
 import gzip
+import datetime
 from cStringIO import StringIO
 
 import requests
@@ -61,31 +62,12 @@ def serveGui(request):
     else:
         module.presented = True
 
-        # pathname = os.path.join(PROJECT_PATH, 'frontend', 'app', 'html', 'gui.html')
-        # with open(pathname, 'rb') as fp:
-        #     html = fp.read()
-        # html = re.sub(r'>\s*<', '><', html)
-        #
-        # stylesheetsAmalgamated = "\n".join([open(os.path.join(PROJECT_PATH, "frontend", pathname)).read() for pathname in RESOURCES_STYLE])
-        #
-        # scriptContent = []
-        # for pathname in RESOURCES_SCRIPT:
-        #     with open(os.path.join(PROJECT_PATH, 'frontend', pathname), 'rU') as fd:
-        #         content = fd.read()
-        #     scriptContent.append(content)
-        # scriptsAmalgamated = '\n'.join(scriptContent)
-        # if DEBUG and request.headers.get('User-Agent', None) != module.userAgent:
-        #     scriptsAmalgamated += """
-        #         ; HTTP_PORT = %d; WEBSOCKET_PORT = %d; BOOT_TOKEN = '%s';
-        #     """ % (module.serverPort, module.serverPort, module.bootToken)
-        # # END DEBUG
-        #
-        # html = html.replace('</head>', '<script>%s</script><style>%s</style></head>' % (scriptsAmalgamated, stylesheetsAmalgamated))
-
         filename = os.path.join(PROJECT_PATH, 'frontend', 'app', 'blob', 'gui')
         with open(filename, 'rb') as fp:
             compressed = fp.read()
         html = bz2.decompress(compressed)
+
+        timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
 
         if DEBUG and request.headers.get('User-Agent', None) != module.userAgent:
             html = html.replace(
@@ -99,6 +81,7 @@ def serveGui(request):
 
         headers = SERVER_HEADERS.copy()
         headers.update({
+            'Last-modified': getRfc1123Timestamp(timestamp),
             'Cache-Control': 'max-age=0, must-revalidate',
             'Content-Encoding': 'gzip',
         })

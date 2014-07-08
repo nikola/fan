@@ -91,6 +91,11 @@ if __name__ == '__main__':
     logger.info('>' * 80)
     logger.info('Starting application.')
 
+    if DEBUG:
+        from scripts.packBlobs import run as runPackBlobs
+        runPackBlobs()
+    # END DEBUG
+
     # Create DB connection here to initialize models.
     streamManager = StreamManager(cleanUp=True)
     streamManager.shutdown()

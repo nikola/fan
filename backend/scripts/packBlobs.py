@@ -9,7 +9,7 @@ import re
 import bz2
 
 
-RESOURCES_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'frontend')
+RESOURCES_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', 'frontend')
 BLOBS_PATH = os.path.join(RESOURCES_PATH, 'app', 'blob')
 
 
@@ -20,7 +20,7 @@ RESOURCES_SCRIPT = [
     'vendor/jquery/jquery.min.js',
     # 'vendor/jquery/jquery.swipe-events.js',
 
-    'vendor/jquery/jquery.waitforimages.min.js',
+    # 'vendor/jquery/jquery.waitforimages.min.js',
     'vendor/misc/color-thief.min.js',
     'vendor/misc/keypress.min.js',
 
@@ -52,7 +52,7 @@ RESOURCES_STYLE = [
 ]
 
 
-if __name__ == '__main__':
+def run():
     pathname = os.path.join(RESOURCES_PATH, 'app', 'html', 'gui.html')
     with open(pathname, 'rb') as fp:
         html = fp.read()
@@ -64,14 +64,33 @@ if __name__ == '__main__':
     for pathname in RESOURCES_SCRIPT:
         with open(os.path.join(RESOURCES_PATH, pathname), 'rU') as fp:
             content = fp.read()
-        # TODO: remove comments
+
+        # Remove comments.
+        content = re.sub(r'/\*.*?\*/', '', content, flags=re.MULTILINE|re.DOTALL)
+
+        # Remove leading whitespace.
+        content = re.sub(r'(?<=\n) +', '', content)
+
+        # Remove trailing whitespace.
+        content = re.sub(r' +(?=\n)', '', content)
+
+        # Remove newlines.
+        content = re.sub(r'\r\n', '\n', content)
+        content = re.sub(r'\n+', '\n', content)
+        content = re.sub(r'(?<=[{},])\n', '', content)
+
         scriptContent.append(content)
-    scriptsAmalgamated = '\n'.join(scriptContent)
+    scriptsAmalgamated = ''.join(scriptContent)
 
     html = html.replace('</head>', '<script>%s</script><style>%s</style></head>' % (scriptsAmalgamated, stylesheetsAmalgamated))
-    # html = html.encode('utf-8')
 
     compressed = bz2.compress(html)
-
     with open(os.path.join(BLOBS_PATH, 'gui'), 'wb') as fp:
         fp.write(compressed)
+
+    # with open(os.path.join(BLOBS_PATH, 'gui.html'), 'wb') as fp:
+    #     fp.write(html)
+
+
+if __name__ == '__main__':
+    run()

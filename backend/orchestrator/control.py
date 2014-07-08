@@ -119,8 +119,7 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                 queue.put(command)
                 queue.task_done()
         except Empty:
-            if engine is not None:
-                engine.poll(poll_timeout=0.015)
+            if engine is not None: engine.poll(poll_timeout=0.015)
 
             if streamGenerator is not None and pubSubReference is not None and pubSubReference.connected:
                 try:
@@ -131,20 +130,29 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                 else:
                     basedata = getBaseDataFromDirName(container)
 
+                    if engine is not None: engine.poll(poll_timeout=0.015)
+
                     for filename in files:
                         streamLocation = os.path.join(path, filename)
 
                         if not streamManager.isStreamKnown(streamLocation):
+                            if engine is not None: engine.poll(poll_timeout=0.015)
+
                             movieRecord = identifyMovieByTitleYear('de', basedata.get('title'), basedata.get('year')) # TODO: make language configurable
                             if movieRecord is None:
                                 print 'unknown stream:', streamLocation
+
+                            if engine is not None: engine.poll(poll_timeout=0.015)
 
                             # TODO: call getEditVersionFromFilename(filename, year)
 
                             movie = streamManager.addMovieStream(movieRecord, streamLocation)
 
+                            if engine is not None: engine.poll(poll_timeout=0.015)
+
                             if movie is not None:
                                 pubSubReference.write(unicode('["receive:movie:item", %s]' % streamManager.getMovieAsJson(movie.uuid)))
+                                if engine is not None: engine.poll(poll_timeout=0.015)
 
             elif syncFinished is True:
                 syncFinished = None

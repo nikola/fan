@@ -58,7 +58,7 @@ function listen() {
     ka.state.socketDispatcher.bind('movie:poster:refresh', function (id) {
         var image = $('#boom-poster-' + id);
         if (image.size()) {
-            image.attr('src', image.attr('src') + '#' +new Date().getTime());
+            image.attr('src', image.attr('src') + '#' + new Date().getTime());
         }
     });
 }
@@ -125,5 +125,4 @@ $(document).ready(function () {
 
     /* Notify backend that UI is ready. */
     $.ajax({url: BOOT_TOKEN, type: 'PATCH', success: boot});
-
 });

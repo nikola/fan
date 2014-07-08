@@ -5,7 +5,6 @@ __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 import os.path
-import json
 import re
 
 import requests
@@ -40,8 +39,8 @@ def presenterReady(request, pathname):
         request.connection.close()
 
 
-@module.route('/index.asp', methods=('GET',), headers=SERVER_HEADERS, content_type='text/html')
-def serveRoot(request):
+@module.route('/boot.asp', methods=('GET',), headers=SERVER_HEADERS, content_type='text/html')
+def serveBootloader(request):
     if module.presented and not DEBUG:
         module.interProcessQueue.put('orchestrator:stop:all')
         request.finish()
@@ -71,6 +70,11 @@ def serveRoot(request):
         html = html.replace('</head>', '<script>%s</script><style>%s</style></head>' % (scriptsAmalgamated, stylesheetsAmalgamated))
 
         return html, 200
+
+
+@module.route('/gui.asp', methods=('GET',), headers=SERVER_HEADERS, content_type='text/html')
+def serveGui(request):
+    pass
 
 
 @module.route('/movie/poster/<string(length=32):identifier>-<int:width>.image', methods=('GET',), content_type='application/octet-stream')

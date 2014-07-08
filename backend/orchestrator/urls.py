@@ -6,6 +6,9 @@ __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 import os.path
 import re
+import bz2
+import gzip
+from cStringIO import StringIO
 
 import requests
 from pants.web.application import Module
@@ -48,7 +51,8 @@ def serveBootloader(request):
     return html, 200
 
 
-@module.route('/gui.asp', methods=('GET',), headers=SERVER_HEADERS, content_type='text/html')
+# @module.route('/gui.asp', methods=('GET',), headers=SERVER_HEADERS, content_type='text/html')
+@module.route('/gui.asp', methods=('GET',), content_type='text/html')
 def serveGui(request):
     if module.presented and not DEBUG:
         module.interProcessQueue.put('orchestrator:stop:all')
@@ -57,28 +61,49 @@ def serveGui(request):
     else:
         module.presented = True
 
-        pathname = os.path.join(PROJECT_PATH, 'frontend', 'app', 'html', 'gui.html')
-        with open(pathname, 'rb') as fp:
-            html = fp.read()
-        html = re.sub(r'>\s*<', '><', html)
+        # pathname = os.path.join(PROJECT_PATH, 'frontend', 'app', 'html', 'gui.html')
+        # with open(pathname, 'rb') as fp:
+        #     html = fp.read()
+        # html = re.sub(r'>\s*<', '><', html)
+        #
+        # stylesheetsAmalgamated = "\n".join([open(os.path.join(PROJECT_PATH, "frontend", pathname)).read() for pathname in RESOURCES_STYLE])
+        #
+        # scriptContent = []
+        # for pathname in RESOURCES_SCRIPT:
+        #     with open(os.path.join(PROJECT_PATH, 'frontend', pathname), 'rU') as fd:
+        #         content = fd.read()
+        #     scriptContent.append(content)
+        # scriptsAmalgamated = '\n'.join(scriptContent)
+        # if DEBUG and request.headers.get('User-Agent', None) != module.userAgent:
+        #     scriptsAmalgamated += """
+        #         ; HTTP_PORT = %d; WEBSOCKET_PORT = %d; BOOT_TOKEN = '%s';
+        #     """ % (module.serverPort, module.serverPort, module.bootToken)
+        # # END DEBUG
+        #
+        # html = html.replace('</head>', '<script>%s</script><style>%s</style></head>' % (scriptsAmalgamated, stylesheetsAmalgamated))
 
-        stylesheetsAmalgamated = "\n".join([open(os.path.join(PROJECT_PATH, "frontend", pathname)).read() for pathname in RESOURCES_STYLE])
+        filename = os.path.join(PROJECT_PATH, 'frontend', 'app', 'blob', 'gui')
+        with open(filename, 'rb') as fp:
+            compressed = fp.read()
+        html = bz2.decompress(compressed)
 
-        scriptContent = []
-        for pathname in RESOURCES_SCRIPT:
-            with open(os.path.join(PROJECT_PATH, 'frontend', pathname), 'rU') as fd:
-                content = fd.read()
-            scriptContent.append(content)
-        scriptsAmalgamated = '\n'.join(scriptContent)
         if DEBUG and request.headers.get('User-Agent', None) != module.userAgent:
-            scriptsAmalgamated += """
-                ; HTTP_PORT = %d; WEBSOCKET_PORT = %d; BOOT_TOKEN = '%s';
-            """ % (module.serverPort, module.serverPort, module.bootToken)
-        # END DEBUG
+            html = html.replace(
+                '</script>',
+                '; HTTP_PORT = %d; WEBSOCKET_PORT = %d; BOOT_TOKEN = "%s";</script>' % (module.serverPort, module.serverPort, module.bootToken)
+            )
 
-        html = html.replace('</head>', '<script>%s</script><style>%s</style></head>' % (scriptsAmalgamated, stylesheetsAmalgamated))
+        stream = StringIO()
+        with gzip.GzipFile(filename='dummy', mode='wb', fileobj=stream) as gzipStream:
+            gzipStream.write(html)
 
-        return html, 200
+        headers = SERVER_HEADERS.copy()
+        headers.update({
+            'Cache-Control': 'max-age=0, must-revalidate',
+            'Content-Encoding': 'gzip',
+        })
+
+        return stream.getvalue(), 200, HTTPHeaders(data=headers)
 
 
 @module.route('/movie/poster/<string(length=32):identifier>-<int:width>.image', methods=('GET',), content_type='application/octet-stream')
@@ -92,7 +117,7 @@ def serveMoviePoster(request, movieUuid, width):
         image = module.streamManager.saveImageData(movieUuid, width, blob, False, 'Poster', 'JPEG', '%soriginal%s' % (module.imageBaseUrl, pathPoster))
 
     if image is not None:
-        headers = SERVER_HEADERS
+        headers = SERVER_HEADERS.copy()
         headers.update({
             'Last-modified': getRfc1123Timestamp(image.modified),
             'Cache-Control': 'max-age=0, must-revalidate',

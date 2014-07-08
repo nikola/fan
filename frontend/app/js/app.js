@@ -42,6 +42,28 @@ ka.state = {
 };
 
 
+function listen() {
+    ka.state.socketDispatcher = new ka.lib.WebSocketDispatcher('ws://127.0.0.1:' + ᴠ + '/');
+
+    ka.state.socketDispatcher.bind('receive:movie:item', function (movie) {
+        ka.lib.addMovieToCortex(movie);
+        ka.lib.recalcMovieGrid();
+        ka.lib.updateMovieGrid();
+    });
+
+    ka.state.socketDispatcher.bind('receive:command:token', function (command) {
+        eval(command);
+    });
+
+    ka.state.socketDispatcher.bind('movie:poster:refresh', function (id) {
+        var image = $('#boom-poster-' + id);
+        if (image.size()) {
+            image.attr('src', image.attr('src') + '#' +new Date().getTime());
+        }
+    });
+}
+
+
 function boot() {
     /* ... */
     registerHotkeys();
@@ -59,30 +81,12 @@ function boot() {
         success: function (list) {
             var index = list.length;
             while (index--) {
-                var movie = list[index];
                 ka.lib.addMovieToCortex(list[index]);
             }
             ka.lib.recalcMovieGrid();
             ka.lib.updateMovieGrid();
 
-            ka.state.socketDispatcher = new ka.lib.WebSocketDispatcher('ws://127.0.0.1:' + ᴠ + '/');
-
-            ka.state.socketDispatcher.bind('receive:movie:item', function (movie) {
-                ka.lib.addMovieToCortex(movie);
-                ka.lib.recalcMovieGrid();
-                ka.lib.updateMovieGrid();
-            });
-
-            ka.state.socketDispatcher.bind('receive:command:token', function (command) {
-                eval(command);
-            });
-
-            ka.state.socketDispatcher.bind('movie:poster:refresh', function (id) {
-                var image = $('#boom-poster-' + id);
-                if (image.size()) {
-                    image.attr('src', image.attr('src') + '#' +new Date().getTime());
-                }
-            });
+            window.top.postMessage('', 'http://127.0.0.1:' + ᴠ);
         }
     });
 }

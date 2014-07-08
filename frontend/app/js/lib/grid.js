@@ -149,8 +149,6 @@ ka.lib.updateMovieGrid = function () {
 
     if (ka.state.gridLookupMatrix.length) {
         // $('#content').waitForImages(function () { // TODO: crap, will wait forever when new movies have been detected !!!
-            $('.spinner').remove();
-            $('#content').css('visibility', 'visible');
             ka.lib.updateDetailPage();
             if (ka.state.currentPageMode == 'grid') {
                 $('#boom-poster-focus').velocity('fadeIn', 720);

@@ -41,6 +41,15 @@ def presenterReady(request, pathname):
 
 @module.route('/boot.asp', methods=('GET',), headers=SERVER_HEADERS, content_type='text/html')
 def serveBootloader(request):
+    pathname = os.path.join(PROJECT_PATH, 'frontend', 'app', 'html', 'boot.html')
+    with open(pathname, 'rb') as fp:
+        html = fp.read()
+
+    return html, 200
+
+
+@module.route('/gui.asp', methods=('GET',), headers=SERVER_HEADERS, content_type='text/html')
+def serveGui(request):
     if module.presented and not DEBUG:
         module.interProcessQueue.put('orchestrator:stop:all')
         request.finish()
@@ -48,8 +57,8 @@ def serveBootloader(request):
     else:
         module.presented = True
 
-        pathname = os.path.join(PROJECT_PATH, "frontend", "app", "index.html")
-        with open(pathname, "rb") as fp:
+        pathname = os.path.join(PROJECT_PATH, 'frontend', 'app', 'html', 'gui.html')
+        with open(pathname, 'rb') as fp:
             html = fp.read()
         html = re.sub(r'>\s*<', '><', html)
 
@@ -70,11 +79,6 @@ def serveBootloader(request):
         html = html.replace('</head>', '<script>%s</script><style>%s</style></head>' % (scriptsAmalgamated, stylesheetsAmalgamated))
 
         return html, 200
-
-
-@module.route('/gui.asp', methods=('GET',), headers=SERVER_HEADERS, content_type='text/html')
-def serveGui(request):
-    pass
 
 
 @module.route('/movie/poster/<string(length=32):identifier>-<int:width>.image', methods=('GET',), content_type='application/octet-stream')
@@ -127,6 +131,18 @@ def serveFont(request, identifier):
         with open(pathname, 'rb') as fd:
             ttf = fd.read()
         return ttf, 200
+    else:
+        request.finish()
+        request.connection.close()
+
+
+@module.route('/<string:identifier>.gif', methods=('GET',), headers=SERVER_HEADERS, content_type='image/gif')
+def serveGif(request, identifier):
+    pathname = os.path.join(PROJECT_PATH, 'frontend', 'app', 'img', '%s.gif' % identifier)
+    if os.path.exists(pathname):
+        with open(pathname, 'rb') as fp:
+            gif = fp.read()
+        return gif, 200
     else:
         request.finish()
         request.connection.close()

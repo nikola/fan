@@ -32,6 +32,8 @@ LAST_TMDB_ACCESS = time.clock()
 
 
 def makeThrottledGetRequest(url, params):
+    # TODO: cache results here!
+
     global LAST_TMDB_ACCESS
     now = time.clock()
     diff = now - LAST_TMDB_ACCESS

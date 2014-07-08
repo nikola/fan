@@ -36,7 +36,9 @@ ka.lib.addMovieToCortex = function (movieDict) {
         } else if (order == 'rating') {
             var criterion = movieDict.titleLocalized.replace(/^the /i, '').replace('.', '').toLowerCase(),
                 rating = movieDict.rating / 10, key;
-            if (rating < 2) {
+            if (!rating) {
+                key = '?';
+            } else if (rating < 2) {
                 key = '< 2';
             } else if (rating < 3) {
                 key = '> 2';
@@ -60,8 +62,6 @@ ka.lib.addMovieToCortex = function (movieDict) {
                 key = '> 7';
             } else if (rating >= 6.5) {
                 key = '> 6.5';
-            } else {
-                key = '?';
             }
         }
 

@@ -11,7 +11,7 @@ import ctypes
 
 import win32api
 
-from config import PROJECT_PATH
+from settings import BASE_DIR
 
 VERSION_TO_TOKEN = {
     '6.3':  'Windows 8.1',
@@ -48,7 +48,7 @@ def isCompatiblePlatform():
 
 
 def isNtfsFilesystem():
-    return bool(win32api.GetVolumeInformation(os.path.splitdrive(PROJECT_PATH)[0] + '/')[3] & 0x00040000) # FILE_NAMED_STREAMS
+    return bool(win32api.GetVolumeInformation(os.path.splitdrive(BASE_DIR)[0] + '/')[3] & 0x00040000) # FILE_NAMED_STREAMS
 
 
 def getScreenResolution():

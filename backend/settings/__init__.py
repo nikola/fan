@@ -4,10 +4,12 @@
 __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
+import sys
+import os
 from utils.win32 import getAppStoragePathname
 
 DEBUG = True
-
+BASE_DIR = os.path.dirname(sys.executable) if hasattr(sys, 'frozen') else os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..'))
 APP_STORAGE_PATH = getAppStoragePathname()
 LOG_CONFIG = dict(
     format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',

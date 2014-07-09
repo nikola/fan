@@ -25,10 +25,10 @@ import win32gui
 import win32api
 import win32con
 
-from presenter.hooks import ClientHandler
-from config import PROJECT_PATH
 from settings import DEBUG
+from settings import BASE_DIR
 from settings.presenter import *
+from presenter.hooks import ClientHandler
 from utils.win32 import getNormalizedPathname, getColorBrush
 
 
@@ -127,7 +127,7 @@ def start(callback, userAgent, serverPort, bridgeToken, bootToken):
     shutdownAll = callback
 
     global cefpython
-    cefpython = imp.load_dynamic('cefpython_py27', os.path.join(PROJECT_PATH, 'backend', 'presenter', 'cef', 'libgfx.dll'))
+    cefpython = imp.load_dynamic('cefpython_py27', os.path.join(BASE_DIR, 'backend', 'presenter', 'cef', 'libgfx.dll'))
 
     appSettings = CEF_APP_SETTINGS
     appSettings.update({

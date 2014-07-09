@@ -6,15 +6,18 @@ __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 import sys
 import os
+import logging
 from uuid import uuid4
 from multiprocessing import JoinableQueue as InterProcessQueue, freeze_support
 from ctypes import windll
 
 from settings import DEBUG
+from settings import LOG_CONFIG
 from models import StreamManager
 from utils.system import isCompatiblePlatform, isNtfsFilesystem, getScreenResolution, isDesktopCompositionEnabled
 from utils.agent import getUserAgent
 from utils.net import getVacantPort, getCertificateLocation
+from utils.fs import getLogFileHandler
 from orchestrator.control import start as startOrchestrator, stop as stopOrchestrator
 from downloader.control import start as startDownloader, stop as stopDownloader
 from player.control import start as startPlayer, stop as stopPlayer
@@ -22,19 +25,12 @@ from analyzer.control import start as startAnalyzer, stop as stopAnalyzer
 from presenter.control import start as present
 
 
-# Setup logging.
-import logging
-
-from settings import LOG_CONFIG
-from utils.fs import getLogFileHandler
-
-logging.basicConfig(**LOG_CONFIG)
-logger = logging.getLogger('application')
-logger.addHandler(getLogFileHandler('application'))
-
-
 if __name__ == '__main__':
     freeze_support()
+
+    logging.basicConfig(**LOG_CONFIG)
+    logger = logging.getLogger('application')
+    logger.addHandler(getLogFileHandler('application'))
 
     if not isCompatiblePlatform():
         windll.user32.MessageBoxA(0, 'This application is only compatible with Windows Vista or newer.', 'Error', 0)
@@ -132,8 +128,6 @@ if __name__ == '__main__':
 
         # Start the blocking presenter process.
         present(_shutdown, *arguments)
-
-
 
         # TODO: implement SIGINT handler
         # http://stackoverflow.com/a/1112350

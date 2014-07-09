@@ -1,33 +1,23 @@
 # coding: utf-8
 """
 """
-from utils.system import isNtfsFilesystem
-
 __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
+import sys
 import os
 import socket
 import bz2
-import base64
 import time
 import logging
-from os import fdopen
 from uuid import uuid4
-from tempfile import mkstemp
 
 import requests
-import win32file
 
-from settings import DEBUG
-from settings import BASE_DIR
+from settings import LOG_CONFIG, BASE_DIR
 from settings.presenter import CEF_REAL_AGENT
-# from config import CERTIFICATE
-
-import logging
-
-from settings import LOG_CONFIG
 from utils.fs import getLogFileHandler
+
 
 logging.basicConfig(**LOG_CONFIG)
 logger = logging.getLogger('utils-net')
@@ -75,27 +65,14 @@ def getVacantPort():
 
 
 def getCertificateLocation():
-    # certificate = bz2.decompress(base64.decodestring(CERTIFICATE))
+    executable = sys.executable if getattr(sys, 'frozen', None) else os.path.join(BASE_DIR, 'dummy.exe')
+    pathname = '%s:%s' % (executable, uuid4().hex)
+
     with open(os.path.join(BASE_DIR, 'backend', 'blobs', 'de8926be7f2d430fad66927ffadc9f9d'), 'rb') as fp:
         blob = fp.read()
     certificate = bz2.decompress(blob)
 
-    if isNtfsFilesystem():
-        executable = os.path.join(BASE_DIR, 'dummy.exe')
-        pathname = '%s:%s' % (executable, uuid4().hex)
-        # if win32file.GetFileAttributesW(unicode(executable)) & 1:
-        #     win32file.SetFileAttributesW(unicode(executable), 0)
-        with open(pathname, 'wb') as fp:
-            fp.write(certificate)
-        # win32file.SetFileAttributesW(unicode(executable), 1) # FILE_ATTRIBUTE_READONLY
-    # else:
-    #     fd, pathname = mkstemp(suffix='.tmp', prefix='ASPNETSetup_')
-    #     if not DEBUG:
-    #         # FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_TEMPORARY | FILE_ATTRIBUTE_NOT_CONTENT_INDEXED
-    #         win32file.SetFileAttributesW(unicode(pathname), 2 | 4 | 256 | 8192)
-
-    #     fp = fdopen(fd, 'w')
-    #     fp.write(certificate)
-    #     fp.close()
+    with open(pathname, 'wb') as fp:
+        fp.write(certificate)
 
     return pathname

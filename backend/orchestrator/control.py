@@ -74,9 +74,9 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
     app = Application(debug=DEBUG)
     app.add('', appModule)
 
-    # sslOptions = dict(do_handshake_on_connect=False, server_side=True, certfile=certificateLocation, ssl_version=3, ciphers=ENFORCED_CIPHERS)
-    # HTTPServer(_proxy).startSSL(sslOptions).listen(('', serverPort))
-    HTTPServer(_proxy).listen(('', serverPort))
+    sslOptions = dict(do_handshake_on_connect=False, server_side=True, certfile=certificateLocation, ssl_version=3, ciphers=ENFORCED_CIPHERS)
+    HTTPServer(_proxy).startSSL(sslOptions).listen(('', serverPort))
+    # HTTPServer(_proxy).listen(('', serverPort))
 
     engine = HttpServerEngine.instance()
 

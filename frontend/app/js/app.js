@@ -44,7 +44,7 @@ ka.state = {
 
 
 function listen() {
-    ka.state.socketDispatcher = new ka.lib.WebSocketDispatcher('ws://127.0.0.1:' + ᴠ + '/');
+    ka.state.socketDispatcher = new ka.lib.WebSocketDispatcher('wss://127.0.0.1:' + ᴠ + '/');
 
     ka.state.socketDispatcher.bind('receive:movie:item', function (movie) {
         ka.lib.addMovieToCortex(movie);
@@ -90,7 +90,7 @@ function boot() {
             ka.lib.recalcMovieGrid();
             ka.lib.updateMovieGrid();
 
-            window.top.postMessage('', 'http://127.0.0.1:' + ᴠ);
+            window.top.postMessage('', 'https://127.0.0.1:' + ᴠ);
         }
     });
 }

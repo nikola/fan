@@ -138,7 +138,7 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                         if not streamManager.isStreamKnown(streamLocation):
                             if engine is not None: engine.poll(poll_timeout=0.015)
 
-                            movieRecord = identifyMovieByTitleYear('de', basedata.get('title'), basedata.get('year')) # TODO: make language configurable
+                            movieRecord = identifyMovieByTitleYear('en', basedata.get('title'), basedata.get('year')) # TODO: make language configurable
                             if movieRecord is None:
                                 print 'unknown stream:', streamLocation # TODO: handle this! perhaps try again when app is re-launched?
 
@@ -150,7 +150,7 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
 
                             if engine is not None: engine.poll(poll_timeout=0.015)
 
-                            if movie is not None:
+                            if movie is not None and pubSubReference.connected:
                                 pubSubReference.write(unicode('["receive:movie:item", %s]' % streamManager.getMovieAsJson(movie.uuid)))
                                 if engine is not None: engine.poll(poll_timeout=0.015)
 

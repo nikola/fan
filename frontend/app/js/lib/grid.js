@@ -148,12 +148,15 @@ ka.lib.updateMovieGrid = function () {
     $('.boom-movie-grid-key').slice(ka.state.gridLookupMatrix.length).remove();
 
     if (ka.state.gridLookupMatrix.length) {
-        // $('#content').waitForImages(function () { // TODO: crap, will wait forever when new movies have been detected !!!
-            ka.lib.updateDetailPage();
-            if (ka.state.currentPageMode == 'grid') {
+        ka.lib.updateDetailPage();
+        if (ka.state.currentPageMode == 'grid') {
+            if (ka.state.shouldFocusFadeIn) {
                 $('#boom-poster-focus').velocity('fadeIn', 720);
+                ka.state.shouldFocusFadeIn = false;
+            } else {
+                $('#boom-poster-focus').css('display', 'block');
             }
-        // });
+        }
     }
 };
 

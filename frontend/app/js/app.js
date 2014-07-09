@@ -21,7 +21,7 @@ ka.data = {
 ka.config = {
     gridMaxRows: 3
   , gridMaxColumns: 7
-  , language: 'de'
+  , language: 'en'
 };
 
 ka.state = {
@@ -39,6 +39,7 @@ ka.state = {
   , gridLookupItemsPerLine: []
   , gridLookupLinesByKey: {} // TODO: needed for focusing via hotkey
   , gridLookupKeyByLine: []
+  , shouldFocusFadeIn: true
 };
 
 
@@ -80,6 +81,9 @@ function boot() {
         url: '/movies/all',
         success: function (list) {
             var index = list.length;
+            if (index) {
+                ka.state.shouldFocusFadeIn = false;
+            }
             while (index--) {
                 ka.lib.addMovieToCortex(list[index]);
             }

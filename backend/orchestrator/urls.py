@@ -16,9 +16,9 @@ from pants.web.application import Module
 from pants.http.utils import HTTPHeaders
 
 from settings import DEBUG
+from settings import BASE_DIR
 from settings.net import SERVER_HEADERS
 from settings.presenter import CEF_REAL_AGENT
-from config import PROJECT_PATH
 from identifier import getImageConfiguration
 from downloader.images import downloadBackdrop
 from utils.rfc import getRfc1123Timestamp
@@ -45,14 +45,27 @@ def presenterReady(request, pathname):
 
 @module.route('/boot.asp', methods=('GET',), headers=SERVER_HEADERS, content_type='text/html')
 def serveBootloader(request):
-    pathname = os.path.join(PROJECT_PATH, 'frontend', 'app', 'html', 'boot.html')
-    with open(pathname, 'rb') as fp:
-        html = fp.read()
+    filename = os.path.join(BASE_DIR, 'backend', 'blobs', 'b1932b8b02de45bc9ec66ebf1c75bb15')
+    with open(filename, 'rb') as fp:
+        compressed = fp.read()
+    html = bz2.decompress(compressed)
 
-    return html, 200
+    timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
+
+    stream = StringIO()
+    with gzip.GzipFile(filename='dummy', mode='wb', fileobj=stream) as gzipStream:
+        gzipStream.write(html)
+
+    headers = SERVER_HEADERS.copy()
+    headers.update({
+        'Last-modified': getRfc1123Timestamp(timestamp),
+        'Cache-Control': 'max-age=0, must-revalidate',
+        'Content-Encoding': 'gzip',
+    })
+
+    return stream.getvalue(), 200, HTTPHeaders(data=headers)
 
 
-# @module.route('/gui.asp', methods=('GET',), headers=SERVER_HEADERS, content_type='text/html')
 @module.route('/gui.asp', methods=('GET',), content_type='text/html')
 def serveGui(request):
     if module.presented and not DEBUG:
@@ -62,7 +75,7 @@ def serveGui(request):
     else:
         module.presented = True
 
-        filename = os.path.join(PROJECT_PATH, 'frontend', 'app', 'blob', 'gui')
+        filename = os.path.join(BASE_DIR, 'backend', 'blobs', 'c9d25707d3a84c4d80fdb6b0789bdcf6')
         with open(filename, 'rb') as fp:
             compressed = fp.read()
         html = bz2.decompress(compressed)
@@ -134,7 +147,7 @@ def serveMoviebackdrop(request, movieUuid):
 
 @module.route('/<string:identifier>.ttf', methods=('GET',), headers=SERVER_HEADERS, content_type='application/x-font-ttf')
 def serveFont(request, identifier):
-    pathname = os.path.join(PROJECT_PATH, 'frontend', 'fonts', '%s.ttf' % identifier)
+    pathname = os.path.join(BASE_DIR, 'frontend', 'fonts', '%s.ttf' % identifier)
     if os.path.exists(pathname):
         with open(pathname, 'rb') as fd:
             ttf = fd.read()
@@ -146,7 +159,7 @@ def serveFont(request, identifier):
 
 @module.route('/<string:identifier>.gif', methods=('GET',), headers=SERVER_HEADERS, content_type='image/gif')
 def serveGif(request, identifier):
-    pathname = os.path.join(PROJECT_PATH, 'frontend', 'app', 'img', '%s.gif' % identifier)
+    pathname = os.path.join(BASE_DIR, 'frontend', 'app', 'img', '%s.gif' % identifier)
     if os.path.exists(pathname):
         with open(pathname, 'rb') as fp:
             gif = fp.read()

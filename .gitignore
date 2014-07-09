@@ -239,4 +239,7 @@ out/
 ## PyInstaller artifact
 *.spec
 
-frontend/app/blob/
+
+## Project-specific.
+backend/blobs/
+dummy.exe

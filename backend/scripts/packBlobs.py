@@ -52,34 +52,42 @@ RESOURCES_STYLE = [
 ]
 
 
+def _readStrip(filename, delimiters='{}'):
+    with open(filename, 'rU') as fp:
+        content = fp.read()
+
+    # Remove comments.
+    content = re.sub(r'/\*.*?\*/', '', content, flags=re.MULTILINE|re.DOTALL)
+
+    # Remove leading whitespace.
+    content = re.sub(r'(?<=\n) +', '', content)
+
+    # Remove trailing whitespace.
+    content = re.sub(r' +(?=\n)', '', content)
+
+    # Remove newlines.
+    content = re.sub(r'\r\n', '\n', content)
+    content = re.sub(r'\n+', '\n', content)
+    content = re.sub(r'(?<=[' + delimiters + '])\n', '', content)
+
+    return content
+
+
 def run():
     pathname = os.path.join(RESOURCES_PATH, 'app', 'html', 'gui.html')
     with open(pathname, 'rb') as fp:
         html = fp.read()
     html = re.sub(r'>\s*<', '><', html)
 
-    # TODO: compress stylesheets, too
-    stylesheetsAmalgamated = '\n'.join([open(os.path.join(RESOURCES_PATH, pathname)).read() for pathname in RESOURCES_STYLE])
+    stylesheetContent = []
+    for pathname in RESOURCES_STYLE:
+        content = _readStrip(os.path.join(RESOURCES_PATH, pathname), '{};,')
+        stylesheetContent.append(content)
+    stylesheetsAmalgamated = ''.join(stylesheetContent)
 
     scriptContent = []
     for pathname in RESOURCES_SCRIPT:
-        with open(os.path.join(RESOURCES_PATH, pathname), 'rU') as fp:
-            content = fp.read()
-
-        # Remove comments.
-        content = re.sub(r'/\*.*?\*/', '', content, flags=re.MULTILINE|re.DOTALL)
-
-        # Remove leading whitespace.
-        content = re.sub(r'(?<=\n) +', '', content)
-
-        # Remove trailing whitespace.
-        content = re.sub(r' +(?=\n)', '', content)
-
-        # Remove newlines.
-        content = re.sub(r'\r\n', '\n', content)
-        content = re.sub(r'\n+', '\n', content)
-        content = re.sub(r'(?<=[{},])\n', '', content)
-
+        content = _readStrip(os.path.join(RESOURCES_PATH, pathname), '{},')
         scriptContent.append(content)
     scriptsAmalgamated = ''.join(scriptContent)
 
@@ -89,8 +97,8 @@ def run():
     with open(os.path.join(BLOBS_PATH, 'gui'), 'wb') as fp:
         fp.write(compressed)
 
-    # with open(os.path.join(BLOBS_PATH, 'gui.html'), 'wb') as fp:
-    #     fp.write(html)
+    with open(os.path.join(BLOBS_PATH, 'gui.html'), 'wb') as fp:
+        fp.write(html)
 
 
 if __name__ == '__main__':

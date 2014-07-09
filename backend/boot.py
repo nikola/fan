@@ -125,7 +125,7 @@ if __name__ == '__main__':
         player = startPlayer(interProcessQueue)
         logger.info('Player process successfully started.')
 
-        arguments = (getUserAgent(), serverPort, uuid4().hex, uuid4().hex)
+        arguments = (getUserAgent(), serverPort, uuid4().hex, uuid4().hex, True)
 
         # Start process, but spawn file scanner and watcher only after receiving a kick-off event from the presenter.
         orchestrator = startOrchestrator(interProcessQueue, certificateLocation, *arguments)

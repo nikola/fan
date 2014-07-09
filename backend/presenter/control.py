@@ -122,7 +122,7 @@ def handleException(excType, excValue, traceObject):
 
 
 # def start(userAgent, httpPort, websocketPort, callback, bridgeToken, bootToken):
-def start(callback, userAgent, serverPort, bridgeToken, bootToken):
+def start(callback, userAgent, serverPort, bridgeToken, bootToken, mustSecure):
     global shutdownAll
     shutdownAll = callback
 
@@ -215,10 +215,11 @@ def start(callback, userAgent, serverPort, bridgeToken, bootToken):
     windowInfo = cefpython.WindowInfo()
     windowInfo.SetAsChild(windowId)
 
+    protocol = 'https:' if mustSecure else 'http:'
     browser = cefpython.CreateBrowserSync(
         windowInfo,
         CEF_BROWSER_SETTINGS,
-        navigateUrl='https://127.0.0.1:%d/boot.asp' % serverPort,
+        navigateUrl='%s//127.0.0.1:%d/boot.asp' % (protocol, serverPort),
     )
 
     clientHandler = ClientHandler()
@@ -227,8 +228,7 @@ def start(callback, userAgent, serverPort, bridgeToken, bootToken):
     bridge = JavascriptBridge(browser)
 
     jsBindings = cefpython.JavascriptBindings(bindToFrames=True, bindToPopups=True)
-    jsBindings.SetProperty('ᴠ', serverPort)     # http://www.unicode.org/Public/security/revision-06/confusables.txt
-    jsBindings.SetProperty('BOOT_TOKEN', bootToken)
+    jsBindings.SetProperty('ᴠ', bootToken)  # http://www.unicode.org/Public/security/revision-06/confusables.txt
     jsBindings.SetObject('__%s__' % bridgeToken, bridge)
     jsBindings.SetObject('console', bridge)
     jsBindings.SetProperty('navigator', {'userAgent': CEF_REAL_AGENT})

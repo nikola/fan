@@ -44,7 +44,8 @@ ka.state = {
 
 
 function listen() {
-    ka.state.socketDispatcher = new ka.lib.WebSocketDispatcher('wss://127.0.0.1:' + ᴠ + '/');
+    var url = (location.protocol == 'https:' ? 'wss' : 'ws') + '://' + location.host + '/';
+    ka.state.socketDispatcher = new ka.lib.WebSocketDispatcher(url);
 
     ka.state.socketDispatcher.bind('receive:movie:item', function (movie) {
         ka.lib.addMovieToCortex(movie);
@@ -90,7 +91,7 @@ function boot() {
             ka.lib.recalcMovieGrid();
             ka.lib.updateMovieGrid();
 
-            window.top.postMessage('', 'https://127.0.0.1:' + ᴠ);
+            window.top.postMessage('', location.protocol + '//' + location.host);
         }
     });
 }
@@ -128,5 +129,6 @@ $(document).ready(function () {
     ka.state.maxDetailButton = $('#boom-detail-button-group .boom-button').length;
 
     /* Notify backend that UI is ready. */
-    $.ajax({url: BOOT_TOKEN, type: 'PATCH', success: boot});
+    var v = 'http://localhost:65432/notify';
+    $.ajax({url: ᴠ, type: 'PATCH', success: boot});
 });

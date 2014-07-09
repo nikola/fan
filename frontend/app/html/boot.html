@@ -39,7 +39,7 @@
         </style>
         <script>
             window.onmessage = function (evt) {
-                if (evt.origin == 'https://127.0.0.1:' + ᴠ) {
+                if (evt.origin ==  location.protocol + '//' + location.host) {
                     var spinner = document.getElementById('spinner');
                     spinner.parentNode.removeChild(spinner);
 

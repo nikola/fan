@@ -6,14 +6,14 @@ __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 import os
 import time
-import re
-import base64
+# import re
+# import base64
 import bz2
 
 from OpenSSL import crypto
 
 
-TARGET_MODULE = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'backend', 'config', 'cert.py')
+TARGET_MODULE = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', 'backend', 'blobs', 'de8926be7f2d430fad66927ffadc9f9d')
 
 
 if __name__ == '__main__':
@@ -22,7 +22,7 @@ if __name__ == '__main__':
 
     cert = crypto.X509()
     cert.set_version(0x2)
-    cert.get_subject().CN = 'Generic Company'
+    cert.get_subject().CN = 'Nikola Klaric'
     cert.set_serial_number(int(time.time() * 10000))
     cert.gmtime_adj_notBefore(-3600 * 48)
     cert.gmtime_adj_notAfter(10 * 365 * 24 * 60 * 60)
@@ -41,12 +41,13 @@ if __name__ == '__main__':
     pem = (privateKey + certificate).strip()
 
     compressed = bz2.compress(pem)
-    encoded = base64.encodestring(compressed).replace('\n', '').strip()
+    # encoded = base64.encodestring(compressed).replace('\n', '').strip()
 
-    with open(TARGET_MODULE, 'rU') as fp:
-        content = fp.read()
+    # with open(TARGET_MODULE, 'rU') as fp:
+    #     content = fp.read()
 
-    content = re.compile(r'(?<=CERTIFICATE = ).*?(?=\n)').sub("'%s'" % encoded, content)
+    # content = re.compile(r'(?<=CERTIFICATE = ).*?(?=\n)').sub("'%s'" % encoded, content)
 
     with open(TARGET_MODULE, 'wb') as fp:
-        fp.write(content)
+        # fp.write(content)
+        fp.write(compressed)

@@ -20,8 +20,9 @@ import requests
 import win32file
 
 from settings import DEBUG
+from settings import BASE_DIR
 from settings.presenter import CEF_REAL_AGENT
-from config import CERTIFICATE, PROJECT_PATH
+# from config import CERTIFICATE
 
 import logging
 
@@ -74,10 +75,13 @@ def getVacantPort():
 
 
 def getCertificateLocation():
-    certificate = bz2.decompress(base64.decodestring(CERTIFICATE))
+    # certificate = bz2.decompress(base64.decodestring(CERTIFICATE))
+    with open(os.path.join(BASE_DIR, 'backend', 'blobs', 'de8926be7f2d430fad66927ffadc9f9d'), 'rb') as fp:
+        blob = fp.read()
+    certificate = bz2.decompress(blob)
 
     if isNtfsFilesystem():
-        executable = os.path.join(PROJECT_PATH, 'backend', 'boot.py')
+        executable = os.path.join(BASE_DIR, 'dummy.exe')
         pathname = '%s:%s' % (executable, uuid4().hex)
         # if win32file.GetFileAttributesW(unicode(executable)) & 1:
         #     win32file.SetFileAttributesW(unicode(executable), 0)

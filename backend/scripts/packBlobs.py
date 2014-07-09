@@ -10,7 +10,7 @@ import bz2
 
 
 RESOURCES_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', 'frontend')
-BLOBS_PATH = os.path.join(RESOURCES_PATH, 'app', 'blob')
+BLOBS_PATH = os.path.join(RESOURCES_PATH, '..', 'backend', 'blobs')
 
 
 RESOURCES_SCRIPT = [
@@ -74,6 +74,14 @@ def _readStrip(filename, delimiters='{}'):
 
 
 def run():
+    # Compress bootloader.
+    pathname = os.path.join(RESOURCES_PATH, 'app', 'html', 'boot.html')
+    html = _readStrip(pathname, '{};')
+    compressed = bz2.compress(html)
+    with open(os.path.join(BLOBS_PATH, 'b1932b8b02de45bc9ec66ebf1c75bb15'), 'wb') as fp:
+        fp.write(compressed)
+
+    # Compress GUI.
     pathname = os.path.join(RESOURCES_PATH, 'app', 'html', 'gui.html')
     with open(pathname, 'rb') as fp:
         html = fp.read()
@@ -94,11 +102,8 @@ def run():
     html = html.replace('</head>', '<script>%s</script><style>%s</style></head>' % (scriptsAmalgamated, stylesheetsAmalgamated))
 
     compressed = bz2.compress(html)
-    with open(os.path.join(BLOBS_PATH, 'gui'), 'wb') as fp:
+    with open(os.path.join(BLOBS_PATH, 'c9d25707d3a84c4d80fdb6b0789bdcf6'), 'wb') as fp:
         fp.write(compressed)
-
-    with open(os.path.join(BLOBS_PATH, 'gui.html'), 'wb') as fp:
-        fp.write(html)
 
 
 if __name__ == '__main__':

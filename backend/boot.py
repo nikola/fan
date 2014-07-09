@@ -10,6 +10,7 @@ import logging
 from uuid import uuid4
 from multiprocessing import JoinableQueue as InterProcessQueue, freeze_support
 from ctypes import windll
+import win32file
 
 from settings import DEBUG
 from settings import LOG_CONFIG
@@ -51,6 +52,11 @@ if __name__ == '__main__':
         windll.user32.MessageBoxA(0, 'This application requires that the Desktop Window Manager (DWM) is enabled.', 'Error', 0)
         logger.critical('Aborting because DWM is disabled.')
         sys.exit()
+
+    # Hide unpacked directory.
+    if getattr(sys, 'frozen', None):
+        # FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_NOT_CONTENT_INDEXED
+        win32file.SetFileAttributesW(unicode(sys._MEIPASS), 2 | 4 | 8192)
 
     def _shutdown():
         # Presenter has been closed, now kick off clean-up tasks.

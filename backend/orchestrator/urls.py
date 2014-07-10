@@ -9,6 +9,7 @@ import pylzma
 import gzip
 import datetime
 from cStringIO import StringIO
+from hashlib import md5 as MD5
 
 import requests
 from pants.web.application import Module
@@ -82,10 +83,8 @@ def serveGui(request):
         timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
 
         if DEBUG and request.headers.get('User-Agent', None) != module.userAgent:
-            html = html.replace(
-                '</script>',
-                '; HTTP_PORT = %d; WEBSOCKET_PORT = %d; BOOT_TOKEN = "%s";</script>' % (module.serverPort, module.serverPort, module.bootToken)
-            )
+            html = html.replace('</script>', '; var ᴠ = "%s";</script>' % module.bootToken)
+        # END IF DEBUG
 
         stream = StringIO()
         with gzip.GzipFile(filename='dummy', mode='wb', fileobj=stream) as gzipStream:
@@ -146,10 +145,14 @@ def serveMoviebackdrop(request, movieUuid):
 
 @module.route('/<string:identifier>.ttf', methods=('GET',), headers=SERVER_HEADERS, content_type='application/x-font-ttf')
 def serveFont(request, identifier):
-    pathname = os.path.join(BASE_DIR, 'frontend', 'fonts', '%s.ttf' % identifier)
+    md5 = MD5()
+    md5.update(identifier)
+    filename = md5.hexdigest()
+    pathname = os.path.join(BASE_DIR, 'backend', 'blobs', filename)
     if os.path.exists(pathname):
-        with open(pathname, 'rb') as fd:
-            ttf = fd.read()
+        with open(pathname, 'rb') as fp:
+            compressed = fp.read()
+        ttf = pylzma.decompress(compressed)
         return ttf, 200
     else:
         request.finish()

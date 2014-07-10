@@ -5,8 +5,7 @@ __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 import os.path
-import re
-import bz2
+import pylzma
 import gzip
 import datetime
 from cStringIO import StringIO
@@ -48,7 +47,7 @@ def serveBootloader(request):
     filename = os.path.join(BASE_DIR, 'backend', 'blobs', 'b1932b8b02de45bc9ec66ebf1c75bb15')
     with open(filename, 'rb') as fp:
         compressed = fp.read()
-    html = bz2.decompress(compressed)
+    html = pylzma.decompress(compressed)
 
     timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
 
@@ -78,7 +77,7 @@ def serveGui(request):
         filename = os.path.join(BASE_DIR, 'backend', 'blobs', 'c9d25707d3a84c4d80fdb6b0789bdcf6')
         with open(filename, 'rb') as fp:
             compressed = fp.read()
-        html = bz2.decompress(compressed)
+        html = pylzma.decompress(compressed)
 
         timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
 

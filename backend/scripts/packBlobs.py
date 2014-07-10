@@ -6,7 +6,8 @@ __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 import os.path
 import re
-import bz2
+import pylzma
+# TODO: pack fonts, too !!!
 
 
 RESOURCES_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', 'frontend')
@@ -77,7 +78,7 @@ def run():
     # Compress bootloader.
     pathname = os.path.join(RESOURCES_PATH, 'app', 'html', 'boot.html')
     html = _readStrip(pathname, '{};')
-    compressed = bz2.compress(html)
+    compressed = pylzma.compress(html)
     with open(os.path.join(BLOBS_PATH, 'b1932b8b02de45bc9ec66ebf1c75bb15'), 'wb') as fp:
         fp.write(compressed)
 
@@ -101,7 +102,7 @@ def run():
 
     html = html.replace('</head>', '<script>%s</script><style>%s</style></head>' % (scriptsAmalgamated, stylesheetsAmalgamated))
 
-    compressed = bz2.compress(html)
+    compressed = pylzma.compress(html)
     with open(os.path.join(BLOBS_PATH, 'c9d25707d3a84c4d80fdb6b0789bdcf6'), 'wb') as fp:
         fp.write(compressed)
 

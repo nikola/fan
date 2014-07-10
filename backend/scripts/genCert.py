@@ -6,9 +6,7 @@ __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 import os
 import time
-# import re
-# import base64
-import bz2
+import pylzma
 
 from OpenSSL import crypto
 
@@ -40,8 +38,7 @@ if __name__ == '__main__':
     certificate = crypto.dump_certificate(crypto.FILETYPE_PEM, cert)
     pem = (privateKey + certificate).strip()
 
-    compressed = bz2.compress(pem)
-    # encoded = base64.encodestring(compressed).replace('\n', '').strip()
+    compressed = pylzma.compress(pem)
 
     # with open(TARGET_MODULE, 'rU') as fp:
     #     content = fp.read()

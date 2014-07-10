@@ -11,8 +11,8 @@ ka.data = {
     cortex: {
         all: new Cortex([])
         , byUuid: new Cortex({})
-        , byYear: {} // new Cortex({})
-        , byTitleOriginal: {} // new Cortex({})
+        , byYear: {}
+        , byTitleOriginal: {}
         , byTitleLocalized: {}
         , byRating: {}
     }

@@ -148,7 +148,9 @@ ka.lib.updateMovieGrid = function () {
     $('.boom-movie-grid-key').slice(ka.state.gridLookupMatrix.length).remove();
 
     if (ka.state.gridLookupMatrix.length) {
-        ka.lib.updateDetailPage();
+        if (ka.state.currentPageMode != 'detail') {
+            ka.lib.updateDetailPage();
+        }
         if (ka.state.currentPageMode == 'grid') {
             if (ka.state.shouldFocusFadeIn) {
                 $('#boom-poster-focus').velocity('fadeIn', 720);

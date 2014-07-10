@@ -4,7 +4,6 @@
 __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
-import sys
 import os
 import socket
 import pylzma
@@ -14,7 +13,7 @@ from uuid import uuid4
 
 import requests
 
-from settings import LOG_CONFIG, BASE_DIR
+from settings import LOG_CONFIG, BASE_DIR, EXE_PATH
 from settings.presenter import CEF_REAL_AGENT
 from utils.fs import getLogFileHandler
 
@@ -65,13 +64,11 @@ def getVacantPort():
 
 
 def getCertificateLocation():
-    executable = sys.executable if getattr(sys, 'frozen', None) else os.path.join(BASE_DIR, 'dummy.exe')
-    pathname = '%s:%s' % (executable, uuid4().hex)
-
     with open(os.path.join(BASE_DIR, 'backend', 'blobs', 'de8926be7f2d430fad66927ffadc9f9d'), 'rb') as fp:
         blob = fp.read()
     certificate = pylzma.decompress(blob)
 
+    pathname = '%s:%s' % (EXE_PATH, uuid4().hex)
     with open(pathname, 'wb') as fp:
         fp.write(certificate)
 

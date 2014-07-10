@@ -114,7 +114,7 @@ if __name__ == '__main__':
             serverPort = 50000
         else:
             serverPort = getVacantPort()
-        # END DEBUG
+        # END IF DEBUG
 
         certificateLocation = getCertificateLocation()
 

@@ -9,13 +9,15 @@
 
 ka.lib.updateDetailPage = function () {
     var movie = ka.lib.getMovieFromGridFocus();
+    $('#boom-detail-release span').text(movie.releaseYear);
+    $('#boom-detail-runtime span').text(movie.runtime);
     $('#boom-movie-detail-title').text(ka.lib.getLocalizedTitleByUuid(movie.uuid));
     $('#boom-movie-detail-description').text(movie.storyline);
 
-    $('#boom-movie-detail-poster img').css('visibility', 'hidden');
+    $('#boom-movie-detail-top img').css('visibility', 'hidden');
     $('#boom-movie-detail').css('backgroundImage', 'none');
 
-    $('#boom-movie-detail-poster img')
+    $('#boom-movie-detail-top img')
         .attr('src', '/movie/poster/' + movie.uuid + '-300.image')
         .load(function () {
             $(this).css('visibility', 'visible');

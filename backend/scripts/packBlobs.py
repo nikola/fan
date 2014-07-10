@@ -15,18 +15,14 @@ BLOBS_PATH = os.path.join(RESOURCES_PATH, 'backend', 'blobs')
 
 
 RESOURCES_SCRIPT = [
-    # 'vendor/lodash/lodash.min.js',
-    # 'vendor/bacon/bacon.min.js',
-    'frontend/vendor/cortex/cortex.min.js',
-    'frontend/vendor/jquery/jquery.min.js',
-    # 'vendor/jquery/jquery.swipe-events.js',
+    'frontend/app/js/thirdparty/cortex.min.js',
+    'frontend/app/js/thirdparty/jquery.min.js',
 
-    # 'vendor/jquery/jquery.waitforimages.min.js',
-    'frontend/vendor/misc/color-thief.min.js',
-    'frontend/vendor/misc/keypress.min.js',
+    'frontend/app/js/thirdparty/color-thief.min.js',
+    'frontend/app/js/thirdparty/keypress.min.js',
 
-    'frontend/vendor/velocity/velocity.min.js',
-    'frontend/vendor/velocity/velocity.ui.js',
+    'frontend/app/js/thirdparty/velocity.min.js',
+    'frontend/app/js/thirdparty/velocity.ui.js',
 
     'frontend/app/js/lib/sockets.js',
     'frontend/app/js/lib/colors.js',

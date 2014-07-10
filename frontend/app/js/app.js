@@ -127,8 +127,9 @@ document.oncontextmenu = function (event) {
 $(document).ready(function () {
     ka.state.maxConfigButton = $('#boom-config-button-group .boom-button').length;
     ka.state.maxDetailButton = $('#boom-detail-button-group .boom-button').length;
+    ka.state.canvasContext = $('#boom-image-color-canvas').get(0).getContext('2d');
 
     /* Notify backend that UI is ready. */
-    var v = 'http://localhost:65432/notify';
+    var v = 'http://localhost:65432/verify';
     $.ajax({url: ᴠ, type: 'PATCH', success: boot});
 });

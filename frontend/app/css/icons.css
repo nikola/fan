@@ -6,7 +6,7 @@
  * -------------------------- */
 @font-face {
   font-family: 'FontAwesome';
-  src: url('/fontawesome-webfont.ttf') format('truetype');
+  src: url('/icons.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }

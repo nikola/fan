@@ -1,20 +1,20 @@
 @font-face {
     font-family: 'Ka Boom';
-    src: url('/segoeui-webfont.ttf') format('truetype');
+    src: url('/regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
     }
 
 @font-face {
     font-family: 'Ka Boom';
-    src: url('/segoeuib-webfont.ttf') format('truetype');
+    src: url('/bold.ttf') format('truetype');
     font-weight: bold;
     font-style: normal;
     }
 
 @font-face {
     font-family: 'Ka Boom';
-    src: url('/segoeuii-webfont.ttf') format('truetype');
+    src: url('/italic.ttf') format('truetype');
     font-weight: normal;
     font-style: italic;
     }

@@ -9,6 +9,8 @@
 
 ka.lib.updateDetailPage = function () {
     var movie = ka.lib.getMovieFromGridFocus();
+    $('#boom-movie-detail .boom-button').data('boom.select-color', movie.primaryPosterColor);
+
     $('#boom-detail-release span').text(movie.releaseYear);
     $('#boom-detail-runtime span').text(movie.runtime);
     $('#boom-movie-detail-title').text(ka.lib.getLocalizedTitleByUuid(movie.uuid));
@@ -27,8 +29,13 @@ ka.lib.updateDetailPage = function () {
 
 
 ka.lib.updateDetailButtonSelection = function () {
-    $('#boom-detail-button-group .boom-active').removeClass('boom-active');
-    $('#boom-detail-button-group .boom-button').eq(ka.state.currentDetailButton).addClass('boom-active');
+    $('#boom-detail-button-group .boom-active').removeClass('boom-active')
+        .css('backgroundColor', 'transparent');
+
+    var button = $('#boom-detail-button-group .boom-button').eq(ka.state.currentDetailButton);
+    button.addClass('boom-active')
+        .css('backgroundColor', '#' + button.data('boom.select-color'));
+
     if (ka.state.currentDetailButton > 0) {
         $('#boom-movie-detail-shade').velocity({opacity: 0.75}, {duration: 360});
         $('#boom-movie-detail-description').velocity('transition.expandIn', {duration: 360, display: 'flex'});

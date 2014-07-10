@@ -15,9 +15,13 @@ ka.lib.setPrimaryPosterColor = function () {
           , ka.lib.getLuminance(primaryColors[1])
           , ka.lib.getLuminance(primaryColors[2])
         ],
-        primaryColorRGB = primaryColors[colorLuminance.indexOf(Math.min.apply(Math, colorLuminance))];
+        primaryColorRGB = primaryColors[colorLuminance.indexOf(Math.min.apply(Math, colorLuminance))],
+        primaryColorHex = ((1 << 24) + (primaryColorRGB[0] << 16) + (primaryColorRGB[1] << 8) + primaryColorRGB[2]).toString(16).slice(1);
 
-    $(this).closest('.boom-movie-grid-info-overlay').find('.boom-movie-grid-info-overlay-title').css('backgroundColor', '#' + ((1 << 24) + (primaryColorRGB[0] << 16) + (primaryColorRGB[1] << 8) + primaryColorRGB[2]).toString(16).slice(1));
+    $(this).closest('.boom-movie-grid-info-overlay')
+        .find('.boom-movie-grid-info-overlay-title')
+            .css('backgroundColor', '#' + primaryColorHex);
+    ka.data.cortex.byUuid[$(this).closest('.boom-movie-grid-item').data('boom.uuid')].primaryPosterColor = primaryColorHex;
 };
 
 
@@ -185,6 +189,8 @@ ka.lib.renderMovieGridCell = function (movie, operation, context) {
                   + '</div>'
               + '</div>'
             ).data('boom.uuid', movie.uuid);
+
+            cell.find('img').on('load', ka.lib.setPrimaryPosterColor);
         }
     } else {
         var cell = $('<div class="boom-movie-grid-item empty"></div>');
@@ -199,8 +205,6 @@ ka.lib.renderMovieGridCell = function (movie, operation, context) {
     if (movie !== null && movie.uuid in ka.state.detachedGridCells) {
         delete ka.state.detachedGridCells[movie.uuid];
     }
-
-    // cell.find('img').on('load', ka.lib.setPrimaryPosterColor);
 };
 
 

@@ -10,8 +10,8 @@ import pylzma
 from hashlib import md5 as MD5
 
 
-RESOURCES_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..') # , 'frontend')
-BLOBS_PATH = os.path.join(RESOURCES_PATH, 'backend', 'blobs')
+BASE_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..')
+BLOBS_PATH = os.path.join(BASE_DIR, 'backend', 'blobs')
 
 
 RESOURCES_SCRIPT = [
@@ -79,27 +79,27 @@ def _readStrip(filename, delimiters='{}'):
 
 def run():
     # Compress bootloader.
-    pathname = os.path.join(RESOURCES_PATH, 'frontend', 'app', 'html', 'boot.html')
+    pathname = os.path.join(BASE_DIR, 'frontend', 'app', 'html', 'boot.html')
     html = _readStrip(pathname, '{};')
     compressed = pylzma.compress(html)
     with open(os.path.join(BLOBS_PATH, 'b1932b8b02de45bc9ec66ebf1c75bb15'), 'wb') as fp:
         fp.write(compressed)
 
     # Compress GUI.
-    pathname = os.path.join(RESOURCES_PATH, 'frontend', 'app', 'html', 'gui.html')
+    pathname = os.path.join(BASE_DIR, 'frontend', 'app', 'html', 'gui.html')
     with open(pathname, 'rb') as fp:
         html = fp.read()
     html = re.sub(r'>\s*<', '><', html)
 
     stylesheetContent = []
     for pathname in RESOURCES_STYLE:
-        content = _readStrip(os.path.join(RESOURCES_PATH, pathname), '{};,')
+        content = _readStrip(os.path.join(BASE_DIR, pathname), '{};,')
         stylesheetContent.append(content)
     stylesheetsAmalgamated = ''.join(stylesheetContent)
 
     scriptContent = []
     for pathname in RESOURCES_SCRIPT:
-        content = _readStrip(os.path.join(RESOURCES_PATH, pathname), '{},')
+        content = _readStrip(os.path.join(BASE_DIR, pathname), '{},')
         scriptContent.append(content)
     scriptsAmalgamated = ''.join(scriptContent)
 
@@ -111,7 +111,7 @@ def run():
 
     # Compress fonts.
     for pathname in RESOURCES_FONT:
-        with open(os.path.join(RESOURCES_PATH, pathname), 'rb') as fp:
+        with open(os.path.join(BASE_DIR, pathname), 'rb') as fp:
             ttf = fp.read()
         compressed = pylzma.compress(ttf)
 

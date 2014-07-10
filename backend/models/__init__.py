@@ -4,8 +4,6 @@
 __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
-import os
-# import bz2
 import json
 from contextlib import contextmanager
 from sqlite3 import dbapi2 as sqlite
@@ -14,9 +12,7 @@ from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker, joinedload
 from sqlalchemy.orm.exc import NoResultFound
 
-
-from settings import DEBUG
-from utils.win32 import getAppStoragePathname
+from settings import EXE_PATH
 from models.common import Base, GUID, createNamedTuple, createUuid # , DictSerializable
 from models.streams import Stream
 # from models.genres import Genre
@@ -26,22 +22,8 @@ from models.localizations import Localization
 # from models.tracks import Track
 
 
-
-
-
 # TODO: use named tuples ?
 #   https://docs.python.org/2/library/collections.html#collections.namedtuple
-
-def _getSqliteDsn(identifier):
-    if DEBUG:
-        directory = getAppStoragePathname()
-        if not os.path.exists(directory): os.makedirs(directory)
-
-        dsn = 'sqlite:///' + (directory + '\\%s.sqlite3' % identifier).replace('\\', r'\\\\')
-    else:
-        dsn = 'sqlite://'
-
-    return dsn
 
 
 class StreamManager(object):
@@ -62,7 +44,9 @@ class StreamManager(object):
 
 
     def __init__(self, cleanUp=False):
-        self.engine = create_engine(_getSqliteDsn('db'), echo=False, module=sqlite)
+        location = 'sqlite:///' + (EXE_PATH + ':b582b94058ff4bbea424c5af17f68586').replace('\\', r'\\\\')
+
+        self.engine = create_engine(location, echo=False, module=sqlite)
         self.engine.execute('select 1').scalar()
         self.session_factory = sessionmaker(bind=self.engine, expire_on_commit=False)
 

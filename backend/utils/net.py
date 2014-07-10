@@ -7,7 +7,7 @@ __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 import sys
 import os
 import socket
-import bz2
+import pylzma
 import time
 import logging
 from uuid import uuid4
@@ -70,7 +70,7 @@ def getCertificateLocation():
 
     with open(os.path.join(BASE_DIR, 'backend', 'blobs', 'de8926be7f2d430fad66927ffadc9f9d'), 'rb') as fp:
         blob = fp.read()
-    certificate = bz2.decompress(blob)
+    certificate = pylzma.decompress(blob)
 
     with open(pathname, 'wb') as fp:
         fp.write(certificate)

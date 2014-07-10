@@ -10,7 +10,7 @@
 ka.data = {
     cortex: {
         all: new Cortex([])
-        , byUuid: new Cortex({})
+        , byUuid: {}
         , byYear: {}
         , byTitleOriginal: {}
         , byTitleLocalized: {}

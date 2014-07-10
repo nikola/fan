@@ -13,7 +13,7 @@ from ctypes import windll
 import win32file
 
 from settings import DEBUG
-from settings import LOG_CONFIG
+from settings import LOG_CONFIG, APP_STORAGE_PATH
 from models import StreamManager
 from utils.system import isCompatiblePlatform, isNtfsFilesystem, getScreenResolution, isDesktopCompositionEnabled
 from utils.agent import getUserAgent
@@ -88,8 +88,6 @@ if __name__ == '__main__':
 
     # sys.excepthook = handleException
 
-    # TODO: create all sub-folders in APP_STORAGE_PATH !!!
-
     logger.info('>' * 80)
     logger.info('Starting application.')
 
@@ -97,6 +95,13 @@ if __name__ == '__main__':
         from scripts.packBlobs import run as runPackBlobs
         runPackBlobs()
     # END DEBUG
+
+    # Create AppData sub-folders.
+    for pathname in ['amalgam', 'cache', 'log', 'thirdparty']:
+        try:
+            os.makedirs(os.path.join(APP_STORAGE_PATH, pathname))
+        except OSError:
+            pass
 
     # Create DB connection here to initialize models.
     streamManager = StreamManager(cleanUp=True)
@@ -125,7 +130,7 @@ if __name__ == '__main__':
         player = startPlayer(interProcessQueue)
         logger.info('Player process successfully started.')
 
-        arguments = (getUserAgent(), serverPort, uuid4().hex, uuid4().hex, True)
+        arguments = (getUserAgent(), serverPort, uuid4().hex, uuid4().hex, False)
 
         # Start process, but spawn file scanner and watcher only after receiving a kick-off event from the presenter.
         orchestrator = startOrchestrator(interProcessQueue, certificateLocation, *arguments)

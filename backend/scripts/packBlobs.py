@@ -18,7 +18,8 @@ RESOURCES_SCRIPT = [
     'frontend/app/js/thirdparty/cortex.min.js',
     'frontend/app/js/thirdparty/jquery.min.js',
 
-    'frontend/app/js/thirdparty/color-thief.min.js',
+    'frontend/app/js/thirdparty/protovis.js',
+    'frontend/app/js/thirdparty/mmcq.js',
     'frontend/app/js/thirdparty/keypress.min.js',
 
     'frontend/app/js/thirdparty/velocity.min.js',

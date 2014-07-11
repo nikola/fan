@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <style>
+            * {
+                cursor: none !important;
+                }
+
+            body {
+                color: white;
+                background-color: black;
+
+                margin: 0; padding: 0;
+                overflow: hidden;
+                width: 100%; height: 100%;
+                }
+        </style>
+        <script>
+            window.onmessage = function (evt) {
+                if (evt.origin ==  location.protocol + '//' + location.host) {
+                    var spinner = document.getElementById('spinner');
+                    spinner.parentNode.removeChild(spinner);
+
+                    var gui = document.getElementsByTagName('iframe')[0];
+                    gui.style.width = gui.style.height = '100%';
+                    gui.contentWindow.focus();
+
+                    evt.source.listen();
+                }
+            };
+        </script>
+    </head>
+    <body>
+        <div id="spinner"><div><img src="/loader.gif"></div></div>
+    </body>
+</html>

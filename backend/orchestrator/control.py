@@ -22,7 +22,7 @@ from identifier import getMoviePathnames, getBaseDataFromDirName, identifyMovieB
 from utils.fs import getLongPathname
 
 
-def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridgeToken, bootToken, mustSecure):
+def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridgeToken, bootToken, mustSecure, userConfig):
     global pubSubReference
     pubSubReference = None
 
@@ -66,10 +66,12 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
     appModule.presented = False
     appModule.streamManager = streamManager
     appModule.bootToken = bootToken
+    appModule.userConfig = userConfig
+
     if DEBUG:
         appModule.userAgent = userAgent
         appModule.serverPort = serverPort
-    # END DEBUG
+    # END IF DEBUG
 
     app = Application(debug=DEBUG)
     app.add('', appModule)

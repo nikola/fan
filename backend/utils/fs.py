@@ -14,6 +14,14 @@ from win32file import FindStreams, SetFileAttributesW
 from settings import APP_STORAGE_PATH
 
 
+def createAppStorageStructure():
+    for pathname in ['amalgam', 'cache', 'log', 'thirdparty']:
+        try:
+            os.makedirs(os.path.join(APP_STORAGE_PATH, pathname))
+        except OSError:
+            pass
+
+
 def getLogFileHandler(name):
     handler = logging.FileHandler(os.path.join(APP_STORAGE_PATH, 'log', '%(name)s.log' % locals()))
     handler.setFormatter(logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s', '%Y-%m-%d %H:%M'))

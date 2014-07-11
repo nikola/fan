@@ -7,18 +7,20 @@ __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 import sys
 import os
 import logging
+import simplejson
 from uuid import uuid4
 from multiprocessing import JoinableQueue as InterProcessQueue, freeze_support
 from ctypes import windll
 import win32file
 
 from settings import DEBUG
-from settings import LOG_CONFIG, APP_STORAGE_PATH
-from models import StreamManager
+from settings import LOG_CONFIG, APP_STORAGE_PATH, EXE_PATH, RESOURCES_PATH
+from models import initialize as initStreamManager
 from utils.system import isCompatiblePlatform, isNtfsFilesystem, getScreenResolution, isDesktopCompositionEnabled
 from utils.agent import getUserAgent
 from utils.net import getVacantPort, getCertificateLocation
-from utils.fs import getLogFileHandler
+from utils.fs import getLogFileHandler, createAppStorageStructure
+from utils.config import getUserConfig
 from orchestrator.control import start as startOrchestrator, stop as stopOrchestrator
 from downloader.control import start as startDownloader, stop as stopDownloader
 from player.control import start as startPlayer, stop as stopPlayer
@@ -88,32 +90,28 @@ if __name__ == '__main__':
 
     # sys.excepthook = handleException
 
-    logger.info('>' * 80)
-    logger.info('Starting application.')
-
     if DEBUG:
         from scripts.packBlobs import run as runPackBlobs
         runPackBlobs()
     # END DEBUG
 
+    logger.info('>' * 80)
+    logger.info('Starting application.')
+
     # Create AppData sub-folders.
-    for pathname in ['amalgam', 'cache', 'log', 'thirdparty']:
-        try:
-            os.makedirs(os.path.join(APP_STORAGE_PATH, pathname))
-        except OSError:
-            pass
+    createAppStorageStructure()
 
     # Create DB connection here to initialize models.
-    streamManager = StreamManager(cleanUp=True)
-    streamManager.shutdown()
-    del streamManager
-    logger.info('Normalized database.')
+    initStreamManager()
+
+    userConfig = getUserConfig()
+    userConfig['language'] = 'en'
+    userConfig['sources'].append(r'\\Diskstation\Movies')
 
     try:
+        serverPort = getVacantPort()
         if DEBUG:
             serverPort = 50000
-        else:
-            serverPort = getVacantPort()
         # END IF DEBUG
 
         certificateLocation = getCertificateLocation()
@@ -122,20 +120,13 @@ if __name__ == '__main__':
         interProcessQueue = InterProcessQueue()
 
         downloader = startDownloader(interProcessQueue)
-        logger.info('Downloader process successfully started.')
-
         analyzer = startAnalyzer(interProcessQueue)
-        logger.info('Analyzer process successfully started.')
-
         player = startPlayer(interProcessQueue)
-        logger.info('Player process successfully started.')
 
-        arguments = (getUserAgent(), serverPort, uuid4().hex, uuid4().hex, False)
+        arguments = (getUserAgent(), serverPort, uuid4().hex, uuid4().hex, False, userConfig)
 
         # Start process, but spawn file scanner and watcher only after receiving a kick-off event from the presenter.
         orchestrator = startOrchestrator(interProcessQueue, certificateLocation, *arguments)
-
-        logger.info('Orchestrator process successfully started.')
 
         # Start the blocking presenter process.
         present(_shutdown, *arguments)

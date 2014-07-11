@@ -10,6 +10,8 @@
     }
 
 body {
+    pointer-events: none !important;
+
     color: white;
     background-color: black;
 
@@ -27,4 +29,8 @@ body {
     -webkit-transform: translateZ(0);
     -webkit-backface-visibility: hidden;
     -webkit-perspective: 1000;
+    }
+
+#boom-image-color-canvas {
+    display: none;
     }

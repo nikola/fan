@@ -9,7 +9,7 @@ from contextlib import contextmanager
 from sqlite3 import dbapi2 as sqlite
 
 from sqlalchemy import create_engine, func
-from sqlalchemy.orm import sessionmaker, joinedload
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import NoResultFound
 
 from settings import EXE_PATH
@@ -24,6 +24,10 @@ from models.localizations import Localization
 
 # TODO: use named tuples ?
 #   https://docs.python.org/2/library/collections.html#collections.namedtuple
+
+
+def initialize():
+    StreamManager(cleanUp=True).shutdown()
 
 
 class StreamManager(object):
@@ -50,12 +54,6 @@ class StreamManager(object):
         self.engine.execute('select 1').scalar()
         self.session_factory = sessionmaker(bind=self.engine, expire_on_commit=False)
 
-        # if not DEBUG and os.path.exists(os.path.join(getAppStoragePathname(), 'data.accdb')):
-        #     self._restore()
-        #     # TODO: migrate schema by dumping all data to JSON, then drop_all, then read JSON back in
-        #       which might not work for images !!!
-        # else:
-        # Base.metadata.drop_all(self.engine, checkfirst=True)
         Base.metadata.create_all(self.engine, checkfirst=True)
 
         if cleanUp:
@@ -361,6 +359,13 @@ class StreamManager(object):
 
 
     """
+
+
+    TODO: migrate schema by dumping all data to JSON, then drop_all, then read JSON back in
+          which might not work for images !!!
+
+    Base.metadata.drop_all(self.engine, checkfirst=True)
+
     def _persist(self):
         compressor = bz2.BZ2Compressor()
         connection = self.engine.raw_connection()

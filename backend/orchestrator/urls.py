@@ -11,6 +11,7 @@ import datetime
 from cStringIO import StringIO
 from hashlib import md5 as MD5
 
+import simplejson
 import requests
 from pants.web.application import Module
 from pants.http.utils import HTTPHeaders
@@ -83,7 +84,7 @@ def serveGui(request):
         timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
 
         if DEBUG and request.headers.get('User-Agent', None) != module.userAgent:
-            html = html.replace('</script>', '; var ᴠ = "%s";</script>' % module.bootToken)
+            html = html.replace('</script>', '; var ᴠ = "%s"; ka.config = {language: "en", sources: []};</script>' % module.bootToken)
         # END IF DEBUG
 
         stream = StringIO()
@@ -176,10 +177,9 @@ def serveAllMovies(request):
     return module.streamManager.getAllMoviesAsJson(), 200
 
 
-@module.route('/update/poster-colors', methods=('POST',), headers=SERVER_HEADERS, content_type='text/plain')
-def updatePosterColors(request):
-    for identifier, primaryColorHex in dict(request.post).iteritems():
-        module.streamManager.updatePosterColorByMovieUuid(identifier, primaryColorHex)
+@module.route('/update/<string:identifier>/poster-color/<string:color>', methods=('GET',), headers=SERVER_HEADERS, content_type='text/plain')
+def updatePosterColors(request, identifier, color):
+    module.streamManager.updatePosterColorByMovieUuid(identifier, color)
     return '', 200
 
 """

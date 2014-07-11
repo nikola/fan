@@ -21,7 +21,7 @@ ka.lib.getLuminance = function (color) {
 ka.lib.desaturateVisiblePosters = function () {
     ka.state.desaturationImageCache = [];
 
-    var start = ka.state.gridPage * ka.config.gridMaxRows, end = (ka.state.gridPage + 1) * ka.config.gridMaxRows;
+    var start = ka.state.gridPage * ka.settings.gridMaxRows, end = (ka.state.gridPage + 1) * ka.settings.gridMaxRows;
     for (var row = start; row < end; row++) {
         for (var item, i = 0; i < 4; i++) {
             item = ka.state.gridLookupMatrix[row][i];

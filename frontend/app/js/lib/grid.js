@@ -18,6 +18,8 @@ ka.lib.setPrimaryPosterColor = function () {
 
 
 ka.lib.processPixelArray = function () {
+    if (!ka.state.imagePosterPixelArrayBacklog.length) return;
+
     var nextPixelArray = ka.state.imagePosterPixelArrayBacklog.shift(),
         uuid = nextPixelArray.shift(),
         primaryColors = MMCQ.quantize(nextPixelArray, 5).palette(),
@@ -35,12 +37,7 @@ ka.lib.processPixelArray = function () {
     ka.data.cortex.byUuid[uuid].primaryPosterColor = primaryColorHex;
     ka.state.imagePosterPrimaryColorByUuid[uuid] = primaryColorHex;
 
-    if (ka.state.imagePosterPixelArrayBacklog.length == 0) {
-        $.post(
-            '/update/poster-colors'
-          , ka.state.imagePosterPrimaryColorByUuid
-        );
-    }
+    $.get('/update/' + uuid + '/poster-color/' + primaryColorHex);
 };
 
 
@@ -62,7 +59,7 @@ ka.lib.recalcMovieGrid = function () {
             if (count) {
                 currentColumnIndex = 0;
                 for (var movieIndex = 0; movieIndex < count; movieIndex++) {
-                    if (movieIndex % ka.config.gridMaxColumns == 0) {
+                    if (movieIndex % ka.settings.gridMaxColumns == 0) {
                         ka.state.gridLookupMatrix.push([]);
                     }
 
@@ -70,7 +67,7 @@ ka.lib.recalcMovieGrid = function () {
                     ka.state.gridLookupMatrix[currentLineIndex][currentColumnIndex] = items.values()[movieIndex];
                     ka.state.gridLookupKeyByLine[currentLineIndex] = key;
 
-                    var currentLine = Math.floor(currentCellIndex / ka.config.gridMaxColumns);
+                    var currentLine = Math.floor(currentCellIndex / ka.settings.gridMaxColumns);
                     if (key in ka.state.gridLookupLinesByKey) {
                         var lines = ka.state.gridLookupLinesByKey[key];
                         if (lines.indexOf(currentLine) == -1) {
@@ -84,24 +81,24 @@ ka.lib.recalcMovieGrid = function () {
                     currentCellIndex++;
                     currentColumnIndex++;
 
-                    if (currentColumnIndex == ka.config.gridMaxColumns) {
+                    if (currentColumnIndex == ka.settings.gridMaxColumns) {
                         currentRowIndex++;
                         currentColumnIndex = 0;
                     }
 
-                    if (currentRowIndex == ka.config.gridMaxRows) {
+                    if (currentRowIndex == ka.settings.gridMaxRows) {
                         currentRowIndex = 0;
                     }
                 }
 
                 if (currentColumnIndex) {
-                    for (; currentColumnIndex < ka.config.gridMaxColumns; currentColumnIndex++) {
+                    for (; currentColumnIndex < ka.settings.gridMaxColumns; currentColumnIndex++) {
                         ka.state.gridLookupMatrix[ka.state.gridLookupMatrix.length - 1][currentColumnIndex] = null;
                         currentCellIndex++;
                     }
                     currentRowIndex++;
 
-                    if (currentRowIndex == ka.config.gridMaxRows) {
+                    if (currentRowIndex == ka.settings.gridMaxRows) {
                         currentRowIndex = 0;
                     }
                 }
@@ -109,7 +106,7 @@ ka.lib.recalcMovieGrid = function () {
         }
     }
 
-    ka.state.gridTotalPages = Math.ceil(ka.state.gridLookupMatrix.length / ka.config.gridMaxRows);
+    ka.state.gridTotalPages = Math.ceil(ka.state.gridLookupMatrix.length / ka.settings.gridMaxRows);
 };
 
 
@@ -128,7 +125,7 @@ ka.lib.updateMovieGrid = function () {
         }
 
         currentKey = ka.state.gridLookupKeyByLine[row];
-        if (currentKey != lastKey || row % ka.config.gridMaxRows == 0) {
+        if (currentKey != lastKey || row % ka.settings.gridMaxRows == 0) {
             keyContainer.css('visibility', 'visible');
 
             var keyLabel = keyContainer.find('.boom-movie-grid-key-label');
@@ -294,7 +291,7 @@ ka.lib.moveFocusUp = function () {
             props.top = '+=720';
             options.duration = 720;
 
-            ka.state.gridFocusY = ka.config.gridMaxRows - 1;
+            ka.state.gridFocusY = ka.settings.gridMaxRows - 1;
             ka.state.gridPage -= 1;
             ka.lib.scrollGrid();
         }
@@ -306,7 +303,7 @@ ka.lib.moveFocusUp = function () {
 
 ka.lib.moveFocusDown = function () {
     var gridFocusAbsoluteY = ka.lib.getGridFocusAbsoluteY(),
-        notLastRow = ka.state.gridFocusY + 1 < ka.config.gridMaxRows,
+        notLastRow = ka.state.gridFocusY + 1 < ka.settings.gridMaxRows,
         notLastPage = ka.state.gridPage + 1 < ka.state.gridTotalPages;
 
     if (gridFocusAbsoluteY + 1 < ka.state.gridLookupMatrix.length && (notLastRow || notLastPage)) {
@@ -349,7 +346,7 @@ ka.lib.moveFocusLeft = function () {
 
 
 ka.lib.moveFocusRight = function () {
-    if (ka.state.gridFocusX < ka.config.gridMaxColumns - 1 && ka.state.gridFocusX + 1 < ka.lib.getItemsPerLineAtFocus()) {
+    if (ka.state.gridFocusX < ka.settings.gridMaxColumns - 1 && ka.state.gridFocusX + 1 < ka.lib.getItemsPerLineAtFocus()) {
         ka.state.gridFocusX += 1;
 
         $('#boom-poster-focus').css('display', 'block').velocity({left: '+=260'}, 260);
@@ -378,7 +375,7 @@ ka.lib.selectFocus = function () {
 
 
 ka.lib.getGridFocusAbsoluteY = function () {
-    return ka.config.gridMaxRows * ka.state.gridPage + ka.state.gridFocusY;
+    return ka.settings.gridMaxRows * ka.state.gridPage + ka.state.gridFocusY;
 };
 
 

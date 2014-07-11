@@ -18,10 +18,9 @@ ka.data = {
     }
 };
 
-ka.config = {
+ka.settings = {
     gridMaxRows: 3
   , gridMaxColumns: 7
-  , language: 'en'
 };
 
 ka.state = {

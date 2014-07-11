@@ -8,8 +8,19 @@
 
 
 ka.lib.setPrimaryPosterColor = function () {
-    var colorThief = new ColorThief(),
-        primaryColors = colorThief.getPalette($(this).get(0), 5),
+    var uuid = $(this).closest('.boom-movie-grid-item').data('boom.uuid'),
+        pixelArray = ka.lib.getPixelsFromImage($(this));
+    pixelArray.unshift(uuid);
+    ka.state.imagePosterPixelArrayBacklog.push(pixelArray);
+
+    setTimeout(ka.lib.processPixelArray, 0);
+};
+
+
+ka.lib.processPixelArray = function () {
+    var nextPixelArray = ka.state.imagePosterPixelArrayBacklog.shift(),
+        uuid = nextPixelArray.shift(),
+        primaryColors = MMCQ.quantize(nextPixelArray, 5).palette(),
         colorLuminance = [
             ka.lib.getLuminance(primaryColors[0])
           , ka.lib.getLuminance(primaryColors[1])
@@ -21,7 +32,7 @@ ka.lib.setPrimaryPosterColor = function () {
     $(this).closest('.boom-movie-grid-info-overlay')
         .find('.boom-movie-grid-info-overlay-title')
             .css('backgroundColor', '#' + primaryColorHex);
-    ka.data.cortex.byUuid[$(this).closest('.boom-movie-grid-item').data('boom.uuid')].primaryPosterColor = primaryColorHex;
+    ka.data.cortex.byUuid[uuid].primaryPosterColor = primaryColorHex;
 };
 
 

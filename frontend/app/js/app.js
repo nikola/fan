@@ -40,6 +40,7 @@ ka.state = {
   , gridLookupLinesByKey: {} // TODO: needed for focusing via hotkey
   , gridLookupKeyByLine: []
   , shouldFocusFadeIn: true
+  , imagePosterPixelArrayBacklog: []
 };
 
 

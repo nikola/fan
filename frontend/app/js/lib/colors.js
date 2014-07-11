@@ -23,10 +23,13 @@ ka.lib.desaturateVisiblePosters = function () {
 
     var start = ka.state.gridPage * ka.config.gridMaxRows, end = (ka.state.gridPage + 1) * ka.config.gridMaxRows;
     for (var row = start; row < end; row++) {
-        for (var item, i = 0; item = ka.state.gridLookupMatrix[row][i]; i++) {
-            var element = $('#boom-poster-' + item.uuid);
-            ka.state.desaturationImageCache.push(element);
-            element.removeClass('undesaturate').addClass('desaturate');
+        for (var item, i = 0; i < 4; i++) {
+            item = ka.state.gridLookupMatrix[row][i];
+            if (item) {
+                var element = $('#boom-poster-' + item.uuid);
+                ka.state.desaturationImageCache.push(element);
+                element.removeClass('undesaturate').addClass('desaturate');
+            }
             // TODO: use same logic to display: none posters when scrolling to details page
         }
     }
@@ -36,4 +39,29 @@ ka.lib.undesaturateVisiblePosters = function () {
     for (var element, e = 0; element = ka.state.desaturationImageCache[e]; e++) {
         element.removeClass('desaturate').addClass('undesaturate');
     }
+};
+
+
+ka.lib.getPixelsFromImage = function (element) {
+    var image = element.get(0),
+        context = ka.state.canvasContext;
+
+    context.canvas.width = image.width;
+    context.canvas.height = image.height;
+    context.drawImage(image, 0, 0, image.width, image.height);
+
+    var pixels = context.getImageData(0, 0, image.width, image.height).data,
+        pixelCount = image.width * image.height, pixelArray = [],
+        block = 0, index = 0, r, g, b;
+    while (block < pixelCount) {
+        r = pixels[index++];
+        g = pixels[index++];
+        b = pixels[index];
+        index += 38;
+        block += 10;
+        if (!(r > 250 && g > 250 && b > 250)) {
+            pixelArray.push([r, g, b]);
+        }
+    }
+    return pixelArray;
 };

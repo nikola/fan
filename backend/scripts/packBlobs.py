@@ -80,7 +80,7 @@ def _readStrip(filename, delimiters='{}'):
 
 def run():
     # Compress bootloader.
-    pathname = os.path.join(BASE_DIR, 'frontend', 'app', 'html', 'boot.html')
+    pathname = os.path.join(BASE_DIR, 'frontend', 'app', 'html', 'load.html')
     html = _readStrip(pathname, '{};')
     compressed = pylzma.compress(html)
     with open(os.path.join(BLOBS_PATH, 'b1932b8b02de45bc9ec66ebf1c75bb15'), 'wb') as fp:

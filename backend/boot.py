@@ -19,7 +19,7 @@ from models import initialize as initStreamManager
 from utils.system import isCompatiblePlatform, isNtfsFilesystem, getScreenResolution, isDesktopCompositionEnabled
 from utils.agent import getUserAgent
 from utils.net import getVacantPort, getCertificateLocation
-from utils.fs import getLogFileHandler, createAppStorageStructure
+from utils.fs import getLogFileHandler, createAppStorageStructure, getDrives
 from utils.config import getUserConfig
 from orchestrator.control import start as startOrchestrator, stop as stopOrchestrator
 from downloader.control import start as startDownloader, stop as stopDownloader
@@ -107,6 +107,9 @@ if __name__ == '__main__':
     userConfig = getUserConfig()
     userConfig['language'] = 'en'
     userConfig['sources'].append(r'\\Diskstation\Movies')
+
+    print getDrives()
+    sys.exit()
 
     try:
         serverPort = getVacantPort()

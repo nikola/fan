@@ -8,8 +8,12 @@ import os
 import re
 import logging
 from os import fdopen
+from itertools import izip_longest
 from tempfile import mkstemp
-from win32file import FindStreams, SetFileAttributesW
+
+from win32file import FindStreams, SetFileAttributesW, GetDriveType
+import win32api
+import win32com.client
 
 from settings import APP_STORAGE_PATH
 
@@ -44,7 +48,7 @@ def getStreamContentType(stream):
 def getLongPathname(pathname):
     if pathname.startswith('\\\\'):
         return pathname.replace(u'\\\\', u'\\\\?\\UNC\\')
-    elif re.search('^[a-z]]:\\\\', pathname, re.I) is not None:
+    elif re.search('^[a-z]:\\\\', pathname, re.I) is not None:
         return u'\\\\?\\' + pathname
     else:
         return pathname
@@ -66,3 +70,25 @@ def writeTemporaryFile(blob):
     fp.close()
 
     return filename
+
+
+def getDrives():
+    def _grouper(n, iterable):
+        args = [iter(iterable)] * n
+        return izip_longest(fillvalue=None, *args)
+
+    detectedDrives = {}
+
+    networkPathsByLetter = dict(_grouper(2, win32com.client.Dispatch('WScript.Network').EnumNetworkDrives()))
+    if '' in networkPathsByLetter:
+        del networkPathsByLetter['']
+
+    for driveLetter in win32api.GetLogicalDriveStrings().split('\000'):
+        if driveLetter:
+            driveType = GetDriveType(driveLetter)
+            if driveType == 3:
+                detectedDrives[driveLetter[0]] = ('Local disk', getLongPathname(driveLetter + '\\'))
+            elif driveType == 4:
+                detectedDrives[driveLetter[0]] = (networkPathsByLetter[driveLetter[:2]], getLongPathname(networkPathsByLetter[driveLetter[:2]]))
+
+    return detectedDrives

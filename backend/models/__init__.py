@@ -343,7 +343,7 @@ class StreamManager(object):
                 return movie.streams[0].location
 
 
-     def updatePosterColorByMovieUuid(self, identifier, color):
+    def updatePosterColorByMovieUuid(self, identifier, color):
         with self._session() as session:
             session.query(Image).join(Movie).filter(Image.imageType == 'Poster', Image.movie.has(Movie.uuid == identifier)).update({'primaryColor': color}, synchronize_session=False)
 

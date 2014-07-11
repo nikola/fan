@@ -29,7 +29,6 @@ class Image(Base):
     movie = relationship('Movie', backref=backref('images', order_by=id), lazy='joined', cascade='all, delete, delete-orphan', single_parent=True)
 
     def __init__(self, **kwargs):
-        # vars(self).update(kwargs)
         for key, value in kwargs.iteritems():
             setattr(self, key, value)
 

@@ -120,9 +120,7 @@ def handleException(excType, excValue, traceObject):
     os._exit(1)
 
 
-
-# def start(userAgent, httpPort, websocketPort, callback, bridgeToken, bootToken):
-def start(callback, userAgent, serverPort, bridgeToken, bootToken, mustSecure):
+def start(callback, userAgent, serverPort, bridgeToken, bootToken, mustSecure, userConfig):
     global shutdownAll
     shutdownAll = callback
 
@@ -229,6 +227,7 @@ def start(callback, userAgent, serverPort, bridgeToken, bootToken, mustSecure):
 
     jsBindings = cefpython.JavascriptBindings(bindToFrames=True, bindToPopups=True)
     jsBindings.SetProperty('ᴠ', bootToken)  # http://www.unicode.org/Public/security/revision-06/confusables.txt
+    jsBindings.SetProperty('ka', {'config': userConfig})
     jsBindings.SetObject('__%s__' % bridgeToken, bridge)
     jsBindings.SetObject('console', bridge)
     jsBindings.SetProperty('navigator', {'userAgent': CEF_REAL_AGENT})

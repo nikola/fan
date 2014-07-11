@@ -176,6 +176,12 @@ def serveAllMovies(request):
     return module.streamManager.getAllMoviesAsJson(), 200
 
 
+@module.route('/update/poster-colors', methods=('POST',), headers=SERVER_HEADERS, content_type='text/plain')
+def updatePosterColors(request):
+    for identifier, primaryColorHex in dict(request.post).iteritems():
+        module.streamManager.updatePosterColorByMovieUuid(identifier, primaryColorHex)
+    return '', 200
+
 """
 # @module.route('<path:pathname>', methods=('GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'TRACE', 'OPTIONS', 'CONNECT'))
 @module.route("<regex('([\s\S]+)'):pathname>", methods=('GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'TRACE', 'OPTIONS', 'CONNECT'))

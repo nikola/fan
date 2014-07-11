@@ -343,15 +343,22 @@ class StreamManager(object):
                 return movie.streams[0].location
 
 
-    def getUnidentifiedTracksMovie(self):
+     def updatePosterColorByMovieUuid(self, identifier, color):
         with self._session() as session:
-            try:
-                movie = session.query(Movie).join(Track).group_by(Movie.id).having(~Movie.tracks.any()).first()
-            except NoResultFound:
-                return None
-            else:
-                if movie is not None:
-                    return movie.uuid
+            session.query(Image).join(Movie).filter(Image.imageType == 'Poster', Image.movie.has(Movie.uuid == identifier)).update({'primaryColor': color}, synchronize_session=False)
+
+
+    # def getUnidentifiedTracksMovie(self):
+    #     with self._session() as session:
+    #         try:
+    #             movie = session.query(Movie).join(Track).group_by(Movie.id).having(~Movie.tracks.any()).first()
+    #         except NoResultFound:
+    #             return None
+    #         else:
+    #             if movie is not None:
+    #                 return movie.uuid
+
+
 
     """
     def _persist(self):

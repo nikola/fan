@@ -33,6 +33,14 @@ ka.lib.processPixelArray = function () {
         .find('.boom-movie-grid-info-overlay-title')
             .css('backgroundColor', '#' + primaryColorHex);
     ka.data.cortex.byUuid[uuid].primaryPosterColor = primaryColorHex;
+    ka.state.imagePosterPrimaryColorByUuid[uuid] = primaryColorHex;
+
+    if (ka.state.imagePosterPixelArrayBacklog.length == 0) {
+        $.post(
+            '/update/poster-colors'
+          , ka.state.imagePosterPrimaryColorByUuid
+        );
+    }
 };
 
 

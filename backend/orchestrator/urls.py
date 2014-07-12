@@ -44,9 +44,32 @@ def presenterReady(request, pathname):
         request.connection.close()
 
 
-@module.route('/boot.asp', methods=('GET',), headers=SERVER_HEADERS, content_type='text/html')
+@module.route('/load.asp', methods=('GET',), headers=SERVER_HEADERS, content_type='text/html')
 def serveBootloader(request):
     filename = os.path.join(BASE_DIR, 'backend', 'blobs', 'b1932b8b02de45bc9ec66ebf1c75bb15')
+    with open(filename, 'rb') as fp:
+        compressed = fp.read()
+    html = pylzma.decompress(compressed)
+
+    timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
+
+    stream = StringIO()
+    with gzip.GzipFile(filename='dummy', mode='wb', fileobj=stream) as gzipStream:
+        gzipStream.write(html)
+
+    headers = SERVER_HEADERS.copy()
+    headers.update({
+        'Last-modified': getRfc1123Timestamp(timestamp),
+        'Cache-Control': 'max-age=0, must-revalidate',
+        'Content-Encoding': 'gzip',
+    })
+
+    return stream.getvalue(), 200, HTTPHeaders(data=headers)
+
+
+@module.route('/configure.asp', methods=('GET',), headers=SERVER_HEADERS, content_type='text/html')
+def serveConfigurator(request):
+    filename = os.path.join(BASE_DIR, 'backend', 'blobs', 'e7edf96693d14aa8a011da221782f4a6')
     with open(filename, 'rb') as fp:
         compressed = fp.read()
     html = pylzma.decompress(compressed)

@@ -20,8 +20,8 @@ def getUserConfig():
     if os.path.exists(EXE_PATH + ':a024b2cd63e44400a8ff18f548dfb54b'):
         with open(EXE_PATH + ':a024b2cd63e44400a8ff18f548dfb54b', 'rU') as fp:
             configUser.update(simplejson.load(fp))
-    else:
-        with open(EXE_PATH + ':a024b2cd63e44400a8ff18f548dfb54b', 'w') as fp:
-            simplejson.dump(configUser, fp, indent=4, sort_keys=True)
+
+    with open(EXE_PATH + ':a024b2cd63e44400a8ff18f548dfb54b', 'w') as fp:
+        simplejson.dump(configUser, fp, indent=4, sort_keys=True)
 
     return configUser

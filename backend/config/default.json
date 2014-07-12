@@ -1,4 +1,17 @@
 {
     "language": "en"
   , "sources": []
+  , "hotkeys": {
+        "firstItem":      "home"
+      , "lastItem":       "end"
+      , "previousPage":   "pageup"
+      , "nextPage":       "pagedown"
+      , "up":             "up"
+      , "down":           "down"
+      , "left":           "left"
+      , "right":          "right"
+      , "toggle":         "space"
+      , "select":         "enter"
+      , "back":           "escape"    
+    }
 }

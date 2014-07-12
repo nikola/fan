@@ -108,8 +108,8 @@ if __name__ == '__main__':
     userConfig['language'] = 'en'
     userConfig['sources'].append(r'\\Diskstation\Movies')
 
-    print getDrives()
-    sys.exit()
+    # print getDrives()
+    # sys.exit()
 
     try:
         serverPort = getVacantPort()

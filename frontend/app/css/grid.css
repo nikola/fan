@@ -10,8 +10,6 @@
 
     position: absolute; top: 0; left: 0;
 
-    /* margin-left: 100px; */
-
     -webkit-transform: translateZ(0);
     -webkit-backface-visibility: hidden;
     -webkit-perspective: 1000;
@@ -31,45 +29,14 @@
     height: 316px;
     top: 16px;
     left: 116px;
-
-    /* -webkit-animation: fade-in 2s 1; */
     }
-
-/* @-webkit-keyframes fade-in {
-    0% {
-        opacity: 0
-    }
-    100% {
-        opacity: 1
-    }
-} */
-
-/* .boom-movie-grid-page {
-    font-size: 0;
-
-    background-color: black;
-    } */
-
-/*
-.boom-movie-grid-letter-indicator {
-    display: inline-block;
-    width: 100px;
-    border-collapse: collapse;
-    }
-
-.boom-movie-grid-letter-cell {
-    padding: 0;
-
-    background-color: black;
-    }
-*/
 
 .boom-movie-grid-key {
-    width: 110px; height: 360px;
+    width: 100px; height: 360px;
     padding: 0;
-    margin-right: -10px;
-    display: inline;
-    float: left;
+
+    display: inline-block;
+    vertical-align: top;
     text-align: center;
     }
 
@@ -124,19 +91,13 @@
     padding: 0;
     width: 260px; height: 300px;
     text-align: center;
-    display: inline; float: left;
+    display: inline-block;
     margin: 30px 0;
-    /* margin-top: 30px; margin-bottom: 30px; */
 
     background-color: black;
-    /* background-color: navy; */
     }
 
 .boom-movie-grid-item img {
-    /* border: 0px solid transparent;
-    box-sizing: content-box;
-    padding: 6px; */
-
     display: block;
     max-width: 200px;
     max-height: 300px;

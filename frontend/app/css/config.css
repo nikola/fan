@@ -14,3 +14,28 @@
 
     padding-left: 30px;
     }
+
+
+.boom-center-outer {
+    display: table;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    }
+
+.boom-center-inner {
+    display: table-cell;
+    vertical-align: middle;
+    }
+
+#boom-center-panel {
+    display: block;
+    width: 1600px;
+    margin: 0 auto;
+    }
+
+#boom-panel-description {
+    font-size: 40px;
+    line-height: 60px;
+    font-weight: bold;
+    }

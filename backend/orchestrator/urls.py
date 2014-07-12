@@ -11,7 +11,6 @@ import datetime
 from cStringIO import StringIO
 from hashlib import md5 as MD5
 
-import simplejson
 import requests
 from pants.web.application import Module
 from pants.http.utils import HTTPHeaders
@@ -23,6 +22,8 @@ from settings.presenter import CEF_REAL_AGENT
 from identifier import getImageConfiguration
 from downloader.images import downloadBackdrop
 from utils.rfc import getRfc1123Timestamp
+from utils.fs import getDrives
+from identifier.fixture import TOP_250
 
 IMG_MIME_TYPES = {
     'JPEG': 'image/jpeg',
@@ -198,6 +199,17 @@ def serveGif(request, identifier):
 @module.route('/movies/all', methods=('GET',), headers=SERVER_HEADERS, content_type='application/json')
 def serveAllMovies(request):
     return module.streamManager.getAllMoviesAsJson(), 200
+
+
+@module.route('/movies/top250', methods=('GET',), headers=SERVER_HEADERS, content_type='application/json')
+def serveAllMovies(request):
+    return TOP_250, 200
+
+
+@module.route('/drives/mounted', methods=('GET',), headers=SERVER_HEADERS, content_type='application/json')
+def serveMountedDrives(request):
+    drives = getDrives()
+    return drives, 200
 
 
 @module.route('/update/<string:identifier>/poster-color/<string:color>', methods=('GET',), headers=SERVER_HEADERS, content_type='text/plain')

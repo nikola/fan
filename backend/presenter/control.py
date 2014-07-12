@@ -217,7 +217,7 @@ def start(callback, userAgent, serverPort, bridgeToken, bootToken, mustSecure, u
     browser = cefpython.CreateBrowserSync(
         windowInfo,
         CEF_BROWSER_SETTINGS,
-        navigateUrl='%s//127.0.0.1:%d/boot.asp' % (protocol, serverPort),
+        navigateUrl='%s//127.0.0.1:%d/configure.asp' % (protocol, serverPort),
     )
 
     clientHandler = ClientHandler()

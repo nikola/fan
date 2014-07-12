@@ -67,7 +67,7 @@ function listen() {
 }
 
 
-function boot() {
+function ready() {
     /* ... */
     registerHotkeys();
 
@@ -100,20 +100,20 @@ function boot() {
 
 function registerHotkeys() {
     var listener = new keypress.Listener(document.body, {prevent_repeat: true}),
-        _key = ka.lib.getConfiguredKeyByCommand;
+        _hotkeys = ka.config.hotkeys;
 
      listener.register_many([
-        {keys: _key('firstItem'),       on_keydown: ka.lib.handleKeypressFirstItem}
-      , {keys: _key('lastItem'),        on_keydown: ka.lib.handleKeypressLastItem}
-      , {keys: _key('previousPage'),    on_keydown: ka.lib.handleKeypressPreviousPage}
-      , {keys: _key('nextPage'),        on_keydown: ka.lib.handleKeypressNextPage}
-      , {keys: _key('up'),              on_keydown: ka.lib.handleKeypressUp}
-      , {keys: _key('down'),            on_keydown: ka.lib.handleKeypressDown}
-      , {keys: _key('left'),            on_keydown: ka.lib.handleKeypressLeft}
-      , {keys: _key('right'),           on_keydown: ka.lib.handleKeypressRight}
-      , {keys: _key('toggle'),          on_keydown: ka.lib.handleKeypressToggle}
-      , {keys: _key('select'),          on_keydown: ka.lib.handleKeypressSelect}
-      , {keys: _key('back'),            on_keydown: ka.lib.handleKeypressBack}
+        {keys: _hotkeys['firstItem'],       on_keydown: ka.lib.handleKeypressFirstItem}
+      , {keys: _hotkeys['lastItem'],        on_keydown: ka.lib.handleKeypressLastItem}
+      , {keys: _hotkeys['previousPage'],    on_keydown: ka.lib.handleKeypressPreviousPage}
+      , {keys: _hotkeys['nextPage'],        on_keydown: ka.lib.handleKeypressNextPage}
+      , {keys: _hotkeys['up'],              on_keydown: ka.lib.handleKeypressUp}
+      , {keys: _hotkeys['down'],            on_keydown: ka.lib.handleKeypressDown}
+      , {keys: _hotkeys['left'],            on_keydown: ka.lib.handleKeypressLeft}
+      , {keys: _hotkeys['right'],           on_keydown: ka.lib.handleKeypressRight}
+      , {keys: _hotkeys['toggle'],          on_keydown: ka.lib.handleKeypressToggle}
+      , {keys: _hotkeys['select'],          on_keydown: ka.lib.handleKeypressSelect}
+      , {keys: _hotkeys['back'],            on_keydown: ka.lib.handleKeypressBack}
     ]);
 
     document.body.addEventListener('keypress', ka.lib.handleKeypressLetter);
@@ -132,5 +132,5 @@ $(document).ready(function () {
 
     /* Notify backend that UI is ready. */
     var v = 'http://localhost:65432/verify';
-    $.ajax({url: ᴠ, type: 'PATCH', success: boot});
+    $.ajax({url: ᴠ, type: 'PATCH', success: ready});
 });

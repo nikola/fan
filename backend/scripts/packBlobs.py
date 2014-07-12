@@ -14,7 +14,44 @@ BASE_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..')
 BLOBS_PATH = os.path.join(BASE_DIR, 'backend', 'blobs')
 
 
-RESOURCES_SCRIPT = [
+RESOURCES_CONFIG_CSS = [
+    'frontend/app/css/fonts.css',
+    'frontend/app/css/icons.css',
+
+    'frontend/app/css/app.css',
+
+    'frontend/app/css/buttons.css',
+    'frontend/app/css/config.css',
+]
+
+RESOURCES_CONFIG_JS = [
+    'frontend/app/js/thirdparty/jquery.min.js',
+
+    'frontend/app/js/thirdparty/keypress.min.js',
+
+    'frontend/app/js/thirdparty/velocity.min.js',
+    'frontend/app/js/thirdparty/velocity.ui.js',
+
+    'frontend/app/js/lib/l10n.js',
+    'frontend/app/js/lib/hotkeys.js',
+    'frontend/app/js/lib/lang.js',
+    'frontend/app/js/lib/config.js',
+    'frontend/app/js/configurator.js',
+]
+
+RESOURCES_GUI_CSS = [
+    'frontend/app/css/fonts.css',
+    'frontend/app/css/icons.css',
+
+    'frontend/app/css/app.css',
+
+    'frontend/app/css/buttons.css',
+    'frontend/app/css/config.css',
+    'frontend/app/css/grid.css',
+    'frontend/app/css/detail.css',
+]
+
+RESOURCES_GUI_JS = [
     'frontend/app/js/thirdparty/cortex.min.js',
     'frontend/app/js/thirdparty/jquery.min.js',
 
@@ -34,19 +71,7 @@ RESOURCES_SCRIPT = [
     'frontend/app/js/lib/config.js',
     'frontend/app/js/lib/grid.js',
     'frontend/app/js/lib/detail.js',
-    'frontend/app/js/app.js',
-]
-
-RESOURCES_STYLE = [
-    'frontend/app/css/fonts.css',
-    'frontend/app/css/icons.css',
-
-    'frontend/app/css/app.css',
-
-    'frontend/app/css/buttons.css',
-    'frontend/app/css/config.css',
-    'frontend/app/css/grid.css',
-    'frontend/app/css/detail.css',
+    'frontend/app/js/gui.js',
 ]
 
 RESOURCES_FONT = [
@@ -60,6 +85,9 @@ RESOURCES_FONT = [
 def _readStrip(filename, delimiters='{}'):
     with open(filename, 'rU') as fp:
         content = fp.read()
+
+    # Remove whitespace between tags.
+    content = re.sub(r'>\s*<', '><', content)
 
     # Remove comments.
     content = re.sub(r'/\*.*?\*/', '', content, flags=re.MULTILINE|re.DOTALL)
@@ -86,6 +114,30 @@ def run():
     with open(os.path.join(BLOBS_PATH, 'b1932b8b02de45bc9ec66ebf1c75bb15'), 'wb') as fp:
         fp.write(compressed)
 
+    # Compress configurator.
+    pathname = os.path.join(BASE_DIR, 'frontend', 'app', 'html', 'config.html')
+    with open(pathname, 'rb') as fp:
+        html = fp.read()
+    html = re.sub(r'>\s*<', '><', html)
+
+    stylesheetContent = []
+    for pathname in RESOURCES_CONFIG_CSS:
+        content = _readStrip(os.path.join(BASE_DIR, pathname), '{};,')
+        stylesheetContent.append(content)
+    stylesheetsAmalgamated = ''.join(stylesheetContent)
+
+    scriptContent = []
+    for pathname in RESOURCES_CONFIG_JS:
+        content = _readStrip(os.path.join(BASE_DIR, pathname), '{},')
+        scriptContent.append(content)
+    scriptsAmalgamated = ''.join(scriptContent)
+
+    html = html.replace('</head>', '<script>%s</script><style>%s</style></head>' % (scriptsAmalgamated, stylesheetsAmalgamated))
+
+    compressed = pylzma.compress(html)
+    with open(os.path.join(BLOBS_PATH, 'e7edf96693d14aa8a011da221782f4a6'), 'wb') as fp:
+        fp.write(compressed)
+
     # Compress GUI.
     pathname = os.path.join(BASE_DIR, 'frontend', 'app', 'html', 'gui.html')
     with open(pathname, 'rb') as fp:
@@ -93,13 +145,13 @@ def run():
     html = re.sub(r'>\s*<', '><', html)
 
     stylesheetContent = []
-    for pathname in RESOURCES_STYLE:
+    for pathname in RESOURCES_GUI_CSS:
         content = _readStrip(os.path.join(BASE_DIR, pathname), '{};,')
         stylesheetContent.append(content)
     stylesheetsAmalgamated = ''.join(stylesheetContent)
 
     scriptContent = []
-    for pathname in RESOURCES_SCRIPT:
+    for pathname in RESOURCES_GUI_JS:
         content = _readStrip(os.path.join(BASE_DIR, pathname), '{},')
         scriptContent.append(content)
     scriptsAmalgamated = ''.join(scriptContent)

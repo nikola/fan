@@ -11,9 +11,10 @@ from os import fdopen
 from itertools import izip_longest
 from tempfile import mkstemp
 
-from win32file import FindStreams, SetFileAttributesW, GetDriveType
-import win32api
 import win32com.client
+from win32file import FindStreams, SetFileAttributesW, GetDriveType
+from win32api import GetLogicalDriveStrings, GetVolumeInformation
+
 
 from settings import APP_STORAGE_PATH
 
@@ -77,18 +78,19 @@ def getDrives():
         args = [iter(iterable)] * n
         return izip_longest(fillvalue=None, *args)
 
-    detectedDrives = {}
+    detectedDrives = []
 
     networkPathsByLetter = dict(_grouper(2, win32com.client.Dispatch('WScript.Network').EnumNetworkDrives()))
     if '' in networkPathsByLetter:
         del networkPathsByLetter['']
 
-    for driveLetter in win32api.GetLogicalDriveStrings().split('\000'):
+    for driveLetter in GetLogicalDriveStrings().split('\000'):
         if driveLetter:
             driveType = GetDriveType(driveLetter)
             if driveType == 3:
-                detectedDrives[driveLetter[0]] = ('Local disk', getLongPathname(driveLetter + '\\'))
+                detectedDrives.append((driveLetter[0], GetVolumeInformation(driveLetter)[0] or 'Local disk', getLongPathname(driveLetter + '\\')))
             elif driveType == 4:
-                detectedDrives[driveLetter[0]] = (networkPathsByLetter[driveLetter[:2]], getLongPathname(networkPathsByLetter[driveLetter[:2]]))
+                
+                detectedDrives.append((driveLetter[0], networkPathsByLetter[driveLetter[:2]], getLongPathname(networkPathsByLetter[driveLetter[:2]])))
 
     return detectedDrives

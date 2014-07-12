@@ -300,7 +300,8 @@ class StreamManager(object):
     def getAllMoviesAsJson(self):
         with self._session() as session:
             movieList = []
-            for movie in session.query(Movie, Localization).filter(Movie.id == Localization.movieId).values(Movie.uuid, Movie.titleOriginal, Localization.title, Movie.releaseYear, Movie.runtime, Localization.storyline, Movie.rating):
+            for movie in session.query(Movie, Localization, Image).filter(Movie.id == Localization.movieId, Movie.id == Image.movieId, Image.imageType == 'Poster', Localization.locale == 'en').distinct() \
+                    .values(Movie.uuid, Movie.titleOriginal, Localization.title, Movie.releaseYear, Movie.runtime, Localization.storyline, Movie.rating, Image.primaryColor):
                 movieList.append({
                     'uuid': movie[0],
                     'titleOriginal': movie[1],
@@ -309,6 +310,7 @@ class StreamManager(object):
                     'runtime': movie[4],
                     'storyline': movie[5],
                     'rating': movie[6],
+                    'primaryPosterColor': movie[7],
                 })
             return json.dumps(movieList, separators=(',',':'))
 

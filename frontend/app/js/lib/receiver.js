@@ -11,8 +11,6 @@
 ka.lib.addMovieToCortex = function (movieDict) {
     if (movieDict.uuid in ka.data.cortex.byUuid) return;
 
-    movieDict.primaryPosterColor = null;
-
     var alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''), compare = ka.state.collator.compare,
         localizedArticles = ka.lib.getLocalizedArticles();
 

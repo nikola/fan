@@ -53,18 +53,5 @@ ka.lib.executeConfigSelection = function () {
 
 
 ka.lib.getConfiguredKeyByCommand = function (command) {
-    return {
-        firstItem:      'home'
-      , lastItem:       'end'
-      , previousPage:   'pageup'
-      , nextPage:       'pagedown'
-      , up:             'up'
-      , down:           'down'
-      , left:           'left'
-      , right:          'right'
-      , toggle:         'space'
-      , select:         'enter'
-      , back:           'escape'
-    }[command];
-
+    return ka.config.hotkeys[command];
 };

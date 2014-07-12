@@ -5,6 +5,10 @@
  *  @copyright Copyright (c) 2013-2014 Nikola Klaric
  */
 
+#boom-image-color-canvas {
+    display: none;
+    }
+
 #boom-movie-grid-container {
     width: 1920px; height: 1080px;
 

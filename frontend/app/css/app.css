@@ -30,7 +30,3 @@ body {
     -webkit-backface-visibility: hidden;
     -webkit-perspective: 1000;
     }
-
-#boom-image-color-canvas {
-    display: none;
-    }

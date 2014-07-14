@@ -91,6 +91,7 @@
     text-align: center;
     display: inline-block;
     margin: 30px 0;
+    vertical-align: top; /* TODO: correct? */
 
     background-color: black;
     }

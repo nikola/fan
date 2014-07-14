@@ -120,9 +120,8 @@ function registerHotkeys() {
 }
 
 
-document.oncontextmenu = function (event) {
-    event.preventDefault();
-};
+/* Prevent all input events. */
+document.oncontextmenu = document.onmousedown = function (event) { event.preventDefault(); };
 
 
 $(document).ready(function () {

@@ -21,6 +21,12 @@
     letter-spacing: 4px;
     }
 
+.boom-button.boom-enabled {
+    color: white;
+
+    text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.75);
+    }
+
 .boom-button.boom-active {
     /* position: absolute; top: 510px; left: 28px;
     width: 302px; height: 45px; */
@@ -32,8 +38,39 @@
                 inset 1px 1px rgba(255, 255, 255, 0.2),
                 inset 0 1px rgba(255, 255, 255, 0.2),
                 inset 0 10px 20px rgba(255, 255, 255, 0.25),
-                inset 0 0px 4px rgba(255, 255, 255, 0.3);
+                inset 0 0 4px rgba(255, 255, 255, 0.3);
     }
+
+.boom-button-floater {
+    position: absolute;
+    display: inline-block;
+
+    width: 300px;
+    height: 45px;
+
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    border-radius: 2px;
+
+    box-shadow: 0 2px 6px rgba(0, 0 , 0, 0.5),
+                inset 1px 1px rgba(255, 255, 255, 0.2),
+                inset 0 1px rgba(255, 255, 255, 0.2),
+                inset 0 10px 20px rgba(255, 255, 255, 0.25),
+                inset 0 0 4px rgba(255, 255, 255, 0.3);
+
+    background-color: rgb(0, 0, 0);
+    }
+/*
+    width: 300px;
+    height: 45px;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    border-radius: 2px;
+
+    box-shadow: 0 2px 6px rgba(0, 0 , 0, 0.5),
+                inset 1px 1px rgba(255, 255, 255, 0.2),
+                inset 0 1px rgba(255, 255, 255, 0.2),
+                inset 0 10px 20px rgba(255, 255, 255, 0.25),
+                inset 0 0 4px rgba(255, 255, 255, 0.3);
+    } */
 
 .boom-align-left {
     text-align: left;

@@ -2,35 +2,37 @@
 <html>
     <head><meta charset="utf-8"></head>
     <body>
-        <div id="content" class="boom-center-outer">
-            <div class="boom-center-inner">
-                <div id="boom-center-panel">
-                    <div id="boom-panel-description">
-                        As this is the first time you are starting this application, you must first choose<br>
-                        how to populate your movie library. Press LEFT or RIGHT to change your choice.
+        <div class="boom-button-floater" id="boom-button-start-floater"></div>
+        <div class="boom-button-floater" id="boom-button-selection-floater"></div>
+        <div id="boom-panel">
+            <div id="boom-panel-description">
+                As this is the first time you are starting this application, you must first choose
+                how to populate your movie library. Press LEFT or RIGHT to make or change your choice.
+            </div>
+            <div id="boom-split-choices">
+                <div id="boom-choice-left" class="boom-choice-box">
+                    <div class="boom-choice-description">
+                        Import supported movie files from mounted drives.
+                        Press SPACE to select or deselect a drive.
                     </div>
-                    <div id="boom-split-choices">
-                        <div id="boom-choice-left">
-                            <div>
-                                Import supported movie files from your mounted drives.
-                                Press SPACE to select or deselect a drive.
-                            </div>
-                            <ul id="boom-drives-list">
-
-                            </ul>
-                        </div>
-                        <div id="boom-choice-right">
-                            <div>
-                                Import the IMDb Top 250 into the movie library. None of these movies
-                                will be playable, of course.
-                            </div>
-                            <ol id="boom-top250-list">
-
-                            </ol>
-                        </div>
+                    <ul id="boom-drives-list"></ul>
+                </div>
+                <div id="boom-choice-splitter">
+                    <div id="boom-splitter-vertical-rule"></div>
+                    <div id="boom-splitter-or">OR</div>
+                </div>
+                <div id="boom-choice-right" class="boom-choice-box">
+                    <div class="boom-choice-description">
+                        Import the IMDb Top 250 as metadata only.
+                        You can browse, but not play imported movies.
                     </div>
+                    <ol id="boom-top250-list"></ol>
                 </div>
             </div>
+            <div id="boom-choice-confirm">
+                <div class="boom-button boom-enabled">Start import</div>
+            </div>
         </div>
+
     </body>
 </html>

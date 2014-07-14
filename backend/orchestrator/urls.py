@@ -75,6 +75,10 @@ def serveConfigurator(request):
         compressed = fp.read()
     html = pylzma.decompress(compressed)
 
+    if DEBUG and request.headers.get('User-Agent', None) != module.userAgent:
+        html = html.replace('</script>', '; ka.config = {language: "en", sources: []};</script>')
+    # END IF DEBUG
+
     timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
 
     stream = StringIO()

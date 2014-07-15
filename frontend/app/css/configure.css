@@ -1,0 +1,132 @@
+/**
+ *  Config page styles.
+ *
+ *  @author Nikola Klaric (nikola@generic.company)
+ *  @copyright Copyright (c) 2013-2014 Nikola Klaric
+ */
+
+#boom-panel {
+    -webkit-transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    -webkit-perspective: 1000;
+
+    margin-top: 130px;
+    }
+
+#boom-panel-description {
+    font-size: 40px;
+    line-height: 60px;
+    font-weight: bold;
+    margin-bottom: 50px;
+    width: 1600px;
+    margin-left: 160px;
+    }
+
+#boom-demand-choice {
+
+    }
+
+#boom-split-choices {
+    display: inline-block;
+    width: 2560px; height: 512px;
+    padding: 0 80px;
+    margin-left: 160px;
+    }
+
+#boom-choice-splitter {
+    width: 160px; height: 512px;
+    display: inline-block;
+    vertical-align: top;
+    }
+
+#boom-splitter-vertical-rule {
+    display: inline-block;
+    width: 2px; height: 512px;
+    vertical-align: top;
+    background-color: white;
+    position: relative;
+    left: 79px;
+    }
+
+#boom-splitter-or {
+    display: inline-block;
+    width: 26px; height: 60px;
+    background-color: black;
+    position: relative;
+    left: 58px;
+    top: 228px;
+    font-size: 30px;
+    line-height: 60px;
+    }
+
+.boom-choice-box {
+    width: 640px; height: 512px;
+    display: inline-block;
+    vertical-align: top;
+    }
+
+.boom-choice-description {
+    font-size: 30px;
+    margin-bottom: 30px;
+    }
+
+#boom-drives-list {
+    list-style: none;
+    -webkit-padding-start: 0;
+    -webkit-margin-before: 0;
+    -webkit-margin-after: 0;
+
+    margin-left: 30px;
+    }
+
+#boom-drives-list li {
+    font-size: 30px;
+    line-height: 50px;
+    }
+
+#boom-drives-list i {
+    margin-right: 20px;
+    }
+
+#boom-top250-list {
+    -webkit-padding-start: 37px;
+    -webkit-margin-before: 0;
+    -webkit-margin-after: 0;
+
+    margin-left: 30px;
+    }
+
+#boom-top250-list li {
+    font-size: 20px;
+    line-height: 40px;
+    }
+
+#boom-choice-confirm {
+    text-align: center;
+    margin-top: 20px;
+    }
+
+#boom-choice-confirm .boom-button {
+    display: none;
+    /* display: inline-block; */
+    }
+
+#boom-choice-confirm .boom-button.boom-active {
+    background-color: #0074d9;
+    }
+
+#boom-button-start-floater {
+    opacity: 0;
+    top: 862px;
+    left: 808px;
+    }
+
+#boom-button-selection-floater {
+    opacity: 0;
+
+    top: 412px;
+    left: 672px;
+    z-index: 1;
+    background-color: transparent;
+    width: 614px;
+    }

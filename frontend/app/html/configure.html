@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+    <head><meta charset="utf-8"></head>
+    <body>
+        <div class="boom-button-floater" id="boom-button-start-floater"></div>
+        <div class="boom-button-floater" id="boom-button-selection-floater"></div>
+        <div id="boom-panel">
+            <div id="boom-panel-description">
+                As this is the first time you are starting this application, you must first choose
+                how to populate your movie library. <span id="boom-demand-choice">Press LEFT or RIGHT</span> to make or change your choice.
+            </div>
+            <div id="boom-split-choices">
+                <div id="boom-choice-left" class="boom-choice-box">
+                    <div class="boom-choice-description">
+                        Import supported movie files from mounted drives.
+                        Press SPACE to select or deselect a drive.
+                    </div>
+                    <ul id="boom-drives-list"></ul>
+                </div>
+                <div id="boom-choice-splitter">
+                    <div id="boom-splitter-vertical-rule"></div>
+                    <div id="boom-splitter-or">OR</div>
+                </div>
+                <div id="boom-choice-right" class="boom-choice-box">
+                    <div class="boom-choice-description">
+                        Import the IMDb Top 250 as metadata only.
+                        You can browse, but not play imported movies.
+                    </div>
+                    <ol id="boom-top250-list"></ol>
+                </div>
+            </div>
+            <div id="boom-choice-confirm">
+                <div class="boom-button boom-enabled">Start import</div>
+            </div>
+        </div>
+
+    </body>
+</html>

@@ -21,7 +21,7 @@ RESOURCES_CONFIG_CSS = [
     'frontend/app/css/app.css',
 
     'frontend/app/css/buttons.css',
-    'frontend/app/css/config.css',
+    'frontend/app/css/configure.css',
 ]
 
 RESOURCES_CONFIG_JS = [
@@ -46,7 +46,6 @@ RESOURCES_GUI_CSS = [
     'frontend/app/css/app.css',
 
     'frontend/app/css/buttons.css',
-    'frontend/app/css/config.css',
     'frontend/app/css/grid.css',
     'frontend/app/css/detail.css',
 ]
@@ -68,7 +67,7 @@ RESOURCES_GUI_JS = [
     'frontend/app/js/lib/receiver.js',
     'frontend/app/js/lib/hotkeys.js',
     'frontend/app/js/lib/lang.js',
-    'frontend/app/js/lib/config.js',
+    'frontend/app/js/lib/menu.js',
     'frontend/app/js/lib/grid.js',
     'frontend/app/js/lib/detail.js',
     'frontend/app/js/gui.js',
@@ -115,7 +114,7 @@ def run():
         fp.write(compressed)
 
     # Compress configurator.
-    pathname = os.path.join(BASE_DIR, 'frontend', 'app', 'html', 'config.html')
+    pathname = os.path.join(BASE_DIR, 'frontend', 'app', 'html', 'configure.html')
     with open(pathname, 'rb') as fp:
         html = fp.read()
     html = re.sub(r'>\s*<', '><', html)

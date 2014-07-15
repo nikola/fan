@@ -30,8 +30,6 @@ class PubSub(WebSocket):
 
     def on_pong(self, data):
         self.registerSelf(self)
-        # global publisherInstance
-        # publisherInstance = self
 
     def on_read(self, data):
         command, payload = json.loads(data)

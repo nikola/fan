@@ -141,20 +141,26 @@ function handleKeypressSelect() {
     if (ka.state.currentChoice === null) {
         demandInitialChoice();
     } else if (ka.state.currentChoice == 'left') {
-        var checkbox = $('#boom-drives-list li').eq(ka.state.currentDriveIndex).find('i');
-        if (checkbox.hasClass('fa-square')) {
-            checkbox.removeClass('fa-square').addClass('fa-check-square');
+        if (ka.state.isStartButtonSelected) {
+            saveAndProceed();
         } else {
-            checkbox.removeClass('fa-check-square').addClass('fa-square');
-        }
+            var checkbox = $('#boom-drives-list li').eq(ka.state.currentDriveIndex).find('i');
+            if (checkbox.hasClass('fa-square')) {
+                checkbox.removeClass('fa-square').addClass('fa-check-square');
+            } else {
+                checkbox.removeClass('fa-check-square').addClass('fa-square');
+            }
 
-        var previouslySelected = ka.state.hasDrivesSelected;
-        ka.state.hasDrivesSelected = $('#boom-drives-list li .fa-check-square').size() > 0;
-        if (ka.state.hasDrivesSelected && !previouslySelected) {
-            $('#boom-choice-confirm .boom-button').velocity('fadeIn', {display: 'inline-block', duration: 360});
-        } else if (!ka.state.hasDrivesSelected && previouslySelected) {
-            $('#boom-choice-confirm .boom-button').velocity('fadeOut', {display: 'none', duration: 360});
+            var previouslySelected = ka.state.hasDrivesSelected;
+            ka.state.hasDrivesSelected = $('#boom-drives-list li .fa-check-square').size() > 0;
+            if (ka.state.hasDrivesSelected && !previouslySelected) {
+                $('#boom-choice-confirm .boom-button').velocity('fadeIn', {display: 'inline-block', duration: 360});
+            } else if (!ka.state.hasDrivesSelected && previouslySelected) {
+                $('#boom-choice-confirm .boom-button').velocity('fadeOut', {display: 'none', duration: 360});
+            }
         }
+    } else if (ka.state.currentChoice == 'right') {
+        saveAndProceed();
     }
 }
 
@@ -177,8 +183,28 @@ function registerHotkeys() {
       , {keys: _hotkeys['select'],          on_keydown: handleKeypressSelect}
       , {keys: _hotkeys['back'],            on_keydown: handleKeypressQuit}
     ]);
+}
 
-    // document.body.addEventListener('keypress', ka.lib.handleKeypressLetter);
+
+function saveAndProceed() {
+    var userConfig = ka.config;
+    userConfig.isDemoMode = Boolean(ka.state.currentChoice == 'right');
+
+    var sources = [];
+    $('#boom-drives-list li').each(function (index) {
+        if ($(this).find('i').hasClass('fa-check-square')) {
+            sources.push(ka.data.drives[index]);
+        }
+    });
+    userConfig.sources = sources;
+
+    $.post(
+        '/update/configuration'
+      , JSON.stringify(userConfig)
+      , function (url) {
+            window.location.href = url;
+        }
+    );
 }
 
 
@@ -215,7 +241,7 @@ $(document).ready(function () {
 
             for (var index = 0; index < list.length; index++) {
                 $('<li>', {
-                    html: '<i class="fa fa-square"></i>' + list[index][1] + ' (' + list[index][0] + ':)'
+                    html: '<i class="fa fa-square"></i>' + list[index].label + ' (' + list[index].drive + ':)'
                 }).appendTo('#boom-drives-list');
             }
         }

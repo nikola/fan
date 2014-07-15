@@ -36,7 +36,7 @@ RESOURCES_CONFIG_JS = [
     'frontend/app/js/lib/hotkeys.js',
     'frontend/app/js/lib/lang.js',
 
-    'frontend/app/js/configurator.js',
+    'frontend/app/js/configure.js',
 ]
 
 RESOURCES_GUI_CSS = [

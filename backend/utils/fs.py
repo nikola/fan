@@ -90,7 +90,6 @@ def getDrives():
             if driveType == 3:
                 detectedDrives.append((driveLetter[0], GetVolumeInformation(driveLetter)[0] or 'Local disk', getLongPathname(driveLetter + '\\')))
             elif driveType == 4:
-                
                 detectedDrives.append((driveLetter[0], networkPathsByLetter[driveLetter[:2]], getLongPathname(networkPathsByLetter[driveLetter[:2]])))
 
     return detectedDrives

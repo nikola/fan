@@ -35,7 +35,7 @@ RESOURCES_CONFIG_JS = [
     'frontend/app/js/lib/l10n.js',
     'frontend/app/js/lib/hotkeys.js',
     'frontend/app/js/lib/lang.js',
-    'frontend/app/js/lib/config.js',
+
     'frontend/app/js/configurator.js',
 ]
 
@@ -59,7 +59,7 @@ RESOURCES_GUI_JS = [
     'frontend/app/js/thirdparty/keypress.min.js',
 
     'frontend/app/js/thirdparty/velocity.min.js',
-    'frontend/app/js/thirdparty/velocity.ui.js',
+    'frontend/app/js/thirdparty/velocity.ui.min.js',
 
     'frontend/app/js/lib/sockets.js',
     'frontend/app/js/lib/colors.js',
@@ -70,6 +70,7 @@ RESOURCES_GUI_JS = [
     'frontend/app/js/lib/menu.js',
     'frontend/app/js/lib/grid.js',
     'frontend/app/js/lib/detail.js',
+
     'frontend/app/js/gui.js',
 ]
 

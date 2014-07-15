@@ -12,6 +12,7 @@ ka.state = {
   , currentChoice: null
   , hasDrivesSelected: false
   , currentDriveIndex: null
+  , isStartButtonSelected: false
 };
 
 ka.data = {
@@ -20,7 +21,7 @@ ka.data = {
 
 
 function demandInitialChoice() {
-    // console.log('demand');
+    $('#boom-demand-choice').velocity('callout.flash');
 }
 
 
@@ -28,7 +29,15 @@ function handleKeypressUp() {
     if (ka.state.currentChoice === null) {
         demandInitialChoice();
     } else if (ka.state.currentChoice == 'left') {
-        if (ka.state.currentDriveIndex > 0) {
+        if (ka.state.isStartButtonSelected) {
+            ka.state.isStartButtonSelected = false;
+
+            $('#boom-button-selection-floater').css('opacity', 1);
+            $('#boom-button-start-floater').css({
+                opacity: 0
+              , backgroundColor: 'rgb(0, 0, 0)'
+            });
+        } else if (ka.state.currentDriveIndex > 0) {
             ka.state.currentDriveIndex -= 1;
 
             $('#boom-button-selection-floater').velocity({top: '-=50'}, {duration: 120});
@@ -46,8 +55,13 @@ function handleKeypressDown() {
 
             $('#boom-button-selection-floater').velocity({top: '+=50'}, {duration: 120});
         } else if (ka.state.currentDriveIndex + 1 == ka.data.drives.length && ka.state.hasDrivesSelected) {
+            ka.state.isStartButtonSelected = true;
+
             $('#boom-button-selection-floater').css('opacity', 0);
-            $('#boom-button-start-floater').css('opacity', 1);
+            $('#boom-button-start-floater').css({
+                opacity: 1
+              , backgroundColor: 'rgb(0, 116, 217)'
+            });
             $('#boom-choice-confirm .boom-button').css('display', 'inline-block');
         }
     }
@@ -57,9 +71,8 @@ function handleKeypressDown() {
 function handleKeypressLeft() {
     if (ka.state.currentChoice == 'left') return;
 
-    ka.state.currentDriveIndex = 0;
-
     if (ka.state.currentChoice === null) {
+        ka.state.currentDriveIndex = 0;
         ka.state.initialChoiceMade = true;
 
         $('#boom-choice-right, #boom-choice-splitter').velocity('fadeOut', {display: null, duration: 360});
@@ -67,22 +80,26 @@ function handleKeypressLeft() {
             $('#boom-button-selection-floater').css('opacity', 1);
         }});
     } else {
-        $('#boom-button-start-floater').velocity({opacity: 0, backgroundColorGreen: 0, backgroundColorBlue: 0}, {duration: 720});
+        if (!ka.state.isStartButtonSelected) {
+            $('#boom-button-start-floater').velocity({opacity: 0, backgroundColorGreen: 0, backgroundColorBlue: 0}, {duration: 720});
+        }
 
         $("#boom-split-choices").velocity({marginLeft: '+=420'}, {duration: 360, easing: 'ease-in'});
         $('#boom-choice-left, #boom-choice-splitter').velocity('fadeIn', {display: null, duration: 360});
         $('#boom-choice-right').velocity('fadeOut', {display: null, duration: 360, complete: function (elements) {
+            if (!ka.state.hasDrivesSelected) {
+                $('#boom-choice-confirm .boom-button').velocity('fadeOut', {display: 'inline-block', duration: 360});
+            }
+
             $('#boom-choice-splitter').velocity('fadeOut', {display: null, duration: 360});
             $("#boom-split-choices").velocity({marginLeft: '+=420'}, {duration: 360, easing: 'ease-out', complete: function () {
-                $('#boom-button-selection-floater').css('opacity', 1);
+                if (!ka.state.isStartButtonSelected) {
+                    $('#boom-button-selection-floater').css('opacity', 1);
+                }
+
+
             }});
         }});
-
-        /* if (ka.state.hasDrivesSelected) {
-            $('#boom-choice-confirm .boom-button').velocity('fadeIn', {display: 'inline-block', duration: 360});
-        } else {
-
-        } */
     }
 
     ka.state.currentChoice = 'left';
@@ -109,6 +126,10 @@ function handleKeypressRight() {
         $('#boom-choice-left').velocity('fadeOut', {display: null, duration: 360, complete: function (elements) {
             $('#boom-choice-splitter').velocity('fadeOut', {display: null, duration: 360});
             $("#boom-split-choices").velocity({marginLeft: '-=420'}, {duration: 360, easing: 'ease-out'});
+
+            if (!ka.state.hasDrivesSelected) {
+                $('#boom-choice-confirm .boom-button').velocity('fadeIn', {display: 'inline-block', duration: 360});
+            }
         }});
     }
 

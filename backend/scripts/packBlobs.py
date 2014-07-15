@@ -30,7 +30,7 @@ RESOURCES_CONFIG_JS = [
     'frontend/app/js/thirdparty/keypress.min.js',
 
     'frontend/app/js/thirdparty/velocity.min.js',
-    'frontend/app/js/thirdparty/velocity.ui.js',
+    'frontend/app/js/thirdparty/velocity.ui.min.js',
 
     'frontend/app/js/lib/l10n.js',
     'frontend/app/js/lib/hotkeys.js',

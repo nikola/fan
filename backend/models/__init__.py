@@ -318,12 +318,12 @@ class StreamManager(object):
     def getMovieAsJson(self, identifier):
         with self._session() as session:
             try:
-                movie = list(session.query(Movie, Localization, Image).filter(Movie.uuid == identifier, Movie.id == Localization.movieId, Movie.id == Image.movieId, Image.imageType == 'Poster', Localization.locale == 'en').distinct() \
-                    .values(Movie.uuid, Movie.titleOriginal, Localization.title, Movie.releaseYear, Movie.runtime, Localization.storyline, Movie.rating, Image.primaryColor))[0]
+                movie = list(session.query(Movie, Localization).filter(Movie.uuid == identifier, Movie.id == Localization.movieId, Localization.locale == 'en').distinct() \
+                    .values(Movie.uuid, Movie.titleOriginal, Localization.title, Movie.releaseYear, Movie.runtime, Localization.storyline, Movie.rating))[0]
             except NoResultFound:
                 return None
             else:
-                return json.dumps({
+                record = {
                     'uuid': movie[0],
                     'titleOriginal': movie[1],
                     'titleLocalized': movie[2],
@@ -331,8 +331,16 @@ class StreamManager(object):
                     'runtime': movie[4],
                     'storyline': movie[5],
                     'rating': movie[6],
-                    'primaryPosterColor': movie[7],
-                }, separators=(',',':'))
+                }
+                try:
+                    poster = session.query(Image).join(Movie).filter(Image.imageType == 'Poster', Image.movie.has(Movie.uuid == identifier)).first()
+                except NoResultFound:
+                    pass
+                else:
+                    if poster is not None and poster.primaryColor:
+                        record['primaryPosterColor'] = poster.primaryColor
+
+                return json.dumps(record, separators=(',',':'))
 
 
     def getStreamLocationByMovie(self, identifier):

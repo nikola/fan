@@ -10,7 +10,7 @@
 ka.lib.setPrimaryPosterColor = function () {
     var gridItem = $(this).closest('.boom-movie-grid-item'),
         uuid = gridItem.data('boom.uuid');
-    if (ka.data.cortex.byUuid[uuid].primaryPosterColor) {
+    if ('primaryPosterColor' in ka.data.cortex.byUuid[uuid]) {
         gridItem.find('.boom-movie-grid-info-overlay-title').css('backgroundColor', '#' + ka.data.cortex.byUuid[uuid].primaryPosterColor);
     } else {
         var pixelArray = ka.lib.getPixelsFromImage($(this));

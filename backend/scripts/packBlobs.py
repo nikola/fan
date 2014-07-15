@@ -35,6 +35,7 @@ RESOURCES_CONFIG_JS = [
     'frontend/app/js/lib/l10n.js',
     'frontend/app/js/lib/hotkeys.js',
     'frontend/app/js/lib/lang.js',
+    'frontend/app/js/lib/sockets.js',
 
     'frontend/app/js/configure.js',
 ]

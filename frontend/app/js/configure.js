@@ -160,7 +160,7 @@ function handleKeypressSelect() {
 
 
 function handleKeypressQuit() {
-
+    ka.state.socketDispatcher.push('loopback:command', 'shutdown');
 }
 
 
@@ -187,7 +187,12 @@ document.oncontextmenu = document.onmousedown = function (event) { event.prevent
 
 
 $(document).ready(function () {
+    var url = (location.protocol == 'https:' ? 'wss' : 'ws') + '://' + location.host + '/';
+    ka.state.socketDispatcher = new ka.lib.WebSocketDispatcher(url);
 
+    ka.state.socketDispatcher.bind('receive:command:token', function (command) {
+        eval(command);
+    });
 
     /* ... */
     registerHotkeys();

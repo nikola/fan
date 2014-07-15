@@ -8,9 +8,11 @@ import os.path
 import pylzma
 import gzip
 import datetime
+import urllib
 from cStringIO import StringIO
 from hashlib import md5 as MD5
 
+import simplejson
 import requests
 from pants.web.application import Module
 from pants.http.utils import HTTPHeaders
@@ -23,6 +25,7 @@ from identifier import getImageConfiguration
 from downloader.images import downloadBackdrop
 from utils.rfc import getRfc1123Timestamp
 from utils.fs import getDrives
+from utils.config import getCurrentUserConfig
 from identifier.fixture import TOP_250
 
 IMG_MIME_TYPES = {
@@ -221,11 +224,10 @@ def updatePosterColors(request, identifier, color):
     module.streamManager.updatePosterColorByMovieUuid(identifier, color)
     return '', 200
 
-"""
-# @module.route('<path:pathname>', methods=('GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'TRACE', 'OPTIONS', 'CONNECT'))
-@module.route("<regex('([\s\S]+)'):pathname>", methods=('GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'TRACE', 'OPTIONS', 'CONNECT'))
-def serveAny(request, pathname):
-    print 'catch-all URL', pathname
-    request.finish()
-    request.connection.close()
-"""
+
+@module.route('/update/configuration', methods=('POST',), headers=SERVER_HEADERS, content_type='text/plain')
+def updateConfiguration(request):
+    config = simplejson.loads(urllib.unquote(request.body))
+    getCurrentUserConfig(config)
+
+    return '/load.asp', 200

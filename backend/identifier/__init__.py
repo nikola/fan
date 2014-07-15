@@ -45,31 +45,26 @@ def getImageConfiguration():
     return configuration.get('images').get('secure_base_url'), closestWidth
 
 
-def getMoviePathnames(top):
-    # If the root is a mapped network share, check first if it's mounted.
-    # if any([True for drive in os.popen("wmic logicaldisk get Name, DriveType").readlines() if
-    #         re.compile(r"^4\s+%s:" % top[0]).search(drive) is not None]) and not os.access(top, os.R_OK):
-    #     raise StopIteration
+def getMoviePathnames(sources):
+    for source in sources:
+        for root, dirs, files in os.walk(unicode(source.get('pathname'))):
+            dirname = RE_DIR_DRIVE.sub('', root)
 
-    # Pass root as a Unicode string.
-    for root, dirs, files in os.walk(unicode(top)):
-        dirname = RE_DIR_DRIVE.sub('', root)
+            # Skip directories which contain no movie files.
+            if any([True for name in files if name.endswith(('.mkv', '.MKV'))]) and RE_SAMPLE_DIR.search(dirname) is None:
+                # Ignore parent directory for the time being.
+                if dirname.find('\\') != -1:
+                    dirname = RE_DIR_TAIL.search(dirname).group()
 
-        # Skip directories which contain no movie files.
-        if any([True for name in files if name.endswith(('.mkv', '.MKV'))]) and RE_SAMPLE_DIR.search(dirname) is None:
-            # Ignore parent directory for the time being.
-            if dirname.find('\\') != -1:
-                dirname = RE_DIR_TAIL.search(dirname).group()
+                # Remove leading underscore.
+                dirname = RE_UNDERSCORE_LEAD.sub('', dirname).strip()
 
-            # Remove leading underscore.
-            dirname = RE_UNDERSCORE_LEAD.sub('', dirname).strip()
+                # Only files with actual movie content.
+                if dirname.lower() != 'extras':
+                    streams = getOnlyStreams(root, files)
 
-            # Only files with actual movie content.
-            if dirname.lower() != 'extras':
-                streams = getOnlyStreams(root, files)
-
-                if len(streams):
-                    yield (root, dirname, streams)
+                    if len(streams):
+                        yield (root, dirname, streams)
 
 
 def getOnlyStreams(root, files):

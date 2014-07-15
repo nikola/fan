@@ -89,8 +89,7 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
             command = queue.get_nowait()
 
             if command == 'orchestrator:start:scan':
-
-                streamGenerator = getMoviePathnames(getLongPathname(r'\\Diskstation\Movies'))
+                streamGenerator = getMoviePathnames(userConfig.get('sources', []))
 
                 queue.task_done()
             elif command == 'orchestrator:watch':

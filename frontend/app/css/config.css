@@ -32,6 +32,10 @@
     margin-left: 160px;
     }
 
+#boom-demand-choice {
+
+    }
+
 #boom-split-choices {
     display: inline-block;
     width: 2560px; height: 512px;
@@ -136,4 +140,3 @@
     background-color: transparent;
     width: 614px;
     }
-

@@ -19,8 +19,6 @@ from settings.presenter import CEF_REAL_AGENT
 from . import logger
 
 
-
-
 def downloadBackdrop(streamManager, imageBaseUrl, movieUuid, discard=False):
     isBackdropDownloading = streamManager.isBackdropDownloading(movieUuid)
     if isBackdropDownloading is False:

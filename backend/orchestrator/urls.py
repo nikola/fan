@@ -35,6 +35,30 @@ IMG_MIME_TYPES = {
 
 module = Module()
 
+
+def _getImageResponse(request, image):
+    if image is None:
+        request.send_status(404)
+        request.finish()
+        request.connection.close()
+    else:
+        modificationTimestamp = image.modified
+        cachedTimestamp = parseRfc1123Timestamp(request.headers.get('If-Modified-Since', 'Tue, 15 Jul 2014 01:23:45 GMT'))
+
+        headers = SERVER_HEADERS.copy()
+        headers.update({
+            'Last-modified': getRfc1123Timestamp(modificationTimestamp),
+            'Cache-Control': 'max-age=0, must-revalidate',
+        })
+
+        if cachedTimestamp < modificationTimestamp:
+            return image.blob, 200, HTTPHeaders(data=headers)
+        else:
+            request.send_status(304)
+            request.finish()
+            request.connection.close()
+
+
 @module.route('/<path:pathname>', methods=('PATCH',), headers=SERVER_HEADERS, content_type='text/plain')
 def presenterReady(request, pathname):
     if DEBUG or pathname == module.bootToken:
@@ -142,22 +166,9 @@ def serveMoviePoster(request, movieUuid, width):
         blob = requests.get(urlPoster, headers={'User-agent': CEF_REAL_AGENT}).content
         image = module.streamManager.saveImageData(movieUuid, width, blob, False, 'Poster', 'JPEG', '%soriginal%s' % (module.imageBaseUrl, pathPoster))
 
-    if image is not None:
-        modificationTimestamp = image.modified
-        cachedTimestamp = parseRfc1123Timestamp(request.headers.get('If-Modified-Since', 'Tue, 15 Jul 2014 01:23:45 GMT'))
-        statusCode = 200 if cachedTimestamp < modificationTimestamp else 304
-
-        headers = SERVER_HEADERS.copy()
-        headers.update({
-            'Last-modified': getRfc1123Timestamp(modificationTimestamp),
-            'Cache-Control': 'max-age=0, must-revalidate',
-        })
-
-        return image.blob, statusCode, HTTPHeaders(data=headers)
-    else:
-        request.send_status(404)
-        request.finish()
-        request.connection.close()
+    response = _getImageResponse(request, image)
+    if response is not None:
+        return response
 
 
 @module.route('/movie/backdrop/<string(length=32):identifier>.jpg', methods=('GET',), content_type='image/jpeg')
@@ -166,17 +177,9 @@ def serveMoviebackdrop(request, movieUuid):
     if image is None:
         image = downloadBackdrop(module.streamManager, module.imageBaseUrl, movieUuid)
 
-    if image is not None:
-        # headers = SERVER_HEADERS
-        # headers.update({'Last-modified': getRfc1123Timestamp(image.modified)})
-
-        return image.blob, 200, HTTPHeaders(data=SERVER_HEADERS)
-    else:
-        request.send_status(404)
-        request.finish()
-        request.connection.close()
-
-    # return blob, 200
+    response = _getImageResponse(request, image)
+    if response is not None:
+        return response
 
 
 @module.route('/<string:identifier>.ttf', methods=('GET',), headers=SERVER_HEADERS, content_type='application/x-font-ttf')

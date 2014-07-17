@@ -23,7 +23,7 @@ from settings.net import SERVER_HEADERS
 from settings.presenter import CEF_REAL_AGENT
 from identifier import getImageConfiguration
 from downloader.images import downloadBackdrop
-from utils.rfc import getRfc1123Timestamp
+from utils.rfc import getRfc1123Timestamp, parseRfc1123Timestamp
 from utils.fs import getDrives
 from utils.config import getCurrentUserConfig
 from identifier.fixture import TOP_250
@@ -143,13 +143,17 @@ def serveMoviePoster(request, movieUuid, width):
         image = module.streamManager.saveImageData(movieUuid, width, blob, False, 'Poster', 'JPEG', '%soriginal%s' % (module.imageBaseUrl, pathPoster))
 
     if image is not None:
+        modificationTimestamp = image.modified
+        cachedTimestamp = parseRfc1123Timestamp(request.headers.get('If-Modified-Since', 'Tue, 15 Jul 2014 01:23:45 GMT'))
+        statusCode = 200 if cachedTimestamp < modificationTimestamp else 304
+
         headers = SERVER_HEADERS.copy()
         headers.update({
-            'Last-modified': getRfc1123Timestamp(image.modified),
+            'Last-modified': getRfc1123Timestamp(modificationTimestamp),
             'Cache-Control': 'max-age=0, must-revalidate',
         })
 
-        return image.blob, 200, HTTPHeaders(data=headers)
+        return image.blob, statusCode, HTTPHeaders(data=headers)
     else:
         request.send_status(404)
         request.finish()
@@ -158,7 +162,7 @@ def serveMoviePoster(request, movieUuid, width):
 
 @module.route('/movie/backdrop/<string(length=32):identifier>.jpg', methods=('GET',), content_type='image/jpeg')
 def serveMoviebackdrop(request, movieUuid):
-    image = module.streamManager.getImageByUuid(movieUuid, 'Backdrop')
+    image = module.streamManager.getImageByUuid(movieUuid, 'Backdrop') # BUGGY ?????!
     if image is None:
         image = downloadBackdrop(module.streamManager, module.imageBaseUrl, movieUuid)
 

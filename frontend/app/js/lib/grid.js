@@ -11,6 +11,18 @@ ka.lib.setPrimaryPosterColor = function () {
     var gridItem = $(this).closest('.boom-movie-grid-item'),
         uuid = gridItem.data('boom.uuid');
     if ('primaryPosterColor' in ka.data.cortex.byUuid[uuid]) {
+        /*  Weird bug:
+         *  Trigger full render of grid by painting every single poster on canvas.
+         */
+        var image = $(this).get(0),
+            context = ka.state.canvasContext;
+
+        context.canvas.width = image.width;
+        context.canvas.height = image.height;
+        context.drawImage(image, 0, 0, image.width, image.height);
+
+        /* TODO: call callback here to remove loading spinner */
+
         gridItem.find('.boom-movie-grid-info-overlay-title').css('backgroundColor', '#' + ka.data.cortex.byUuid[uuid].primaryPosterColor);
     } else {
         var pixelArray = ka.lib.getPixelsFromImage($(this));
@@ -228,7 +240,7 @@ ka.lib.renderMovieGridCell = function (movie, operation, context) {
 
 
 ka.lib.scrollGrid = function () {
-    $('#boom-movie-grid-container').velocity({translateY: '-' + (ka.state.gridPage * 1080) + 'px'}, {duration: 720, easing: 'ease-out'});
+    $('#boom-movie-grid-container').velocity({translateZ: 0, translateY: '-' + (ka.state.gridPage * 1080) + 'px'}, {duration: 720, easing: 'ease-out'});
 };
 
 
@@ -377,7 +389,7 @@ ka.lib.selectFocus = function () {
     ka.lib.updateDetailPage();
     ka.lib.updateDetailButtonSelection();
 
-    $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({left: '-=1920'}, 720);
+    $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({translateZ: 0, left: '-=1920'}, 720);
 };
 
 

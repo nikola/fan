@@ -49,7 +49,7 @@ def _startDownloader(queue):
                 movieUuid = downloaderStreamManager.getMissingBackdropMovieUuid()
                 if movieUuid is not None:
                     if imageBaseUrl is not None:
-                        logger.info('Must downloaded backdrop for "%s".' % downloaderStreamManager.getMovieTitleByUuid(movieUuid))
+                        logger.info('Must download backdrop for "%s".' % downloaderStreamManager.getMovieTitleByUuid(movieUuid))
                         downloadBackdrop(downloaderStreamManager, imageBaseUrl, movieUuid, True)
                 else:
                     image = downloaderStreamManager.getUnscaledPosterImage()

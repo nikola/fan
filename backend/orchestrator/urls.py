@@ -28,6 +28,8 @@ from utils.fs import getDrives
 from utils.config import getCurrentUserConfig
 from identifier.fixture import TOP_250
 
+from . import logger
+
 IMG_MIME_TYPES = {
     'JPEG': 'image/jpeg',
     'WebP': 'application/octet-stream',
@@ -175,6 +177,7 @@ def serveMoviePoster(request, movieUuid, width):
 def serveMoviebackdrop(request, movieUuid):
     image = module.streamManager.getImageByUuid(movieUuid, 'Backdrop') # BUGGY ?????!
     if image is None:
+        logger.info('Must download backdrop for "%s".' % module.streamManager.getMovieTitleByUuid(movieUuid))
         image = downloadBackdrop(module.streamManager, module.imageBaseUrl, movieUuid)
 
     response = _getImageResponse(request, image)

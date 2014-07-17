@@ -133,9 +133,9 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                 else:
                     basedata = getBaseDataFromDirName(container)
 
-                    if engine is not None: engine.poll(poll_timeout=0.015)
-
                     for filename in files:
+                        if engine is not None: engine.poll(poll_timeout=0.015)
+
                         streamLocation = os.path.join(path, filename)
 
                         if not streamManager.isStreamKnown(streamLocation):

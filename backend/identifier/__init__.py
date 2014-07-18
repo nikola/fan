@@ -7,10 +7,13 @@ __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 import os
 import re
 import datetime
+import logging
 from simplejson import JSONDecodeError
 
+from settings import LOG_CONFIG
 from settings.collector import THEMOVIEDB_API_KEY
 from utils.net import makeThrottledGetRequest, makeUnthrottledGetRequest
+from utils.fs import getLogFileHandler
 
 
 STREAM_SIZE_THRESHOLD = 1024 * 1024 * 10 # 10 MiB
@@ -25,11 +28,18 @@ RE_SEP_CHARS = re.compile(r'[\(\[,\-]')
 RE_ROMAN_LEADS = re.compile(r'^X?(IX|IV|V?I{0,3}) ')
 RE_UNDERSCORE_LEAD = re.compile(r'^_ +')
 RE_DOT_SEPARATOR = re.compile(r'\.(?!0)')
+RE_UNDERSCORE_SEPARATOR = re.compile(r'_')
 RE_MULTI_ANGLE = re.compile(r'\d[\- ]*in[\- ]*\d')
-RE_EDITION_IND = re.compile(r'(?<= )(special edition|hybrid|(2|3)d source|open matte|tv aspect ratio)(?= |$)', re.I)
+RE_EDITION_IND = re.compile(r'(?<= )(special edition|remastered|european version|hybrid|(2|3)d source|3d half sbs|half sbs|3d|open matte|tv aspect ratio)(?= |$)', re.I)
+RE_SOURCE_IND = re.compile(r'(?<= )(blu ?ray|hd dvd)(?= |$)', re.I)
 RE_MULTI_SPACE = re.compile('  +')
 RE_DIR_DRIVE = re.compile('"[a-z]\:\\\\', re.I)
 RE_DIR_TAIL = re.compile(r'(?<=\\)[^\\]*$', re.I)
+
+
+logging.basicConfig(**LOG_CONFIG)
+logger = logging.getLogger('identifier')
+logger.addHandler(getLogFileHandler('identifier'))
 
 
 def getImageConfiguration():
@@ -81,8 +91,8 @@ def getOnlyStreams(root, files):
     return streams
 
 
-def getBaseDataFromDirName(pathname):
-    releaseYear = 2014
+def getBaseDataFromPathname(pathname):
+    releaseYear = None # 2014
 
     rawTitle = pathname
 
@@ -101,23 +111,32 @@ def getBaseDataFromDirName(pathname):
             extractedTitle = rawTitle
 
     # Convert dots to spaces (except when followed by a zero).
-    extractedTitle = RE_DOT_SEPARATOR.sub(' ', extractedTitle)
+    extractedTitle = RE_DOT_SEPARATOR.sub(' ', extractedTitle).strip()
+
+    # Convert underscores to spaces.
+    extractedTitle = RE_UNDERSCORE_SEPARATOR.sub(' ', extractedTitle).strip()
+
+    # Collapse multiple spaces.
+    extractedTitle = RE_MULTI_SPACE.sub(' ', extractedTitle).strip()
 
     # Remove superfluous multi-angle indicators.
     extractedTitle = RE_MULTI_ANGLE.sub('', extractedTitle).strip()
+
+    # Remove superfluous source indicators.
+    extractedTitle = RE_SOURCE_IND.sub('', extractedTitle).strip()
 
     # Remove superfluous edition indicators.
     extractedTitle = RE_EDITION_IND.sub(' ', extractedTitle).strip()
 
     # Collapse multiple spaces.
-    extractedTitle = RE_MULTI_SPACE.sub(' ', extractedTitle)
+    extractedTitle = RE_MULTI_SPACE.sub(' ', extractedTitle).strip()
 
     # Remove cut indicator.
-    extractedTitle = RE_CUT_INDICATOR_1.sub('', extractedTitle)
-    extractedTitle = re.sub(r'(?<=%s[ \.])(extended|unrated)(?=[ \.])' % releaseYear, '', extractedTitle, 0, re.I)
+    extractedTitle = RE_CUT_INDICATOR_1.sub('', extractedTitle).strip()
+    extractedTitle = re.sub(r'(?<=%s[ \.])(extended|unrated)(?=[ \.])' % releaseYear, '', extractedTitle, 0, re.I).strip()
 
     # Remove leading Roman numerals.
-    extractedTitle = RE_ROMAN_LEADS.sub('', extractedTitle)
+    extractedTitle = RE_ROMAN_LEADS.sub('', extractedTitle).strip()
 
     # Remove extraneous whitespace.
     extractedTitle = RE_MULTI_SPACE.sub(' ', extractedTitle).strip()
@@ -154,34 +173,97 @@ def getEditVersionFromFilename(filename, year):
     return editVersion
 
 
-def identifyMovieByTitleYear(language, title, year):
+def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary, yearSecondary):
+    if yearPrimary is not None and yearSecondary is None:
+        searchTitlePrimary, searchTitleSecondary = titlePrimary, titleSecondary
+        searchYearPrimary, searchYearSecondary = yearPrimary, yearSecondary
+    elif yearPrimary is None and yearSecondary is not None:
+        searchTitlePrimary, searchTitleSecondary = titleSecondary, titlePrimary
+        searchYearPrimary, searchYearSecondary = yearSecondary, yearPrimary
+    elif yearSecondary is not None:
+        searchTitlePrimary, searchTitleSecondary = titleSecondary, titlePrimary
+        searchYearPrimary, searchYearSecondary = yearSecondary, yearPrimary
+    elif yearPrimary is not None:
+        searchTitlePrimary, searchTitleSecondary = titlePrimary, titleSecondary
+        searchYearPrimary, searchYearSecondary = yearPrimary, yearSecondary
+    elif len(titlePrimary) > len(titleSecondary):
+        searchTitlePrimary, searchTitleSecondary = titlePrimary, titleSecondary
+        searchYearPrimary, searchYearSecondary = yearPrimary, yearSecondary
+    else:
+        searchTitlePrimary, searchTitleSecondary = titleSecondary, titlePrimary
+        searchYearPrimary, searchYearSecondary = yearSecondary, yearPrimary
+
     record = None
+    identified = False
 
     try:
+        logger.info('Trying to identify "%s (%d)" at themoviedb.org ...' % (searchTitlePrimary, searchYearPrimary))
+
         url = 'https://api.themoviedb.org/3/search/movie'
         params = {
             'api_key': THEMOVIEDB_API_KEY,
-            'query': title.encode('utf-8'),
+            'query': searchTitlePrimary.encode('utf-8'),
             'page': 1,
             'language': language,
             'include_adult': False,
-            'year': year,
         }
+        if searchYearPrimary is not None:
+            params['year'] = searchYearPrimary
+
         response = makeThrottledGetRequest(url, params).json()
 
         if response['total_results'] == 0:
-            print 'movie %s not found at tmdb, retrying without year' % title
-            del params['year']
+            logger.info('Movie with title "%s" not found at themoviedb.org, retrying with title "%s" ...' % (searchTitlePrimary, searchTitleSecondary))
+            params['query'] = searchTitleSecondary
+            if searchYearSecondary is not None:
+                params['year'] = searchYearSecondary
             response = makeThrottledGetRequest(url, params).json()
+        elif not identified:
+            logger.info('Movie successfully identified using query: %s' % params['query'])
+            identified = True
 
         if response['total_results'] == 0:
-            print 'movie %s still not found at tmdb, retrying with ngram option' % title
+            logger.info('Movie with title "%s" still not found at themoviedb.org, retrying with title "%s" and search type "ngram" ...' % (searchTitleSecondary, searchTitlePrimary))
+            params['query'] = searchTitlePrimary
             params['search_type'] = 'ngram'
+            if searchYearPrimary is not None:
+                params['year'] = searchYearPrimary
             response = makeThrottledGetRequest(url, params).json()
+        elif not identified:
+            logger.info('Movie successfully identified using query: %s' % params['query'])
+            identified = True
+
+        if response['total_results'] == 0:
+            logger.info('Movie with title "%s" still not found at themoviedb.org, retrying with title "%s" and search type "ngram" ...' % (searchTitlePrimary, searchTitleSecondary))
+            params['query'] = searchTitleSecondary
+            if searchYearSecondary is not None:
+                params['year'] = searchYearSecondary
+            response = makeThrottledGetRequest(url, params).json()
+        elif not identified:
+            logger.info('Movie successfully identified using query: %s' % params['query'])
+            identified = True
+
+        if response['total_results'] == 0:
+            logger.info('Movie with title "%s" still not found at themoviedb.org, retrying with title "%s", omitting year ...' % (searchTitleSecondary, searchTitlePrimary))
+            params['query'] = searchTitlePrimary
+            if params.has_key('year'):
+                del params['year']
+            del params['search_type']
+            response = makeThrottledGetRequest(url, params).json()
+        elif not identified:
+            logger.info('Movie successfully identified using query: %s' % params['query'])
+            identified = True
+
+        if response['total_results'] == 0:
+            logger.info('Movie with title "%s" still not found at themoviedb.org, retrying with title "%s", omitting year ...' % (searchTitlePrimary, searchTitleSecondary))
+            params['query'] = searchTitleSecondary
+            response = makeThrottledGetRequest(url, params).json()
+        elif not identified:
+            logger.info('Movie successfully identified using query: %s' % params['query'])
+            identified = True
 
         if response['total_results'] > 0:
             movieId = response['results'][0]['id']
-            print 'movie %s found at tmdb, id = %d' % (title, movieId)
 
             url = 'https://api.themoviedb.org/3/movie/%d' % movieId
             params = {
@@ -190,9 +272,11 @@ def identifyMovieByTitleYear(language, title, year):
             }
             response = makeThrottledGetRequest(url, params).json()
 
+            logger.info('Movie identified at themoviedb.org as "%s" with ID: %d.' % (response['original_title'], movieId))
+
             overview = response.get('overview', None)
             if overview is None:
-                print 'overview not found in current locale for %s, falling back to English' % title
+                logger.info('Movie has no overview in locale "%s", falling back to English ...' % language)
                 params['language'] = 'en'
                 response = makeThrottledGetRequest(url, params).json()
 
@@ -228,6 +312,6 @@ def identifyMovieByTitleYear(language, title, year):
                 storyline     = overview,
             )
     except JSONDecodeError:
-        print 'error when requesting: %s (%d)' % (title, year)
+        logger.error('Error while querying themoviedb.org for "%s" or "%s".' % (titlePrimary, titleSecondary))
 
     return record

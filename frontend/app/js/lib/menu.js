@@ -57,3 +57,14 @@ ka.lib.executeConfigSelection = function () {
 ka.lib.getConfiguredKeyByCommand = function (command) {
     return ka.config.hotkeys[command];
 };
+
+
+ka.lib.closeMenu = function () {
+    ka.state.currentPageMode = 'grid';
+
+    $('#boom-movie-grid-container, #boom-movie-detail').velocity({translateZ: 0, left: '-=780', opacity: '+=0.5'}, 360);
+    $('#boom-poster-focus').velocity({translateZ: 0, left: '-=780', opacity: '+=1'}, 360);
+    $('#boom-movie-config').velocity({translateZ: 0, left: '-=780'}, {duration: 360});
+
+    ka.lib.undesaturateVisiblePosters();
+};

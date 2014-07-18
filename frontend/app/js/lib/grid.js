@@ -145,9 +145,9 @@ ka.lib.updateMovieGrid = function () {
 
             var keyLabel = keyContainer.find('.boom-movie-grid-key-label');
             if (keyLabel.size()) {
-                keyLabel.text(currentKey);
+                keyLabel.text(currentKey).attr('id', currentKey);
             } else{
-                $('<span class="boom-movie-grid-key-label">' + currentKey + '</span>').appendTo(keyContainer);
+                $('<span class="boom-movie-grid-key-label" id="boom-movie-grid-key-' + currentKey + '">' + currentKey + '</span>').appendTo(keyContainer);
             }
 
             lastKey = currentKey;

@@ -45,16 +45,20 @@
     }
 
 .boom-movie-grid-key-label {
+    color: rgb(160, 160, 160);
+    background-color: rgb(0, 0, 0);
+    border-color: rgb(160, 160, 160);
+    border-width: 2px;
+    border-style: solid;
+
     display: inline-block;
     margin-top: 30px;
     min-width: 44px;
     font-size: 32px;
     text-align: center;
-    color: #aaa;
-    border: 2px solid #aaa;
     height: 48px;
     line-height: 46px;
-    border-radius: 8px; /* 0 0 8px 8px; */
+    border-radius: 8px;
     padding: 0 8px;
     }
 

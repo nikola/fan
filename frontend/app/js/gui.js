@@ -116,6 +116,10 @@ function registerHotkeys() {
       , {keys: _hotkeys['back'],            on_keydown: ka.lib.handleKeypressBack}
     ]);
 
+    listener.sequence_combo('up up down down left right left right b a', function() {
+        /* TODO */
+    }, true);
+
     document.body.addEventListener('keypress', ka.lib.handleKeypressLetter);
 }
 

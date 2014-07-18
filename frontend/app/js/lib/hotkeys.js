@@ -81,6 +81,8 @@ ka.lib.handleKeypressLeft = function () {
 ka.lib.handleKeypressRight = function () {
     if (ka.state.currentPageMode == 'grid') {
         ka.lib.moveFocusRight();
+    } else if (ka.state.currentPageMode == 'config') {
+        ka.lib.closeMenu();
     }
 };
 
@@ -107,15 +109,7 @@ ka.lib.handleKeypressSelect = function () {
 
 ka.lib.handleKeypressBack = function () {
     if (ka.state.currentPageMode == 'config') {
-        ka.state.currentPageMode = 'grid';
-
-        $('#boom-movie-grid-container, #boom-movie-detail').velocity({translateZ: 0, left: '-=780', opacity: '+=0.5'}, 360);
-        $('#boom-poster-focus').velocity({translateZ: 0, left: '-=780', opacity: '+=1'}, 360);
-        $('#boom-movie-config').velocity({translateZ: 0, left: '-=780'}, {duration: 360}); /*, complete: function () {
-            ka.state.currentPageMode = 'grid';
-        }}); */
-
-        ka.lib.undesaturateVisiblePosters();
+        ka.lib.closeMenu();
     } else if (ka.state.currentPageMode == 'detail') {
         ka.state.currentPageMode = 'grid';
 
@@ -138,7 +132,26 @@ ka.lib.handleKeypressBack = function () {
 
 ka.lib.handleKeypressLetter = function (evt) {
     var character = String.fromCharCode(evt.keyCode);
-    if (/^[a-z]$/.test(character)) {
+
+    if (/^[a-z]$/i.test(character)) {
+        var key = character.toUpperCase();
+        if (key in ka.state.gridLookupLinesByKey) {
+            var line = ka.state.gridLookupLinesByKey[key][0] % ka.settings.gridMaxRows;
+            ka.state.gridPage = Math.floor(ka.state.gridLookupLinesByKey[key][0] / ka.settings.gridMaxRows);
+            ka.state.gridFocusX = 0;
+            ka.state.gridFocusY = line;
+
+            $('#boom-movie-grid-container').velocity({translateZ: 0, translateY: '-' + (ka.state.gridPage * 1080) + 'px'}, 0);
+            $('#boom-poster-focus').css({top: (16 + 360 * line) + 'px', left: '116px'});
+            $('#boom-movie-grid-key-' + key).velocity({
+                colorRed: 0, colorGreen: 0, colorBlue: 0
+              , backgroundColorRed: 255, backgroundColorGreen: 255, backgroundColorBlue: 255
+              , borderColorRed: 255, borderColorGreen: 255, borderColorBlue: 255
+            }, {duration: 360}).velocity('reverse');
+        } else {
+            $('#boom-movie-grid-container').velocity('callout.shake');
+        }
+    } else if (/^[0-9]$/.test(character)) {
 
     }
 };

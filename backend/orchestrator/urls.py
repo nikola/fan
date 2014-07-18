@@ -149,7 +149,7 @@ def serveGui(request):
         timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
 
         if DEBUG and request.headers.get('User-Agent', None) != module.userAgent:
-            html = html.replace('</script>', '; var ᴠ = "%s"; ka.config = {language: "en", sources: []};</script>' % module.bootToken)
+            html = html.replace('</script>', '; var ᴠ = "%s"; ka.config = %s;</script>' % (module.bootToken, simplejson.dumps(module.userConfig)))
         # END IF DEBUG
 
         stream = StringIO()

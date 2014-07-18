@@ -259,12 +259,13 @@ class StreamManager(object):
             try:
                 image = session.query(Image).filter(Image.movie.has(Movie.uuid == identifier), Image.imageType == imageType, Image.width == width).one()
             except NoResultFound:
-                return None
+                return None, None
             else:
                 if image is not None:
-                    return image
+                    # return image
+                    return image.modified, image.blob
                 else:
-                    return None
+                    return None, None
 
 
     def saveImageData(self, identifier, width, blob, isScaled=False, imageType='Poster', imageFormat='JPEG', urlOriginal=None):
@@ -294,7 +295,8 @@ class StreamManager(object):
                 session.add(image)
                 session.commit()
 
-                return image # TODO: correct return type ?
+                # return image # TODO: correct return type ?
+                return image.modified, image.blob
 
 
     def getAllMoviesAsJson(self):

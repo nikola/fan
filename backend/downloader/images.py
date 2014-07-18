@@ -20,19 +20,23 @@ from . import logger
 
 
 def downloadBackdrop(streamManager, imageBaseUrl, movieUuid, discard=False):
+    imageModified, imageBlob = None, None
+
     isBackdropDownloading = streamManager.isBackdropDownloading(movieUuid)
     if isBackdropDownloading is False:
         streamManager.startBackdropDownload(movieUuid)
 
         url = '%soriginal%s' % (imageBaseUrl, streamManager.getMovieByUuid(movieUuid).urlBackdrop)
         blob = requests.get(url, headers={'User-agent': CEF_REAL_AGENT}).content
-        image = streamManager.saveImageData(movieUuid, 1920, blob, False, 'Backdrop', 'JPEG', url)
+        # image = streamManager.saveImageData(movieUuid, 1920, blob, False, 'Backdrop', 'JPEG', url)
+        imageModified, imageBlob = streamManager.saveImageData(movieUuid, 1920, blob, False, 'Backdrop', 'JPEG', url)
 
         streamManager.endBackdropDownload(movieUuid)
     elif isBackdropDownloading is True:
         while True:
-            image = streamManager.getImageByUuid(movieUuid, 'Backdrop')
-            if image is None:
+            # image = streamManager.getImageByUuid(movieUuid, 'Backdrop')
+            imageModified, imageBlob = streamManager.getImageByUuid(movieUuid, 'Backdrop')
+            if imageBlob is None:
                 time.sleep(0.5)
             else:
                 # blob = image.blob
@@ -42,7 +46,8 @@ def downloadBackdrop(streamManager, imageBaseUrl, movieUuid, discard=False):
         image = None
 
     if not discard:
-        return image
+        # return image
+        return imageModified, imageBlob
 
 
 def downscalePoster(streamManager, image):

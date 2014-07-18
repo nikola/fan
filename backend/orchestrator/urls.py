@@ -38,23 +38,31 @@ IMG_MIME_TYPES = {
 module = Module()
 
 
-def _getImageResponse(request, image):
-    if image is None:
+def _getImageResponse(request, imageModified, imageBlob):
+    # if image is None:
+    if imageBlob is None:
         request.send_status(404)
         request.finish()
         request.connection.close()
     else:
-        modificationTimestamp = image.modified
-        cachedTimestamp = parseRfc1123Timestamp(request.headers.get('If-Modified-Since', 'Tue, 15 Jul 2014 01:23:45 GMT'))
+        # try:
+        #     # modificationTimestamp = image.modified
+        # except: # DetachedInstanceError
+        #     modificationTimestamp = parseRfc1123Timestamp('Sun, 13 Jul 2014 01:23:45 GMT')
+
+        cachedTimestamp = parseRfc1123Timestamp(request.headers.get('If-Modified-Since', 'Sun, 13 Jul 2014 01:23:45 GMT'))
 
         headers = SERVER_HEADERS.copy()
         headers.update({
-            'Last-modified': getRfc1123Timestamp(modificationTimestamp),
+            # 'Last-modified': getRfc1123Timestamp(modificationTimestamp),
+            'Last-modified': getRfc1123Timestamp(imageModified),
             'Cache-Control': 'max-age=0, must-revalidate',
         })
 
-        if cachedTimestamp < modificationTimestamp:
-            return image.blob, 200, HTTPHeaders(data=headers)
+        # if cachedTimestamp < modificationTimestamp:
+        if cachedTimestamp < imageModified:
+            # return image.blob, 200, HTTPHeaders(data=headers)
+            return imageBlob, 200, HTTPHeaders(data=headers)
         else:
             request.send_status(304)
             request.finish()
@@ -160,27 +168,32 @@ def serveGui(request):
 
 @module.route('/movie/poster/<string(length=32):identifier>-<int:width>.image', methods=('GET',), content_type='application/octet-stream')
 def serveMoviePoster(request, movieUuid, width):
-    image = module.streamManager.getImageByUuid(movieUuid, 'Poster', width)
+    # image = module.streamManager.getImageByUuid(movieUuid, 'Poster', width)
+    imageModified, imageBlob = module.streamManager.getImageByUuid(movieUuid, 'Poster', width)
 
-    if image is None:
+    # if image is None:
+    if imageBlob is None:
         pathPoster = module.streamManager.getMovieByUuid(movieUuid).urlPoster
         urlPoster = '%s%s%s' % (module.imageBaseUrl, module.imageClosestSize, pathPoster)
         blob = requests.get(urlPoster, headers={'User-agent': CEF_REAL_AGENT}).content
-        image = module.streamManager.saveImageData(movieUuid, width, blob, False, 'Poster', 'JPEG', '%soriginal%s' % (module.imageBaseUrl, pathPoster))
+        # image = module.streamManager.saveImageData(movieUuid, width, blob, False, 'Poster', 'JPEG', '%soriginal%s' % (module.imageBaseUrl, pathPoster))
+        imageModified, imageBlob = module.streamManager.saveImageData(movieUuid, width, blob, False, 'Poster', 'JPEG', '%soriginal%s' % (module.imageBaseUrl, pathPoster))
 
-    response = _getImageResponse(request, image)
+    response = _getImageResponse(request, imageModified, imageBlob)
     if response is not None:
         return response
 
 
 @module.route('/movie/backdrop/<string(length=32):identifier>.jpg', methods=('GET',), content_type='image/jpeg')
 def serveMoviebackdrop(request, movieUuid):
-    image = module.streamManager.getImageByUuid(movieUuid, 'Backdrop') # BUGGY ?????!
-    if image is None:
+    # image = module.streamManager.getImageByUuid(movieUuid, 'Backdrop') # BUGGY ?????!
+    imageModified, imageBlob = module.streamManager.getImageByUuid(movieUuid, 'Backdrop') # BUGGY ?????!
+    if imageBlob is None:
         logger.info('Must download backdrop for "%s".' % module.streamManager.getMovieTitleByUuid(movieUuid))
-        image = downloadBackdrop(module.streamManager, module.imageBaseUrl, movieUuid)
+        imageModified, imageBlob = downloadBackdrop(module.streamManager, module.imageBaseUrl, movieUuid)
 
-    response = _getImageResponse(request, image)
+    # response = _getImageResponse(request, image)
+    response = _getImageResponse(request, imageModified, imageBlob)
     if response is not None:
         return response
 

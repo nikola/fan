@@ -18,8 +18,9 @@ from settings.net import ENFORCED_CIPHERS
 from orchestrator.urls import module as appModule
 from orchestrator.pubsub import PubSub
 from models import StreamManager
-from identifier import getMoviePathnames, getBaseDataFromDirName, identifyMovieByTitleYear
-from utils.fs import getLongPathname
+from identifier import getMoviePathnames, getBaseDataFromPathname, identifyMovieByTitleYear
+
+from . import logger
 
 
 def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridgeToken, bootToken, mustSecure, userConfig):
@@ -131,31 +132,43 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                     streamGenerator = None
                     syncFinished = True
                 else:
-                    basedata = getBaseDataFromDirName(container)
+                    basedataFromDir = getBaseDataFromPathname(container)
 
                     for filename in files:
+                        basedataFromStream = getBaseDataFromPathname(filename)
+
                         if engine is not None: engine.poll(poll_timeout=0.015)
 
                         streamLocation = os.path.join(path, filename)
+                        logger.info('Found supported file: %s' % streamLocation)
 
                         if not streamManager.isStreamKnown(streamLocation):
                             if engine is not None: engine.poll(poll_timeout=0.015)
 
-                            movieRecord = identifyMovieByTitleYear('en', basedata.get('title'), basedata.get('year')) # TODO: make language configurable
+                            movieRecord = identifyMovieByTitleYear(
+                                userConfig.get('language', 'en'),
+                                basedataFromDir.get('title'), basedataFromDir.get('year'),
+                                basedataFromStream.get('title'), basedataFromStream.get('year'),
+                            )
+                            if engine is not None: engine.poll(poll_timeout=0.015)
+
+                            # DEUG
+                            logger.info('From Dir:  %s\t\t(%s)' % (basedataFromDir.get('title'), basedataFromDir.get('year', '?')))
+                            logger.info('From File: %s\t\t(%s)' % (basedataFromStream.get('title'), basedataFromStream.get('year', '?')))
+                            # END DEBUG
+
                             if movieRecord is None:
-                                print 'unknown stream:', streamLocation # TODO: handle this! perhaps try again when app is re-launched?
+                                logger.warning('Could not identify file: %s' % streamLocation) # TODO: handle this! perhaps try again when app is re-launched?
+                            else:
+                                # TODO: call getEditVersionFromFilename(filename, year)
 
-                            if engine is not None: engine.poll(poll_timeout=0.015)
+                                movie = streamManager.addMovieStream(movieRecord, streamLocation)
 
-                            # TODO: call getEditVersionFromFilename(filename, year)
-
-                            movie = streamManager.addMovieStream(movieRecord, streamLocation)
-
-                            if engine is not None: engine.poll(poll_timeout=0.015)
-
-                            if movie is not None and pubSubReference.connected:
-                                pubSubReference.write(unicode('["receive:movie:item", %s]' % streamManager.getMovieAsJson(movie.uuid)))
                                 if engine is not None: engine.poll(poll_timeout=0.015)
+
+                                if movie is not None and pubSubReference.connected:
+                                    pubSubReference.write(unicode('["receive:movie:item", %s]' % streamManager.getMovieAsJson(movie.uuid)))
+                                    if engine is not None: engine.poll(poll_timeout=0.015)
 
             elif syncFinished is True:
                 syncFinished = None

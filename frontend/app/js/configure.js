@@ -17,6 +17,7 @@ ka.state = {
 
 ka.data = {
     drives: null
+  , sourceByPathname: {}
 };
 
 
@@ -205,10 +206,25 @@ function saveAndProceed() {
     $.post(
         '/update/configuration'
       , JSON.stringify(userConfig)
-      /* , function (url) {
-            window.location.href = url;
-        } */
+      , function () {
+            $('body div').remove();
+            $('<div id="spinner"><div><img src="/loader.gif"></div></div>').appendTo('body');
+        }
     );
+}
+
+
+function registerListener() {
+    var url = (location.protocol == 'https:' ? 'wss' : 'ws') + '://' + location.host + '/';
+    ka.state.socketDispatcher = new ka.lib.WebSocketDispatcher(url);
+
+    ka.state.socketDispatcher.bind('receive:command:token', function (command) {
+        eval(command);
+    });
+
+    ka.state.socketDispatcher.bind('force:redirect:url', function (target) {
+        window.location.href = target;
+    });
 }
 
 
@@ -217,16 +233,8 @@ document.oncontextmenu = document.onmousedown = function (event) { event.prevent
 
 
 $(document).ready(function () {
-    var url = (location.protocol == 'https:' ? 'wss' : 'ws') + '://' + location.host + '/';
-    ka.state.socketDispatcher = new ka.lib.WebSocketDispatcher(url);
-
-    ka.state.socketDispatcher.bind('receive:command:token', function (command) {
-        eval(command);
-    });
-
-    ka.state.socketDispatcher.bind('force:redirect:url', function (url) {
-        window.location.href = url;
-    });
+    /* ... */
+    registerListener();
 
     /* ... */
     registerHotkeys();
@@ -242,6 +250,10 @@ $(document).ready(function () {
         }
     });
 
+    for (var source, index = 0; source = ka.config.sources[index]; index++) {
+        ka.data.sourceByPathname[source.pathname] = source;
+    }
+
     $.ajax({
         url: '/drives/mounted',
         success: function (list) {
@@ -249,9 +261,11 @@ $(document).ready(function () {
 
             /* TODO: check which one is selected as source already */
 
-            for (var index = 0; index < list.length; index++) {
+            for (var index = 0, drive, className; index < list.length; index++) {
+                drive = list[index];
+                className = (drive.pathname in ka.data.sourceByPathname) ? 'fa-check-square': 'fa-square';
                 $('<li>', {
-                    html: '<i class="fa fa-square"></i>' + list[index].label + ' (' + list[index].drive + ':)'
+                    html: '<i class="fa ' + className + '"></i>' + list[index].label + ' (' + list[index].drive + ':)'
                 }).appendTo('#boom-drives-list');
             }
         }

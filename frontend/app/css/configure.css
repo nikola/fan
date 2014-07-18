@@ -130,3 +130,21 @@
     background-color: transparent;
     width: 614px;
     }
+
+/* TODO: refactor into separate CSS that gets loaded in load.html, too */
+#spinner {
+    display: table;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    }
+
+#spinner > div {
+    display: table-cell;
+    vertical-align: middle;
+    }
+
+#spinner img {
+    display: block;
+    margin: 0 auto;
+    }

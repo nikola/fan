@@ -221,8 +221,8 @@ def start(callback, userAgent, serverPort, bridgeToken, bootToken, mustSecure, u
         navigateUrl='%s//127.0.0.1:%d/%s.asp' % (protocol, serverPort, screen),
     )
 
-    clientHandler = ClientHandler()
-    browser.SetClientHandler(clientHandler)
+    # clientHandler = ClientHandler()
+    # browser.SetClientHandler(clientHandler)
 
     bridge = JavascriptBridge(browser)
 

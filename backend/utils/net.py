@@ -10,6 +10,7 @@ import pylzma
 import time
 import logging
 from uuid import uuid4
+from collections import OrderedDict
 
 import requests
 
@@ -27,28 +28,36 @@ REQUESTS_LOGGER.setLevel(logging.CRITICAL)
 REQUESTS_LOGGER.propagate = True
 
 LAST_TMDB_ACCESS = time.clock()
+TMDB_RESPONSE_CACHE = {}
 
 
 def makeThrottledGetRequest(url, params):
-    # TODO: cache results here!
+    key = '%s;%s' % (url, ';'.join(['%s:%s' % (key, value) for key, value in OrderedDict(sorted(params.items(), key=lambda t: t[0])).iteritems()]))
 
-    global LAST_TMDB_ACCESS
-    now = time.clock()
-    diff = now - LAST_TMDB_ACCESS
+    global TMDB_RESPONSE_CACHE
+    if TMDB_RESPONSE_CACHE.has_key(key):
+        logger.info('Found cached response from themoviedb.org.')
+        return TMDB_RESPONSE_CACHE.get(key)
+    else:
+        global LAST_TMDB_ACCESS
+        now = time.clock()
+        diff = now - LAST_TMDB_ACCESS
 
-    # Only 30 requests every 10 seconds per IP.
-    if diff < 0.34:
-        time.sleep(0.34 - diff)
+        # Only 30 requests every 10 seconds per IP.
+        if diff < 0.34:
+            time.sleep(0.34 - diff)
 
-    LAST_TMDB_ACCESS = time.clock()
+        LAST_TMDB_ACCESS = time.clock()
 
-    try:
-        response = requests.get(url, params=params, headers={'User-agent': CEF_REAL_AGENT}, timeout=5)
-    except requests.ConnectionError:
-        logger.error('Could not GET %s' % url)
-        response = None
+        try:
+            response = requests.get(url, params=params, headers={'User-agent': CEF_REAL_AGENT}, timeout=5)
+        except requests.ConnectionError:
+            logger.error('Could not GET %s' % url)
+            response = None
+        else:
+            TMDB_RESPONSE_CACHE[key] = response
 
-    return response
+        return response
 
 
 def makeUnthrottledGetRequest(url):

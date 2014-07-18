@@ -19,6 +19,8 @@ ka.lib.executeConfigSelection = function () {
 
     if (id == 'boom-config-button-exit') {
         ka.state.socketDispatcher.push('loopback:command', 'shutdown');
+    } else if (id == 'boom-config-button-change-import') {
+        window.top.location.href = '/configure.asp#return';
     } else {
         var lastCriterion = ka.state.gridSortCriterion, lastOrder = ka.state.gridSortOrder;
 

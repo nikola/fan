@@ -166,7 +166,17 @@ function handleKeypressSelect() {
 
 
 function handleKeypressQuit() {
-    ka.state.socketDispatcher.push('loopback:command', 'shutdown');
+    if (window.location.hash == '#return') {
+        $.post(
+            '/update/configuration'
+          , JSON.stringify(ka.config)
+          , function (url) {
+                window.location.href = url;
+            }
+        );
+    } else {
+        ka.state.socketDispatcher.push('loopback:command', 'shutdown');
+    }
 }
 
 

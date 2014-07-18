@@ -167,13 +167,7 @@ function handleKeypressSelect() {
 
 function handleKeypressQuit() {
     if (window.location.hash == '#return') {
-        $.post(
-            '/update/configuration'
-          , JSON.stringify(ka.config)
-          , function (url) {
-                window.location.href = url;
-            }
-        );
+        ka.state.socketDispatcher.push('loopback:redirect', 'return');
     } else {
         ka.state.socketDispatcher.push('loopback:command', 'shutdown');
     }
@@ -211,9 +205,9 @@ function saveAndProceed() {
     $.post(
         '/update/configuration'
       , JSON.stringify(userConfig)
-      , function (url) {
+      /* , function (url) {
             window.location.href = url;
-        }
+        } */
     );
 }
 
@@ -228,6 +222,10 @@ $(document).ready(function () {
 
     ka.state.socketDispatcher.bind('receive:command:token', function (command) {
         eval(command);
+    });
+
+    ka.state.socketDispatcher.bind('force:redirect:url', function (url) {
+        window.location.href = url;
     });
 
     /* ... */
@@ -248,6 +246,8 @@ $(document).ready(function () {
         url: '/drives/mounted',
         success: function (list) {
             ka.data.drives = list.concat();
+
+            /* TODO: check which one is selected as source already */
 
             for (var index = 0; index < list.length; index++) {
                 $('<li>', {

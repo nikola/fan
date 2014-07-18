@@ -37,6 +37,9 @@ class PubSub(WebSocket):
             self.queue.put('player:play:%s' % payload)
         elif command == 'loopback:command':
             self.write(unicode('["receive:command:token", "__%s__.%s()"]'% (self.bridgeToken, payload)))
+        elif command == 'loopback:redirect':
+            if payload == 'return':
+                self.write(unicode('["force:redirect:url", "load.asp"]'))
 
     def on_close(self):
         pass

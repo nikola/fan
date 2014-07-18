@@ -9,6 +9,7 @@ import time
 from multiprocessing import Process
 from Queue import Empty
 
+import simplejson
 from pants import Engine as HttpServerEngine
 from pants.http import HTTPServer
 from pants.web import Application
@@ -19,6 +20,7 @@ from orchestrator.urls import module as appModule
 from orchestrator.pubsub import PubSub
 from models import StreamManager
 from identifier import getMoviePathnames, getBaseDataFromPathname, identifyMovieByTitleYear
+from utils.config import getCurrentUserConfig
 
 from . import logger
 
@@ -90,12 +92,19 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
             command = queue.get_nowait()
 
             if command == 'orchestrator:start:scan':
-                streamGenerator = getMoviePathnames(userConfig.get('sources', []))
+                streamGenerator = getMoviePathnames(appModule.userConfig.get('sources', []))
 
                 queue.task_done()
             elif command == 'orchestrator:watch':
                 # streamWatcher.start()
                 streamWatcherStarted = True
+                queue.task_done()
+            elif command == 'orchestrator:reload:config':
+                appModule.userConfig = getCurrentUserConfig()
+                streamGenerator = getMoviePathnames(appModule.userConfig.get('sources', []))
+
+                pubSubReference.write(unicode('["force:redirect:url", "load.asp"]'))
+
                 queue.task_done()
             elif command == 'orchestrator:stop:all':
                 # if streamWatcherStarted:
@@ -140,9 +149,10 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                         if engine is not None: engine.poll(poll_timeout=0.015)
 
                         streamLocation = os.path.join(path, filename)
-                        logger.info('Found supported file: %s' % streamLocation)
 
                         if not streamManager.isStreamKnown(streamLocation):
+                            logger.info('Found supported file: %s' % streamLocation)
+
                             if engine is not None: engine.poll(poll_timeout=0.015)
 
                             movieRecord = identifyMovieByTitleYear(
@@ -162,7 +172,7 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                             else:
                                 # TODO: call getEditVersionFromFilename(filename, year)
 
-                                movie = streamManager.addMovieStream(movieRecord, streamLocation)
+                                movie = streamManager.addMovieStream(movieRecord, streamLocation) # TODO: re-wire stream to correct movie if necessary
 
                                 if engine is not None: engine.poll(poll_timeout=0.015)
 

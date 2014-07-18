@@ -112,9 +112,8 @@ def serveConfigurator(request):
         compressed = fp.read()
     html = pylzma.decompress(compressed)
 
-    if DEBUG and request.headers.get('User-Agent', None) != module.userAgent:
-        html = html.replace('</script>', '; ka.config = {language: "en", sources: []};</script>')
-    # END IF DEBUG
+    # Inject current user configuration.
+    html = html.replace('</script>', '; ka.config = %s;</script>' % simplejson.dumps(module.userConfig))
 
     timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
 
@@ -148,8 +147,11 @@ def serveGui(request):
 
         timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
 
+        # Inject current user configuration.
+        html = html.replace('</script>', '; ka.config = %s;</script>' % simplejson.dumps(module.userConfig))
+
         if DEBUG and request.headers.get('User-Agent', None) != module.userAgent:
-            html = html.replace('</script>', '; var ᴠ = "%s"; ka.config = %s;</script>' % (module.bootToken, simplejson.dumps(module.userConfig)))
+            html = html.replace('</script>', '; var ᴠ = "%s";</script>' % module.bootToken)
         # END IF DEBUG
 
         stream = StringIO()
@@ -252,5 +254,7 @@ def updatePosterColors(request, identifier, color):
 def updateConfiguration(request):
     config = simplejson.loads(urllib.unquote(request.body))
     getCurrentUserConfig(config)
+    module.interProcessQueue.put('orchestrator:reload:config')
 
-    return '/load.asp', 200
+    # return '/load.asp', 200
+    return '', 200

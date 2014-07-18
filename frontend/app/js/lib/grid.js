@@ -184,7 +184,7 @@ ka.lib.updateMovieGrid = function () {
 
     if (ka.state.gridLookupMatrix.length) {
         if (ka.state.currentPageMode != 'detail') {
-            ka.lib.updateDetailPage();
+            ka.lib.updateDetailPage(); // TODO: prevent this from happening by repositioning focus
         }
         if (ka.state.currentPageMode == 'grid') {
             if (ka.state.shouldFocusFadeIn) {
@@ -281,6 +281,8 @@ ka.lib.moveFocusPageDown = function () {
 
         ka.state.gridPage += 1;
         ka.lib.scrollGrid();
+
+        // TODO: reposition vertical focus position as well when scrolling to last page !!!!
     }
 };
 

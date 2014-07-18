@@ -88,6 +88,8 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
     engine = HttpServerEngine.instance()
 
     while True:
+        if engine is not None: engine.poll(poll_timeout=0.015)
+
         try:
             command = queue.get_nowait()
 

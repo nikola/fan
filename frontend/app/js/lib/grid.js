@@ -267,7 +267,11 @@ ka.lib.moveFocusLastItem = function () {
 
 ka.lib.moveFocusPageUp = function () {
     if (ka.state.gridPage > 0) {
-        ka.lib.moveFocusX(-ka.settings.gridMaxRows);
+        /* ka.lib.moveFocusX(-ka.settings.gridMaxRows); */
+        var transition = ka.lib.moveFocusX(-ka.settings.gridMaxRows);
+        if (transition !== null) {
+            $('#boom-poster-focus').velocity(transition[0], transition[1]);
+        }
 
         ka.state.gridPage -= 1;
         ka.lib.scrollGrid();
@@ -277,12 +281,30 @@ ka.lib.moveFocusPageUp = function () {
 
 ka.lib.moveFocusPageDown = function () {
     if (ka.state.gridPage + 1 < ka.state.gridTotalPages) {
-        ka.lib.moveFocusX(ka.settings.gridMaxRows);
+        var transitionX = ka.lib.moveFocusX(ka.settings.gridMaxRows),
+            transitionY = null;
 
         ka.state.gridPage += 1;
         ka.lib.scrollGrid();
 
-        // TODO: reposition vertical focus position as well when scrolling to last page !!!!
+        if (ka.state.gridFocusY > 0 && ka.lib.getGridFocusAbsoluteY() >= ka.state.gridLookupMatrix.length) {
+            var overshoot = ka.lib.getGridFocusAbsoluteY() - ka.state.gridLookupMatrix.length + 1,
+                offsetY = overshoot * 360;
+            ka.state.gridFocusY -= overshoot;
+
+            transitionY = [{top: '-=' + offsetY}, {duration: offsetY}];
+        }
+
+        if (transitionX !== null && transitionY !== null) {
+            $('#boom-poster-focus').velocity(
+                {left: transitionX[0].left, top: transitionY[0].top}
+              , {easing: 'easeOutSine', duration: Math.max(transitionX[1].duration, transitionY[1].duration)}
+            );
+        } else if (transitionX !== null) {
+            $('#boom-poster-focus').velocity({left: transitionX[0].left}, {easing: 'easeOutSine', duration: transitionX[1].duration});
+        } else if (transitionY !== null) {
+            $('#boom-poster-focus').velocity({top: transitionY[0].top}, {easing: 'ease-out', duration: transitionY[1].duration});
+        }
     }
 };
 
@@ -415,10 +437,18 @@ ka.lib.repositionFocusX = function (targetY) {
 
 ka.lib.moveFocusX = function (offsetY) {
     var gridFocusAbsoluteY = ka.lib.getGridFocusAbsoluteY(),
-        gridFocusTargetY = gridFocusAbsoluteY + offsetY,
-        itemsPerLineAtTarget = ka.state.gridLookupItemsPerLine[gridFocusTargetY];
+        gridFocusTargetY = gridFocusAbsoluteY + offsetY;
+
+    if (gridFocusTargetY > ka.state.gridLookupMatrix.length - 1) {
+        gridFocusTargetY = ka.state.gridLookupMatrix.length - 1;
+    }
+
+    var itemsPerLineAtTarget = ka.state.gridLookupItemsPerLine[gridFocusTargetY];
+
     if (itemsPerLineAtTarget <= ka.state.gridFocusX) {
-        $('#boom-poster-focus').velocity({left: ka.lib.repositionFocusX(gridFocusTargetY)}, {duration: 720, easing: 'easeOutSine'});
+        return [{left: ka.lib.repositionFocusX(gridFocusTargetY)}, {duration: 720, easing: 'easeOutSine'}];
+    } else {
+        return null;
     }
 };
 

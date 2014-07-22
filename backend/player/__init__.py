@@ -11,17 +11,18 @@ __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 import sys
-# import os
-# import re
-import win32api
+import logging
 from subprocess import Popen
 
-from utils.win32 import getAppStoragePathname
-# from updater.const import *
-from updater.lib import *
-from settings.player import MPCHC_INI
+import win32api
 
-PLAYER_AMALGAM_PATH = os.path.join(getAppStoragePathname(), 'amalgam')
+from settings import LOG_CONFIG, APP_STORAGE_PATH
+from settings.player import MPCHC_INI
+from utils.fs import getLogFileHandler
+from updater.lib import *
+
+
+PLAYER_AMALGAM_PATH = os.path.join(APP_STORAGE_PATH, 'amalgam')
 
 MT_PATCH = """
     <file name="madVR.ax">
@@ -48,11 +49,14 @@ MT_PATCH = """
     </file>
 """
 
+logging.basicConfig(**LOG_CONFIG)
+logger = logging.getLogger('player')
+logger.addHandler(getLogFileHandler('player'))
+
 
 def _updateComponents():
     def _log(text, color=BLACK):
-        #  windll.Kernel32.SetConsoleTextAttribute(CONSOLE_HANDLER, color)
-        sys.stdout.write(text)
+        logger.info(text)
 
     setLogger(_log)
 
@@ -87,14 +91,15 @@ def _updateComponents():
 
         pathname = os.path.join(PLAYER_AMALGAM_PATH, filename)
 
-        latestVersion = getattr(instance, 'getLatestReleaseVersion')()
-        if latestVersion is None:
+        try:
+            latestVersion = getattr(instance, 'getLatestReleaseVersion')()
+        except:
             _log('ERROR: Could not retrieve version info of the latest %s release.\n' % name, RED)
         else:
             _log('Latest release version of %s: %s\n' % (name, latestVersion))
 
-            installedVersion, detectedInstallationPath = instance.getInstalledVersion(pathname)
             mustInstall = False
+            installedVersion, detectedInstallationPath = instance.getInstalledVersion(pathname)
             if installedVersion is not None:
                 _log('Installed version: %s\n\t%s\n' % (installedVersion, detectedInstallationPath))
 
@@ -107,15 +112,9 @@ def _updateComponents():
                 mustInstall = True
 
             if mustInstall:
-                # try:
                 getattr(instance, 'installLatestReleaseVersion')(latestVersion, PLAYER_AMALGAM_PATH, silent=False, archive=True, compact=True, compatText=True)
-                # except Exception, e:
-                #     log(' ERROR: %s\n' % e.message, RED)
-                # else:
-                currentInstalledVersion, currentInstallationPath = instance.getInstalledVersion(pathname)
-                # print
-                # print currentInstalledVersion
-                # print currentInstallationPath
+
+                currentInstalledVersion, currentInstallationPath = instance.getPostInstallVersion(pathname)
                 if currentInstallationPath is None or getVersionTuple(currentInstalledVersion) != getVersionTuple(latestVersion):
                     _log('\nFailed to %s %s %s.\n'
                         % ('update to' if installedVersion is not None else 'install', name, latestVersion), RED)

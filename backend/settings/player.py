@@ -9,6 +9,8 @@ MPCHC_INI = r"""
 [Favorites]
 RelativeDrive=0
 RememberPosition=1
+[Commands2]
+CommandMod0=816 1 1b "" 5 0 0 0
 [FileFormats]
 3g2=3g2 3gp2  \2
 3gp=3gp 3gpp 3ga \0

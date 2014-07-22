@@ -35,10 +35,9 @@ def _startPlayer(queue):
                 break
             elif command.startswith('player:play:'):
                 if isPlayerUpToDate:
-                    identifier = command[-32:]
-                    location = playerStreamManager.getStreamLocationByMovie(identifier)
+                    playFile(playerStreamManager.getStreamLocationByMovie(command[-32:]))
 
-                    playFile(location)
+                    queue.put('orchestrator:resume:detail')
                 else:
                     queue.put(command)
 

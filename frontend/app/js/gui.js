@@ -58,6 +58,12 @@ function listen() {
         eval(command);
     });
 
+    ka.state.socketDispatcher.bind('resume:detail:screen', function () {
+        $('#boom-movie-detail').velocity('fadeIn', {duration: 360, complete: function () {
+            ka.state.currentPageMode = 'detail';
+        }});
+    });
+
     ka.state.socketDispatcher.bind('movie:poster:refresh', function (id) {
         var image = $('#boom-poster-' + id);
         if (image.size()) {

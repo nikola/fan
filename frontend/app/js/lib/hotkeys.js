@@ -100,9 +100,11 @@ ka.lib.handleKeypressSelect = function () {
     } else if (ka.state.currentPageMode == 'grid') {
         ka.lib.selectFocus();
     } else if (ka.state.currentPageMode == 'detail') {
-        // ka.state.currentPageMode = 'play';
+        $('#boom-movie-detail').velocity('fadeOut', {duration: 360, complete: function () {
+            ka.state.currentPageMode = 'play';
 
-        ka.state.socketDispatcher.push('movie:play', ka.lib.getMovieFromGridFocus().uuid);
+            ka.state.socketDispatcher.push('movie:play', ka.lib.getMovieFromGridFocus().uuid);
+        }});
     }
 };
 

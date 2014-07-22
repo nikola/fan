@@ -9,7 +9,6 @@ import time
 from multiprocessing import Process
 from Queue import Empty
 
-import simplejson
 from pants import Engine as HttpServerEngine
 from pants.http import HTTPServer
 from pants.web import Application
@@ -108,6 +107,10 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                 pubSubReference.write(unicode('["force:redirect:url", "load.asp"]'))
 
                 queue.task_done()
+            elif command == 'orchestrator:resume:detail':
+                pubSubReference.write(unicode('["resume:detail:screen", ""]'))
+
+                queue.task_done()
             elif command == 'orchestrator:stop:all':
                 # if streamWatcherStarted:
                 #     streamWatcher.stop()
@@ -171,16 +174,16 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
 
                             if movieRecord is None:
                                 logger.warning('Could not identify file: %s' % streamLocation) # TODO: handle this! perhaps try again when app is re-launched?
-                            else:
-                                # TODO: call getEditVersionFromFilename(filename, year)
+                            # else:
+                            #     # TODO: call getEditVersionFromFilename(filename, year)
 
-                                movie = streamManager.addMovieStream(movieRecord, streamLocation) # TODO: re-wire stream to correct movie if necessary
+                            movie = streamManager.addMovieStream(movieRecord, streamLocation) # TODO: re-wire stream to correct movie if necessary
 
+                            if engine is not None: engine.poll(poll_timeout=0.015)
+
+                            if movieRecord is not None and pubSubReference.connected:
+                                pubSubReference.write(unicode('["receive:movie:item", %s]' % streamManager.getMovieAsJson(movie.uuid)))
                                 if engine is not None: engine.poll(poll_timeout=0.015)
-
-                                if movie is not None and pubSubReference.connected:
-                                    pubSubReference.write(unicode('["receive:movie:item", %s]' % streamManager.getMovieAsJson(movie.uuid)))
-                                    if engine is not None: engine.poll(poll_timeout=0.015)
 
             elif syncFinished is True:
                 syncFinished = None

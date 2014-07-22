@@ -10,13 +10,15 @@ from Queue import Empty
 
 from downloader.images import downloadBackdrop, downscalePoster
 from models import StreamManager
+from player import update as downloadPlayer
 
 from . import logger
 
 
 def _startDownloader(queue):
     downloaderStreamManager = StreamManager()
-    isStarted = False
+    doDownloadPlayer = True
+    doDownloadAssets = False
     imageBaseUrl = None
 
     while True:
@@ -25,7 +27,7 @@ def _startDownloader(queue):
             if command == 'downloader:start':
                 # TODO: only launch this when all poster images have been downloaded in frontend
 
-                isStarted = True
+                doDownloadAssets = True
                 logger.info('Downloader main loop started.')
 
                 queue.task_done()
@@ -45,7 +47,11 @@ def _startDownloader(queue):
                 queue.put(command)
                 queue.task_done()
         except Empty:
-            if isStarted:
+            if doDownloadPlayer:
+                downloadPlayer()
+                doDownloadPlayer = False
+                queue.put('player:up-to-date')
+            elif doDownloadAssets:
                 movieUuid = downloaderStreamManager.getMissingBackdropMovieUuid()
                 if movieUuid is not None:
                     if imageBaseUrl is not None:

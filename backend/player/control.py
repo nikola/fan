@@ -12,14 +12,21 @@ from Queue import Empty
 
 from models import StreamManager
 
+from . import playFile
+
 
 def _startPlayer(queue):
     playerStreamManager = StreamManager()
 
+    isPlayerUpToDate = False
+
     while True:
         try:
             command = queue.get_nowait()
-            if command == 'player:stop':
+            if command == 'player:up-to-date':
+                isPlayerUpToDate = True
+                queue.task_done()
+            elif command == 'player:stop':
                 # print 'attempting to shut down player stream manager ...'
                 playerStreamManager.shutdown()
                 # print '... shut down player stream manager!'
@@ -27,26 +34,20 @@ def _startPlayer(queue):
                 queue.task_done()
                 break
             elif command.startswith('player:play:'):
-                identifier = command[-32:]
-                location = playerStreamManager.getStreamLocationByMovie(identifier)
-                # print location
+                if isPlayerUpToDate:
+                    identifier = command[-32:]
+                    location = playerStreamManager.getStreamLocationByMovie(identifier)
 
-                process = Popen([
-                    # os.path.join(PLAYER_AMALGAM_PATH, 'mpc-hc.exe'),
-                    r'C:\Program Files (x86)\MPC-HC\mpc-hc.exe',
-                    location,
-                    '/play', '/close', '/fullscreen',
-                ])
-                process.wait()
-
-
+                    playFile(location)
+                else:
+                    queue.put(command)
 
                 queue.task_done()
             else:
                 queue.put(command)
                 queue.task_done()
         except Empty:
-            time.sleep(0.015)
+            time.sleep(0.5)
 
 
 def start(*args):

@@ -7,19 +7,19 @@ __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 import sys
 import os
 import logging
-import simplejson
 from uuid import uuid4
 from multiprocessing import JoinableQueue as InterProcessQueue, freeze_support
 from ctypes import windll
+
 import win32file
 
 from settings import DEBUG
-from settings import LOG_CONFIG, APP_STORAGE_PATH, EXE_PATH, RESOURCES_PATH
+from settings import LOG_CONFIG
 from models import initialize as initStreamManager
 from utils.system import isCompatiblePlatform, isNtfsFilesystem, getScreenResolution, isDesktopCompositionEnabled
 from utils.agent import getUserAgent
 from utils.net import getVacantPort, getCertificateLocation
-from utils.fs import getLogFileHandler, createAppStorageStructure, getDrives
+from utils.fs import getLogFileHandler, createAppStorageStructure
 from utils.config import getCurrentUserConfig
 from orchestrator.control import start as startOrchestrator, stop as stopOrchestrator
 from downloader.control import start as startDownloader, stop as stopDownloader

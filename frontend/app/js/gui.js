@@ -36,7 +36,7 @@ ka.state = {
   , detachedGridCells: {}
   , gridLookupMatrix: {}
   , gridLookupItemsPerLine: []
-  , gridLookupLinesByKey: {} // TODO: needed for focusing via hotkey
+  , gridLookupLinesByKey: {}
   , gridLookupKeyByLine: []
   , shouldFocusFadeIn: true
   , imagePosterPrimaryColorByUuid: {}

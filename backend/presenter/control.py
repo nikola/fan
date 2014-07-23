@@ -26,7 +26,7 @@ import win32api
 import win32con
 
 from settings import DEBUG
-from settings import BASE_DIR
+from settings import BASE_DIR, ENTROPY_SEED
 from settings.presenter import *
 from presenter.hooks import ClientHandler
 from utils.win32 import getNormalizedPathname, getColorBrush
@@ -34,7 +34,7 @@ from utils.win32 import getNormalizedPathname, getColorBrush
 
 shutdownAll = None
 
-
+# TODO: REFACTOR AND CLEAN UP !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 class JavascriptBridge(object):
     # mainBrowser = None
     # stringVisitor = None
@@ -54,8 +54,6 @@ class JavascriptBridge(object):
 
     def shutdown(self):
         stop()
-        # self.shutdownCallback()
-
 
     def Print(self, message):
         print(message)
@@ -135,7 +133,7 @@ def start(callback, userAgent, serverPort, bridgeToken, bootToken, mustSecure, u
         'user_agent':              userAgent,
         'locales_dir_path':        r'C:\Users\Niko\Documents\GitHub\ka-BOOM\backend\presenter\cef', # TODO: replace this with known directory
     })
-    if DEBUG:
+    if False: # DEBUG
         appSettings.update({
             'debug':                  True,
             'release_dcheck_enabled': True,
@@ -143,7 +141,7 @@ def start(callback, userAgent, serverPort, bridgeToken, bootToken, mustSecure, u
             'log_file':               getNormalizedPathname('debug.log'), # TODO: replace this
             'log_severity':           cefpython.LOGSEVERITY_INFO,
         })
-    # {END DEBUG}
+    # END if DEBUG
 
     cefpython.Initialize(appSettings, CEF_CMD_LINE_SETTINGS)
 
@@ -231,7 +229,7 @@ def start(callback, userAgent, serverPort, bridgeToken, bootToken, mustSecure, u
     jsBindings.SetProperty('ka', {'config': userConfig})
     jsBindings.SetObject('__%s__' % bridgeToken, bridge)
     jsBindings.SetObject('console', bridge)
-    jsBindings.SetProperty('navigator', {'userAgent': CEF_REAL_AGENT})
+    jsBindings.SetProperty('navigator', {'userAgent': ENTROPY_SEED})
     browser.SetJavascriptBindings(jsBindings)
 
     cefpython.MessageLoop()

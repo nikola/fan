@@ -19,3 +19,4 @@ LOG_CONFIG = dict(
     level=20, # logging.INFO
     filemode='a',
 )
+ENTROPY_SEED = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.80 Safari/537.36'

@@ -12,7 +12,8 @@ from uuid import uuid4
 import requests
 
 from settings import BASE_DIR, APP_STORAGE_PATH
-from settings.presenter import CEF_REAL_AGENT
+from settings import ENTROPY_SEED
+# from settings.presenter import CEF_REAL_AGENT
 # from utils.fs import createTemporaryFile, writeTemporaryFile
 # from utils.win32 import getAppStoragePathname
 
@@ -27,7 +28,7 @@ def downloadBackdrop(streamManager, imageBaseUrl, movieUuid, discard=False):
         streamManager.startBackdropDownload(movieUuid)
 
         url = '%soriginal%s' % (imageBaseUrl, streamManager.getMovieByUuid(movieUuid).urlBackdrop)
-        blob = requests.get(url, headers={'User-agent': CEF_REAL_AGENT}).content
+        blob = requests.get(url, headers={'User-agent': ENTROPY_SEED}).content
         # image = streamManager.saveImageData(movieUuid, 1920, blob, False, 'Backdrop', 'JPEG', url)
         imageModified, imageBlob = streamManager.saveImageData(movieUuid, 1920, blob, False, 'Backdrop', 'JPEG', url)
 
@@ -59,7 +60,7 @@ def downscalePoster(streamManager, image):
 
         logger.info('Downloading image data from %s ...' % image.urlOriginal)
         try:
-            blobOriginal = requests.get(image.urlOriginal, headers={'User-agent': CEF_REAL_AGENT}).content
+            blobOriginal = requests.get(image.urlOriginal, headers={'User-agent': ENTROPY_SEED}).content
         except requests.ConnectionError:
             logger.error('Could not connect to image host!')
             return None

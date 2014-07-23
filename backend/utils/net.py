@@ -14,8 +14,8 @@ from collections import OrderedDict
 
 import requests
 
-from settings import LOG_CONFIG, BASE_DIR, EXE_PATH
-from settings.presenter import CEF_REAL_AGENT
+from settings import LOG_CONFIG, BASE_DIR, EXE_PATH, ENTROPY_SEED
+# from settings.presenter import CEF_REAL_AGENT
 from utils.fs import getLogFileHandler
 
 
@@ -50,7 +50,7 @@ def makeThrottledGetRequest(url, params):
         LAST_TMDB_ACCESS = time.clock()
 
         try:
-            response = requests.get(url, params=params, headers={'User-agent': CEF_REAL_AGENT}, timeout=5)
+            response = requests.get(url, params=params, headers={'User-agent': ENTROPY_SEED}, timeout=5)
         except requests.ConnectionError:
             logger.error('Could not GET %s' % url)
             response = None
@@ -61,7 +61,7 @@ def makeThrottledGetRequest(url, params):
 
 
 def makeUnthrottledGetRequest(url):
-    return requests.get(url, headers={'User-agent': CEF_REAL_AGENT}, timeout=5)
+    return requests.get(url, headers={'User-agent': ENTROPY_SEED}, timeout=5)
 
 
 def getVacantPort():

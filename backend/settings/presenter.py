@@ -28,15 +28,11 @@ CEF_CMD_LINE_SETTINGS = {
     'disable-volume-adjust-sound':          '',
     'disable-webaudio':                     '',
     'dns-prefetch-disable':                 '',
-    # 'disk-cache-dir':                       'nul',
-    # 'media-cache-dir':                      'nul',
-    # 'disk-cache-size':                      '1',
     'enable-benchmarking':                  '',
     'no-displaying-insecure-content':       '',
     'no-pings':                             '',
     'no-referrers':                         '',
     'noerrdialogs':                         '',
-    # locale_pak Load the locale resources from the given path. When running on Mac/Unix the path should point to a locale.pak file.
 }
 
 CEF_APP_SETTINGS = {
@@ -64,4 +60,4 @@ CEF_BROWSER_SETTINGS = dict(
     # pack_loading_disabled = True,
 )
 
-CEF_REAL_AGENT = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.80 Safari/537.36'
+# CEF_REAL_AGENT = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.80 Safari/537.36'

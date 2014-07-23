@@ -18,8 +18,8 @@ from pants.web.application import Module
 from pants.http.utils import HTTPHeaders
 
 from settings import DEBUG
-from settings import BASE_DIR
-from settings.presenter import CEF_REAL_AGENT
+from settings import BASE_DIR, ENTROPY_SEED
+# from settings.presenter import CEF_REAL_AGENT
 from identifier import getImageConfiguration
 from downloader.images import downloadBackdrop
 from utils.rfc import getRfc1123Timestamp, parseRfc1123Timestamp
@@ -176,7 +176,7 @@ def serveMoviePoster(request, movieUuid, width):
     if imageBlob is None:
         pathPoster = module.streamManager.getMovieByUuid(movieUuid).urlPoster
         urlPoster = '%s%s%s' % (module.imageBaseUrl, module.imageClosestSize, pathPoster)
-        blob = requests.get(urlPoster, headers={'User-agent': CEF_REAL_AGENT}).content
+        blob = requests.get(urlPoster, headers={'User-agent': ENTROPY_SEED}).content
         # image = module.streamManager.saveImageData(movieUuid, width, blob, False, 'Poster', 'JPEG', '%soriginal%s' % (module.imageBaseUrl, pathPoster))
         imageModified, imageBlob = module.streamManager.saveImageData(movieUuid, width, blob, False, 'Poster', 'JPEG', '%soriginal%s' % (module.imageBaseUrl, pathPoster))
 

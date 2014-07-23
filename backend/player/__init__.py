@@ -159,10 +159,9 @@ def _patchManifest():
 
 def _writeConfig():
     with open(os.path.join(BASE_DIR, 'backend', 'filters', '4ebc0ca1e8324ba6a134ca78b1ca3088'), 'rb') as fp:
-        compressed = fp.read()
-    ini = uppercase(compressed)
+        string = fp.read()
     with open(os.path.join(PLAYER_AMALGAM_PATH, 'mpc-hc.ini'), 'wb') as fp:
-        fp.write(ini)
+        fp.write(uppercase(string))
 
 
 def update():

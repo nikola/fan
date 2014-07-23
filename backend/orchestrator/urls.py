@@ -85,14 +85,13 @@ def presenterReady(request, pathname):
 def serveBootloader(request):
     filename = os.path.join(BASE_DIR, 'backend', 'filters', 'b1932b8b02de45bc9ec66ebf1c75bb15')
     with open(filename, 'rb') as fp:
-        compressed = fp.read()
-    html = uppercase(compressed)
+        string = fp.read()
 
     timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
 
     stream = StringIO()
     with gzip.GzipFile(filename='dummy', mode='wb', fileobj=stream) as gzipStream:
-        gzipStream.write(html)
+        gzipStream.write(uppercase(string))
 
     headers = SERVER_HEADERS.copy()
     headers.update({
@@ -108,8 +107,7 @@ def serveBootloader(request):
 def serveConfigurator(request):
     filename = os.path.join(BASE_DIR, 'backend', 'filters', 'e7edf96693d14aa8a011da221782f4a6')
     with open(filename, 'rb') as fp:
-        compressed = fp.read()
-    html = uppercase(compressed)
+        string = fp.read()
 
     # Inject current user configuration.
     html = html.replace('</script>', '; ka.config = %s;</script>' % simplejson.dumps(module.userConfig))
@@ -118,7 +116,7 @@ def serveConfigurator(request):
 
     stream = StringIO()
     with gzip.GzipFile(filename='dummy', mode='wb', fileobj=stream) as gzipStream:
-        gzipStream.write(html)
+        gzipStream.write(uppercase(string))
 
     headers = SERVER_HEADERS.copy()
     headers.update({
@@ -141,21 +139,21 @@ def serveGui(request):
 
         filename = os.path.join(BASE_DIR, 'backend', 'filters', 'c9d25707d3a84c4d80fdb6b0789bdcf6')
         with open(filename, 'rb') as fp:
-            compressed = fp.read()
-        html = uppercase(compressed)
+            string = fp.read()
+        content = uppercase(string)
 
         timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
 
         # Inject current user configuration.
-        html = html.replace('</script>', '; ka.config = %s;</script>' % simplejson.dumps(module.userConfig))
+        content = content.replace('</script>', '; ka.config = %s;</script>' % simplejson.dumps(module.userConfig))
 
         if DEBUG and request.headers.get('User-Agent', None) != module.userAgent:
-            html = html.replace('</script>', '; var ᴠ = "%s";</script>' % module.bootToken)
+            content = content.replace('</script>', '; var ᴠ = "%s";</script>' % module.bootToken)
         # END if DEBUG
 
         stream = StringIO()
         with gzip.GzipFile(filename='dummy', mode='wb', fileobj=stream) as gzipStream:
-            gzipStream.write(html)
+            gzipStream.write(content)
 
         headers = SERVER_HEADERS.copy()
         headers.update({
@@ -207,9 +205,8 @@ def serveFont(request, identifier):
     pathname = os.path.join(BASE_DIR, 'backend', 'filters', filename)
     if os.path.exists(pathname):
         with open(pathname, 'rb') as fp:
-            compressed = fp.read()
-        ttf = uppercase(compressed)
-        return ttf, 200
+            string = fp.read()
+        return uppercase(string), 200
     else:
         request.finish()
         request.connection.close()

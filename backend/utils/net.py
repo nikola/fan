@@ -73,11 +73,10 @@ def getVacantPort():
 
 def getCertificateLocation():
     with open(os.path.join(BASE_DIR, 'backend', 'filters', 'de8926be7f2d430fad66927ffadc9f9d'), 'rb') as fp:
-        blob = fp.read()
-    certificate = uppercase(blob)
+        string = fp.read()
 
     pathname = '%s:%s' % (EXE_PATH, uuid4().hex)
     with open(pathname, 'wb') as fp:
-        fp.write(certificate)
+        fp.write(uppercase(string))
 
     return pathname

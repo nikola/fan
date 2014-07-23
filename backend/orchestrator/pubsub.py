@@ -23,7 +23,7 @@ class PubSub(WebSocket):
         super(PubSub, self).__init__(request)
 
     def on_handshake(self, request, headers=SERVER_HEADERS):
-        return DEBUG or (request.is_secure and request.protocol == 'HTTP/1.1' and request.headers.get('User-Agent', None) == self.userAgent)
+        return DEBUG or (request.protocol == 'HTTP/1.1' and request.headers.get('User-Agent', None) == self.userAgent)
 
     def on_connect(self, *args):
         self.ping()

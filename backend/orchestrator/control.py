@@ -33,9 +33,9 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
         pubSubReference = reference
 
     def _proxy(request):
-        if DEBUG or (request.is_secure and request.protocol == 'HTTP/1.1' and request.headers.get('User-Agent', None) == userAgent):
+        if DEBUG or (request.protocol == 'HTTP/1.1' and request.headers.get('User-Agent', None) == userAgent):
             # if request.headers.get('Sec-WebSocket-Version', None) == 13:
-            if request.headers.get('Upgrade', None) == 'websocket': # 'Sec-WebSocket-Extensions': 'x-webkit-deflate-frame', 'Sec-WebSocket-Version': 13
+            if request.headers.get('Upgrade', None) == 'websocket':
                 PubSub(queue, request, userAgent, bridgeToken, _getPubSubReference)
             else:
                 app(request)

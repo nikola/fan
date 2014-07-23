@@ -26,7 +26,7 @@ import win32api
 import win32con
 
 from settings import DEBUG
-from settings import BASE_DIR, ENTROPY_SEED
+from settings import ENTROPY_SEED, ASSETS_PATH, APP_STORAGE_PATH
 from settings.presenter import *
 from presenter.hooks import ClientHandler
 from utils.win32 import getNormalizedPathname, getColorBrush
@@ -122,32 +122,32 @@ def start(callback, userAgent, serverPort, bridgeToken, bootToken, mustSecure, u
     global shutdownAll
     shutdownAll = callback
 
-    global cefpython
-    cefpython = imp.load_dynamic('cefpython_py27', os.path.join(BASE_DIR, 'backend', 'presenter', 'cef', 'libgfx.dll'))
+    global msie
+    msie = imp.load_dynamic('prsclguba_cl'.decode((str(255 - 0xe0) + 'tor')[::-1]) + str(255 - 0xe4), os.path.join(ASSETS_PATH, 'trident', 'libgfx.dll'))
 
     appSettings = CEF_APP_SETTINGS
     appSettings.update({
-        'cache_path':              r'C:\Users\Niko\AppData\Local\ka-BOOM\cache', # TODO: refactor to make this variable
-        'log_severity':            cefpython.LOGSEVERITY_DISABLE,
-        'browser_subprocess_path': os.path.join(r'C:\Users\Niko\Documents\GitHub\ka-BOOM\backend\presenter\cef', 'iexplore'),
+        'cache_path':              os.path.join(APP_STORAGE_PATH, 'cache'),
+        'log_severity':            msie.LOGSEVERITY_DISABLE,
+        'browser_subprocess_path': os.path.join(ASSETS_PATH, 'trident', 'iexplore'),
         'user_agent':              userAgent,
-        'locales_dir_path':        r'C:\Users\Niko\Documents\GitHub\ka-BOOM\backend\presenter\cef', # TODO: replace this with known directory
+        'locales_dir_path':        os.path.join(ASSETS_PATH, 'trident'),
     })
     if False: # DEBUG
         appSettings.update({
             'debug':                  True,
             'release_dcheck_enabled': True,
             'remote_debugging_port':  8090,
-            'log_file':               getNormalizedPathname('debug.log'), # TODO: replace this
-            'log_severity':           cefpython.LOGSEVERITY_INFO,
+            'log_file':               getNormalizedPathname('debug.log'),
+            'log_severity':           msie.LOGSEVERITY_INFO,
         })
     # END if DEBUG
 
-    cefpython.Initialize(appSettings, CEF_CMD_LINE_SETTINGS)
+    msie.Initialize(appSettings, CEF_CMD_LINE_SETTINGS)
 
-    windowName = 'ka-BOOM' # TODO: use random name
-    className = 'kaboom_%s' % uuid.uuid4().hex  # TODO: use random class
-    iconPathname = getNormalizedPathname("../presenter/cef/icon.ico")
+    windowName = uuid.uuid4().hex
+    className = uuid.uuid4().hex
+    iconPathname = os.path.join(ASSETS_PATH, 'trident', 'icon.ico')
 
     wndclass = win32gui.WNDCLASS()
     wndclass.hInstance = win32api.GetModuleHandle(None)
@@ -160,9 +160,9 @@ def start(callback, userAgent, serverPort, bridgeToken, bootToken, mustSecure, u
     wndclass.lpfnWndProc = {
         win32con.WM_CLOSE: CloseWindow,
         win32con.WM_DESTROY: QuitApplication,
-        win32con.WM_SIZE: cefpython.WindowUtils.OnSize,
-        win32con.WM_SETFOCUS: cefpython.WindowUtils.OnSetFocus,
-        win32con.WM_ERASEBKGND: cefpython.WindowUtils.OnEraseBackground
+        win32con.WM_SIZE: msie.WindowUtils.OnSize,
+        win32con.WM_SETFOCUS: msie.WindowUtils.OnSetFocus,
+        win32con.WM_ERASEBKGND: msie.WindowUtils.OnEraseBackground
     }
     win32gui.RegisterClass(wndclass)
 
@@ -208,12 +208,12 @@ def start(callback, userAgent, serverPort, bridgeToken, bootToken, mustSecure, u
     smallIcon = win32gui.LoadImage(0, iconPathname, win32con.IMAGE_ICON, smallX, smallY, win32con.LR_LOADFROMFILE)
     win32api.SendMessage(windowId, win32con.WM_SETICON, win32con.ICON_SMALL, smallIcon)
 
-    windowInfo = cefpython.WindowInfo()
+    windowInfo = msie.WindowInfo()
     windowInfo.SetAsChild(windowId)
 
     protocol = 'https:' if mustSecure else 'http:'
     screen = 'configure' if not len(userConfig['sources']) else 'load'
-    browser = cefpython.CreateBrowserSync(
+    browser = msie.CreateBrowserSync(
         windowInfo,
         CEF_BROWSER_SETTINGS,
         navigateUrl='%s//127.0.0.1:%d/%s.asp' % (protocol, serverPort, screen),
@@ -224,7 +224,7 @@ def start(callback, userAgent, serverPort, bridgeToken, bootToken, mustSecure, u
 
     bridge = JavascriptBridge(browser)
 
-    jsBindings = cefpython.JavascriptBindings(bindToFrames=True, bindToPopups=True)
+    jsBindings = msie.JavascriptBindings(bindToFrames=True, bindToPopups=True)
     jsBindings.SetProperty('ᴠ', bootToken)  # http://www.unicode.org/Public/security/revision-06/confusables.txt
     jsBindings.SetProperty('ka', {'config': userConfig})
     jsBindings.SetObject('__%s__' % bridgeToken, bridge)
@@ -232,24 +232,24 @@ def start(callback, userAgent, serverPort, bridgeToken, bootToken, mustSecure, u
     jsBindings.SetProperty('navigator', {'userAgent': ENTROPY_SEED})
     browser.SetJavascriptBindings(jsBindings)
 
-    cefpython.MessageLoop()
-    cefpython.Shutdown()
+    msie.MessageLoop()
+    msie.Shutdown()
 
     shutdownAll()
 
 
 def stop():
-    global cefpython
-    cefpython.QuitMessageLoop()
-    cefpython.Shutdown()
+    global msie
+    msie.QuitMessageLoop()
+    msie.Shutdown()
 
     global shutdownAll
     shutdownAll()
 
 
 def CloseWindow(windowHandle, message, wparam, lparam):
-    global cefpython
-    browser = cefpython.GetBrowserByWindowHandle(windowHandle)
+    global msie
+    browser = msie.GetBrowserByWindowHandle(windowHandle)
     browser.CloseBrowser()
 
     # print 'CloseWindow'

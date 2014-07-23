@@ -90,7 +90,7 @@ if __name__ == '__main__':
 
     # sys.excepthook = handleException
 
-    if DEBUG:
+    if True: # DEBUG
         from scripts.packBlobs import run as runPackBlobs
         runPackBlobs()
     # END if DEBUG

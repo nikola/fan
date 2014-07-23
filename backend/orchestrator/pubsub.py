@@ -9,7 +9,8 @@ import json
 from pants.http import WebSocket
 
 from settings import DEBUG
-from settings.net import SERVER_HEADERS
+
+from . import SERVER_HEADERS
 
 
 class PubSub(WebSocket):

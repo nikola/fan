@@ -19,7 +19,6 @@ from pants.http.utils import HTTPHeaders
 
 from settings import DEBUG
 from settings import BASE_DIR
-from settings.net import SERVER_HEADERS
 from settings.presenter import CEF_REAL_AGENT
 from identifier import getImageConfiguration
 from downloader.images import downloadBackdrop
@@ -28,7 +27,7 @@ from utils.fs import getDrives
 from utils.config import getCurrentUserConfig
 from identifier.fixture import TOP_250
 
-from . import logger
+from . import logger, SERVER_HEADERS
 
 IMG_MIME_TYPES = {
     'JPEG': 'image/jpeg',

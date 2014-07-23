@@ -73,7 +73,7 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
     if DEBUG:
         appModule.userAgent = userAgent
         appModule.serverPort = serverPort
-    # END IF DEBUG
+    # END if DEBUG
 
     app = Application(debug=DEBUG)
     app.add('', appModule)
@@ -167,10 +167,10 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                             )
                             if engine is not None: engine.poll(poll_timeout=0.015)
 
-                            # DEUG
-                            logger.info('From Dir:  %s\t\t(%s)' % (basedataFromDir.get('title'), basedataFromDir.get('year', '?')))
-                            logger.info('From File: %s\t\t(%s)' % (basedataFromStream.get('title'), basedataFromStream.get('year', '?')))
-                            # END DEBUG
+
+                            # logger.info('From Dir:  %s\t\t(%s)' % (basedataFromDir.get('title'), basedataFromDir.get('year', '?')))
+                            # logger.info('From File: %s\t\t(%s)' % (basedataFromStream.get('title'), basedataFromStream.get('year', '?')))
+
 
                             if movieRecord is None:
                                 logger.warning('Could not identify file: %s' % streamLocation) # TODO: handle this! perhaps try again when app is re-launched?

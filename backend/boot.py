@@ -93,7 +93,7 @@ if __name__ == '__main__':
     if DEBUG:
         from scripts.packBlobs import run as runPackBlobs
         runPackBlobs()
-    # END DEBUG
+    # END if DEBUG
 
     logger.info('>' * 80)
     logger.info('Starting application.')
@@ -110,7 +110,7 @@ if __name__ == '__main__':
         serverPort = getVacantPort()
         if DEBUG:
             serverPort = 50000
-        # END IF DEBUG
+        # END if DEBUG
 
         certificateLocation = getCertificateLocation()
 

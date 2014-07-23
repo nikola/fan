@@ -152,7 +152,7 @@ def serveGui(request):
 
         if DEBUG and request.headers.get('User-Agent', None) != module.userAgent:
             html = html.replace('</script>', '; var ᴠ = "%s";</script>' % module.bootToken)
-        # END IF DEBUG
+        # END if DEBUG
 
         stream = StringIO()
         with gzip.GzipFile(filename='dummy', mode='wb', fileobj=stream) as gzipStream:

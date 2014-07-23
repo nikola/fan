@@ -10,14 +10,13 @@
 __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
-import sys
 import logging
 from subprocess import Popen
 
 import win32api
+import pylzma
 
-from settings import LOG_CONFIG, APP_STORAGE_PATH
-from settings.player import MPCHC_INI
+from settings import LOG_CONFIG, APP_STORAGE_PATH, BASE_DIR
 from utils.fs import getLogFileHandler
 from updater.lib import *
 
@@ -159,8 +158,11 @@ def _patchManifest():
 
 
 def _writeConfig():
+    with open(os.path.join(BASE_DIR, 'backend', 'blobs', '4ebc0ca1e8324ba6a134ca78b1ca3088'), 'rb') as fp:
+        compressed = fp.read()
+    ini = pylzma.decompress(compressed)
     with open(os.path.join(PLAYER_AMALGAM_PATH, 'mpc-hc.ini'), 'wb') as fp:
-        fp.write(MPCHC_INI)
+        fp.write(ini)
 
 
 def update():

@@ -9,7 +9,6 @@ import re
 import pylzma
 from hashlib import md5 as MD5
 
-
 BASE_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..')
 BLOBS_PATH = os.path.join(BASE_DIR, 'backend', 'blobs')
 
@@ -176,6 +175,12 @@ def run():
 
         with open(os.path.join(BLOBS_PATH, filename), 'wb') as fp:
             fp.write(compressed)
+
+    # Compress MPC-HC configuration.
+    from settings.player import MPCHC_INI
+    compressed = pylzma.compress(MPCHC_INI)
+    with open(os.path.join(BLOBS_PATH, '4ebc0ca1e8324ba6a134ca78b1ca3088'), 'wb') as fp:
+        fp.write(compressed)
 
 
 if __name__ == '__main__':

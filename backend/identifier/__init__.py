@@ -11,10 +11,11 @@ import logging
 from simplejson import JSONDecodeError
 
 from settings import LOG_CONFIG
-from settings.collector import THEMOVIEDB_API_KEY
 from utils.net import makeThrottledGetRequest, makeUnthrottledGetRequest
 from utils.fs import getLogFileHandler
 
+
+THEMOVIEDB_API_KEY = 'ef89c0a371440a7226e1be2ddfe84318'
 
 STREAM_SIZE_THRESHOLD = 1024 * 1024 * 10 # 10 MiB
 

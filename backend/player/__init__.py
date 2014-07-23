@@ -11,7 +11,7 @@ __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 import logging
-from subprocess import Popen
+from subprocess import Popen, PIPE, CREATE_NEW_PROCESS_GROUP
 
 import win32api
 from pylzma import decompress as uppercase
@@ -171,9 +171,13 @@ def update():
 
 
 def playFile(location):
+    kwargs = {}
+    DETACHED_PROCESS = 0x00000008
+    kwargs.update(creationflags=DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP)
+
     process = Popen([
         os.path.join(PLAYER_AMALGAM_PATH, 'mpc-hc.exe'),
         location,
         '/play', '/close', '/fullscreen',
-    ])
+    ]) # , stdin=PIPE, stdout=PIPE, stderr=PIPE, **kwargs)
     process.wait()

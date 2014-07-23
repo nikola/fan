@@ -25,11 +25,10 @@ def _startPlayer(queue):
             command = queue.get_nowait()
             if command == 'player:up-to-date':
                 isPlayerUpToDate = True
+
                 queue.task_done()
             elif command == 'player:stop':
-                # print 'attempting to shut down player stream manager ...'
                 playerStreamManager.shutdown()
-                # print '... shut down player stream manager!'
 
                 queue.task_done()
                 break

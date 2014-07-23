@@ -8,7 +8,7 @@ import sys
 import os
 from utils.win32 import getAppStoragePathname
 
-DEBUG = True # END DEBUG
+DEBUG = False # END DEBUG
 BASE_DIR = os.path.dirname(sys.executable) if hasattr(sys, 'frozen') else os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..'))
 ASSETS_PATH = sys._MEIPASS if getattr(sys, 'frozen', None) else BASE_DIR
 EXE_PATH = sys.executable if getattr(sys, 'frozen', None) else os.path.join(BASE_DIR, 'dummy.exe')

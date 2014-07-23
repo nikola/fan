@@ -13,7 +13,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import NoResultFound
 
 from settings import EXE_PATH
-from models.common import Base, GUID, createNamedTuple, createUuid # , DictSerializable
+from models.common import Base, GUID, createNamedTuple, createUuid
 from models.streams import Stream
 # from models.genres import Genre
 from models.movies import Movie

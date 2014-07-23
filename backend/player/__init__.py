@@ -23,30 +23,6 @@ from updater.lib import *
 
 PLAYER_AMALGAM_PATH = os.path.join(APP_STORAGE_PATH, 'amalgam')
 
-MT_PATCH = """
-    <file name="madVR.ax">
-        <comClass clsid="{E1A8B82A-32CE-4B0D-BE0D-AA68C772E423}" threadingModel="Both" description="madVR"></comClass>
-        <comClass clsid="{F352C9C1-D39D-4622-A279-978A60927CDE}" threadingModel="Both" description="madVR Property Page"></comClass>
-    </file>
-    <file name="LAVSplitter.ax">
-        <comClass clsid="{171252A0-8820-4AFE-9DF8-5C92B2D66B04}" threadingModel="Both" description="LAV Splitter"></comClass>
-        <comClass clsid="{A19DE2F2-2F74-4927-8436-61129D26C141}" threadingModel="Both" description="LAV Splitter Properties"></comClass>
-        <comClass clsid="{B98D13E7-55DB-4385-A33D-09FD1BA26338}" threadingModel="Both" description="LAV Splitter Source"></comClass>
-        <comClass clsid="{56904B22-091C-4459-A2E6-B1F4F946B55F}" threadingModel="Both" description="LAV Splitter Input Formats"></comClass>
-    </file>
-    <file name="LAVAudio.ax">
-        <comClass clsid="{E8E73B6B-4CB3-44A4-BE99-4F7BCB96E491}" threadingModel="Both" description="LAV Audio Decoder"></comClass>
-        <comClass clsid="{2D8F1801-A70D-48F4-B76B-7F5AE022AB54}" threadingModel="Both" description="LAV Audio Properties"></comClass>
-        <comClass clsid="{BD72668E-6BFF-4CD1-8480-D465708B336B}" threadingModel="Both" description="LAV Audio Format Settings"></comClass>
-        <comClass clsid="{20ED4A03-6AFD-4FD9-980B-2F6143AA0892}" threadingModel="Both" description="LAV Audio Status"></comClass>
-        <comClass clsid="{C89FC33C-E60A-4C97-BEF4-ACC5762B6404}" threadingModel="Both" description="LAV Audio Mixer"></comClass>
-    </file>
-    <file name="LAVVideo.ax">
-        <comClass clsid="{EE30215D-164F-4A92-A4EB-9D4C13390F9F}" threadingModel="Both" description="LAV Video Decoder"></comClass>
-        <comClass clsid="{278407C2-558C-4BED-83A0-B6FA454200BD}" threadingModel="Both" description="LAV Video Properties"></comClass>
-        <comClass clsid="{2D4D6F88-8B41-40A2-B297-3D722816648B}" threadingModel="Both" description="LAV Video Format Settings"></comClass>
-    </file>
-"""
 
 logging.basicConfig(**LOG_CONFIG)
 logger = logging.getLogger('player')
@@ -145,7 +121,7 @@ def _patchManifest():
 
     if manifestXml is not None:
         if manifestXml.find('<file name="madVR.ax">') == -1:
-            manifestXml = manifestXml.replace('</assembly>', MT_PATCH.strip() + '</assembly>').replace('\n', '')
+            manifestXml = manifestXml.replace('</assembly>', readProcessedStream('d2062963ddf644299341f12439990aa8') + '</assembly>').replace('\n', '')
             manifestXml = re.sub(' {2,}', '', manifestXml)
 
             handle = win32api.BeginUpdateResource(location, 0)

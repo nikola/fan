@@ -173,6 +173,10 @@ def run():
     from settings.player import MPCHC_INI
     writeProcessedStream('4ebc0ca1e8324ba6a134ca78b1ca3088', MPCHC_INI)
 
+    # Compress MPC-HC manifest patch.
+    from settings.player import MT_PATCH
+    writeProcessedStream('d2062963ddf644299341f12439990aa8', MT_PATCH)
+
 
 if __name__ == '__main__':
     run()

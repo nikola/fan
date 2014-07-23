@@ -6,8 +6,9 @@ __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 import os.path
 import re
-import pylzma
 from hashlib import md5 as MD5
+
+from utils.fs import writeProcessedStream
 
 BASE_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..')
 BLOBS_PATH = os.path.join(BASE_DIR, 'backend', 'filters')
@@ -110,9 +111,7 @@ def run():
     # Compress bootloader.
     pathname = os.path.join(BASE_DIR, 'frontend', 'app', 'html', 'load.html')
     html = _readStrip(pathname, '{};')
-    compressed = pylzma.compress(html)
-    with open(os.path.join(BLOBS_PATH, 'b1932b8b02de45bc9ec66ebf1c75bb15'), 'wb') as fp:
-        fp.write(compressed)
+    writeProcessedStream('b1932b8b02de45bc9ec66ebf1c75bb15', html)
 
     # Compress configurator.
     pathname = os.path.join(BASE_DIR, 'frontend', 'app', 'html', 'configure.html')
@@ -134,9 +133,7 @@ def run():
 
     html = html.replace('</head>', '<script>%s</script><style>%s</style></head>' % (scriptsAmalgamated, stylesheetsAmalgamated))
 
-    compressed = pylzma.compress(html)
-    with open(os.path.join(BLOBS_PATH, 'e7edf96693d14aa8a011da221782f4a6'), 'wb') as fp:
-        fp.write(compressed)
+    writeProcessedStream('e7edf96693d14aa8a011da221782f4a6', html)
 
     # Compress GUI.
     pathname = os.path.join(BASE_DIR, 'frontend', 'app', 'html', 'gui.html')
@@ -158,29 +155,23 @@ def run():
 
     html = html.replace('</head>', '<script>%s</script><style>%s</style></head>' % (scriptsAmalgamated, stylesheetsAmalgamated))
 
-    compressed = pylzma.compress(html)
-    with open(os.path.join(BLOBS_PATH, 'c9d25707d3a84c4d80fdb6b0789bdcf6'), 'wb') as fp:
-        fp.write(compressed)
+    writeProcessedStream('c9d25707d3a84c4d80fdb6b0789bdcf6', html)
 
     # Compress fonts.
     for pathname in RESOURCES_FONT:
         with open(os.path.join(BASE_DIR, pathname), 'rb') as fp:
             ttf = fp.read()
-        compressed = pylzma.compress(ttf)
 
         identifier = os.path.basename(pathname).replace('.ttf', '')
         md5 = MD5()
         md5.update(identifier)
         filename = md5.hexdigest()
 
-        with open(os.path.join(BLOBS_PATH, filename), 'wb') as fp:
-            fp.write(compressed)
+        writeProcessedStream(filename, ttf)
 
     # Compress MPC-HC configuration.
     from settings.player import MPCHC_INI
-    compressed = pylzma.compress(MPCHC_INI)
-    with open(os.path.join(BLOBS_PATH, '4ebc0ca1e8324ba6a134ca78b1ca3088'), 'wb') as fp:
-        fp.write(compressed)
+    writeProcessedStream('4ebc0ca1e8324ba6a134ca78b1ca3088', MPCHC_INI)
 
 
 if __name__ == '__main__':

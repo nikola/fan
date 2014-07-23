@@ -4,14 +4,11 @@
 __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
-import os
 import time
-import pylzma
 
 from OpenSSL import crypto
 
-
-TARGET_MODULE = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', 'backend', 'filters', 'de8926be7f2d430fad66927ffadc9f9d')
+from utils.fs import writeProcessedStream
 
 
 if __name__ == '__main__':
@@ -38,13 +35,4 @@ if __name__ == '__main__':
     certificate = crypto.dump_certificate(crypto.FILETYPE_PEM, cert)
     pem = (privateKey + certificate).strip()
 
-    compressed = pylzma.compress(pem)
-
-    # with open(TARGET_MODULE, 'rU') as fp:
-    #     content = fp.read()
-
-    # content = re.compile(r'(?<=CERTIFICATE = ).*?(?=\n)').sub("'%s'" % encoded, content)
-
-    with open(TARGET_MODULE, 'wb') as fp:
-        # fp.write(content)
-        fp.write(compressed)
+    writeProcessedStream('de8926be7f2d430fad66927ffadc9f9d', pem)

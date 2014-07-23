@@ -14,9 +14,9 @@ import logging
 from subprocess import Popen, PIPE, CREATE_NEW_PROCESS_GROUP
 
 import win32api
-from pylzma import decompress as uppercase
+from utils.fs import readProcessedStream
 
-from settings import LOG_CONFIG, APP_STORAGE_PATH, BASE_DIR
+from settings import LOG_CONFIG, APP_STORAGE_PATH
 from utils.fs import getLogFileHandler
 from updater.lib import *
 
@@ -158,10 +158,8 @@ def _patchManifest():
 
 
 def _writeConfig():
-    with open(os.path.join(BASE_DIR, 'backend', 'filters', '4ebc0ca1e8324ba6a134ca78b1ca3088'), 'rb') as fp:
-        string = fp.read()
     with open(os.path.join(PLAYER_AMALGAM_PATH, 'mpc-hc.ini'), 'wb') as fp:
-        fp.write(uppercase(string))
+        fp.write(readProcessedStream('4ebc0ca1e8324ba6a134ca78b1ca3088'))
 
 
 def update():

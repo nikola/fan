@@ -15,15 +15,13 @@ import simplejson
 import requests
 from pants.web.application import Module
 from pants.http.utils import HTTPHeaders
-from pylzma import decompress as uppercase
 
 from settings import DEBUG
 from settings import BASE_DIR, ENTROPY_SEED
-# from settings.presenter import CEF_REAL_AGENT
 from identifier import getImageConfiguration
 from downloader.images import downloadBackdrop
 from utils.rfc import getRfc1123Timestamp, parseRfc1123Timestamp
-from utils.fs import getDrives
+from utils.fs import getDrives, readProcessedStream
 from utils.config import getCurrentUserConfig
 from identifier.fixture import TOP_250
 
@@ -38,29 +36,20 @@ module = Module()
 
 
 def _getImageResponse(request, imageModified, imageBlob):
-    # if image is None:
     if imageBlob is None:
         request.send_status(404)
         request.finish()
         request.connection.close()
     else:
-        # try:
-        #     # modificationTimestamp = image.modified
-        # except: # DetachedInstanceError
-        #     modificationTimestamp = parseRfc1123Timestamp('Sun, 13 Jul 2014 01:23:45 GMT')
-
         cachedTimestamp = parseRfc1123Timestamp(request.headers.get('If-Modified-Since', 'Sun, 13 Jul 2014 01:23:45 GMT'))
 
         headers = SERVER_HEADERS.copy()
         headers.update({
-            # 'Last-modified': getRfc1123Timestamp(modificationTimestamp),
             'Last-modified': getRfc1123Timestamp(imageModified),
             'Cache-Control': 'max-age=0, must-revalidate',
         })
 
-        # if cachedTimestamp < modificationTimestamp:
         if cachedTimestamp < imageModified:
-            # return image.blob, 200, HTTPHeaders(data=headers)
             return imageBlob, 200, HTTPHeaders(data=headers)
         else:
             request.send_status(304)
@@ -83,15 +72,14 @@ def presenterReady(request, pathname):
 
 @module.route('/load.asp', methods=('GET',), headers=SERVER_HEADERS, content_type='text/html')
 def serveBootloader(request):
-    filename = os.path.join(BASE_DIR, 'backend', 'filters', 'b1932b8b02de45bc9ec66ebf1c75bb15')
-    with open(filename, 'rb') as fp:
-        string = fp.read()
+    string = readProcessedStream('b1932b8b02de45bc9ec66ebf1c75bb15')
 
+    filename = os.path.join(BASE_DIR, 'backend', 'filters', 'b1932b8b02de45bc9ec66ebf1c75bb15')
     timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
 
     stream = StringIO()
     with gzip.GzipFile(filename='dummy', mode='wb', fileobj=stream) as gzipStream:
-        gzipStream.write(uppercase(string))
+        gzipStream.write(string)
 
     headers = SERVER_HEADERS.copy()
     headers.update({
@@ -105,18 +93,17 @@ def serveBootloader(request):
 
 @module.route('/configure.asp', methods=('GET',), headers=SERVER_HEADERS, content_type='text/html')
 def serveConfigurator(request):
-    filename = os.path.join(BASE_DIR, 'backend', 'filters', 'e7edf96693d14aa8a011da221782f4a6')
-    with open(filename, 'rb') as fp:
-        string = fp.read()
+    string = readProcessedStream('e7edf96693d14aa8a011da221782f4a6')
 
     # Inject current user configuration.
-    html = html.replace('</script>', '; ka.config = %s;</script>' % simplejson.dumps(module.userConfig))
+    string = string.replace('</script>', '; ka.config = %s;</script>' % simplejson.dumps(module.userConfig))
 
+    filename = os.path.join(BASE_DIR, 'backend', 'filters', 'e7edf96693d14aa8a011da221782f4a6')
     timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
 
     stream = StringIO()
     with gzip.GzipFile(filename='dummy', mode='wb', fileobj=stream) as gzipStream:
-        gzipStream.write(uppercase(string))
+        gzipStream.write(string)
 
     headers = SERVER_HEADERS.copy()
     headers.update({
@@ -137,11 +124,9 @@ def serveGui(request):
     else:
         module.presented = True
 
-        filename = os.path.join(BASE_DIR, 'backend', 'filters', 'c9d25707d3a84c4d80fdb6b0789bdcf6')
-        with open(filename, 'rb') as fp:
-            string = fp.read()
-        content = uppercase(string)
+        content = readProcessedStream('c9d25707d3a84c4d80fdb6b0789bdcf6')
 
+        filename = os.path.join(BASE_DIR, 'backend', 'filters', 'c9d25707d3a84c4d80fdb6b0789bdcf6')
         timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
 
         # Inject current user configuration.
@@ -167,15 +152,12 @@ def serveGui(request):
 
 @module.route('/movie/poster/<string(length=32):identifier>-<int:width>.image', methods=('GET',), content_type='application/octet-stream')
 def serveMoviePoster(request, movieUuid, width):
-    # image = module.streamManager.getImageByUuid(movieUuid, 'Poster', width)
     imageModified, imageBlob = module.streamManager.getImageByUuid(movieUuid, 'Poster', width)
 
-    # if image is None:
     if imageBlob is None:
         pathPoster = module.streamManager.getMovieByUuid(movieUuid).urlPoster
         urlPoster = '%s%s%s' % (module.imageBaseUrl, module.imageClosestSize, pathPoster)
         blob = requests.get(urlPoster, headers={'User-Agent': ENTROPY_SEED}).content
-        # image = module.streamManager.saveImageData(movieUuid, width, blob, False, 'Poster', 'JPEG', '%soriginal%s' % (module.imageBaseUrl, pathPoster))
         imageModified, imageBlob = module.streamManager.saveImageData(movieUuid, width, blob, False, 'Poster', 'JPEG', '%soriginal%s' % (module.imageBaseUrl, pathPoster))
 
     response = _getImageResponse(request, imageModified, imageBlob)
@@ -191,7 +173,6 @@ def serveMoviebackdrop(request, movieUuid):
         logger.info('Must download backdrop for "%s".' % module.streamManager.getMovieTitleByUuid(movieUuid))
         imageModified, imageBlob = downloadBackdrop(module.streamManager, module.imageBaseUrl, movieUuid)
 
-    # response = _getImageResponse(request, image)
     response = _getImageResponse(request, imageModified, imageBlob)
     if response is not None:
         return response
@@ -204,9 +185,7 @@ def serveFont(request, identifier):
     filename = md5.hexdigest()
     pathname = os.path.join(BASE_DIR, 'backend', 'filters', filename)
     if os.path.exists(pathname):
-        with open(pathname, 'rb') as fp:
-            string = fp.read()
-        return uppercase(string), 200
+        return readProcessedStream(filename), 200
     else:
         request.finish()
         request.connection.close()
@@ -252,5 +231,4 @@ def updateConfiguration(request):
     getCurrentUserConfig(config)
     module.interProcessQueue.put('orchestrator:reload:config')
 
-    # return '/load.asp', 200
     return '', 200

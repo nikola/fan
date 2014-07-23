@@ -121,7 +121,7 @@ if __name__ == '__main__':
         analyzer = startAnalyzer(interProcessQueue)
         player = startPlayer(interProcessQueue)
 
-        arguments = (getUserAgent(), serverPort, uuid4().hex, uuid4().hex, False, userConfig)
+        arguments = (getUserAgent(), serverPort, uuid4().hex, uuid4().hex, True, userConfig)
 
         # Start process, but spawn file scanner and watcher only after receiving a kick-off event from the presenter.
         orchestrator = startOrchestrator(interProcessQueue, certificateLocation, *arguments)

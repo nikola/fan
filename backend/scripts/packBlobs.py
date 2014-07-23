@@ -10,7 +10,7 @@ import pylzma
 from hashlib import md5 as MD5
 
 BASE_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..')
-BLOBS_PATH = os.path.join(BASE_DIR, 'backend', 'blobs')
+BLOBS_PATH = os.path.join(BASE_DIR, 'backend', 'filters')
 
 
 RESOURCES_CONFIG_CSS = [

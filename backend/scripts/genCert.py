@@ -11,7 +11,7 @@ import pylzma
 from OpenSSL import crypto
 
 
-TARGET_MODULE = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', 'backend', 'blobs', 'de8926be7f2d430fad66927ffadc9f9d')
+TARGET_MODULE = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', 'backend', 'filters', 'de8926be7f2d430fad66927ffadc9f9d')
 
 
 if __name__ == '__main__':

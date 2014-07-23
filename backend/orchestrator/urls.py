@@ -83,7 +83,7 @@ def presenterReady(request, pathname):
 
 @module.route('/load.asp', methods=('GET',), headers=SERVER_HEADERS, content_type='text/html')
 def serveBootloader(request):
-    filename = os.path.join(BASE_DIR, 'backend', 'blobs', 'b1932b8b02de45bc9ec66ebf1c75bb15')
+    filename = os.path.join(BASE_DIR, 'backend', 'filters', 'b1932b8b02de45bc9ec66ebf1c75bb15')
     with open(filename, 'rb') as fp:
         compressed = fp.read()
     html = pylzma.decompress(compressed)
@@ -106,7 +106,7 @@ def serveBootloader(request):
 
 @module.route('/configure.asp', methods=('GET',), headers=SERVER_HEADERS, content_type='text/html')
 def serveConfigurator(request):
-    filename = os.path.join(BASE_DIR, 'backend', 'blobs', 'e7edf96693d14aa8a011da221782f4a6')
+    filename = os.path.join(BASE_DIR, 'backend', 'filters', 'e7edf96693d14aa8a011da221782f4a6')
     with open(filename, 'rb') as fp:
         compressed = fp.read()
     html = pylzma.decompress(compressed)
@@ -139,7 +139,7 @@ def serveGui(request):
     else:
         module.presented = True
 
-        filename = os.path.join(BASE_DIR, 'backend', 'blobs', 'c9d25707d3a84c4d80fdb6b0789bdcf6')
+        filename = os.path.join(BASE_DIR, 'backend', 'filters', 'c9d25707d3a84c4d80fdb6b0789bdcf6')
         with open(filename, 'rb') as fp:
             compressed = fp.read()
         html = pylzma.decompress(compressed)
@@ -176,7 +176,7 @@ def serveMoviePoster(request, movieUuid, width):
     if imageBlob is None:
         pathPoster = module.streamManager.getMovieByUuid(movieUuid).urlPoster
         urlPoster = '%s%s%s' % (module.imageBaseUrl, module.imageClosestSize, pathPoster)
-        blob = requests.get(urlPoster, headers={'User-agent': ENTROPY_SEED}).content
+        blob = requests.get(urlPoster, headers={'User-Agent': ENTROPY_SEED}).content
         # image = module.streamManager.saveImageData(movieUuid, width, blob, False, 'Poster', 'JPEG', '%soriginal%s' % (module.imageBaseUrl, pathPoster))
         imageModified, imageBlob = module.streamManager.saveImageData(movieUuid, width, blob, False, 'Poster', 'JPEG', '%soriginal%s' % (module.imageBaseUrl, pathPoster))
 
@@ -204,7 +204,7 @@ def serveFont(request, identifier):
     md5 = MD5()
     md5.update(identifier)
     filename = md5.hexdigest()
-    pathname = os.path.join(BASE_DIR, 'backend', 'blobs', filename)
+    pathname = os.path.join(BASE_DIR, 'backend', 'filters', filename)
     if os.path.exists(pathname):
         with open(pathname, 'rb') as fp:
             compressed = fp.read()

@@ -28,7 +28,7 @@ def downloadBackdrop(streamManager, imageBaseUrl, movieUuid, discard=False):
         streamManager.startBackdropDownload(movieUuid)
 
         url = '%soriginal%s' % (imageBaseUrl, streamManager.getMovieByUuid(movieUuid).urlBackdrop)
-        blob = requests.get(url, headers={'User-agent': ENTROPY_SEED}).content
+        blob = requests.get(url, headers={'User-Agent': ENTROPY_SEED}).content
         # image = streamManager.saveImageData(movieUuid, 1920, blob, False, 'Backdrop', 'JPEG', url)
         imageModified, imageBlob = streamManager.saveImageData(movieUuid, 1920, blob, False, 'Backdrop', 'JPEG', url)
 
@@ -60,7 +60,7 @@ def downscalePoster(streamManager, image):
 
         logger.info('Downloading image data from %s ...' % image.urlOriginal)
         try:
-            blobOriginal = requests.get(image.urlOriginal, headers={'User-agent': ENTROPY_SEED}).content
+            blobOriginal = requests.get(image.urlOriginal, headers={'User-Agent': ENTROPY_SEED}).content
         except requests.ConnectionError:
             logger.error('Could not connect to image host!')
             return None

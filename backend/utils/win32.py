@@ -39,9 +39,8 @@ def getAppStoragePathname():
     return pathname
 
 
+"""
 def getNormalizedPathname(file=None):
-    """
-    """
     # encodeURL param - will call urllib.pathname2url(), only when file is empty (current dir)
     # or is relative path ("test.html", "some/test.html"), we need to encode it before passing
     # to CreateBrowser(), otherwise it is encoded by CEF internally and becomes (chinese characters):
@@ -71,3 +70,4 @@ def getNormalizedPathname(file=None):
         # else:
         return path
     return file
+"""

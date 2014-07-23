@@ -241,7 +241,7 @@ out/
 
 
 ## Project-specific.
-backend/filters/
+filters/
 dummy.exe
 compiler/clean/
 compiler/pyminifier/

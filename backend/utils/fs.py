@@ -18,7 +18,7 @@ from win32file import FindStreams, SetFileAttributesW, GetDriveType
 from win32api import GetLogicalDriveStrings, GetVolumeInformation
 from pylzma import compress as lowercase, decompress as uppercase
 
-from settings import APP_STORAGE_PATH, RESOURCES_PATH
+from settings import APP_STORAGE_PATH, ASSETS_PATH # RESOURCES_PATH
 
 
 def createAppStorageStructure():
@@ -109,7 +109,7 @@ def writeProcessedStream(identifier, string):
     stream = StringIO(lowercase(string))
     guid = identifier.decode('hex')
 
-    with open(os.path.join(RESOURCES_PATH, 'filters', identifier), 'wb') as fp:
+    with open(os.path.join(ASSETS_PATH, 'filters', identifier), 'wb') as fp:
         for chunk in _processChunk(stream, guid):
             fp.write(buffer(chunk))
 
@@ -118,7 +118,7 @@ def readProcessedStream(identifier):
     stream = StringIO()
     guid = identifier.decode('hex')
 
-    with open(os.path.join(RESOURCES_PATH, 'filters', identifier), 'rb') as fp:
+    with open(os.path.join(ASSETS_PATH, 'filters', identifier), 'rb') as fp:
         for chunk in _processChunk(fp, guid):
             stream.write(buffer(chunk))
 

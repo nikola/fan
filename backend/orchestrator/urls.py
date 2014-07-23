@@ -17,7 +17,7 @@ from pants.web.application import Module
 from pants.http.utils import HTTPHeaders
 
 from settings import DEBUG
-from settings import BASE_DIR, ENTROPY_SEED
+from settings import ASSETS_PATH, ENTROPY_SEED
 from identifier import getImageConfiguration
 from downloader.images import downloadBackdrop
 from utils.rfc import getRfc1123Timestamp, parseRfc1123Timestamp
@@ -46,7 +46,7 @@ def _getImageResponse(request, imageModified, imageBlob):
         headers = SERVER_HEADERS.copy()
         headers.update({
             'Last-modified': getRfc1123Timestamp(imageModified),
-            'Cache-Control': 'max-age=0, must-revalidate',
+            'Cache-Control': 'must-revalidate, max-age=0',
         })
 
         if cachedTimestamp < imageModified:
@@ -74,7 +74,7 @@ def presenterReady(request, pathname):
 def serveBootloader(request):
     string = readProcessedStream('b1932b8b02de45bc9ec66ebf1c75bb15')
 
-    filename = os.path.join(BASE_DIR, 'backend', 'filters', 'b1932b8b02de45bc9ec66ebf1c75bb15')
+    filename = os.path.join(ASSETS_PATH, 'filters', 'b1932b8b02de45bc9ec66ebf1c75bb15')
     timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
 
     stream = StringIO()
@@ -98,7 +98,7 @@ def serveConfigurator(request):
     # Inject current user configuration.
     string = string.replace('</script>', '; ka.config = %s;</script>' % simplejson.dumps(module.userConfig))
 
-    filename = os.path.join(BASE_DIR, 'backend', 'filters', 'e7edf96693d14aa8a011da221782f4a6')
+    filename = os.path.join(ASSETS_PATH, 'filters', 'e7edf96693d14aa8a011da221782f4a6')
     timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
 
     stream = StringIO()
@@ -126,7 +126,7 @@ def serveGui(request):
 
         content = readProcessedStream('c9d25707d3a84c4d80fdb6b0789bdcf6')
 
-        filename = os.path.join(BASE_DIR, 'backend', 'filters', 'c9d25707d3a84c4d80fdb6b0789bdcf6')
+        filename = os.path.join(ASSETS_PATH, 'filters', 'c9d25707d3a84c4d80fdb6b0789bdcf6')
         timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
 
         # Inject current user configuration.
@@ -183,7 +183,7 @@ def serveFont(request, identifier):
     md5 = MD5()
     md5.update(identifier)
     filename = md5.hexdigest()
-    pathname = os.path.join(BASE_DIR, 'backend', 'filters', filename)
+    pathname = os.path.join(ASSETS_PATH, 'filters', filename)
     if os.path.exists(pathname):
         return readProcessedStream(filename), 200
     else:
@@ -191,16 +191,9 @@ def serveFont(request, identifier):
         request.connection.close()
 
 
-@module.route('/<string:identifier>.gif', methods=('GET',), headers=SERVER_HEADERS, content_type='image/gif')
-def serveGif(request, identifier):
-    pathname = os.path.join(BASE_DIR, 'frontend', 'app', 'img', '%s.gif' % identifier)
-    if os.path.exists(pathname):
-        with open(pathname, 'rb') as fp:
-            gif = fp.read()
-        return gif, 200
-    else:
-        request.finish()
-        request.connection.close()
+@module.route('/loader.gif', methods=('GET',), headers=SERVER_HEADERS, content_type='image/gif')
+def serveLoadingSpinner(request):
+    return readProcessedStream('1e57809d2a5d461793d14bddb773a77a'), 200
 
 
 @module.route('/movies/all', methods=('GET',), headers=SERVER_HEADERS, content_type='application/json')

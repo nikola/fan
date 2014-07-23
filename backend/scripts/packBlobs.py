@@ -8,10 +8,11 @@ import os.path
 import re
 from hashlib import md5 as MD5
 
+from settings import BASE_DIR
 from utils.fs import writeProcessedStream
 
-BASE_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..')
-BLOBS_PATH = os.path.join(BASE_DIR, 'backend', 'filters')
+# BASE_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..')
+FILTERS_DIR = os.path.join(BASE_DIR, 'backend', 'filters')
 
 
 RESOURCES_CONFIG_CSS = [
@@ -176,7 +177,16 @@ def run():
     # Compress MPC-HC manifest patch.
     from settings.player import MT_PATCH
     writeProcessedStream('d2062963ddf644299341f12439990aa8', MT_PATCH)
+    
+    # Compress default configuration.
+    with open(os.path.join(BASE_DIR, 'config', 'default.json'), 'rU') as fp:
+        content = fp.read()
+    writeProcessedStream('781354b1bf474046888a703d21148e65', content)
 
+    # Compress loading spinner.
+    with open(os.path.join(BASE_DIR, 'frontend', 'app', 'img', 'loader.gif'), 'rb') as fp:
+        content = fp.read()
+    writeProcessedStream('1e57809d2a5d461793d14bddb773a77a', content)
 
 if __name__ == '__main__':
     run()

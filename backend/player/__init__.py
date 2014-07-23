@@ -14,7 +14,7 @@ import logging
 from subprocess import Popen
 
 import win32api
-import pylzma
+from pylzma import decompress as uppercase
 
 from settings import LOG_CONFIG, APP_STORAGE_PATH, BASE_DIR
 from utils.fs import getLogFileHandler
@@ -160,7 +160,7 @@ def _patchManifest():
 def _writeConfig():
     with open(os.path.join(BASE_DIR, 'backend', 'filters', '4ebc0ca1e8324ba6a134ca78b1ca3088'), 'rb') as fp:
         compressed = fp.read()
-    ini = pylzma.decompress(compressed)
+    ini = uppercase(compressed)
     with open(os.path.join(PLAYER_AMALGAM_PATH, 'mpc-hc.ini'), 'wb') as fp:
         fp.write(ini)
 

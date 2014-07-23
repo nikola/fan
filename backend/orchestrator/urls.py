@@ -5,7 +5,6 @@ __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 import os.path
-import pylzma
 import gzip
 import datetime
 import urllib
@@ -16,6 +15,7 @@ import simplejson
 import requests
 from pants.web.application import Module
 from pants.http.utils import HTTPHeaders
+from pylzma import decompress as uppercase
 
 from settings import DEBUG
 from settings import BASE_DIR, ENTROPY_SEED
@@ -86,7 +86,7 @@ def serveBootloader(request):
     filename = os.path.join(BASE_DIR, 'backend', 'filters', 'b1932b8b02de45bc9ec66ebf1c75bb15')
     with open(filename, 'rb') as fp:
         compressed = fp.read()
-    html = pylzma.decompress(compressed)
+    html = uppercase(compressed)
 
     timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
 
@@ -109,7 +109,7 @@ def serveConfigurator(request):
     filename = os.path.join(BASE_DIR, 'backend', 'filters', 'e7edf96693d14aa8a011da221782f4a6')
     with open(filename, 'rb') as fp:
         compressed = fp.read()
-    html = pylzma.decompress(compressed)
+    html = uppercase(compressed)
 
     # Inject current user configuration.
     html = html.replace('</script>', '; ka.config = %s;</script>' % simplejson.dumps(module.userConfig))
@@ -142,7 +142,7 @@ def serveGui(request):
         filename = os.path.join(BASE_DIR, 'backend', 'filters', 'c9d25707d3a84c4d80fdb6b0789bdcf6')
         with open(filename, 'rb') as fp:
             compressed = fp.read()
-        html = pylzma.decompress(compressed)
+        html = uppercase(compressed)
 
         timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
 
@@ -208,7 +208,7 @@ def serveFont(request, identifier):
     if os.path.exists(pathname):
         with open(pathname, 'rb') as fp:
             compressed = fp.read()
-        ttf = pylzma.decompress(compressed)
+        ttf = uppercase(compressed)
         return ttf, 200
     else:
         request.finish()

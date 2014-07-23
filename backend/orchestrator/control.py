@@ -14,7 +14,6 @@ from pants.http import HTTPServer
 from pants.web import Application
 
 from settings import DEBUG
-from settings.net import ENFORCED_CIPHERS
 from orchestrator.urls import module as appModule
 from orchestrator.pubsub import PubSub
 from models import StreamManager
@@ -79,7 +78,13 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
     app.add('', appModule)
 
     if mustSecure:
-        sslOptions = dict(do_handshake_on_connect=False, server_side=True, certfile=certificateLocation, ssl_version=3, ciphers=ENFORCED_CIPHERS)
+        sslOptions = dict(
+            do_handshake_on_connect=False,
+            server_side=True,
+            certfile=certificateLocation,
+            ssl_version=3,
+            ciphers='ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS',
+        )
         HTTPServer(_proxy).startSSL(sslOptions).listen(('', serverPort))
     else:
         HTTPServer(_proxy).listen(('', serverPort))

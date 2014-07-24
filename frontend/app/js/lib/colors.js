@@ -37,8 +37,9 @@ ka.lib.desaturateVisiblePosters = function () {
 
 ka.lib.undesaturateVisiblePosters = function () {
     for (var element, e = 0; element = ka.state.desaturationImageCache[e]; e++) {
-        element.removeClass('desaturate').addClass('undesaturate');
+        element.removeClass('desaturate desaturated').addClass('undesaturate');
     }
+    ka.state.desaturationImageCache = [];
 };
 
 

@@ -49,12 +49,15 @@ ka.lib.executeConfigSelection = function () {
         if (ka.state.gridSortCriterion != lastCriterion || ka.state.gridSortOrder != lastOrder) {
             var uuid = ka.lib.getMovieFromGridFocus().uuid;
             ka.lib.recalcMovieGrid();
-            ka.lib.updateMovieGrid();
 
             var coordinates = ka.state.gridLookupCoordByUuid[uuid];
             ka.state.gridPage = Math.floor(coordinates[1] / ka.settings.gridMaxRows);
             ka.state.gridFocusX = coordinates[0];
             ka.state.gridFocusY = coordinates[1] % ka.settings.gridMaxRows;
+
+            ka.state.desaturationImageCache = [];
+
+            ka.lib.updateMovieGrid();
 
             ka.lib.refocusGrid();
             $('#boom-poster-focus').velocity({translateZ: 0, left: '+=780'}, 0);

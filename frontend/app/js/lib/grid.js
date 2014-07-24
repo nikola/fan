@@ -176,6 +176,17 @@ ka.lib.updateMovieGrid = function () {
                     }
                 }
             }
+
+            if (ka.state.currentPageMode == 'config' && movie !== null) {
+                if (row >= ka.state.gridPage * ka.settings.gridMaxRows
+                        && row < (ka.state.gridPage + 1) * ka.settings.gridMaxRows
+                        && column < 4) {
+                    ka.state.desaturationImageCache.push($('#boom-poster-' + movie.uuid).addClass('desaturated'));
+                } else {
+                    $('#boom-poster-' + movie.uuid).removeClass('desaturate desaturated');
+                }
+            }
+
             currentCellIndex++;
         }
     }

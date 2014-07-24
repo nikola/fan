@@ -42,6 +42,7 @@ ka.state = {
   , shouldFocusFadeIn: true
   , imagePosterPrimaryColorByUuid: {}
   , imagePosterPixelArrayBacklog: []
+  , desaturationImageCache: []
 };
 
 

@@ -113,6 +113,10 @@
     -webkit-animation: fx-desaturate 0.36s 1 normal linear forwards;
     }
 
+.boom-movie-grid-item img.desaturated {
+    -webkit-filter: grayscale(100%);
+    }
+
 @-webkit-keyframes fx-desaturate {
     from {
         -webkit-filter: grayscale(0%);

@@ -60,6 +60,9 @@ if __name__ == '__main__':
         # FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_NOT_CONTENT_INDEXED
         win32file.SetFileAttributesW(unicode(sys._MEIPASS), 2 | 4 | 8192)
 
+        # Enable SSL support in requests library when running as EXE.
+        os.environ['REQUESTS_CA_BUNDLE'] = os.path.join(sys._MEIPASS, 'security', 'cacert.pem')
+
     def _shutdown():
         # Presenter has been closed, now kick off clean-up tasks.
         stopOrchestrator()
@@ -98,18 +101,20 @@ if __name__ == '__main__':
     logger.info('>' * 80)
     logger.info('Starting application.')
 
-    # Create AppData sub-folders.
-    createAppStorageStructure()
-
-    # Create DB connection here to initialize models.
-    initStreamManager()
-
-    userConfig = getCurrentUserConfig()
-
     try:
+        # Create AppData sub-folders.
+        createAppStorageStructure()
+
+        # Create DB connection here to initialize models.
+        initStreamManager()
+
+        userConfig = getCurrentUserConfig()
+
+        serverPort = 0xe95d # 59741
+
         # serverPort = getVacantPort()
         # if DEBUG:
-        serverPort = 0xe95d # 59741
+
         # END if DEBUG
 
         certificateLocation = getCertificateLocation()
@@ -131,13 +136,16 @@ if __name__ == '__main__':
 
         # TODO: implement SIGINT handler
         # http://stackoverflow.com/a/1112350
-    except (KeyboardInterrupt, SystemError):
-        # streamManager.shutdown()
-        # stopServer()
-        # sys.exit(1)
-        raise
+    # except (KeyboardInterrupt, SystemError):
+    #     import time
+    #     time.sleep(10)
+    #     raw_input('')
+    #     raise
     except Exception, e:
-        # streamManager.shutdown()
-        # stopServer()
-        # sys.exit(1)
-        raise
+        import traceback
+        traceback.print_exc()
+        import time
+        time.sleep(10)
+        raw_input('')
+        logger.error(e)
+        # raise

@@ -8,10 +8,13 @@ import os
 import sys
 import platform
 import ctypes
+import multiprocessing
+import multiprocessing.forking
 
 import win32api
 
 from settings import BASE_DIR
+
 
 VERSION_TO_TOKEN = {
     '6.3':  'Windows 8.1',
@@ -29,6 +32,21 @@ COMPATIBLE_PLATFORMS = (
     'Windows 7',
     'Windows Vista',
 )
+
+
+class _Popen(multiprocessing.forking.Popen):
+    def __init__(self, *args, **kw):
+        if hasattr(sys, 'frozen'):
+            os.putenv('_MEIPASS2', sys._MEIPASS)
+        try:
+            super(_Popen, self).__init__(*args, **kw)
+        finally:
+            if hasattr(sys, 'frozen'):
+                os.unsetenv('_MEIPASS2')
+
+
+class Process(multiprocessing.Process):
+    _Popen = _Popen
 
 
 def getSystemVersion():

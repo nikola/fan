@@ -5,7 +5,7 @@ __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 import time
-from multiprocessing import Process
+from utils.system import Process
 from Queue import Empty
 
 from models import StreamManager

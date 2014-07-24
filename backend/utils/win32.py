@@ -4,12 +4,8 @@
 __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
-import sys
 import os
-import re
 import ctypes
-
-# from config import APP_VENDOR, APP_NAME
 
 
 def getColorBrush(red=0, green=0, blue=0):

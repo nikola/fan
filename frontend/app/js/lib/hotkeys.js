@@ -143,8 +143,8 @@ ka.lib.handleKeypressLetter = function (evt) {
             ka.state.gridFocusX = 0;
             ka.state.gridFocusY = line;
 
-            $('#boom-movie-grid-container').velocity({translateZ: 0, translateY: '-' + (ka.state.gridPage * 1080) + 'px'}, 0);
-            $('#boom-poster-focus').css({top: (16 + 360 * line) + 'px', left: '116px'});
+            ka.lib.refocusGrid();
+
             $('#boom-movie-grid-key-' + key).velocity({
                 colorRed: 0, colorGreen: 0, colorBlue: 0
               , backgroundColorRed: 255, backgroundColorGreen: 255, backgroundColorBlue: 255

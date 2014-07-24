@@ -38,6 +38,7 @@ ka.state = {
   , gridLookupItemsPerLine: []
   , gridLookupLinesByKey: {}
   , gridLookupKeyByLine: []
+  , gridLookupCoordByUuid: {}
   , shouldFocusFadeIn: true
   , imagePosterPrimaryColorByUuid: {}
   , imagePosterPixelArrayBacklog: []

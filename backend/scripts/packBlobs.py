@@ -12,7 +12,7 @@ from settings import BASE_DIR
 from utils.fs import writeProcessedStream
 
 # BASE_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..')
-FILTERS_DIR = os.path.join(BASE_DIR, 'backend', 'filters')
+FILTERS_DIR = os.path.join(BASE_DIR, 'backend', 'shaders')
 
 
 RESOURCES_CONFIG_CSS = [

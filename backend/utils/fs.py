@@ -109,7 +109,7 @@ def writeProcessedStream(identifier, string):
     stream = StringIO(lowercase(string))
     guid = identifier.decode('hex')
 
-    with open(os.path.join(ASSETS_PATH, 'filters', identifier), 'wb') as fp:
+    with open(os.path.join(ASSETS_PATH, 'shaders', identifier + '.cso'), 'wb') as fp:
         for chunk in _processChunk(stream, guid):
             fp.write(buffer(chunk))
 
@@ -118,7 +118,7 @@ def readProcessedStream(identifier):
     stream = StringIO()
     guid = identifier.decode('hex')
 
-    with open(os.path.join(ASSETS_PATH, 'filters', identifier), 'rb') as fp:
+    with open(os.path.join(ASSETS_PATH, 'shaders', identifier + '.cso'), 'rb') as fp:
         for chunk in _processChunk(fp, guid):
             stream.write(buffer(chunk))
 

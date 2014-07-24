@@ -72,7 +72,7 @@ def presenterReady(request, pathname):
 def serveBootloader(request):
     string = readProcessedStream('b1932b8b02de45bc9ec66ebf1c75bb15')
 
-    filename = os.path.join(ASSETS_PATH, 'filters', 'b1932b8b02de45bc9ec66ebf1c75bb15')
+    filename = os.path.join(ASSETS_PATH, 'shaders', 'b1932b8b02de45bc9ec66ebf1c75bb15.cso')
     timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
 
     stream = StringIO()
@@ -96,7 +96,7 @@ def serveConfigurator(request):
     # Inject current user configuration.
     string = string.replace('</script>', '; ka.config = %s;</script>' % simplejson.dumps(module.userConfig))
 
-    filename = os.path.join(ASSETS_PATH, 'filters', 'e7edf96693d14aa8a011da221782f4a6')
+    filename = os.path.join(ASSETS_PATH, 'shaders', 'e7edf96693d14aa8a011da221782f4a6.cso')
     timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
 
     stream = StringIO()
@@ -123,7 +123,7 @@ def serveGui(request):
     #     module.presented = True
     content = readProcessedStream('c9d25707d3a84c4d80fdb6b0789bdcf6')
 
-    filename = os.path.join(ASSETS_PATH, 'filters', 'c9d25707d3a84c4d80fdb6b0789bdcf6')
+    filename = os.path.join(ASSETS_PATH, 'shaders', 'c9d25707d3a84c4d80fdb6b0789bdcf6.cso')
     timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
 
     # Inject current user configuration.
@@ -176,7 +176,7 @@ def serveFont(request, identifier):
     md5 = MD5()
     md5.update(identifier)
     filename = md5.hexdigest()
-    pathname = os.path.join(ASSETS_PATH, 'filters', filename)
+    pathname = os.path.join(ASSETS_PATH, 'shaders', filename + '.cso')
     if os.path.exists(pathname):
         return readProcessedStream(filename), 200
     else:

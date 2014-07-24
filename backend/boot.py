@@ -107,9 +107,9 @@ if __name__ == '__main__':
     userConfig = getCurrentUserConfig()
 
     try:
-        serverPort = getVacantPort()
-        if DEBUG:
-            serverPort = 50000
+        # serverPort = getVacantPort()
+        # if DEBUG:
+        serverPort = 0xe95d # 59741
         # END if DEBUG
 
         certificateLocation = getCertificateLocation()

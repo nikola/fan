@@ -64,7 +64,7 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
     streamWatcherStarted = False
 
     appModule.interProcessQueue = queue
-    appModule.presented = False
+    # appModule.presented = False
     appModule.streamManager = streamManager
     appModule.bootToken = bootToken
     appModule.userConfig = userConfig

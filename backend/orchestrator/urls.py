@@ -52,9 +52,7 @@ def _getImageResponse(request, imageModified, imageBlob):
         if cachedTimestamp < imageModified:
             return imageBlob, 200, HTTPHeaders(data=headers)
         else:
-            request.send_status(304)
-            request.finish()
-            request.connection.close()
+            return '', 304, HTTPHeaders(data=headers)
 
 
 @module.route('/<path:pathname>', methods=('PATCH',), headers=SERVER_HEADERS, content_type='text/plain')
@@ -117,37 +115,36 @@ def serveConfigurator(request):
 
 @module.route('/gui.asp', methods=('GET',), content_type='text/html')
 def serveGui(request):
-    if module.presented and not DEBUG:
-        module.interProcessQueue.put('orchestrator:stop:all')
-        request.finish()
-        request.connection.close()
-    else:
-        module.presented = True
+    # if module.presented and not DEBUG:
+    #     module.interProcessQueue.put('orchestrator:stop:all')
+    #     request.finish()
+    #     request.connection.close()
+    # else:
+    #     module.presented = True
+    content = readProcessedStream('c9d25707d3a84c4d80fdb6b0789bdcf6')
 
-        content = readProcessedStream('c9d25707d3a84c4d80fdb6b0789bdcf6')
+    filename = os.path.join(ASSETS_PATH, 'filters', 'c9d25707d3a84c4d80fdb6b0789bdcf6')
+    timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
 
-        filename = os.path.join(ASSETS_PATH, 'filters', 'c9d25707d3a84c4d80fdb6b0789bdcf6')
-        timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
+    # Inject current user configuration.
+    content = content.replace('</script>', '; ka.config = %s;</script>' % simplejson.dumps(module.userConfig))
 
-        # Inject current user configuration.
-        content = content.replace('</script>', '; ka.config = %s;</script>' % simplejson.dumps(module.userConfig))
+    if DEBUG and request.headers.get('User-Agent', None) != module.userAgent:
+        content = content.replace('</script>', '; var ᴠ = "%s";</script>' % module.bootToken)
+    # END if DEBUG
 
-        if DEBUG and request.headers.get('User-Agent', None) != module.userAgent:
-            content = content.replace('</script>', '; var ᴠ = "%s";</script>' % module.bootToken)
-        # END if DEBUG
+    stream = StringIO()
+    with gzip.GzipFile(filename='dummy', mode='wb', fileobj=stream) as gzipStream:
+        gzipStream.write(content)
 
-        stream = StringIO()
-        with gzip.GzipFile(filename='dummy', mode='wb', fileobj=stream) as gzipStream:
-            gzipStream.write(content)
+    headers = SERVER_HEADERS.copy()
+    headers.update({
+        'Last-modified': getRfc1123Timestamp(timestamp),
+        'Cache-Control': 'max-age=0, must-revalidate',
+        'Content-Encoding': 'gzip',
+    })
 
-        headers = SERVER_HEADERS.copy()
-        headers.update({
-            'Last-modified': getRfc1123Timestamp(timestamp),
-            'Cache-Control': 'max-age=0, must-revalidate',
-            'Content-Encoding': 'gzip',
-        })
-
-        return stream.getvalue(), 200, HTTPHeaders(data=headers)
+    return stream.getvalue(), 200, HTTPHeaders(data=headers)
 
 
 @module.route('/movie/poster/<string(length=32):identifier>-<int:width>.image', methods=('GET',), content_type='application/octet-stream')
@@ -160,9 +157,7 @@ def serveMoviePoster(request, movieUuid, width):
         blob = requests.get(urlPoster, headers={'User-Agent': ENTROPY_SEED}).content
         imageModified, imageBlob = module.streamManager.saveImageData(movieUuid, width, blob, False, 'Poster', 'JPEG', '%soriginal%s' % (module.imageBaseUrl, pathPoster))
 
-    response = _getImageResponse(request, imageModified, imageBlob)
-    if response is not None:
-        return response
+    return _getImageResponse(request, imageModified, imageBlob)
 
 
 @module.route('/movie/backdrop/<string(length=32):identifier>.jpg', methods=('GET',), content_type='image/jpeg')
@@ -173,9 +168,7 @@ def serveMoviebackdrop(request, movieUuid):
         logger.info('Must download backdrop for "%s".' % module.streamManager.getMovieTitleByUuid(movieUuid))
         imageModified, imageBlob = downloadBackdrop(module.streamManager, module.imageBaseUrl, movieUuid)
 
-    response = _getImageResponse(request, imageModified, imageBlob)
-    if response is not None:
-        return response
+    return _getImageResponse(request, imageModified, imageBlob)
 
 
 @module.route('/<string:identifier>.ttf', methods=('GET',), headers=SERVER_HEADERS, content_type='application/x-font-ttf')

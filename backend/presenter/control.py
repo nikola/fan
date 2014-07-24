@@ -29,7 +29,7 @@ from settings import DEBUG
 from settings import ENTROPY_SEED, ASSETS_PATH, APP_STORAGE_PATH
 from settings.presenter import *
 from presenter.hooks import ClientHandler
-from utils.win32 import getNormalizedPathname, getColorBrush
+from utils.win32 import getColorBrush # getNormalizedPathname,
 
 
 shutdownAll = None
@@ -105,11 +105,11 @@ def handleException(excType, excValue, traceObject):
     if type(errorMsg) == bytes:
         errorMsg = errorMsg.decode(encoding="utf-8", errors="replace")
 
-    try:
-        with codecs.open(getNormalizedPathname("error.log"), mode="a", encoding="utf-8") as fp:
-            fp.write("\n[%s] %s\n" % (time.strftime("%Y-%m-%d %H:%M:%S"), errorMsg))
-    except:
-        pass
+    # try:
+    #     with codecs.open(getNormalizedPathname("error.log"), mode="a", encoding="utf-8") as fp:
+    #         fp.write("\n[%s] %s\n" % (time.strftime("%Y-%m-%d %H:%M:%S"), errorMsg))
+    # except:
+    #     pass
 
     errorMsg = errorMsg.encode("ascii", errors="replace").decode("ascii", errors="replace")
     print("\n%s\n" % errorMsg)
@@ -138,14 +138,14 @@ def start(callback, userAgent, serverPort, bridgeToken, bootToken, mustSecure, u
             'debug':                  True,
             'release_dcheck_enabled': True,
             'remote_debugging_port':  8090,
-            'log_file':               getNormalizedPathname('debug.log'),
+            # 'log_file':               getNormalizedPathname('debug.log'),
             'log_severity':           msie.LOGSEVERITY_INFO,
         })
     # END if DEBUG
 
     msie.Initialize(appSettings, CEF_CMD_LINE_SETTINGS)
 
-    windowName = uuid.uuid4().hex
+    windowName = 'ka-BOOM'
     className = uuid.uuid4().hex
     iconPathname = os.path.join(ASSETS_PATH, 'trident', 'icon.ico')
 
@@ -153,9 +153,7 @@ def start(callback, userAgent, serverPort, bridgeToken, bootToken, mustSecure, u
     wndclass.hInstance = win32api.GetModuleHandle(None)
     wndclass.lpszClassName = className
     wndclass.style = win32con.CS_NOCLOSE | win32con.CS_VREDRAW | win32con.CS_HREDRAW
-    # wndclass.hbrBackground = win32gui.GetStockObject(win32con.WHITE_BRUSH)
-    wndclass.hbrBackground = getColorBrush()
-    # wndclass.hCursor = win32gui.LoadCursor(0, win32con.IDC_ARROW)
+    wndclass.hbrBackground = win32gui.GetStockObject(win32con.WHITE_BRUSH)
     wndclass.hCursor = win32gui.SetCursor(None)
     wndclass.lpfnWndProc = {
         win32con.WM_CLOSE: CloseWindow,
@@ -167,12 +165,11 @@ def start(callback, userAgent, serverPort, bridgeToken, bootToken, mustSecure, u
     win32gui.RegisterClass(wndclass)
 
     # BUG: only works when /HKEY_CURRENT_USER/Software/Microsoft/Windows/DWM/Composition = 0
-    dwExStyle = win32con.WS_EX_APPWINDOW # | win32con.WS_EX_LAYERED # | win32con.WS_EX_TRANSPARENT # | win32con.WS_EX_TOPMOST
+    dwExStyle = win32con.WS_EX_APPWINDOW | win32con.WS_EX_LAYERED
     style = win32con.WS_VISIBLE | win32con.WS_POPUP | win32con.WS_CLIPCHILDREN | win32con.WS_CLIPSIBLINGS
 
-    # TODO: re-enable this to prevent blueish solid color from showing when closing application
     # if DEBUG:
-    #     dwExStyle = win32con.WS_EX_APPWINDOW
+    #     dwExStyle = win32con.WS_EX_APPWINDOW | win32con.WS_EX_TOPMOST
     #     style = win32con.WS_VISIBLE | win32con.WS_OVERLAPPEDWINDOW | win32con.WS_CLIPCHILDREN | win32con.WS_CLIPSIBLINGS | win32con.WS_MAXIMIZE
     # {END DEBUG}
 
@@ -189,9 +186,7 @@ def start(callback, userAgent, serverPort, bridgeToken, bootToken, mustSecure, u
         None, # reserved
     )
 
-    # if not DEBUG:
-    # win32gui.SetLayeredWindowAttributes(windowId, win32api.RGB(255, 255, 255), 0, win32con.LWA_COLORKEY)
-    # {END NOT DEBUG}
+    win32gui.SetLayeredWindowAttributes(windowId, win32api.RGB(255, 255, 255), 0, win32con.LWA_COLORKEY)
 
     # To turn off:
     # win32gui.SetWindowLong(windowID, win32con.GWL_EXSTYLE, win32gui.GetWindowLong(windowID, win32con.GWL_EXSTYLE) & ~win32con.WS_EX_LAYERED)

@@ -13,8 +13,6 @@ from utils.fs import readProcessedStream
 
 
 def getCurrentUserConfig(config=None):
-    # with open(os.path.join(RESOURCES_PATH, 'config', 'default.json'), 'rU') as fp:
-    #     configDefaults = simplejson.load(fp)
     configDefaults = simplejson.loads(readProcessedStream('781354b1bf474046888a703d21148e65'))
 
     configUser = configDefaults.copy()

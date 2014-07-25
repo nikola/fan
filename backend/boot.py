@@ -61,7 +61,7 @@ if __name__ == '__main__':
         win32file.SetFileAttributesW(unicode(sys._MEIPASS), 2 | 4 | 8192)
 
         # Enable SSL support in requests library when running as EXE.
-        os.environ['REQUESTS_CA_BUNDLE'] = os.path.join(sys._MEIPASS, 'security', 'cacert.pem')
+        os.environ['REQUESTS_CA_BUNDLE'] = os.path.join(sys._MEIPASS, 'requests', 'cacert.pem')
 
     def _shutdown():
         # Presenter has been closed, now kick off clean-up tasks.

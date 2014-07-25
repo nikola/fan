@@ -11,11 +11,9 @@ from uuid import uuid4
 
 import requests
 
-from settings import BASE_DIR, APP_STORAGE_PATH
+from settings import ASSETS_PATH, APP_STORAGE_PATH
 from settings import ENTROPY_SEED
-# from settings.presenter import CEF_REAL_AGENT
-# from utils.fs import createTemporaryFile, writeTemporaryFile
-# from utils.win32 import getAppStoragePathname
+
 
 from . import logger
 
@@ -106,7 +104,7 @@ def downscalePoster(streamManager, image):
 def _downscaleImage(blob, width, height):
     blobOut = None
 
-    convertExe = os.path.join(BASE_DIR, 'tools', 'convert.exe')
+    convertExe = os.path.join(ASSETS_PATH, 'tools', 'convert.exe')
     convertProcess = Popen([convertExe, 'jpg:-', '-resize', '%dx%d' % (width, height), 'png:-'], stdout=PIPE, stdin=PIPE)
     try:
         convertProcess.stdin.write(blob)
@@ -119,11 +117,11 @@ def _downscaleImage(blob, width, height):
 
         filenameIn = os.path.join(APP_STORAGE_PATH, uuid4().hex)
         filenameOut = os.path.join(APP_STORAGE_PATH, uuid4().hex)
-        with open(filenameIn, 'wb') as fd: fd.write(resizedImage)
-
+        with open(filenameIn, 'wb') as fd:
+            fd.write(resizedImage)
 
         try:
-            encodeExe = os.path.join(BASE_DIR, 'tools', 'cwebp.exe')
+            encodeExe = os.path.join(ASSETS_PATH, 'tools', 'cwebp.exe')
             call([encodeExe, '-preset', 'icon', '-sns', '0', '-f', '0', '-m', '0', '-mt', '-lossless', '-noalpha', '-quiet', filenameIn, '-o', filenameOut])
             with open(filenameOut, 'rb') as fp:
                 blobOut = fp.read()

@@ -30,6 +30,8 @@ def createAppStorageStructure():
 
 
 def getLogFileHandler(name):
+    createAppStorageStructure()
+
     handler = logging.FileHandler(os.path.join(APP_STORAGE_PATH, 'log', '%(name)s.log' % locals()))
     handler.setFormatter(logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s', '%Y-%m-%d %H:%M'))
     handler.setLevel(logging.INFO)

@@ -236,12 +236,10 @@ backend/.idea/
 ## Additional for IntelliJ
 out/
 
-## PyInstaller artifact
-*.spec
-
 
 ## Project-specific.
 shaders/
 dummy.exe
 compiler/clean/
 compiler/pyminifier/
+trident.not.compressed/

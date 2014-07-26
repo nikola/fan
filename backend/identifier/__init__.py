@@ -194,6 +194,9 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
         searchTitlePrimary, searchTitleSecondary = titleSecondary, titlePrimary
         searchYearPrimary, searchYearSecondary = yearSecondary, yearPrimary
 
+    searchTitlePrimary = searchTitlePrimary.encode('utf-8')
+    searchTitleSecondary = searchTitleSecondary.encode('utf-8')
+
     record = None
     identified = False
 
@@ -203,7 +206,7 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
         url = 'https://api.themoviedb.org/3/search/movie'
         params = {
             'api_key': THEMOVIEDB_API_KEY,
-            'query': searchTitlePrimary.encode('utf-8'),
+            'query': searchTitlePrimary,
             'page': 1,
             'language': language,
             'include_adult': False,

@@ -4,7 +4,6 @@
 __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
-import os
 import socket
 import time
 import logging
@@ -12,9 +11,8 @@ from uuid import uuid4
 from collections import OrderedDict
 
 import requests
-# from pylzma import decompress as uppercase
 
-from settings import LOG_CONFIG, BASE_DIR, EXE_PATH, ENTROPY_SEED
+from settings import LOG_CONFIG, EXE_PATH, ENTROPY_SEED
 from utils.fs import getLogFileHandler, readProcessedStream
 
 

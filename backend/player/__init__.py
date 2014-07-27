@@ -31,7 +31,8 @@ logger.addHandler(getLogFileHandler('player'))
 
 def _updateComponents():
     def _log(text, color=BLACK):
-        logger.info(text)
+        if text.strip():
+            logger.info(text.strip())
 
     setLogger(_log)
 
@@ -62,28 +63,26 @@ def _updateComponents():
     mpcHcVersionSnapshot = components[0][2].getInstalledVersion(os.path.join(PLAYER_AMALGAM_PATH, 'mpc-hc.exe'))[0]
 
     for name, filename, instance in components:
-        _log('\n')
-
         pathname = os.path.join(PLAYER_AMALGAM_PATH, filename)
 
         try:
             latestVersion = getattr(instance, 'getLatestReleaseVersion')()
         except:
-            _log('ERROR: Could not retrieve version info of the latest %s release.\n' % name, RED)
+            _log('ERROR: Could not retrieve version info of the latest %s release.' % name, RED)
         else:
-            _log('Latest release version of %s: %s\n' % (name, latestVersion))
+            _log('Latest release version of %s: %s' % (name, latestVersion))
 
             mustInstall = False
             installedVersion, detectedInstallationPath = instance.getInstalledVersion(pathname)
             if installedVersion is not None:
-                _log('Installed version: %s\n\t%s\n' % (installedVersion, detectedInstallationPath))
+                _log('Installed version: %s' % installedVersion)
 
                 if not installedVersion or getVersionTuple(installedVersion) < getVersionTuple(latestVersion):
                     mustInstall = True
                 else:
-                    _log('%s does not need to be updated.\n' % name, GREEN)
+                    _log('%s does not need to be updated.' % name, GREEN)
             else:
-                _log('%s does not seem to be installed on the local machine.\n' % name)
+                _log('%s does not seem to be installed on the local machine.' % name)
                 mustInstall = True
 
             if mustInstall:
@@ -91,17 +90,16 @@ def _updateComponents():
 
                 currentInstalledVersion, currentInstallationPath = instance.getPostInstallVersion(pathname)
                 if currentInstallationPath is None or getVersionTuple(currentInstalledVersion) != getVersionTuple(latestVersion):
-                    _log('\nFailed to %s %s %s.\n'
+                    _log('\nFailed to %s %s %s.'
                         % ('update to' if installedVersion is not None else 'install', name, latestVersion), RED)
                 else:
                     _log(' done.\n')
                     if detectedInstallationPath != currentInstallationPath:
-                        _log('%s %s is now installed in:\n\t%s\n'
-                            % (name, latestVersion, currentInstallationPath))
+                        _log('%s %s is now installed.'
+                            % (name, latestVersion))
                         if installedVersion is not None:
-                            _log('Your previous installation of %s %s remains in:\n\t%s\n'
-                                % (name, installedVersion, detectedInstallationPath))
-                    _log('Successfully %s %s. No errors.\n'
+                            pass
+                    _log('Successfully %s %s. No errors.'
                         % ('updated' if installedVersion is not None else 'installed', name), GREEN)
 
     mpcHcVersionCurrent = components[0][2].getInstalledVersion(os.path.join(PLAYER_AMALGAM_PATH, 'mpc-hc.exe'))[0]

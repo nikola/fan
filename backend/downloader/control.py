@@ -53,7 +53,7 @@ def _startDownloader(queue):
                 queue.put('player:up-to-date')
             elif doDownloadAssets:
                 time.sleep(0.5)
-                
+
                 movieUuid = downloaderStreamManager.getMissingBackdropMovieUuid()
                 if movieUuid is not None:
                     if imageBaseUrl is not None:

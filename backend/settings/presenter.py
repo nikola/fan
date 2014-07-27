@@ -59,5 +59,3 @@ CEF_BROWSER_SETTINGS = dict(
     tab_to_links_disabled = True,
     # pack_loading_disabled = True,
 )
-
-# CEF_REAL_AGENT = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.80 Safari/537.36'

@@ -52,6 +52,8 @@ def _startDownloader(queue):
                 doDownloadPlayer = False
                 queue.put('player:up-to-date')
             elif doDownloadAssets:
+                time.sleep(0.5)
+                
                 movieUuid = downloaderStreamManager.getMissingBackdropMovieUuid()
                 if movieUuid is not None:
                     if imageBaseUrl is not None:
@@ -74,7 +76,6 @@ def _startDownloader(queue):
                     else:
                         # print 'nothing to downscale'
                         pass
-                time.sleep(0.5)
             else:
                 time.sleep(0.015)
 

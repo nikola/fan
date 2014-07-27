@@ -201,7 +201,7 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
     identified = False
 
     try:
-        logger.info('Trying to identify "%s (%d)" at themoviedb.org ...' % (searchTitlePrimary, searchYearPrimary))
+        logger.info('Trying to identify "%s" at themoviedb.org ...' % searchTitlePrimary)
 
         url = 'https://api.themoviedb.org/3/search/movie'
         params = {

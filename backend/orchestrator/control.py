@@ -146,49 +146,41 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
 
             if streamGenerator is not None and pubSubReference is not None and pubSubReference.connected:
                 try:
-                    (path, container, files) = streamGenerator.next()
+                    # (path, container, files) = streamGenerator.next()
+                    (streamLocation, basedataFromStream, basedataFromDir) = streamGenerator.next()
                 except StopIteration:
                     streamGenerator = None
                     syncFinished = True
                 else:
-                    basedataFromDir = getBaseDataFromPathname(container)
+                    if engine is not None: engine.poll(poll_timeout=0.015)
 
-                    for filename in files:
-                        basedataFromStream = getBaseDataFromPathname(filename)
+                    if not streamManager.isStreamKnown(streamLocation):
+                        logger.info('Found supported file: %s' % streamLocation)
 
                         if engine is not None: engine.poll(poll_timeout=0.015)
 
-                        streamLocation = os.path.join(path, filename)
+                        movieRecord = identifyMovieByTitleYear(
+                            userConfig.get('language', 'en'),
+                            basedataFromDir.get('title'), basedataFromDir.get('year'),
+                            basedataFromStream.get('title'), basedataFromStream.get('year'),
+                        )
+                        if engine is not None: engine.poll(poll_timeout=0.015)
 
-                        if not streamManager.isStreamKnown(streamLocation):
-                            logger.info('Found supported file: %s' % streamLocation)
+                        # logger.info('From Dir:  %s\t\t(%s)' % (basedataFromDir.get('title'), basedataFromDir.get('year', '?')))
+                        # logger.info('From File: %s\t\t(%s)' % (basedataFromStream.get('title'), basedataFromStream.get('year', '?')))
 
+                        if movieRecord is None:
+                            logger.warning('Could not identify file: %s' % streamLocation) # TODO: handle this! perhaps try again when app is re-launched?
+                        # else:
+                        #     # TODO: call getEditVersionFromFilename(filename, year)
+
+                        movie = streamManager.addMovieStream(movieRecord, streamLocation) # TODO: re-wire stream to correct movie if necessary
+
+                        if engine is not None: engine.poll(poll_timeout=0.015)
+
+                        if movieRecord is not None and pubSubReference.connected:
+                            pubSubReference.write(unicode('["receive:movie:item", %s]' % streamManager.getMovieAsJson(movie.uuid)))
                             if engine is not None: engine.poll(poll_timeout=0.015)
-
-                            movieRecord = identifyMovieByTitleYear(
-                                userConfig.get('language', 'en'),
-                                basedataFromDir.get('title'), basedataFromDir.get('year'),
-                                basedataFromStream.get('title'), basedataFromStream.get('year'),
-                            )
-                            if engine is not None: engine.poll(poll_timeout=0.015)
-
-
-                            # logger.info('From Dir:  %s\t\t(%s)' % (basedataFromDir.get('title'), basedataFromDir.get('year', '?')))
-                            # logger.info('From File: %s\t\t(%s)' % (basedataFromStream.get('title'), basedataFromStream.get('year', '?')))
-
-
-                            if movieRecord is None:
-                                logger.warning('Could not identify file: %s' % streamLocation) # TODO: handle this! perhaps try again when app is re-launched?
-                            # else:
-                            #     # TODO: call getEditVersionFromFilename(filename, year)
-
-                            movie = streamManager.addMovieStream(movieRecord, streamLocation) # TODO: re-wire stream to correct movie if necessary
-
-                            if engine is not None: engine.poll(poll_timeout=0.015)
-
-                            if movieRecord is not None and pubSubReference.connected:
-                                pubSubReference.write(unicode('["receive:movie:item", %s]' % streamManager.getMovieAsJson(movie.uuid)))
-                                if engine is not None: engine.poll(poll_timeout=0.015)
 
             elif syncFinished is True:
                 syncFinished = None

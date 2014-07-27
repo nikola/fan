@@ -48,22 +48,23 @@ class Movie(Base):
     uuid = Column(GUID, default=createUuid)
 
     idTheMovieDb = Column(Integer)
-    idImdb = Column(String)
+    idImdb = Column(String(convert_unicode=False))
+    idYoutubeTrailer = Column(String(convert_unicode=False))
 
     titleOriginal = Column(Unicode)
     releaseYear = Column(SmallInteger)
     runtime = Column(SmallInteger)
 
-    homepage = Column(String)
+    homepage = Column(String(convert_unicode=False))
     budget = Column(Integer)
     revenue = Column(BigInteger)
 
     rating = Column(SmallInteger)
 
-    urlBackdrop = Column(String)
+    urlBackdrop = Column(String(convert_unicode=False))
     isBackdropDownloading = Column(Boolean, default=False)
 
-    urlPoster = Column(String)
+    urlPoster = Column(String(convert_unicode=False))
     isPosterDownloading = Column(Boolean, default=False)
 
     # Many-to-many Movies <-> Genres.

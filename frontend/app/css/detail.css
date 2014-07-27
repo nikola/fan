@@ -53,7 +53,7 @@
 #boom-movie-detail-bottom {
     margin: 0 0 30px 30px;
     height: 320px;
-    padding-top: 224px;
+    padding-top: 180px;
     }
 
 .boom-detail-info {
@@ -105,4 +105,14 @@
 
     flex-direction: column;
     justify-content: center;
+    }
+
+#boom-movie-trailer {
+    pointer-events: auto;
+    width: 1920px;
+    height: 1080px;
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
     }

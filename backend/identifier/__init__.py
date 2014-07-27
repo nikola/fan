@@ -280,6 +280,7 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
             params = {
                 'api_key': THEMOVIEDB_API_KEY,
                 'language': language,
+                'append_to_response': 'trailers',
             }
             response = makeThrottledGetRequest(url, params).json()
 
@@ -301,9 +302,16 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
                 if ratingSearch is not None:
                     rating = float(ratingSearch.group(1)) * 10
 
+            if response['trailers'].has_key('youtube') and len(response['trailers']['youtube']):
+                idYoutubeTrailer = response['trailers']['youtube'][0].get('source')
+            else:
+                idYoutubeTrailer = None
+
+
             record = dict(
                 idTheMovieDb  = movieId,
                 idImdb        = idImdb,
+                idYoutubeTrailer = idYoutubeTrailer,
 
                 titleOriginal = response['original_title'],
                 releaseYear   = datetime.datetime.strptime(response['release_date'], '%Y-%m-%d').year,

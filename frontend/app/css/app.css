@@ -42,3 +42,10 @@ body {
 
     padding-left: 30px;
     }
+
+iframe[seamless] {
+    background-color: transparent;
+    border: 0 none transparent;
+    padding: 0;
+    overflow: hidden;
+    }

@@ -262,7 +262,6 @@ class StreamManager(object):
                 return None, None
             else:
                 if image is not None:
-                    # return image
                     return image.modified, image.blob
                 else:
                     return None, None
@@ -295,7 +294,6 @@ class StreamManager(object):
                 session.add(image)
                 session.commit()
 
-                # return image # TODO: correct return type ?
                 return image.modified, image.blob
 
 
@@ -303,7 +301,7 @@ class StreamManager(object):
         with self._session() as session:
             movieList = []
             for movie in session.query(Movie, Localization, Image).filter(Movie.id == Localization.movieId, Movie.id == Image.movieId, Image.imageType == 'Poster', Localization.locale == 'en').distinct() \
-                    .values(Movie.uuid, Movie.titleOriginal, Localization.title, Movie.releaseYear, Movie.runtime, Localization.storyline, Movie.rating, Image.primaryColor):
+                    .values(Movie.uuid, Movie.titleOriginal, Localization.title, Movie.releaseYear, Movie.runtime, Localization.storyline, Movie.rating, Movie.idYoutubeTrailer, Image.primaryColor):
                 movieList.append({
                     'uuid': movie[0],
                     'titleOriginal': movie[1],
@@ -312,7 +310,8 @@ class StreamManager(object):
                     'runtime': movie[4],
                     'storyline': movie[5],
                     'rating': movie[6],
-                    'primaryPosterColor': movie[7],
+                    'trailer': movie[7],
+                    'primaryPosterColor': movie[8],
                 })
             return json.dumps(movieList, separators=(',',':'))
 
@@ -321,7 +320,7 @@ class StreamManager(object):
         with self._session() as session:
             try:
                 movie = list(session.query(Movie, Localization).filter(Movie.uuid == identifier, Movie.id == Localization.movieId, Localization.locale == 'en').distinct() \
-                    .values(Movie.uuid, Movie.titleOriginal, Localization.title, Movie.releaseYear, Movie.runtime, Localization.storyline, Movie.rating))[0]
+                    .values(Movie.uuid, Movie.titleOriginal, Localization.title, Movie.releaseYear, Movie.runtime, Localization.storyline, Movie.rating, Movie.idYoutubeTrailer))[0]
             except NoResultFound:
                 return None
             else:
@@ -333,6 +332,7 @@ class StreamManager(object):
                     'runtime': movie[4],
                     'storyline': movie[5],
                     'rating': movie[6],
+                    'trailer': movie[7],
                 }
                 try:
                     poster = session.query(Image).join(Movie).filter(Image.imageType == 'Poster', Image.movie.has(Movie.uuid == identifier)).first()

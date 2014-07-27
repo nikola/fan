@@ -38,6 +38,7 @@ a.datas.append(('trident/blink.pak',                    '../trident/blink.pak', 
 a.datas.append(('trident/cef.pak',                      '../trident/cef.pak',                       'DATA'))
 a.datas.append(('trident/d3dcompiler_46.dll',           '../trident/d3dcompiler_46.dll',            'DATA'))
 a.datas.append(('trident/devtools_resources.pak',       '../trident/devtools_resources.pak',        'DATA'))
+a.datas.append(('trident/ffmpegsumo.dll',               '../trident/ffmpegsumo.dll',                'DATA'))
 a.datas.append(('trident/icon.ico',                     '../trident/icon.ico',                      'DATA'))
 a.datas.append(('trident/icudt.dll',                    '../trident/icudt.dll',                     'DATA'))
 a.datas.append(('trident/iexplore.exe',                 '../trident/iexplore.exe',                  'DATA'))

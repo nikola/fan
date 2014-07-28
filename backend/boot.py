@@ -19,7 +19,7 @@ from models import initialize as initStreamManager
 from utils.system import isCompatiblePlatform, isNtfsFilesystem, getScreenResolution, isDesktopCompositionEnabled
 from utils.agent import getUserAgent
 from utils.net import getCertificateLocation
-from utils.fs import getLogFileHandler, createAppStorageStructure
+from utils.fs import getLogFileHandler
 from utils.config import getCurrentUserConfig
 from orchestrator.control import start as startOrchestrator, stop as stopOrchestrator
 from downloader.control import start as startDownloader, stop as stopDownloader
@@ -61,8 +61,8 @@ if __name__ == '__main__':
 
     try:
         logging.basicConfig(**LOG_CONFIG)
-        logger = logging.getLogger('application')
-        logger.addHandler(getLogFileHandler('application'))
+        logger = logging.getLogger('core')
+        logger.addHandler(getLogFileHandler('core'))
 
         if not isCompatiblePlatform():
             windll.user32.MessageBoxA(0, 'This application is only compatible with Windows Vista or newer.', 'Error', 0)
@@ -102,22 +102,12 @@ if __name__ == '__main__':
         # logger.info('>' * 80)
         logger.info('Starting application.')
 
-
-        # Create AppData sub-folders.
-        # createAppStorageStructure()
-
         # Create DB connection here to initialize models.
         initStreamManager()
 
         userConfig = getCurrentUserConfig()
 
         serverPort = 0xe95d # 59741
-
-        # serverPort = getVacantPort()
-        # if DEBUG:
-
-        # END if DEBUG
-
         certificateLocation = getCertificateLocation()
 
         # Omni-directional message queue between boot process, collector process and server process.

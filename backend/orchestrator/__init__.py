@@ -10,7 +10,7 @@ from settings import LOG_CONFIG
 from utils.fs import getLogFileHandler
 
 logging.basicConfig(**LOG_CONFIG)
-logger = logging.getLogger('orchestrator')
-logger.addHandler(getLogFileHandler('orchestrator'))
+logger = logging.getLogger('scanner')
+logger.addHandler(getLogFileHandler('scanner'))
 
 SERVER_HEADERS = {'Server': 'Microsoft-IIS/7.5', 'X-Powered-By': 'ASP.NET', 'X-AspNet-Version': '4.0.30319', 'X-AspNetMvc-Version': '3.0'}

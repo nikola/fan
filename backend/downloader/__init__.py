@@ -10,5 +10,5 @@ from settings import LOG_CONFIG
 from utils.fs import getLogFileHandler
 
 logging.basicConfig(**LOG_CONFIG)
-logger = logging.getLogger('downloader')
-logger.addHandler(getLogFileHandler('downloader'))
+logger = logging.getLogger('remote')
+logger.addHandler(getLogFileHandler('remote'))

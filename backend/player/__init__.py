@@ -11,7 +11,7 @@ __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 import logging
-from subprocess import Popen, PIPE, CREATE_NEW_PROCESS_GROUP
+from subprocess import Popen # , PIPE, CREATE_NEW_PROCESS_GROUP
 
 import win32api
 from utils.fs import readProcessedStream
@@ -25,8 +25,8 @@ PLAYER_AMALGAM_PATH = os.path.join(APP_STORAGE_PATH, 'amalgam')
 
 
 logging.basicConfig(**LOG_CONFIG)
-logger = logging.getLogger('player')
-logger.addHandler(getLogFileHandler('player'))
+logger = logging.getLogger('updater')
+logger.addHandler(getLogFileHandler('updater'))
 
 
 def _updateComponents():
@@ -143,9 +143,9 @@ def update():
 
 
 def playFile(location):
-    kwargs = {}
-    DETACHED_PROCESS = 0x00000008
-    kwargs.update(creationflags=DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP)
+    # kwargs = {}
+    # DETACHED_PROCESS = 0x00000008
+    # kwargs.update(creationflags=DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP)
 
     process = Popen([
         os.path.join(PLAYER_AMALGAM_PATH, 'mpc-hc.exe'),

@@ -17,8 +17,8 @@ from utils.fs import getLogFileHandler, readProcessedStream
 
 
 logging.basicConfig(**LOG_CONFIG)
-logger = logging.getLogger('utils-net')
-logger.addHandler(getLogFileHandler('utils-net'))
+logger = logging.getLogger('requests')
+logger.addHandler(getLogFileHandler('requests'))
 
 REQUESTS_LOGGER = logging.getLogger('requests.packages.urllib3')
 REQUESTS_LOGGER.setLevel(logging.CRITICAL)

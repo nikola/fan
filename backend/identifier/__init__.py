@@ -39,8 +39,8 @@ RE_DIR_TAIL = re.compile(r'(?<=\\)[^\\]*$', re.I)
 
 
 logging.basicConfig(**LOG_CONFIG)
-logger = logging.getLogger('identifier')
-logger.addHandler(getLogFileHandler('identifier'))
+logger = logging.getLogger('tmdb')
+logger.addHandler(getLogFileHandler('tmdb'))
 
 
 def getImageConfiguration():

@@ -55,6 +55,7 @@ ka.lib.startTrailerPlayer = function (id) {
       , suggestedQuality: 'hd1080'
     });
     ka.state.movieTrailerPlayer.playVideo();
+    ka.state.movieTrailerPlayer.setPlaybackQuality('hd1080');
 };
 
 

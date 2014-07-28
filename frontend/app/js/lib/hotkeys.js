@@ -105,13 +105,13 @@ ka.lib.handleKeypressSelect = function () {
             $('#boom-movie-detail').velocity('fadeOut', {duration: 360, complete: function () {
                 ka.state.currentPageMode = 'play:movie';
 
-                ka.state.socketDispatcher.push('movie:play', ka.lib.getMovieFromGridFocus().uuid);
+                ka.state.socketDispatcher.push('movie:play', ka.state.currentGridMovieUuid.uuid);
             }});
         } else if (ka.state.currentDetailButton == 'trailer') {
             $('#boom-movie-detail').velocity('fadeOut', {duration: 360, complete: function () {
                 ka.state.currentPageMode = 'play:trailer';
 
-                ka.lib.startTrailerPlayer(ka.lib.getMovieFromGridFocus().trailer);
+                ka.lib.startTrailerPlayer(ka.state.currentGridMovieUuid.trailer);
             }});
         }
     }

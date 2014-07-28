@@ -26,6 +26,7 @@ ka.settings = {
 ka.state = {
     currentPageMode: 'grid'
   , currentConfigButton: 1
+  , currentGridMovieUuid: null
   , gridSortCriterion: 'byTitleLocalized'
   , gridSortDisplayLanguage: 'localized'
   , gridSortOrder: 'asc'
@@ -52,8 +53,23 @@ function listen() {
 
     ka.state.socketDispatcher.bind('receive:movie:item', function (movie) {
         ka.lib.addMovieToCortex(movie);
+
+        if (ka.state.currentPageMode == 'detail') {
+            var uuid = ka.lib.getMovieFromGridFocus().uuid;
+        }
+
         ka.lib.recalcMovieGrid();
+
+        if (ka.state.currentPageMode == 'detail') {
+            ka.lib.recallFocusByUuid(uuid);
+        }
+
         ka.lib.updateMovieGrid();
+
+        if (ka.state.currentPageMode == 'detail') {
+            ka.lib.refocusGrid();
+            $('#boom-poster-focus').velocity({translateZ: 0, left: '-=1920'}, 0);
+        }
     });
 
     ka.state.socketDispatcher.bind('receive:command:token', function (command) {

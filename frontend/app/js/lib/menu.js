@@ -50,10 +50,7 @@ ka.lib.executeConfigSelection = function () {
             var uuid = ka.lib.getMovieFromGridFocus().uuid;
             ka.lib.recalcMovieGrid();
 
-            var coordinates = ka.state.gridLookupCoordByUuid[uuid];
-            ka.state.gridPage = Math.floor(coordinates[1] / ka.settings.gridMaxRows);
-            ka.state.gridFocusX = coordinates[0];
-            ka.state.gridFocusY = coordinates[1] % ka.settings.gridMaxRows;
+            ka.lib.recallFocusByUuid(uuid);
 
             ka.state.desaturationImageCache = [];
 

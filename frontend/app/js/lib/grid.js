@@ -422,6 +422,7 @@ ka.lib.toggleFocus = function () {
 ka.lib.selectFocus = function () {
     ka.state.currentPageMode = 'detail';
     ka.state.currentDetailButton = 'play';
+    ka.state.currentGridMovieUuid = ka.lib.getMovieFromGridFocus().uuid;
 
     ka.lib.updateDetailPage();
     ka.lib.updateDetailButtonSelection();
@@ -473,4 +474,12 @@ ka.lib.getMovieFromGridFocus = function () {
 ka.lib.refocusGrid = function () {
     $('#boom-movie-grid-container').velocity({translateZ: 0, translateY: '-' + (ka.state.gridPage * 1080) + 'px'}, 0);
     $('#boom-poster-focus').css({top: (16 + 360 * ka.state.gridFocusY) + 'px', left: (116 + 260 * ka.state.gridFocusX) + 'px'});
+};
+
+
+ka.lib.recallFocusByUuid = function (uuid) {
+    var coordinates = ka.state.gridLookupCoordByUuid[uuid];
+    ka.state.gridPage = Math.floor(coordinates[1] / ka.settings.gridMaxRows);
+    ka.state.gridFocusX = coordinates[0];
+    ka.state.gridFocusY = coordinates[1] % ka.settings.gridMaxRows;
 };

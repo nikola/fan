@@ -71,8 +71,14 @@ def _startDownloader(queue):
                             except Empty:
                                 queue.put('orchestrator:poster-refresh:%s' % movieUuid)
                             else:
-                                queue.put(command)
-                                queue.task_done()
+                                if command == 'downloader:stop':
+                                    downloaderStreamManager.shutdown()
+
+                                    queue.task_done()
+                                    break
+                                else:
+                                    queue.put(command)
+                                    queue.task_done()
                     else:
                         # print 'nothing to downscale'
                         pass

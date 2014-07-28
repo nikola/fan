@@ -141,6 +141,15 @@ $(document).ready(function () {
     ka.state.maxDetailButton = $('#boom-detail-button-group .boom-button').length;
     ka.state.canvasContext = $('#boom-image-color-canvas').get(0).getContext('2d');
 
+    $.get(
+        'https://www.youtube.com/iframe_api'
+      , null
+      , function () {
+
+        }
+      , 'script'
+    );
+
     /* Notify backend that UI is ready. */
     var v = 'http://localhost:65432/verify';
     $.ajax({url: ᴠ, type: 'PATCH', success: ready});

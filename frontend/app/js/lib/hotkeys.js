@@ -106,26 +106,17 @@ ka.lib.handleKeypressSelect = function () {
 
                 ka.state.socketDispatcher.push('movie:play', ka.lib.getMovieFromGridFocus().uuid);
             }});
-        } else if (ka.state.currentDetailButton == 2) {
+        } else if (ka.state.currentDetailButton == 1) {
             $('#boom-movie-detail').velocity('fadeOut', {duration: 360, complete: function () {
                 ka.state.currentPageMode = 'play:trailer';
-                $('#boom-movie-trailer')
-                    .css('display', 'block')
-                    .attr('src', 'https://www.youtube.com/embed/' + ka.lib.getMovieFromGridFocus().trailer
-                        + '?autoplay=1'
-                        + '&autohide=1'
-                        + '&controls=2'
-                        + '&enablejsapi=1'
-                        + '&hl=2'
-                        + '&iv_load_policy=3'
-                        + '&modestbranding=1'
-                        + '&origin=127.0.0.1'
-                        + '&rel=0'
-                        + '&showinfo=0'
-                    );
+
+                ka.state.movieTrailerPlayer.loadVideoById({
+                    videoId: ka.lib.getMovieFromGridFocus().trailer
+                  , suggestedQuality: 'hd1080'
+                });
+                ka.state.movieTrailerPlayer.playVideo();
             }});
         }
-
     }
 };
 
@@ -150,13 +141,7 @@ ka.lib.handleKeypressBack = function () {
 
         ka.lib.desaturateVisiblePosters();
     } else if (ka.state.currentPageMode == 'play:trailer') {
-        ka.state.currentPageMode = 'detail';
-
-        $('#boom-movie-trailer')
-            .css('display', 'none')
-            .removeAttr('src');
-
-        $('#boom-movie-detail').velocity('fadeIn', 360);
+        ka.lib.closeTrailerPlayer();
     }
 };
 

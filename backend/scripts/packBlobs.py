@@ -72,6 +72,7 @@ RESOURCES_GUI_JS = [
     'frontend/app/js/lib/menu.js',
     'frontend/app/js/lib/grid.js',
     'frontend/app/js/lib/detail.js',
+    'frontend/app/js/lib/youtube.js',
 
     'frontend/app/js/gui.js',
 ]

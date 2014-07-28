@@ -17,7 +17,7 @@ ka.lib.updateDetailPage = function () {
     $('#boom-movie-detail-title').text(ka.lib.getLocalizedTitleByUuid(movie.uuid));
     $('#boom-movie-detail-description').text(movie.storyline);
 
-    $('#boom-movie-detail-trailer-button').css('visibility', (movie.trailer) ? 'visible': 'hidden');
+    $('#boom-movie-detail-trailer-button').css('display', (movie.trailer) ? 'inline-block': 'none');
 
     $('#boom-movie-detail-top img').css('visibility', 'hidden');
     $('#boom-movie-detail').css('backgroundImage', 'none');
@@ -39,7 +39,7 @@ ka.lib.updateDetailButtonSelection = function () {
     button.addClass('boom-active')
         .css('backgroundColor', '#' + button.data('boom.select-color'));
 
-    if (ka.state.currentDetailButton == 1) {
+    if (ka.state.currentDetailButton == 2) {
         $('#boom-movie-detail-shade').velocity({opacity: 0.75}, {duration: 360});
         $('#boom-movie-detail-description').velocity('transition.expandIn', {duration: 360, display: 'flex'});
     } else {
@@ -47,3 +47,17 @@ ka.lib.updateDetailButtonSelection = function () {
         $('#boom-movie-detail-description').velocity('transition.expandOut', 360);
     }
 };
+
+
+ka.lib.closeTrailerPlayer = function () {
+    ka.state.movieTrailerPlayer.stopVideo();
+    ka.state.movieTrailerPlayer.clearVideo();
+
+    ka.state.currentPageMode = 'detail';
+
+    $('#boom-movie-trailer').css('display', 'none');
+
+    $('#boom-movie-detail').velocity('fadeIn', 360);
+
+    window.focus();
+}

@@ -108,7 +108,8 @@
     }
 
 #boom-movie-trailer {
-    pointer-events: auto;
+    pointer-events: none !important;
+    cursor: none !important;
     width: 1920px;
     height: 1080px;
     display: none;

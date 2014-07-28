@@ -196,8 +196,8 @@ ka.lib.updateMovieGrid = function () {
     $('.boom-movie-grid-key').slice(ka.state.gridLookupMatrix.length).remove();
 
     if (ka.state.gridLookupMatrix.length) {
-        if (ka.state.currentPageMode != 'detail') {
-            ka.lib.updateDetailPage(); // TODO: prevent this from happening by repositioning focus
+        if (ka.state.currentPageMode == 'config' || ka.state.currentPageMode == 'grid') {
+            ka.lib.updateDetailPage();
         }
         if (ka.state.currentPageMode == 'grid') {
             if (ka.state.shouldFocusFadeIn) {

@@ -4,6 +4,28 @@
 __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
+TRAILERS_HD = {
+       534: 'W6GWhOvSAf4',  # Terminator Salvation
+       550: 'ZwaBbL6fmgs',  # Fight Club
+      1495: 'Kfq9U2tWWGo',  # Kingdom of Heaven
+     13475: 'iGAHnZ555nI',  # Star Trek
+     19995: '5PSNL1qE6VY',  # Avatar
+     20504: 'kAMUv22y1og',  # The Book of Eli
+     49051: 'SDnYMbYB-nU',  # The Hobbit: An Unexpected Journey
+     54138: 'sJNyGFqgyag',  # Star Trek Into Darkness
+     57158: 'OPVWy1tFXuc',  # The Hobbit: The Desolation of Smaug
+     59967: '2iQuhsmtfHw',  # Looper
+     62177: 'TEHWDA_6e3M',  # Brave
+     70981: 'GfiJ-E0S4YY',  # Prometheus
+     76203: 'KrDg_6rxCzs',  # 12 Years A Slave
+     86838: 'GPAlUz1hUkA',  # Seven Psychopaths
+    106646: 'iszwuX1AK6A',  # The Wolf of Wall Street
+    109443: 'NzNUkWFDuKQ',  # Anchorman 2
+    109445: 'TbQm5doF_Uc',  # Frozen
+    168672: 'h5Cb4SFt7gE',  # American Hustle
+}
+
+
 TOP_250 = [
     # 1
     ("The Shawshank Redemption", 1994),                                 

@@ -13,6 +13,7 @@ from simplejson import JSONDecodeError
 from settings import LOG_CONFIG
 from utils.net import makeThrottledGetRequest, makeUnthrottledGetRequest
 from utils.fs import getLogFileHandler
+from identifier.fixture import TRAILERS_HD
 
 
 THEMOVIEDB_API_KEY = 'ef89c0a371440a7226e1be2ddfe84318'
@@ -307,11 +308,12 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
                 if ratingSearch is not None:
                     rating = float(ratingSearch.group(1)) * 10
 
-            if response['trailers'].has_key('youtube') and len(response['trailers']['youtube']):
+            if TRAILERS_HD.has_key(movieId):
+                idYoutubeTrailer = TRAILERS_HD[movieId]
+            elif response['trailers'].has_key('youtube') and len(response['trailers']['youtube']):
                 idYoutubeTrailer = response['trailers']['youtube'][0].get('source')
             else:
                 idYoutubeTrailer = None
-
 
             record = dict(
                 idTheMovieDb  = movieId,

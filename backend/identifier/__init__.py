@@ -75,7 +75,10 @@ def getMoviePathnames(sources):
                     streams = getOnlyStreams(root, files)
 
                     if len(streams):
-                        basedataFromDir = getBaseDataFromPathname(dirname)
+                        if re.compile(r'^\\\\\?\\UNC\\\w+\\\w+$').search(root) is None:
+                            basedataFromDir = getBaseDataFromPathname(dirname)
+                        else:
+                            basedataFromDir = {'title': None, 'year': None}
 
                         for filename in streams:
                             basedataFromStream = getBaseDataFromPathname(filename)
@@ -223,7 +226,7 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
 
         response = makeThrottledGetRequest(url, params).json()
 
-        if response['total_results'] == 0:
+        if response['total_results'] == 0 and searchTitleSecondary is not None:
             logger.info('Movie with title "%s" not found at themoviedb.org, retrying with title "%s" ...' % (searchTitlePrimary, searchTitleSecondary))
             params['query'] = searchTitleSecondary.encode('utf-8')
             if searchYearSecondary is not None:
@@ -244,7 +247,7 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
             logger.info('Movie successfully identified using query: %s' % params['query'])
             identified = True
 
-        if response['total_results'] == 0:
+        if response['total_results'] == 0 and searchTitleSecondary is not None:
             logger.info('Movie with title "%s" still not found at themoviedb.org, retrying with title "%s" and search type "ngram" ...' % (searchTitlePrimary, searchTitleSecondary))
             params['query'] = searchTitleSecondary.encode('utf-8')
             if searchYearSecondary is not None:
@@ -265,7 +268,7 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
             logger.info('Movie successfully identified using query: %s' % params['query'])
             identified = True
 
-        if response['total_results'] == 0:
+        if response['total_results'] == 0 and searchTitleSecondary is not None:
             logger.info('Movie with title "%s" still not found at themoviedb.org, retrying with title "%s", omitting year ...' % (searchTitlePrimary, searchTitleSecondary))
             params['query'] = searchTitleSecondary.encode('utf-8')
             response = makeThrottledGetRequest(url, params).json()
@@ -273,7 +276,9 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
             logger.info('Movie successfully identified using query: %s' % params['query'])
             identified = True
 
-        if response['total_results'] > 0:
+        if response['total_results'] == 0:
+            logger.warning('Movie with title "%s" not found at themoviedb.org, giving up for now.' % searchTitlePrimary)
+        else:
             movieId = response['results'][0]['id']
 
             url = 'https://api.themoviedb.org/3/movie/%d' % movieId

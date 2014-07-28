@@ -35,17 +35,26 @@ ka.lib.updateDetailButtonSelection = function () {
     $('#boom-detail-button-group .boom-active').removeClass('boom-active')
         .css('backgroundColor', 'transparent');
 
-    var button = $('#boom-detail-button-group .boom-button').eq(ka.state.currentDetailButton);
+    var button = $('#boom-movie-detail-' + ka.state.currentDetailButton + '-button');
     button.addClass('boom-active')
         .css('backgroundColor', '#' + button.data('boom.select-color'));
 
-    if (ka.state.currentDetailButton == 2) {
+    if (ka.state.currentDetailButton == 'details') {
         $('#boom-movie-detail-shade').velocity({opacity: 0.75}, {duration: 360});
         $('#boom-movie-detail-description').velocity('transition.expandIn', {duration: 360, display: 'flex'});
     } else {
         $('#boom-movie-detail-shade').velocity({opacity: 0}, {duration: 360});
         $('#boom-movie-detail-description').velocity('transition.expandOut', 360);
     }
+};
+
+
+ka.lib.startTrailerPlayer = function (id) {
+    ka.state.movieTrailerPlayer.loadVideoById({
+        videoId: id
+      , suggestedQuality: 'hd1080'
+    });
+    ka.state.movieTrailerPlayer.playVideo();
 };
 
 

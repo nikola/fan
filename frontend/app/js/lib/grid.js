@@ -421,7 +421,7 @@ ka.lib.toggleFocus = function () {
 
 ka.lib.selectFocus = function () {
     ka.state.currentPageMode = 'detail';
-    ka.state.currentDetailButton = 0;
+    ka.state.currentDetailButton = 'play';
 
     ka.lib.updateDetailPage();
     ka.lib.updateDetailButtonSelection();

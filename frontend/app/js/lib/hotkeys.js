@@ -44,8 +44,9 @@ ka.lib.handleKeypressUp = function () {
             ka.lib.updateConfigButtonSelection();
         }
     } else if (ka.state.currentPageMode == 'detail') {
-        if (ka.state.currentDetailButton > 0) {
-            ka.state.currentDetailButton -= 1;
+        if ($('#boom-detail-button-group .boom-button:visible.boom-active').index() > 0) {
+            ka.state.currentDetailButton = $('#boom-detail-button-group .boom-button.boom-active').prevAll(':visible').eq(0).text().toLowerCase();
+
             ka.lib.updateDetailButtonSelection();
         }
     } else if (ka.state.currentPageMode == 'grid') {
@@ -61,8 +62,8 @@ ka.lib.handleKeypressDown = function () {
             ka.lib.updateConfigButtonSelection();
         }
     } else if (ka.state.currentPageMode == 'detail') {
-        if (ka.state.currentDetailButton + 1 < ka.state.maxDetailButton) {
-            ka.state.currentDetailButton += 1;
+        if ($('#boom-detail-button-group .boom-button:visible.boom-active').index() + 1 < ka.state.maxDetailButton) {
+            ka.state.currentDetailButton = $('#boom-detail-button-group .boom-button.boom-active').nextAll(':visible').eq(0).text().toLowerCase();
             ka.lib.updateDetailButtonSelection();
         }
     } else if (ka.state.currentPageMode == 'grid') {
@@ -100,21 +101,17 @@ ka.lib.handleKeypressSelect = function () {
     } else if (ka.state.currentPageMode == 'grid') {
         ka.lib.selectFocus();
     } else if (ka.state.currentPageMode == 'detail') {
-        if (ka.state.currentDetailButton == 0) {
+        if (ka.state.currentDetailButton == 'play') {
             $('#boom-movie-detail').velocity('fadeOut', {duration: 360, complete: function () {
                 ka.state.currentPageMode = 'play:movie';
 
                 ka.state.socketDispatcher.push('movie:play', ka.lib.getMovieFromGridFocus().uuid);
             }});
-        } else if (ka.state.currentDetailButton == 1) {
+        } else if (ka.state.currentDetailButton == 'trailer') {
             $('#boom-movie-detail').velocity('fadeOut', {duration: 360, complete: function () {
                 ka.state.currentPageMode = 'play:trailer';
 
-                ka.state.movieTrailerPlayer.loadVideoById({
-                    videoId: ka.lib.getMovieFromGridFocus().trailer
-                  , suggestedQuality: 'hd1080'
-                });
-                ka.state.movieTrailerPlayer.playVideo();
+                ka.lib.startTrailerPlayer(ka.lib.getMovieFromGridFocus().trailer);
             }});
         }
     }

@@ -29,7 +29,7 @@ CEF_CMD_LINE_SETTINGS = {
     'disable-webaudio':                     '',
     'dns-prefetch-disable':                 '',
     'enable-benchmarking':                  '',
-    'no-displaying-insecure-content':       '',
+    # 'no-displaying-insecure-content':       '',
     'no-pings':                             '',
     'no-referrers':                         '',
     'noerrdialogs':                         '',

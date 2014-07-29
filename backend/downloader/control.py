@@ -32,9 +32,11 @@ def _startDownloader(queue):
                 queue.task_done()
             elif command.startswith('configuration:image-base-url:'):
                 imageBaseUrl = command.replace('configuration:image-base-url:', '')
-                logger.info('Base URL for images received by downloader: %s.' % imageBaseUrl)
+                logger.info('Base URL for images received: %s.' % imageBaseUrl)
 
                 queue.task_done()
+
+                queue.put('orchestrator:start:scan')
             elif command == 'downloader:stop':
                 # logger.info('Downloader received STOP command.')
 
@@ -82,6 +84,7 @@ def _startDownloader(queue):
                     else:
                         logger.info('Going into idle mode ...')
                         isIdle = True
+                        queue.put('orchestrator:wake-up:downloader')
             else:
                 time.sleep(0.015)
 

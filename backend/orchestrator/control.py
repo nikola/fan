@@ -62,6 +62,7 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
     streamGenerator = None
     syncFinished = False
     streamWatcherStarted = False
+    isDownloaderIdle = False
 
     appModule.interProcessQueue = queue
     # appModule.presented = False
@@ -98,6 +99,7 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
             command = queue.get_nowait()
 
             if command == 'orchestrator:start:scan':
+                appModule.userConfig = getCurrentUserConfig()
                 streamGenerator = getMoviePathnames(appModule.userConfig.get('sources', []))
 
                 queue.task_done()
@@ -106,14 +108,18 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                 streamWatcherStarted = True
                 queue.task_done()
             elif command == 'orchestrator:reload:config':
-                appModule.userConfig = getCurrentUserConfig()
-                streamGenerator = getMoviePathnames(appModule.userConfig.get('sources', []))
+                # appModule.userConfig = getCurrentUserConfig()
+                # streamGenerator = getMoviePathnames(appModule.userConfig.get('sources', []))
 
                 pubSubReference.write(unicode('["force:redirect:url", "load.asp"]'))
 
                 queue.task_done()
             elif command == 'orchestrator:resume:detail':
                 pubSubReference.write(unicode('["resume:detail:screen", ""]'))
+
+                queue.task_done()
+            elif command == 'orchestrator:wake-up:downloader':
+                isDownloaderIdle = True
 
                 queue.task_done()
             elif command == 'orchestrator:stop:all':
@@ -181,7 +187,8 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                             if pubSubReference.connected:
                                 pubSubReference.write(unicode('["receive:movie:item", %s]' % streamManager.getMovieAsJson(movie.uuid)))
                                 if engine is not None: engine.poll(poll_timeout=0.015)
-                            queue.put('downloader:resume')
+                            if isDownloaderIdle:
+                                queue.put('downloader:resume')
 
             elif syncFinished is True:
                 syncFinished = None

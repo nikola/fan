@@ -61,7 +61,6 @@ def presenterReady(request, pathname):
         module.imageBaseUrl, module.imageClosestSize = getImageConfiguration()
         module.interProcessQueue.put('configuration:image-base-url:%s' % module.imageBaseUrl)
 
-        module.interProcessQueue.put('orchestrator:start:scan')
         return '', 200
     else:
         request.finish()

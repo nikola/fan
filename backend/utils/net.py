@@ -29,7 +29,12 @@ TMDB_RESPONSE_CACHE = {}
 
 
 def makeThrottledGetRequest(url, params):
-    key = '%s;%s' % (url, ';'.join(['%s:%s' % (key, value) for key, value in OrderedDict(sorted(params.items(), key=lambda t: t[0])).iteritems()]))
+    tuples = []
+    for k, v in OrderedDict(sorted(params.items(), key=lambda t: t[0])).iteritems():
+        if k == 'query':
+            v = v.decode('utf-8')
+        tuples.append('%s:%s' % (k, v))
+    key = '%s;%s' % (url, ';'.join(tuples))
 
     global TMDB_RESPONSE_CACHE
     if TMDB_RESPONSE_CACHE.has_key(key):

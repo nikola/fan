@@ -238,7 +238,6 @@ out/
 
 
 ## Project-specific.
-shaders/
 dummy.exe
 compiler/clean/
 compiler/pyminifier/

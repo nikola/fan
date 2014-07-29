@@ -10,16 +10,15 @@ from Queue import Empty
 
 from downloader.images import downloadBackdrop, downscalePoster
 from models import StreamManager
-from player import update as downloadPlayer
 
 from . import logger
 
 
 def _startDownloader(queue):
     downloaderStreamManager = StreamManager()
-    doDownloadPlayer = True
     doDownloadAssets = False
     imageBaseUrl = None
+    isIdle = False
 
     while True:
         try:
@@ -43,16 +42,17 @@ def _startDownloader(queue):
 
                 queue.task_done()
                 break
-            else:
-                queue.put(command)
+            elif command == 'downloader:resume':
+                logger.info('Resuming from idle mode ...')
+                isIdle = False
+
                 queue.task_done()
+            else:
+                queue.task_done()
+                queue.put(command)
         except Empty:
-            if doDownloadPlayer:
-                downloadPlayer()
-                doDownloadPlayer = False
-                queue.put('player:up-to-date')
-            elif doDownloadAssets:
-                time.sleep(0.5)
+            if doDownloadAssets and not isIdle:
+                # time.sleep(0.5)
 
                 movieUuid = downloaderStreamManager.getMissingBackdropMovieUuid()
                 if movieUuid is not None:
@@ -80,8 +80,8 @@ def _startDownloader(queue):
                                     queue.put(command)
                                     queue.task_done()
                     else:
-                        # print 'nothing to downscale'
-                        pass
+                        logger.info('Going into idle mode ...')
+                        isIdle = True
             else:
                 time.sleep(0.015)
 

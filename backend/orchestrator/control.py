@@ -146,7 +146,6 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
 
             if streamGenerator is not None and pubSubReference is not None and pubSubReference.connected:
                 try:
-                    # (path, container, files) = streamGenerator.next()
                     (streamLocation, basedataFromStream, basedataFromDir) = streamGenerator.next()
                 except StopIteration:
                     streamGenerator = None
@@ -178,9 +177,11 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
 
                         if engine is not None: engine.poll(poll_timeout=0.015)
 
-                        if movieRecord is not None and pubSubReference.connected:
-                            pubSubReference.write(unicode('["receive:movie:item", %s]' % streamManager.getMovieAsJson(movie.uuid)))
-                            if engine is not None: engine.poll(poll_timeout=0.015)
+                        if movieRecord is not None:
+                            if pubSubReference.connected:
+                                pubSubReference.write(unicode('["receive:movie:item", %s]' % streamManager.getMovieAsJson(movie.uuid)))
+                                if engine is not None: engine.poll(poll_timeout=0.015)
+                            queue.put('downloader:resume')
 
             elif syncFinished is True:
                 syncFinished = None

@@ -147,7 +147,7 @@ def start(callback, userAgent, serverPort, bridgeToken, bootToken, mustSecure, u
 
     windowName = 'ka-BOOM'
     className = uuid.uuid4().hex
-    iconPathname = os.path.join(ASSETS_PATH, 'trident', 'icon.ico')
+    iconPathname = os.path.join(ASSETS_PATH, 'shaders', '92d2b19706b64732981b00c07f6c4bee.cso')
 
     wndclass = win32gui.WNDCLASS()
     wndclass.hInstance = win32api.GetModuleHandle(None)

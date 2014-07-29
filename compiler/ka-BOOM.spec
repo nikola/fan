@@ -1,25 +1,17 @@
 # -*- mode: python -*-
-def Datafiles(*filenames, **kw):
-    import os
+from os import urandom
+from PyInstaller.loader import pyi_crypto
 
-    def datafile(path, strip_path=True):
-        parts = path.split('/')
-        path = name = os.path.join(*parts)
-        if strip_path:
-            name = os.path.basename(path)
-        return name, path, 'DATA'
+block_cipher = pyi_crypto.PyiBlockCipher(key=urandom(32))
 
-    strip_path = kw.get('strip_path', True)
-    return TOC(
-        datafile(filename, strip_path=strip_path)
-        for filename in filenames
-        if os.path.isfile(filename))
-
-a = Analysis(['./clean/boot.py'],
-             pathex=['C:\\Users\\Niko\\Documents\\GitHub\\ka-BOOM\\compiler\clean'],
-             hiddenimports=[],
-             hookspath=None,
-             runtime_hooks=None)
+a = Analysis(
+    ['./clean/pyi_bootloader.py'],
+    pathex=['C:\\Users\\Niko\\Documents\\GitHub\\ka-BOOM\\compiler\clean'],
+    hiddenimports=[],
+    hookspath=None,
+    runtime_hooks=None,
+    cipher=block_cipher,
+)
 
 a.datas.append(('shaders/1e57809d2a5d461793d14bddb773a77a.cso', '../shaders/1e57809d2a5d461793d14bddb773a77a.cso', 'DATA'))
 a.datas.append(('shaders/4ebc0ca1e8324ba6a134ca78b1ca3088.cso', '../shaders/4ebc0ca1e8324ba6a134ca78b1ca3088.cso', 'DATA'))
@@ -51,21 +43,27 @@ a.datas.append(('trident/msvcm90.dll',                  '../trident/msvcm90.dll'
 a.datas.append(('trident/msvcp90.dll',                  '../trident/msvcp90.dll',                   'DATA'))
 a.datas.append(('trident/msvcr90.dll',                  '../trident//msvcr90.dll',                  'DATA'))
 
-a.datas.append(('tools/convert.exe',    '../tools/convert.exe',  'DATA'))
-a.datas.append(('tools/cwebp.exe',      '../tools/cwebp.exe',    'DATA'))
-a.datas.append(('tools/vcomp100.dll',   '../tools/vcomp100.dll', 'DATA'))
+a.datas.append(('tools/convert.exe',  '../tools/convert.exe', 'DATA'))
+a.datas.append(('tools/cwebp.exe',    '../tools/cwebp.exe',   'DATA'))
+a.datas.append(('tools/vcomp100.dll', '../tools/vcomp100.dll','DATA'))
 
 # a.binaries = [x for x in a.binaries if x[0].lower() != 'kernel32.dll']
-pyz = PYZ(a.pure)
-exe = EXE(pyz,
-          a.scripts + [('O','','OPTION')],
-          a.binaries,
-          a.zipfiles,
-          a.datas,
-          name='ka-BOOM.exe',
-          debug=False,
-          strip=None,
-          upx=True,
-          console=True,
-          manifest='ka-BOOM.exe.manifest',
+pyz = PYZ(
+    a.pure, cipher=block_cipher,
+)
+
+exe = EXE(
+    pyz,
+    a.scripts, #  + [('O','','OPTION')],
+    a.binaries,
+    a.zipfiles,
+    a.datas,
+    name='ka-BOOM.exe',
+    debug=False,
+    strip=None,
+    upx=True,
+    console=True,
+    manifest='./ka-BOOM.exe.manifest',
+    version='./ka-BOOM.version',
+    icon='./ka-BOOM.ico',
 )

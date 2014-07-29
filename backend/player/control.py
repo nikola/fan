@@ -10,7 +10,7 @@ from Queue import Empty
 
 from models import StreamManager
 
-from . import playFile
+from . import playFile, update as updatePlayer
 
 
 def _startPlayer(queue):
@@ -21,6 +21,7 @@ def _startPlayer(queue):
     while True:
         try:
             command = queue.get_nowait()
+
             if command == 'player:up-to-date':
                 isPlayerUpToDate = True
 
@@ -31,17 +32,19 @@ def _startPlayer(queue):
                 queue.task_done()
                 break
             elif command.startswith('player:play:'):
-                if isPlayerUpToDate:
-                    playFile(playerStreamManager.getStreamLocationByMovie(command[-32:]))
+                if not isPlayerUpToDate:
+                    updatePlayer()
+                    isPlayerUpToDate = True
 
-                    queue.put('orchestrator:resume:detail')
-                else:
-                    queue.put(command)
+                playFile(playerStreamManager.getStreamLocationByMovie(command[-32:]))
 
                 queue.task_done()
+
+                queue.put('orchestrator:resume:detail')
             else:
-                queue.put(command)
                 queue.task_done()
+
+                queue.put(command)
         except Empty:
             time.sleep(0.5)
 

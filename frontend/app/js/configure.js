@@ -239,6 +239,10 @@ $(document).ready(function () {
     /* ... */
     registerHotkeys();
 
+    /* Preload spinner. */
+    var image = Image();
+    image.src = '/loader.gif';
+
     $.ajax({
         url: '/movies/top250',
         success: function (list) {

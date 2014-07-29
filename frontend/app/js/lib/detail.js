@@ -13,7 +13,7 @@ ka.lib.updateDetailPage = function () {
 
     $('#boom-detail-release span').text(movie.releaseYear);
     $('#boom-detail-runtime span').text(movie.runtime);
-    $('#boom-detail-rating span').text(movie.rating / 10);
+    $('#boom-detail-rating span').text((movie.rating) ? (movie.rating / 10) : '?');
     $('#boom-movie-detail-title').text(ka.lib.getLocalizedTitleByUuid(movie.uuid));
     $('#boom-movie-detail-description').text(movie.storyline);
 

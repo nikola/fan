@@ -5,12 +5,14 @@ __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 TRAILERS_HD = {
+       101: 'AEYXe8MXuZo',  # Leon: The Professional
        534: 'W6GWhOvSAf4',  # Terminator Salvation
        550: 'ZwaBbL6fmgs',  # Fight Club
       1495: 'Kfq9U2tWWGo',  # Kingdom of Heaven
      13475: 'iGAHnZ555nI',  # Star Trek
      19995: '5PSNL1qE6VY',  # Avatar
      20504: 'kAMUv22y1og',  # The Book of Eli
+     49049: 'qv-6dNqqnMA',  # Dredd
      49051: 'SDnYMbYB-nU',  # The Hobbit: An Unexpected Journey
      54138: 'sJNyGFqgyag',  # Star Trek Into Darkness
      57158: 'OPVWy1tFXuc',  # The Hobbit: The Desolation of Smaug

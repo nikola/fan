@@ -4,7 +4,6 @@
 __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
-import os
 import time
 from utils.system import Process
 from Queue import Empty
@@ -17,7 +16,7 @@ from settings import DEBUG
 from orchestrator.urls import module as appModule
 from orchestrator.pubsub import PubSub
 from models import StreamManager
-from identifier import getMoviePathnames, getBaseDataFromPathname, identifyMovieByTitleYear
+from identifier import getMoviePathnames, identifyMovieByTitleYear
 from utils.config import getCurrentUserConfig
 
 from . import logger

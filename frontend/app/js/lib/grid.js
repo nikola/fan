@@ -21,8 +21,6 @@ ka.lib.setPrimaryPosterColor = function () {
         context.canvas.height = image.height;
         context.drawImage(image, 0, 0, image.width, image.height);
 
-        /* TODO: call callback here to remove loading spinner */
-
         gridItem.find('.boom-movie-grid-info-overlay-title').css('backgroundColor', '#' + ka.data.cortex.byUuid[uuid].primaryPosterColor);
     } else {
         var pixelArray = ka.lib.getPixelsFromImage($(this));
@@ -31,6 +29,8 @@ ka.lib.setPrimaryPosterColor = function () {
 
         setTimeout(ka.lib.processPixelArray, 0);
     }
+
+    ka.lib.onPosterLoaded();
 };
 
 
@@ -53,6 +53,20 @@ ka.lib.processPixelArray = function () {
     ka.state.imagePosterPrimaryColorByUuid[uuid] = primaryColorHex;
 
     $.get('/update/' + uuid + '/poster-color/' + primaryColorHex);
+};
+
+
+ka.lib.onPosterLoaded = function () {
+    if (ka.state.isProcessingInitialItems) {
+        ka.state.processingInitialItemsCount -= 1;
+
+        if (ka.state.processingInitialItemsCount == 0) {
+            ka.state.isProcessingInitialItems = false;
+            ka.state.processingInitialItemsCount = null;
+
+            window.top.postMessage('', location.protocol + '//' + location.host);
+        }
+    }
 };
 
 

@@ -9,7 +9,10 @@
 // ka.data.cortex.all.forEach(function (item, index) { console.log(item.titleOriginal.getValue(), '->', item.criterion.getValue())})
 
 ka.lib.addMovieToCortex = function (movieDict) {
-    if (movieDict.uuid in ka.data.cortex.byUuid) return;
+    if (movieDict.uuid in ka.data.cortex.byUuid) {
+        ka.state.processingInitialItemsCount -= 1;
+        return;
+    }
 
     var alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''), compare = ka.state.collator.compare,
         localizedArticles = ka.lib.getLocalizedArticles();

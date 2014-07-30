@@ -44,6 +44,8 @@ ka.state = {
   , imagePosterPrimaryColorByUuid: {}
   , imagePosterPixelArrayBacklog: []
   , desaturationImageCache: []
+  , isProcessingInitialItems: false
+  , processingInitialItemsCount: null
 };
 
 
@@ -109,6 +111,8 @@ function ready() {
             var index = list.length;
             if (index) {
                 ka.state.shouldFocusFadeIn = false;
+                ka.state.isProcessingInitialItems = true;
+                ka.state.processingInitialItemsCount = index;
             }
             while (index--) {
                 ka.lib.addMovieToCortex(list[index]);
@@ -116,14 +120,14 @@ function ready() {
             ka.lib.recalcMovieGrid();
             ka.lib.updateMovieGrid();
 
-            window.top.postMessage('', location.protocol + '//' + location.host);
+            /* window.top.postMessage('', location.protocol + '//' + location.host); */
         }
     });
 }
 
 
 function registerHotkeys() {
-    var listener = new keypress.Listener(document.body, {prevent_repeat: true}),
+    var listener = ka.state.hotkeyListener = new keypress.Listener(document.body, {prevent_repeat: true}),
         _hotkeys = ka.config.hotkeys;
 
      listener.register_many([

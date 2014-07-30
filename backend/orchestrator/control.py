@@ -61,7 +61,7 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
     streamManager = StreamManager()
     streamGenerator = None
     syncFinished = False
-    streamWatcherStarted = False
+    # streamWatcherStarted = False
     isDownloaderIdle = False
 
     appModule.interProcessQueue = queue
@@ -103,10 +103,10 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                 streamGenerator = getMoviePathnames(appModule.userConfig.get('sources', []))
 
                 queue.task_done()
-            elif command == 'orchestrator:watch':
-                # streamWatcher.start()
-                streamWatcherStarted = True
-                queue.task_done()
+            # elif command == 'orchestrator:watch':
+            #     # streamWatcher.start()
+            #     streamWatcherStarted = True
+            #     queue.task_done()
             elif command == 'orchestrator:reload:config':
                 # appModule.userConfig = getCurrentUserConfig()
                 # streamGenerator = getMoviePathnames(appModule.userConfig.get('sources', []))
@@ -145,8 +145,10 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
 
                 queue.task_done()
             else:
-                queue.put(command)
                 queue.task_done()
+                queue.put(command)
+
+                time.sleep(0.015)
         except Empty:
             if engine is not None: engine.poll(poll_timeout=0.015)
 
@@ -171,9 +173,6 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                         )
                         if engine is not None: engine.poll(poll_timeout=0.015)
 
-                        # logger.info('From Dir:  %s\t\t(%s)' % (basedataFromDir.get('title'), basedataFromDir.get('year', '?')))
-                        # logger.info('From File: %s\t\t(%s)' % (basedataFromStream.get('title'), basedataFromStream.get('year', '?')))
-
                         if movieRecord is None:
                             logger.warning('Could not identify file: %s' % streamLocation) # TODO: handle this! perhaps try again when app is re-launched?
                         # else:
@@ -193,10 +192,12 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
             elif syncFinished is True:
                 syncFinished = None
 
-                queue.put('orchestrator:watch')
+                # queue.put('orchestrator:watch')
                 queue.put('downloader:start')
-            else:
+            elif syncFinished is False:
                 time.sleep(0.015)
+            else:
+                time.sleep(2)
 
 
 def start(*args):

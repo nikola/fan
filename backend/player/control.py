@@ -43,8 +43,9 @@ def _startPlayer(queue):
                 queue.put('orchestrator:resume:detail')
             else:
                 queue.task_done()
-
                 queue.put(command)
+
+                time.sleep(0.015)
         except Empty:
             time.sleep(0.5)
 

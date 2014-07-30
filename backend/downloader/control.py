@@ -52,6 +52,8 @@ def _startDownloader(queue):
             else:
                 queue.task_done()
                 queue.put(command)
+
+                time.sleep(0.015)
         except Empty:
             if doDownloadAssets and not isIdle:
                 # time.sleep(0.5)
@@ -59,12 +61,12 @@ def _startDownloader(queue):
                 movieUuid = downloaderStreamManager.getMissingBackdropMovieUuid()
                 if movieUuid is not None:
                     if imageBaseUrl is not None:
-                        logger.info('Must download backdrop for "%s".' % downloaderStreamManager.getMovieTitleByUuid(movieUuid))
+                        logger.info('Downloading backdrop for "%s" ...' % downloaderStreamManager.getMovieTitleByUuid(movieUuid))
                         downloadBackdrop(downloaderStreamManager, imageBaseUrl, movieUuid, True)
                 else:
                     image = downloaderStreamManager.getUnscaledPosterImage()
                     if image is not None:
-                        logger.info('Must downscale original poster image for "%s".' % downloaderStreamManager.getMovieTitleById(image.movieId))
+                        logger.info('Starting production of downscaled poster image for "%s" ...' % downloaderStreamManager.getMovieTitleById(image.movieId))
                         movieUuid = downscalePoster(downloaderStreamManager, image)
 
                         if movieUuid is not None:
@@ -85,8 +87,12 @@ def _startDownloader(queue):
                         logger.info('Going into idle mode ...')
                         isIdle = True
                         queue.put('orchestrator:wake-up:downloader')
+                        time.sleep(0.015)
             else:
-                time.sleep(0.015)
+                if isIdle:
+                    time.sleep(2)
+                else:
+                    time.sleep(0.015)
 
 
 def start(*args):

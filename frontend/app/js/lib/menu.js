@@ -1,5 +1,5 @@
 /**
- *  Render config page items.
+ *  Render menu page items.
  *
  *  @author Nikola Klaric (nikola@generic.company)
  *  @copyright Copyright (c) 2013-2014 Nikola Klaric
@@ -18,7 +18,11 @@ ka.lib.executeConfigSelection = function () {
     var id = $('#boom-config-button-group .boom-button').eq(ka.state.currentConfigButton).attr('id');
 
     if (id == 'boom-config-button-exit') {
+        ka.state.hotkeyListener.reset();
+
         ka.state.socketDispatcher.push('loopback:command', 'shutdown');
+
+        $('#content').velocity('fadeOut', 360);
     } else if (id == 'boom-config-button-change-import') {
         window.top.location.href = '/configure.asp#return';
     } else {

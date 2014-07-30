@@ -113,14 +113,15 @@ function ready() {
                 ka.state.shouldFocusFadeIn = false;
                 ka.state.isProcessingInitialItems = true;
                 ka.state.processingInitialItemsCount = index;
-            }
-            while (index--) {
-                ka.lib.addMovieToCortex(list[index]);
-            }
-            ka.lib.recalcMovieGrid();
-            ka.lib.updateMovieGrid();
 
-            /* window.top.postMessage('', location.protocol + '//' + location.host); */
+                while (index--) {
+                    ka.lib.addMovieToCortex(list[index]);
+                }
+                ka.lib.recalcMovieGrid();
+                ka.lib.updateMovieGrid();
+            } else {
+                window.top.postMessage('', location.protocol + '//' + location.host);
+            }
         }
     });
 }

@@ -10,7 +10,9 @@
 
 ka.lib.addMovieToCortex = function (movieDict) {
     if (movieDict.uuid in ka.data.cortex.byUuid) {
-        ka.state.processingInitialItemsCount -= 1;
+        if (ka.state.isProcessingInitialItems) {
+            ka.state.processingInitialItemsCount -= 1;
+        }
         return;
     }
 

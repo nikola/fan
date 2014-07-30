@@ -6,9 +6,11 @@ __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 import sys
 import os
+import time
 import logging
 from uuid import uuid4
 from multiprocessing import JoinableQueue as InterProcessQueue, freeze_support
+from Queue import Empty
 from ctypes import windll
 
 import win32file
@@ -24,7 +26,7 @@ from utils.config import getCurrentUserConfig
 from orchestrator.control import start as startOrchestrator, stop as stopOrchestrator
 from downloader.control import start as startDownloader, stop as stopDownloader
 from player.control import start as startPlayer, stop as stopPlayer
-from analyzer.control import start as startAnalyzer, stop as stopAnalyzer
+# from analyzer.control import start as startAnalyzer, stop as stopAnalyzer
 from presenter.control import start as present
 
 
@@ -38,7 +40,17 @@ if __name__ == '__main__':
         # stopAnalyzer()
         stopDownloader()
 
-        # TODO: remove all items from queue and dump them here:
+        # Remove pending commands from queue if not essential.
+        while True:
+            try:
+                command = interProcessQueue.get_nowait()
+            except Empty:
+                break
+            else:
+                interProcessQueue.task_done()
+                if command.find(':stop') != -1:
+                    interProcessQueue.put(command)
+                time.sleep(0.1)
 
         # Block until all queue items have been processed.
         interProcessQueue.join()
@@ -56,7 +68,7 @@ if __name__ == '__main__':
 
         logger.info('Closing application.')
         # logger.info('<' * 80)
-        logger.info('')
+        # logger.info('')
 
         # Circumvent SystemExit exception handler.
         os._exit(1)

@@ -41,6 +41,10 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
             request.finish()
             request.connection.close()
 
+    def _processRequests():
+        if engine is not None:
+            engine.poll(poll_timeout=0.015)
+
     # logging.basicConfig(level=logging.INFO,
     #                     format='%(asctime)s - %(message)s',
     #                     datefmt='%Y-%m-%d %H:%M:%S')
@@ -92,7 +96,7 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
     engine = HttpServerEngine.instance()
 
     while True:
-        if engine is not None: engine.poll(poll_timeout=0.015)
+        _processRequests()
 
         try:
             command = queue.get_nowait()
@@ -149,7 +153,7 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
 
                 time.sleep(0.015)
         except Empty:
-            if engine is not None: engine.poll(poll_timeout=0.015)
+            _processRequests()
 
             if streamGenerator is not None and pubSubReference is not None and pubSubReference.connected:
                 try:
@@ -158,19 +162,19 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                     streamGenerator = None
                     syncFinished = True
                 else:
-                    if engine is not None: engine.poll(poll_timeout=0.015)
+                    _processRequests()
 
                     if not streamManager.isStreamKnown(streamLocation):
-                        logger.info('Found supported file: %s' % streamLocation)
+                        logger.info('Found new supported file: %s' % streamLocation)
 
-                        if engine is not None: engine.poll(poll_timeout=0.015)
+                        _processRequests()
 
                         movieRecord = identifyMovieByTitleYear(
                             userConfig.get('language', 'en'),
                             basedataFromDir.get('title'), basedataFromDir.get('year'),
                             basedataFromStream.get('title'), basedataFromStream.get('year'),
                         )
-                        if engine is not None: engine.poll(poll_timeout=0.015)
+                        _processRequests()
 
                         if movieRecord is None:
                             logger.warning('Could not identify file: %s' % streamLocation) # TODO: handle this! perhaps try again when app is re-launched?
@@ -179,12 +183,12 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
 
                         movie = streamManager.addMovieStream(movieRecord, streamLocation) # TODO: re-wire stream to correct movie if necessary
 
-                        if engine is not None: engine.poll(poll_timeout=0.015)
+                        _processRequests()
 
                         if movieRecord is not None:
                             if pubSubReference.connected:
                                 pubSubReference.write(unicode('["receive:movie:item", %s]' % streamManager.getMovieAsJson(movie.uuid)))
-                                if engine is not None: engine.poll(poll_timeout=0.015)
+                                _processRequests()
                             if isDownloaderIdle:
                                 queue.put('downloader:resume')
 
@@ -193,10 +197,12 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
 
                 # queue.put('orchestrator:watch')
                 queue.put('downloader:start')
-            elif syncFinished is False:
-                time.sleep(0.015)
-            else:
-                time.sleep(2)
+
+            _processRequests()
+            # elif syncFinished is False:
+            #     time.sleep(0.015)
+            # else:
+            #     if engine is not None: engine.poll(poll_timeout=0.015)
 
 
 def start(*args):

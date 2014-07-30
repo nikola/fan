@@ -57,17 +57,20 @@ def _startDownloader(queue):
         except Empty:
             if doDownloadAssets and not isIdle:
                 # time.sleep(0.5)
+                time.sleep(0.015)
 
                 movieUuid = downloaderStreamManager.getMissingBackdropMovieUuid()
                 if movieUuid is not None:
                     if imageBaseUrl is not None:
-                        logger.info('Downloading backdrop for "%s" ...' % downloaderStreamManager.getMovieTitleByUuid(movieUuid))
                         downloadBackdrop(downloaderStreamManager, imageBaseUrl, movieUuid, True)
                 else:
+                    time.sleep(0.015)
                     image = downloaderStreamManager.getUnscaledPosterImage()
                     if image is not None:
+                        time.sleep(0.015)
                         logger.info('Starting production of downscaled poster image for "%s" ...' % downloaderStreamManager.getMovieTitleById(image.movieId))
                         movieUuid = downscalePoster(downloaderStreamManager, image)
+                        time.sleep(0.015)
 
                         if movieUuid is not None:
                             try:

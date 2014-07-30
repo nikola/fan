@@ -240,7 +240,7 @@ $(document).ready(function () {
     registerHotkeys();
 
     /* Preload spinner. */
-    var image = Image();
+    var image = new Image();
     image.src = '/loader.gif';
 
     $.ajax({

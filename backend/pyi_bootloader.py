@@ -35,8 +35,10 @@ if __name__ == '__main__':
         # Presenter has been closed, now kick off clean-up tasks.
         stopOrchestrator()
         stopPlayer()
-        stopAnalyzer()
+        # stopAnalyzer()
         stopDownloader()
+
+        # TODO: remove all items from queue and dump them here:
 
         # Block until all queue items have been processed.
         interProcessQueue.join()
@@ -46,7 +48,7 @@ if __name__ == '__main__':
         # Gracefully stop processes.
         orchestrator.join()
         player.join()
-        analyzer.join()
+        # analyzer.join()
         downloader.join()
         logger.info('All processes gracefully terminated.')
 
@@ -59,11 +61,11 @@ if __name__ == '__main__':
         # Circumvent SystemExit exception handler.
         os._exit(1)
 
-    try:
-        logging.basicConfig(**LOG_CONFIG)
-        logger = logging.getLogger('core')
-        logger.addHandler(getLogFileHandler('core'))
+    logging.basicConfig(**LOG_CONFIG)
+    logger = logging.getLogger('core')
+    logger.addHandler(getLogFileHandler('core'))
 
+    try:
         if not isCompatiblePlatform():
             windll.user32.MessageBoxA(0, 'This application is only compatible with Windows Vista or newer.', 'Error', 0)
             logger.critical('Aborting because system is not Windows Vista or newer.')
@@ -114,7 +116,7 @@ if __name__ == '__main__':
         interProcessQueue = InterProcessQueue()
 
         downloader = startDownloader(interProcessQueue)
-        analyzer = startAnalyzer(interProcessQueue)
+        # analyzer = startAnalyzer(interProcessQueue)
         player = startPlayer(interProcessQueue)
 
         arguments = (getUserAgent(), serverPort, uuid4().hex, uuid4().hex, False, userConfig)
@@ -127,16 +129,5 @@ if __name__ == '__main__':
 
         # TODO: implement SIGINT handler
         # http://stackoverflow.com/a/1112350
-    # except (KeyboardInterrupt, SystemError):
-    #     import time
-    #     time.sleep(10)
-    #     raw_input('')
-    #     raise
-    except Exception, e:
-        import traceback
-        traceback.print_exc()
-        import time
-        time.sleep(10)
-        raw_input('')
-        logger.error(e)
-        # raise
+    except:
+        logger.exception()

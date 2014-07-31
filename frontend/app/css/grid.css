@@ -36,7 +36,8 @@
     }
 
 .boom-movie-grid-key {
-    width: 100px; height: 360px;
+    width: 120px; height: 360px;
+    margin-right: -20px;
     padding: 0;
 
     display: inline-block;
@@ -48,13 +49,14 @@
     color: rgb(160, 160, 160);
     background-color: rgb(0, 0, 0);
     border-color: rgb(160, 160, 160);
-    border-width: 2px;
+    border-width: 3px;
     border-style: solid;
 
     display: inline-block;
     margin-top: 30px;
     min-width: 44px;
-    font-size: 32px;
+    font-size: 24px;
+    font-weight: bold;
     text-align: center;
     height: 48px;
     line-height: 46px;

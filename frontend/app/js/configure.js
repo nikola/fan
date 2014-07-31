@@ -70,9 +70,9 @@ function handleKeypressDown() {
 
 
 function handleKeypressLeft() {
-    if (ka.state.currentChoice == 'left') return;
-
-    if (ka.state.currentChoice === null) {
+    if (ka.state.currentChoice == 'left') {
+        return;
+    } else if (ka.state.currentChoice === null) {
         ka.state.currentDriveIndex = 0;
         ka.state.initialChoiceMade = true;
 
@@ -80,6 +80,10 @@ function handleKeypressLeft() {
         $("#boom-split-choices").velocity({marginLeft: '+=420'}, {duration: 360, complete: function (elements) {
             $('#boom-button-selection-floater').css('opacity', 1);
         }});
+
+        if (ka.state.hasDrivesSelected) {
+            $('#boom-choice-confirm .boom-button').velocity('fadeIn', {display: 'inline-block', duration: 360});
+        }
     } else {
         if (!ka.state.isStartButtonSelected) {
             $('#boom-button-start-floater').velocity({opacity: 0, backgroundColorGreen: 0, backgroundColorBlue: 0}, {duration: 720});
@@ -243,6 +247,12 @@ $(document).ready(function () {
     var image = new Image();
     image.src = '/loader.gif';
 
+    for (var source, index = 0; source = ka.config.sources[index]; index++) {
+        ka.data.sourceByPathname[source.pathname] = source;
+    }
+
+    ka.state.hasDrivesSelected = ka.config.sources.length > 0;
+
     $.ajax({
         url: '/movies/top250',
         success: function (list) {
@@ -251,27 +261,23 @@ $(document).ready(function () {
                     text: list[index][0] + ' (' + list[index][1] + ')'
                 }).appendTo('#boom-top250-list');
             }
-        }
-    });
 
-    for (var source, index = 0; source = ka.config.sources[index]; index++) {
-        ka.data.sourceByPathname[source.pathname] = source;
-    }
+            $.ajax({
+                url: '/drives/mounted',
+                success: function (list) {
+                    ka.data.drives = list.concat();
 
-    $.ajax({
-        url: '/drives/mounted',
-        success: function (list) {
-            ka.data.drives = list.concat();
+                    for (var index = 0, drive, className; index < list.length; index++) {
+                        drive = list[index];
+                        className = (drive.pathname in ka.data.sourceByPathname) ? 'fa-check-square': 'fa-square';
+                        $('<li>', {
+                            html: '<i class="fa ' + className + '"></i>' + list[index].label + ' (' + list[index].drive + ':)'
+                        }).appendTo('#boom-drives-list');
+                    }
 
-            /* TODO: check which one is selected as source already */
-
-            for (var index = 0, drive, className; index < list.length; index++) {
-                drive = list[index];
-                className = (drive.pathname in ka.data.sourceByPathname) ? 'fa-check-square': 'fa-square';
-                $('<li>', {
-                    html: '<i class="fa ' + className + '"></i>' + list[index].label + ' (' + list[index].drive + ':)'
-                }).appendTo('#boom-drives-list');
-            }
+                    $('#boom-panel').velocity('fadeIn', 360);
+                }
+            });
         }
     });
 });

@@ -73,6 +73,7 @@ RESOURCES_GUI_JS = [
     'frontend/app/js/lib/grid.js',
     'frontend/app/js/lib/detail.js',
     'frontend/app/js/lib/youtube.js',
+    'frontend/app/js/lib/credits.js',
 
     'frontend/app/js/gui.js',
 ]
@@ -85,7 +86,7 @@ RESOURCES_FONT = [
 ]
 
 
-def _readStrip(filename, delimiters='{}'):
+def _readStrip(filename, delimiters='{}', keepComments=False):
     with open(filename, 'rU') as fp:
         content = fp.read()
 
@@ -93,7 +94,8 @@ def _readStrip(filename, delimiters='{}'):
     content = re.sub(r'>\s*<', '><', content)
 
     # Remove comments.
-    content = re.sub(r'/\*.*?\*/', '', content, flags=re.MULTILINE|re.DOTALL)
+    if not keepComments:
+        content = re.sub(r'/\*.*?\*/', '', content, flags=re.MULTILINE|re.DOTALL)
 
     # Remove leading whitespace.
     content = re.sub(r'(?<=\n) +', '', content)
@@ -151,7 +153,10 @@ def run():
 
     scriptContent = []
     for pathname in RESOURCES_GUI_JS:
-        content = _readStrip(os.path.join(BASE_DIR, pathname), '{},')
+        if pathname.endswith('/credits.js'):
+            content = _readStrip(os.path.join(BASE_DIR, pathname), '{},', keepComments=True)
+        else:
+            content = _readStrip(os.path.join(BASE_DIR, pathname), '{},')
         scriptContent.append(content)
     scriptsAmalgamated = ''.join(scriptContent)
 

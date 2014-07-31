@@ -66,7 +66,7 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
     syncFinished = False
     # streamWatcherStarted = False
     isDownloaderIdle = False
-    isImportingDemoMovies = False
+    # isImportingDemoMovies = False
 
     appModule.interProcessQueue = queue
     # appModule.presented = False
@@ -105,22 +105,22 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
             if command == 'orchestrator:start:scan':
                 appModule.userConfig = getCurrentUserConfig()
 
-                if appModule.userConfig.get('isDemoMode', False) and not appModule.userConfig.get('hasDemoMovies', False):
+                if appModule.userConfig.get('isDemoMode', False): # and not appModule.userConfig.get('hasDemoMovies', False):
                     appModule.userConfig['hasDemoMovies'] = True
                     appModule.userConfig = getCurrentUserConfig(appModule.userConfig)
 
                     streamGenerator = getFixedRecords()
-                    isImportingDemoMovies = True
-                elif not appModule.userConfig.get('isDemoMode', False):
+                    # isImportingDemoMovies = True
+                else: # if not appModule.userConfig.get('isDemoMode', False):
                     if appModule.userConfig.get('hasDemoMovies', False):
                         appModule.userConfig['hasDemoMovies'] = False
                         appModule.userConfig = getCurrentUserConfig(appModule.userConfig)
 
                     streamGenerator = getStreamRecords(appModule.userConfig.get('sources', []))
-                    isImportingDemoMovies = False
-                else:
-                    streamGenerator = None
-                    isImportingDemoMovies = False
+                    # isImportingDemoMovies = False
+                # else:
+                #     streamGenerator = None
+                #     isImportingDemoMovies = False
 
                 queue.task_done()
             # elif command == 'orchestrator:watch':
@@ -145,6 +145,10 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                 queue.task_done()
             elif command == 'orchestrator:wake-up:downloader':
                 isDownloaderIdle = True
+
+                queue.task_done()
+            elif command == 'orchestrator:active:downloader':
+                isDownloaderIdle = False
 
                 queue.task_done()
             elif command == 'orchestrator:stop:all':
@@ -187,7 +191,8 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                     _processRequests()
 
                     if not streamManager.isStreamKnown(streamLocation):
-                        if not isImportingDemoMovies:
+                        # if not isImportingDemoMovies:
+                        if not appModule.userConfig.get('isDemoMode', False):
                             logger.info('Found new supported file: %s' % streamLocation)
                         else:
                             logger.info('Importing TOP 250 movie: "%s (%d)"' % (basedataFromStream['title'], basedataFromStream['year']))

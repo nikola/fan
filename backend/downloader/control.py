@@ -45,10 +45,11 @@ def _startDownloader(queue):
                 queue.task_done()
                 break
             elif command == 'downloader:resume':
-                logger.info('Resuming from idle mode ...')
+                logger.debug('Resuming from idle mode ...')
                 isIdle = False
 
                 queue.task_done()
+                queue.put('orchestrator:active:downloader')
             else:
                 queue.task_done()
                 queue.put(command)
@@ -88,7 +89,7 @@ def _startDownloader(queue):
                                     queue.put(command)
                                     queue.task_done()
                     else:
-                        logger.info('Going into idle mode ...')
+                        logger.debug('Going into idle mode ...')
                         isIdle = True
                         queue.put('orchestrator:wake-up:downloader')
                         time.sleep(0.015)

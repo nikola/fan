@@ -16,7 +16,7 @@ from settings import DEBUG
 from orchestrator.urls import module as appModule
 from orchestrator.pubsub import PubSub
 from models import StreamManager
-from identifier import getMoviePathnames, identifyMovieByTitleYear
+from identifier import getStreamRecords, getFixedRecords, identifyMovieByTitleYear
 from utils.config import getCurrentUserConfig
 
 from . import logger
@@ -66,6 +66,7 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
     syncFinished = False
     # streamWatcherStarted = False
     isDownloaderIdle = False
+    isImportingDemoMovies = False
 
     appModule.interProcessQueue = queue
     # appModule.presented = False
@@ -103,7 +104,23 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
 
             if command == 'orchestrator:start:scan':
                 appModule.userConfig = getCurrentUserConfig()
-                streamGenerator = getMoviePathnames(appModule.userConfig.get('sources', []))
+
+                if appModule.userConfig.get('isDemoMode', False) and not appModule.userConfig.get('hasDemoMovies', False):
+                    appModule.userConfig['hasDemoMovies'] = True
+                    appModule.userConfig = getCurrentUserConfig(appModule.userConfig)
+
+                    streamGenerator = getFixedRecords()
+                    isImportingDemoMovies = True
+                elif not appModule.userConfig.get('isDemoMode', False):
+                    if appModule.userConfig.get('hasDemoMovies', False):
+                        appModule.userConfig['hasDemoMovies'] = False
+                        appModule.userConfig = getCurrentUserConfig(appModule.userConfig)
+
+                    streamGenerator = getStreamRecords(appModule.userConfig.get('sources', []))
+                    isImportingDemoMovies = False
+                else:
+                    streamGenerator = None
+                    isImportingDemoMovies = False
 
                 queue.task_done()
             # elif command == 'orchestrator:watch':
@@ -111,8 +128,13 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
             #     streamWatcherStarted = True
             #     queue.task_done()
             elif command == 'orchestrator:reload:config':
-                # appModule.userConfig = getCurrentUserConfig()
-                # streamGenerator = getMoviePathnames(appModule.userConfig.get('sources', []))
+                appModule.userConfig = getCurrentUserConfig()
+
+                if appModule.userConfig.get('isDemoMode', False):
+                    if not appModule.userConfig.get('hasDemoMovies', False):
+                        streamManager.purge()
+                elif appModule.userConfig.get('hasDemoMovies', False):
+                    streamManager.purge()
 
                 pubSubReference.write(unicode('["force:redirect:url", "load.asp"]'))
 
@@ -165,7 +187,10 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                     _processRequests()
 
                     if not streamManager.isStreamKnown(streamLocation):
-                        logger.info('Found new supported file: %s' % streamLocation)
+                        if not isImportingDemoMovies:
+                            logger.info('Found new supported file: %s' % streamLocation)
+                        else:
+                            logger.info('Importing TOP 250 movie: "%s (%d)"' % (basedataFromStream['title'], basedataFromStream['year']))
 
                         _processRequests()
 
@@ -178,16 +203,14 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
 
                         if movieRecord is None:
                             logger.warning('Could not identify file: %s' % streamLocation) # TODO: handle this! perhaps try again when app is re-launched?
-                        # else:
-                        #     # TODO: call getEditVersionFromFilename(filename, year)
 
-                        movie = streamManager.addMovieStream(movieRecord, streamLocation) # TODO: re-wire stream to correct movie if necessary
+                        movieUuid = streamManager.addMovieStream(movieRecord, streamLocation) # TODO: re-wire stream to correct movie if necessary
 
                         _processRequests()
 
                         if movieRecord is not None:
                             if pubSubReference.connected:
-                                pubSubReference.write(unicode('["receive:movie:item", %s]' % streamManager.getMovieAsJson(movie.uuid)))
+                                pubSubReference.write(unicode('["receive:movie:item", %s]' % streamManager.getMovieAsJson(movieUuid)))
                                 _processRequests()
                             if isDownloaderIdle:
                                 queue.put('downloader:resume')

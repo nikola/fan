@@ -207,7 +207,7 @@ def start(callback, userAgent, serverPort, bridgeToken, bootToken, mustSecure, u
     windowInfo.SetAsChild(windowId)
 
     protocol = 'https:' if mustSecure else 'http:'
-    screen = 'configure' if not len(userConfig['sources']) else 'load'
+    screen = 'configure' if not len(userConfig['sources']) and not userConfig.get('isDemoMode', False) else 'load'
     browser = msie.CreateBrowserSync(
         windowInfo,
         CEF_BROWSER_SETTINGS,

@@ -71,6 +71,27 @@ class StreamManager(object):
         self.engine.dispose()
 
 
+    def purge(self):
+        with self._session() as session:
+            session.query(Localization).delete()
+            session.query(Image).delete()
+            session.query(Stream).delete()
+            session.query(Movie).delete()
+
+            session.commit()
+
+
+    def deleteMovie(self, identifier):
+        with self._session() as session:
+            try:
+                movie = session.query(Movie).filter(Movie.uuid == identifier).one()
+            except NoResultFound:
+                return None
+            else:
+                movie.delete()
+                session.commit()
+
+
     def getMovieByUuid(self, identifier):
         with self._session() as session:
             try:
@@ -101,56 +122,43 @@ class StreamManager(object):
                 return '%s (%d)' % (movie.titleOriginal, movie.releaseYear)
 
 
-    def addMovieStream(self, movieRecord, streamLocation):
-        if not streamLocation: return
-
-        movie = None
+    def addMovieStream(self, movieDict, streamLocation):
         with self._session() as session:
-            try:
-                stream = session.query(Stream).filter_by(location=streamLocation).one()
-            except NoResultFound:
-                streamFormat = 'Matroska' if streamLocation.lower().endswith('.mkv') else 'BD'
-                stream = Stream(
-                    format = streamFormat,
-                    location = streamLocation,
-                )
-                session.add(stream)
-
-            if movieRecord is not None:
+            if streamLocation is not None:
                 try:
-                    movie = session.query(Movie).filter("titleOriginal=:title and releaseYear=:year").params(title=movieRecord["titleOriginal"], year=movieRecord["releaseYear"]).one()
+                    stream = session.query(Stream).filter_by(location=streamLocation).one()
+                except NoResultFound:
+                    streamFormat = 'Matroska' if streamLocation.lower().endswith('.mkv') else 'BD'
+                    stream = Stream(
+                        format = streamFormat,
+                        location = streamLocation,
+                    )
+                    session.add(stream)
+            else:
+                stream = None
+
+            if movieDict is not None:
+                try:
+                    movie = session.query(Movie).filter("titleOriginal=:title and releaseYear=:year").params(title=movieDict["titleOriginal"], year=movieDict["releaseYear"]).one()
                 except NoResultFound:
                     localization = Localization(
-                        locale = movieRecord['locale'],
-                        title = movieRecord['title'],
-                        storyline = movieRecord['storyline'],
+                        locale = movieDict['locale'],
+                        title = movieDict['title'],
+                        storyline = movieDict['storyline'],
                     )
-                    movie = Movie(**movieRecord)
+                    movie = Movie(**movieDict)
                     localization.movie = movie
                     session.add_all([movie, localization])
 
-                stream.movie = movie
+                if stream is not None:
+                    movie.stream = stream
+            else:
+                movie = None
 
             session.commit()
 
-        return movie
-
-
-    def deleteStreams(self):
-        with self._session() as session:
-            session.query(Stream).delete()
-            session.query(Movie).delete()
-
-
-    def deleteMovie(self, identifier):
-        with self._session() as session:
-            try:
-                movie = session.query(Movie).filter(Movie.uuid == identifier).one()
-            except NoResultFound:
-                return None
-            else:
-                movie.delete()
-                session.commit()
+            if movie is not None:
+                return movie.uuid
 
 
     def isStreamKnown(self, streamLocation):

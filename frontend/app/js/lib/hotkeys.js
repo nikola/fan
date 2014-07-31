@@ -144,29 +144,35 @@ ka.lib.handleKeypressBack = function () {
 
 
 ka.lib.handleKeypressLetter = function (evt) {
-    var character = String.fromCharCode(evt.keyCode);
+    if (ka.state.currentPageMode != 'grid') {
+        return;
+    } else {
+        var character = String.fromCharCode(evt.keyCode);
 
-    if (/^[a-z]$/i.test(character)) {
-        var key = character.toUpperCase();
-        if (key in ka.state.gridLookupLinesByKey) {
-            var line = ka.state.gridLookupLinesByKey[key][0] % ka.settings.gridMaxRows;
-            ka.state.gridPage = Math.floor(ka.state.gridLookupLinesByKey[key][0] / ka.settings.gridMaxRows);
-            ka.state.gridFocusX = 0;
-            ka.state.gridFocusY = line;
+        if (/^[a-z]$/i.test(character)) {
+            var key = character.toUpperCase();
+            if (key in ka.state.gridLookupLinesByKey) {
+                var line = ka.state.gridLookupLinesByKey[key][0] % ka.settings.gridMaxRows;
+                ka.state.gridPage = Math.floor(ka.state.gridLookupLinesByKey[key][0] / ka.settings.gridMaxRows);
+                ka.state.gridFocusX = 0;
+                ka.state.gridFocusY = line;
 
-            ka.lib.refocusGrid();
+                ka.lib.refocusGrid();
 
-            $('#boom-movie-grid-key-' + key).velocity({
-                colorRed: 0, colorGreen: 0, colorBlue: 0
-              , backgroundColorRed: 255, backgroundColorGreen: 255, backgroundColorBlue: 255
-              , borderColorRed: 255, borderColorGreen: 255, borderColorBlue: 255
-            }, {duration: 360}).velocity('reverse');
-        } else {
-            $('#boom-movie-grid-container').velocity('callout.shake');
+                $('#boom-movie-grid-key-' + key).velocity({
+                    colorRed: 0, colorGreen: 0, colorBlue: 0
+                  , backgroundColorRed: 255, backgroundColorGreen: 255, backgroundColorBlue: 255
+                  , borderColorRed: 255, borderColorGreen: 255, borderColorBlue: 255
+                }, {duration: 360}).velocity('reverse');
+            } else {
+                $('#boom-movie-grid-container').velocity('callout.shake');
+            }
+        } else if (/^[0-9]$/.test(character)) {
+
         }
-    } else if (/^[0-9]$/.test(character)) {
-
     }
+
+
 };
 
 /*

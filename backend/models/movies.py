@@ -46,6 +46,7 @@ class Movie(Base):
 
     id = Column(Integer, primary_key=True)
     uuid = Column(GUID, default=createUuid)
+    streamless = Column(Boolean, default=True)
 
     idTheMovieDb = Column(Integer)
     idImdb = Column(String(convert_unicode=False))

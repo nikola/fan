@@ -126,39 +126,41 @@ class StreamManager(object):
         with self._session() as session:
             if streamLocation is not None:
                 try:
-                    stream = session.query(Stream).filter_by(location=streamLocation).one()
+                    streamObject = session.query(Stream).filter_by(location=streamLocation).one()
                 except NoResultFound:
                     streamFormat = 'Matroska' if streamLocation.lower().endswith('.mkv') else 'BD'
-                    stream = Stream(
+                    streamObject = Stream(
                         format = streamFormat,
                         location = streamLocation,
                     )
-                    session.add(stream)
+                    session.add(streamObject)
             else:
-                stream = None
+                streamObject = None
 
             if movieDict is not None:
                 try:
-                    movie = session.query(Movie).filter("titleOriginal=:title and releaseYear=:year").params(title=movieDict["titleOriginal"], year=movieDict["releaseYear"]).one()
+                    movieObject = session.query(Movie).filter("titleOriginal=:title and releaseYear=:year").params(title=movieDict["titleOriginal"], year=movieDict["releaseYear"]).one()
                 except NoResultFound:
                     localization = Localization(
                         locale = movieDict['locale'],
                         title = movieDict['title'],
                         storyline = movieDict['storyline'],
                     )
-                    movie = Movie(**movieDict)
-                    localization.movie = movie
-                    session.add_all([movie, localization])
+                    if not streamLocation.startswith('\\\\03cab2fbe3354d838578b09178ac2a1a\\ka-BOOM\\'):
+                        movieDict['streamless'] = False
+                    movieObject = Movie(**movieDict)
+                    localization.movie = movieObject
+                    session.add_all([movieObject, localization])
 
-                if stream is not None:
-                    movie.stream = stream
+                if streamObject is not None:
+                    movieObject.streams.append(streamObject)
             else:
-                movie = None
+                movieObject = None
 
             session.commit()
 
-            if movie is not None:
-                return movie.uuid
+            if movieObject is not None:
+                return movieObject.uuid
 
 
     def isStreamKnown(self, streamLocation):
@@ -319,7 +321,7 @@ class StreamManager(object):
         with self._session() as session:
             movieList = []
             for movie in session.query(Movie, Localization, Image).filter(Movie.id == Localization.movieId, Movie.id == Image.movieId, Image.imageType == 'Poster', Localization.locale == 'en').distinct() \
-                    .values(Movie.uuid, Movie.titleOriginal, Localization.title, Movie.releaseYear, Movie.runtime, Localization.storyline, Movie.rating, Movie.idYoutubeTrailer, Image.primaryColor):
+                    .values(Movie.uuid, Movie.titleOriginal, Localization.title, Movie.releaseYear, Movie.runtime, Localization.storyline, Movie.rating, Movie.idYoutubeTrailer, Image.primaryColor, Movie.streamless):
                 movieList.append({
                     'uuid': movie[0],
                     'titleOriginal': movie[1],
@@ -330,6 +332,7 @@ class StreamManager(object):
                     'rating': movie[6],
                     'trailer': movie[7],
                     'primaryPosterColor': movie[8],
+                    'streamless': movie[9],
                 })
             return json.dumps(movieList, separators=(',',':'))
 
@@ -338,7 +341,7 @@ class StreamManager(object):
         with self._session() as session:
             try:
                 movie = list(session.query(Movie, Localization).filter(Movie.uuid == identifier, Movie.id == Localization.movieId, Localization.locale == 'en').distinct() \
-                    .values(Movie.uuid, Movie.titleOriginal, Localization.title, Movie.releaseYear, Movie.runtime, Localization.storyline, Movie.rating, Movie.idYoutubeTrailer))[0]
+                    .values(Movie.uuid, Movie.titleOriginal, Localization.title, Movie.releaseYear, Movie.runtime, Localization.storyline, Movie.rating, Movie.idYoutubeTrailer, Movie.streamless))[0]
             except NoResultFound:
                 return None
             else:
@@ -351,6 +354,7 @@ class StreamManager(object):
                     'storyline': movie[5],
                     'rating': movie[6],
                     'trailer': movie[7],
+                    'streamless': movie[8],
                 }
                 try:
                     poster = session.query(Image).join(Movie).filter(Image.imageType == 'Poster', Image.movie.has(Movie.uuid == identifier)).first()

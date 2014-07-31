@@ -434,9 +434,18 @@ ka.lib.toggleFocus = function () {
 
 
 ka.lib.selectFocus = function () {
+    var movie = ka.lib.getMovieFromGridFocus();
+
     ka.state.currentPageMode = 'detail';
-    ka.state.currentDetailButton = 'play';
     ka.state.currentGridMovieUuid = ka.lib.getMovieFromGridFocus().uuid;
+
+    if (!movie.streamless) {
+        ka.state.currentDetailButton = 'play';
+    } else if (movie.trailer) {
+        ka.state.currentDetailButton = 'trailer';
+    } else {
+        ka.state.currentDetailButton = 'details';
+    }
 
     ka.lib.updateDetailPage();
     ka.lib.updateDetailButtonSelection();

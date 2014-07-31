@@ -159,7 +159,7 @@ document.oncontextmenu = document.onmousedown = function (event) { event.prevent
 
 $(document).ready(function () {
     ka.state.maxConfigButton = $('#boom-config-button-group .boom-button').length;
-    ka.state.maxDetailButton = $('#boom-detail-button-group .boom-button').length;
+    // ka.state.maxDetailButton = $('#boom-detail-button-group .boom-button:visible').length;
     ka.state.canvasContext = $('#boom-image-color-canvas').get(0).getContext('2d');
 
     $.get(

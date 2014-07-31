@@ -17,7 +17,8 @@ ka.lib.updateDetailPage = function () {
     $('#boom-movie-detail-title').text(ka.lib.getLocalizedTitleByUuid(movie.uuid));
     $('#boom-movie-detail-description').text(movie.storyline);
 
-    $('#boom-movie-detail-trailer-button').css('display', (movie.trailer) ? 'inline-block': 'none');
+    $('#boom-movie-detail-play-button').css('display', (movie.streamless) ? 'none' : 'inline-block');
+    $('#boom-movie-detail-trailer-button').css('display', (movie.trailer) ? 'inline-block' : 'none');
 
     $('#boom-movie-detail-top img').css('visibility', 'hidden');
     $('#boom-movie-detail').css('backgroundImage', 'none');

@@ -59,7 +59,7 @@ def getImageConfiguration():
 
 def getFixedRecords():
     for title, year in TOP_250:
-        yield '\\\\VIRTUAL\\ka-BOOM\\%s (%d).mkv' % (title, year), {'title': title, 'year': year}, {'title': None, 'year': None}
+        yield '\\\\03cab2fbe3354d838578b09178ac2a1a\\ka-BOOM\\%s (%d).mkv' % (title, year), {'title': title, 'year': year}, {'title': None, 'year': None}
 
 
 def getStreamRecords(sources):

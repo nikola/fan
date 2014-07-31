@@ -55,7 +55,7 @@ if __name__ == '__main__':
         # Block until all queue items have been processed.
         interProcessQueue.join()
         interProcessQueue.close()
-        logger.info('Pending IPC items successfully processed.')
+        # logger.info('Pending IPC items successfully processed.')
 
         # Gracefully stop processes.
         orchestrator.join()

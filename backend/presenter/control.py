@@ -153,7 +153,7 @@ def start(callback, userAgent, serverPort, bridgeToken, bootToken, mustSecure, u
     wndclass.hInstance = win32api.GetModuleHandle(None)
     wndclass.lpszClassName = className
     wndclass.style = win32con.CS_NOCLOSE | win32con.CS_VREDRAW | win32con.CS_HREDRAW
-    wndclass.hbrBackground = win32gui.GetStockObject(win32con.WHITE_BRUSH)
+    wndclass.hbrBackground = win32gui.GetStockObject(win32con.BLACK_BRUSH)
     wndclass.hCursor = win32gui.SetCursor(None)
     wndclass.lpfnWndProc = {
         win32con.WM_CLOSE: CloseWindow,
@@ -165,7 +165,7 @@ def start(callback, userAgent, serverPort, bridgeToken, bootToken, mustSecure, u
     win32gui.RegisterClass(wndclass)
 
     # BUG: only works when /HKEY_CURRENT_USER/Software/Microsoft/Windows/DWM/Composition = 0
-    dwExStyle = win32con.WS_EX_APPWINDOW | win32con.WS_EX_LAYERED
+    dwExStyle = win32con.WS_EX_APPWINDOW # | win32con.WS_EX_LAYERED
     style = win32con.WS_VISIBLE | win32con.WS_POPUP | win32con.WS_CLIPCHILDREN | win32con.WS_CLIPSIBLINGS
 
     # if DEBUG:
@@ -186,7 +186,7 @@ def start(callback, userAgent, serverPort, bridgeToken, bootToken, mustSecure, u
         None, # reserved
     )
 
-    win32gui.SetLayeredWindowAttributes(windowId, win32api.RGB(255, 255, 255), 0, win32con.LWA_COLORKEY)
+    # win32gui.SetLayeredWindowAttributes(windowId, win32api.RGB(255, 255, 255), 0, win32con.LWA_COLORKEY)
 
     # To turn off:
     # win32gui.SetWindowLong(windowID, win32con.GWL_EXSTYLE, win32gui.GetWindowLong(windowID, win32con.GWL_EXSTYLE) & ~win32con.WS_EX_LAYERED)

@@ -166,9 +166,9 @@ ka.lib.handleKeypressLetter = function (evt) {
                 ka.lib.refocusGrid();
 
                 $('#boom-movie-grid-key-' + key).velocity({
-                    colorRed: 0, colorGreen: 0, colorBlue: 0
-                  , backgroundColorRed: 255, backgroundColorGreen: 255, backgroundColorBlue: 255
-                  , borderColorRed: 255, borderColorGreen: 255, borderColorBlue: 255
+                    color: '#000000'
+                  , backgroundColor: '#ffffff'
+                  , borderColor: '#ffffff'
                 }, {duration: 360}).velocity('reverse');
             } else {
                 $('#boom-movie-grid-container').velocity('callout.shake');

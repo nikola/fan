@@ -49,3 +49,19 @@ iframe[seamless] {
     padding: 0;
     overflow: hidden;
     }
+
+#boom-credit-text {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    position: absolute; left: 0; top: 0;
+
+    width: 780px; height: 1080px;
+    white-space: pre-line;
+    font-size: 20px;
+    margin-left: 570px;
+    }
+
+#boom-credit-text span {
+    font-weight: bold;
+    }

@@ -26,7 +26,9 @@ ka.lib.executeConfigSelection = function () {
     } else if (id == 'boom-config-button-change-import') {
         window.top.location.href = '/configure.asp#return';
     } else if (id == 'boom-config-button-show-credits') {
-        ka.lib.showLicenseTexts();
+        if (ka.state.currentPageMode != 'credits') {
+            ka.lib.showLicenseTexts();
+        }
     } else {
         var lastCriterion = ka.state.gridSortCriterion, lastOrder = ka.state.gridSortOrder;
 

@@ -139,6 +139,12 @@ ka.lib.handleKeypressBack = function () {
         ka.lib.desaturateVisiblePosters();
     } else if (ka.state.currentPageMode == 'play:trailer') {
         ka.lib.closeTrailerPlayer();
+    } else if (ka.state.currentPageMode == 'credits') {
+        ka.state.licenseTextIndex = -1;
+        $('#boom-credit-text').stop();
+
+
+        /* ka.lib.stopLicenseTextDisplay(); */
     }
 };
 

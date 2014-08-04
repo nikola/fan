@@ -18,6 +18,7 @@ from utils.fs import getLogFileHandler, readProcessedStream
 
 logging.basicConfig(**LOG_CONFIG)
 logger = logging.getLogger('requests')
+logger.propagate = False
 logger.addHandler(getLogFileHandler('requests'))
 
 REQUESTS_LOGGER = logging.getLogger('requests.packages.urllib3')
@@ -38,7 +39,7 @@ def makeThrottledGetRequest(url, params):
 
     global TMDB_RESPONSE_CACHE
     if TMDB_RESPONSE_CACHE.has_key(key):
-        logger.info('Found cached response from themoviedb.org.')
+        # logger.info('Found cached response from themoviedb.org.')
         return TMDB_RESPONSE_CACHE.get(key)
     else:
         global LAST_TMDB_ACCESS

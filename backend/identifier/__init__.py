@@ -41,6 +41,7 @@ RE_DIR_TAIL = re.compile(r'(?<=\\)[^\\]*$', re.I)
 
 logging.basicConfig(**LOG_CONFIG)
 logger = logging.getLogger('tmdb')
+logger.propagate = False
 logger.addHandler(getLogFileHandler('tmdb'))
 
 

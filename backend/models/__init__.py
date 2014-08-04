@@ -24,6 +24,7 @@ from models.localizations import Localization
 
 logging.basicConfig(**LOG_CONFIG)
 logger = logging.getLogger('orm')
+logger.propagate = False
 logger.addHandler(getLogFileHandler('orm'))
 
 

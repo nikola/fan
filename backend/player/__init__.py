@@ -26,6 +26,7 @@ PLAYER_AMALGAM_PATH = os.path.join(APP_STORAGE_PATH, 'amalgam')
 
 logging.basicConfig(**LOG_CONFIG)
 logger = logging.getLogger('updater')
+logger.propagate = False
 logger.addHandler(getLogFileHandler('updater'))
 
 

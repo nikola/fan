@@ -11,4 +11,5 @@ from utils.fs import getLogFileHandler
 
 logging.basicConfig(**LOG_CONFIG)
 logger = logging.getLogger('remote')
+logger.propagate = False
 logger.addHandler(getLogFileHandler('remote'))

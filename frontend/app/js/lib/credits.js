@@ -118,5 +118,9 @@ Unless required by applicable law or agreed to in writing, software distributed 
     , (function () {/*
 <span>Font Awesome by Dave Gandy - http://fontawesome.io</span>
 */}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1]
+
+    , (function () {/*
+<span>All movie metadata and artwork is fetched from TMDb - http://themoviedb.org</span>
+*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1]
 ];
 }

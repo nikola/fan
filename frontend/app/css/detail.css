@@ -117,3 +117,14 @@
     top: 0;
     left: 0;
     }
+
+#boom-playback-wait {
+    display: none;
+
+    position: absolute;
+    top: 0; left: 0;
+    justify-content: center; flex-direction: column;
+    width: 1920px; height: 1080px;
+    text-align: center;
+    font-size: 32px; font-style: italic;
+    }

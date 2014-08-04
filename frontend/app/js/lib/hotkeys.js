@@ -105,7 +105,13 @@ ka.lib.handleKeypressSelect = function () {
             $('#boom-movie-detail').velocity('fadeOut', {duration: 360, complete: function () {
                 ka.state.currentPageMode = 'play:movie';
 
-                ka.state.socketDispatcher.push('movie:play', ka.state.currentGridMovieUuid);
+                if (!ka.state.isPlayerUpdated) {
+                    $('#boom-playback-wait').velocity('fadeIn', {display: 'flex', duration: 360, complete: function () {
+                        ka.state.socketDispatcher.push('movie:play', ka.state.currentGridMovieUuid);
+                    }});
+                } else {
+                    ka.state.socketDispatcher.push('movie:play', ka.state.currentGridMovieUuid);
+                }
             }});
         } else if (ka.state.currentDetailButton == 'trailer') {
             $('#boom-movie-detail').velocity('fadeOut', {duration: 360, complete: function () {

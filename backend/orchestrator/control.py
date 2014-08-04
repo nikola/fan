@@ -143,6 +143,10 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                 pubSubReference.write(unicode('["resume:detail:screen", ""]'))
 
                 queue.task_done()
+            elif command == 'orchestrator:player:updated':
+                pubSubReference.write(unicode('["player:update:complete", ""]'))
+
+                queue.task_done()
             elif command == 'orchestrator:wake-up:downloader':
                 isDownloaderIdle = True
 

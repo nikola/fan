@@ -46,6 +46,7 @@ ka.state = {
   , desaturationImageCache: []
   , isProcessingInitialItems: false
   , processingInitialItemsCount: null
+  , isPlayerUpdated: false
 };
 
 
@@ -82,6 +83,11 @@ function listen() {
         $('#boom-movie-detail').velocity('fadeIn', {duration: 360, complete: function () {
             ka.state.currentPageMode = 'detail';
         }});
+    });
+
+    ka.state.socketDispatcher.bind('player:update:complete', function () {
+        $('#boom-playback-wait').css('display', 'none');
+        ka.state.isPlayerUpdated = true;
     });
 
     ka.state.socketDispatcher.bind('movie:poster:refresh', function (id) {

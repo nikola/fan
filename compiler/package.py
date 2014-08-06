@@ -67,6 +67,7 @@ def run():
                 script = re.compile(r'(debug=DEBUG)').sub('()', script)
                 script = re.compile(r' and not DEBUG').sub('', script)
                 script = re.compile(r'DEBUG = (True|False)').sub('', script)
+                script = re.compile(r' = DEBUG').sub(' = False', script)
 
                 script = minification.remove_comments_and_docstrings(script)
 

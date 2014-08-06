@@ -41,6 +41,8 @@ if __name__ == '__main__':
         stopDownloader()
 
         # Remove pending commands from queue if not essential.
+        counter = 0
+        unsafe = False
         while True:
             try:
                 command = interProcessQueue.get_nowait()
@@ -50,19 +52,31 @@ if __name__ == '__main__':
                 interProcessQueue.task_done()
                 if command.find(':stop') != -1:
                     interProcessQueue.put(command)
-                time.sleep(0.1)
+                counter += 1
+                if counter > 100:
+                    orchestrator.terminate()
+                    player.terminate()
+                    downloader.terminate()
+                    unsafe = True
+                else:
+                    time.sleep(0.1)
 
-        # Block until all queue items have been processed.
-        interProcessQueue.join()
-        interProcessQueue.close()
-        logger.info('Pending IPC items successfully processed.')
+        if unsafe:
+            interProcessQueue.cancel_join_thread()
+            interProcessQueue.close()
+            logger.warning('All processes forcefully terminated after grace period.')
+        else:
+            # Block until all queue items have been processed.
+            interProcessQueue.join()
+            interProcessQueue.close()
+            logger.info('Pending IPC items successfully processed.')
 
-        # Gracefully stop processes.
-        orchestrator.join()
-        player.join()
-        # analyzer.join()
-        downloader.join()
-        logger.info('All processes gracefully terminated.')
+            # Gracefully stop processes.
+            orchestrator.join()
+            player.join()
+            # analyzer.join()
+            downloader.join()
+            logger.info('All processes gracefully terminated.')
 
         os.remove(certificateLocation)
 
@@ -75,7 +89,7 @@ if __name__ == '__main__':
 
     logging.basicConfig(**LOG_CONFIG)
     logger = logging.getLogger('core')
-    logger.propagate = False
+    logger.propagate = DEBUG
     logger.addHandler(getLogFileHandler('core'))
 
     try:

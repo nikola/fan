@@ -9,26 +9,28 @@
 
 ka.lib.updateDetailPage = function () {
     var movie = ka.lib.getMovieFromGridFocus();
-    $('#boom-movie-detail .boom-button').data('boom.select-color', movie.primaryPosterColor);
+    if (movie) {
+        $('#boom-movie-detail .boom-button').data('boom.select-color', movie.primaryPosterColor);
 
-    $('#boom-detail-release span').text(movie.releaseYear);
-    $('#boom-detail-runtime span').text(movie.runtime);
-    $('#boom-detail-rating span').text((movie.rating) ? (movie.rating / 10) : '?');
-    $('#boom-movie-detail-title').text(ka.lib.getLocalizedTitleByUuid(movie.uuid));
-    $('#boom-movie-detail-description').text(movie.storyline);
+        $('#boom-detail-release span').text(movie.releaseYear);
+        $('#boom-detail-runtime span').text(movie.runtime);
+        $('#boom-detail-rating span').text((movie.rating) ? (movie.rating / 10) : '?');
+        $('#boom-movie-detail-title').text(ka.lib.getLocalizedTitleByUuid(movie.uuid));
+        $('#boom-movie-detail-description').text(movie.storyline);
 
-    $('#boom-movie-detail-play-button').css('display', (movie.streamless) ? 'none' : 'inline-block');
-    $('#boom-movie-detail-trailer-button').css('display', (movie.trailer) ? 'inline-block' : 'none');
+        $('#boom-movie-detail-play-button').css('display', (movie.streamless) ? 'none' : 'inline-block');
+        $('#boom-movie-detail-trailer-button').css('display', (movie.trailer) ? 'inline-block' : 'none');
 
-    $('#boom-movie-detail-top img').css('visibility', 'hidden');
-    $('#boom-movie-detail').css('backgroundImage', 'none');
+        $('#boom-movie-detail-top img').css('visibility', 'hidden');
+        $('#boom-movie-detail').css('backgroundImage', 'none');
 
-    $('#boom-movie-detail-top img')
-        .attr('src', '/movie/poster/' + movie.uuid + '-300.image')
-        .load(function () {
-            $(this).css('visibility', 'visible');
-            $('#boom-movie-detail').css('backgroundImage', 'url(/movie/backdrop/' + movie.uuid + '.jpg)');
-        });
+        $('#boom-movie-detail-top img')
+            .attr('src', '/movie/poster/' + movie.uuid + '-300.image')
+            .load(function () {
+                $(this).css('visibility', 'visible');
+                $('#boom-movie-detail').css('backgroundImage', 'url(/movie/backdrop/' + movie.uuid + '.jpg)');
+            });
+    }
 };
 
 

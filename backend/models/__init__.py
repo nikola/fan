@@ -13,8 +13,8 @@ from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 
-from settings import EXE_PATH, LOG_CONFIG
-from utils.fs import getLogFileHandler
+from settings import EXE_PATH #, LOG_CONFIG
+# from utils.fs import getLogFileHandler
 from models.common import Base, GUID, createNamedTuple, createUuid
 from models.streams import Stream
 from models.movies import Movie
@@ -22,10 +22,10 @@ from models.images import Image
 from models.localizations import Localization
 
 
-logging.basicConfig(**LOG_CONFIG)
-logger = logging.getLogger('orm')
-logger.propagate = False
-logger.addHandler(getLogFileHandler('orm'))
+# logging.basicConfig(**LOG_CONFIG)
+# logger = logging.getLogger('orm')
+# logger.propagate = False
+# logger.addHandler(getLogFileHandler('orm'))
 
 
 # TODO: use named tuples ?
@@ -295,7 +295,7 @@ class StreamManager(object):
                 try:
                     image = session.query(Image).join(Movie).filter(Movie.uuid == identifier, Movie.id == Image.movieId, Image.imageType == imageType, Image.width == width).one()
                 except MultipleResultsFound:
-                    logger.error('Multiple poster images of the same size and type found for movie "%s".', self.getMovieTitleByUuid(identifier))
+                    # logger.error('Multiple poster images of the same size and type found for movie "%s".', self.getMovieTitleByUuid(identifier))
                     image = session.query(Image).join(Movie).filter(Movie.uuid == identifier, Movie.id == Image.movieId, Image.imageType == imageType, Image.width == width).first()
                 except NoResultFound:
                     image = Image(

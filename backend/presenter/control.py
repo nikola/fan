@@ -20,16 +20,25 @@ import traceback
 import codecs
 import uuid
 import imp
+import logging
 
 import win32gui
 import win32api
 import win32con
 
 from settings import DEBUG
+from settings import LOG_CONFIG
 from settings import ENTROPY_SEED, ASSETS_PATH, APP_STORAGE_PATH
 from settings.presenter import *
 from presenter.hooks import ClientHandler
 from utils.win32 import getColorBrush # getNormalizedPathname,
+from utils.fs import getLogFileHandler
+
+
+logging.basicConfig(**LOG_CONFIG)
+logger = logging.getLogger('gui')
+logger.propagate = False
+logger.addHandler(getLogFileHandler('gui'))
 
 
 shutdownAll = None
@@ -51,6 +60,9 @@ class JavascriptBridge(object):
 
     def warn(self, message):
         print(message)
+
+    def error(self, message):
+        logger.error(message)
 
     def shutdown(self):
         stop()

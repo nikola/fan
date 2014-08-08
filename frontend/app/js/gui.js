@@ -163,6 +163,11 @@ function registerHotkeys() {
 document.oncontextmenu = document.onmousedown = function (event) { event.preventDefault(); };
 
 
+window.onerror = function (message, filename, lineno, colno, error) {
+    console.error(message);
+};
+
+
 $(document).ready(function () {
     ka.state.maxConfigButton = $('#boom-config-button-group .boom-button').length;
     // ka.state.maxDetailButton = $('#boom-detail-button-group .boom-button:visible').length;

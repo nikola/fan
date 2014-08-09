@@ -7,7 +7,9 @@
 ; var ka = ka || {}; if (!('lib' in ka)) ka.lib = {};
 
 
-ka.lib.updateDetailPage = function () {
+ka.lib.updateDetailPage = function (callback) {
+
+
     var movie = ka.lib.getMovieFromGridFocus();
     if (movie) {
         $('#boom-movie-detail .boom-button').data('boom.select-color', movie.primaryPosterColor);
@@ -21,14 +23,21 @@ ka.lib.updateDetailPage = function () {
         $('#boom-movie-detail-play-button').css('display', (movie.streamless) ? 'none' : 'inline-block');
         $('#boom-movie-detail-trailer-button').css('display', (movie.trailer) ? 'inline-block' : 'none');
 
-        $('#boom-movie-detail-top img').css('visibility', 'hidden');
         $('#boom-movie-detail').css('backgroundImage', 'none');
 
+        if (callback) {
+            setTimeout(callback, 50);
+        }
+
         $('#boom-movie-detail-top img')
+            .css('visibility', 'hidden')
+            .data({'boom.isLoading': true, 'boom.loadUuid': movie.uuid})
             .attr('src', '/movie/poster/' + movie.uuid + '-300.image')
-            .load(function () {
-                $(this).css('visibility', 'visible');
-                $('#boom-movie-detail').css('backgroundImage', 'url(/movie/backdrop/' + movie.uuid + '.jpg)');
+            .on('load', function () {
+                if ($(this).data('boom.isLoading')) {
+                    $(this).data('boom.isLoading', false).css('visibility', 'visible');
+                    $('#boom-movie-detail').css('backgroundImage', 'url(/movie/backdrop/' + $(this).data('boom.loadUuid') + '.jpg)');
+                }
             });
     }
 };

@@ -447,10 +447,10 @@ ka.lib.selectFocus = function () {
         ka.state.currentDetailButton = 'details';
     }
 
-    ka.lib.updateDetailPage();
-    ka.lib.updateDetailButtonSelection();
-
-    $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({translateZ: 0, left: '-=1920'}, 720);
+    ka.lib.updateDetailPage(function () {
+        ka.lib.updateDetailButtonSelection();
+        $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({translateZ: 0, left: '-=1920'}, 720);
+    });
 };
 
 

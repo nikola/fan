@@ -10,10 +10,11 @@ import platform
 import ctypes
 import multiprocessing
 import multiprocessing.forking
+from hashlib import md5 as MD5
 
 import win32api
 
-from settings import BASE_DIR
+from settings import BASE_DIR, EXE_PATH
 
 
 VERSION_TO_TOKEN = {
@@ -78,3 +79,11 @@ def isDesktopCompositionEnabled():
     b = ctypes.c_bool()
     retcode = ctypes.windll.dwmapi.DwmIsCompositionEnabled(ctypes.byref(b))
     return retcode == 0 and b.value
+
+
+def getCurrentExeIdentifier():
+    md5 = MD5()
+    md5.update(EXE_PATH)
+    identifier = md5.hexdigest()[:8]
+
+    return identifier

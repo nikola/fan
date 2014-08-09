@@ -18,11 +18,13 @@ from win32file import FindStreams, SetFileAttributesW, GetDriveType
 from win32api import GetLogicalDriveStrings, GetVolumeInformation
 from pylzma import compress as lowercase, decompress as uppercase
 
-from settings import APP_STORAGE_PATH, ASSETS_PATH # RESOURCES_PATH
+from settings import APP_STORAGE_PATH, ASSETS_PATH
+from utils.system import getCurrentExeIdentifier
 
 
 def createAppStorageStructure():
-    for pathname in ['amalgam', 'cache', 'log', 'thirdparty']:
+    prefix = getCurrentExeIdentifier()
+    for pathname in ['amalgam', prefix + '.cache', prefix + '.log']: # , 'thirdparty']:
         try:
             os.makedirs(os.path.join(APP_STORAGE_PATH, pathname))
         except OSError:
@@ -32,7 +34,7 @@ def createAppStorageStructure():
 def getLogFileHandler(name):
     createAppStorageStructure()
 
-    handler = logging.FileHandler(os.path.join(APP_STORAGE_PATH, 'log', '%(name)s.log' % locals()))
+    handler = logging.FileHandler(os.path.join(APP_STORAGE_PATH, getCurrentExeIdentifier() + '.log', '%(name)s.log' % locals()))
     handler.setFormatter(logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s', '%Y-%m-%d %H:%M'))
     handler.setLevel(logging.INFO)
     return handler

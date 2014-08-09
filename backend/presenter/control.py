@@ -33,6 +33,7 @@ from settings.presenter import *
 from presenter.hooks import ClientHandler
 from utils.win32 import getColorBrush # getNormalizedPathname,
 from utils.fs import getLogFileHandler
+from utils.system import getCurrentExeIdentifier
 
 
 logging.basicConfig(**LOG_CONFIG)
@@ -139,7 +140,7 @@ def start(callback, userAgent, serverPort, bridgeToken, bootToken, mustSecure, u
 
     appSettings = CEF_APP_SETTINGS
     appSettings.update({
-        'cache_path':              os.path.join(APP_STORAGE_PATH, 'cache'),
+        'cache_path':              os.path.join(APP_STORAGE_PATH, getCurrentExeIdentifier() + '.cache'),
         'log_severity':            msie.LOGSEVERITY_DISABLE,
         'browser_subprocess_path': os.path.join(ASSETS_PATH, 'trident', 'iexplore'),
         'user_agent':              userAgent,

@@ -1,2 +1,4 @@
 SQLAlchemy
 SQLAlchemy-utils
+requests
+pylzma

@@ -119,37 +119,30 @@ def downscalePoster(streamManager, movieUuid, urlOriginal):
 def _downscaleImage(blob, width, height):
     blobOut = None
 
-    convertExe = os.path.join(ASSETS_PATH, 'tools', 'convert.exe')
-    convertProcess = Popen([convertExe, 'jpg:-', '-resize', '%dx%d' % (width, height), 'png:-'], stdout=PIPE, stdin=PIPE)
+    filenameIn = os.path.join(APP_STORAGE_PATH, uuid4().hex)
+    filenameOut = os.path.join(APP_STORAGE_PATH, uuid4().hex)
+
+    with open(filenameIn, 'wb') as fd:
+        fd.write(blob)
     time.sleep(0)
+
     try:
-        convertProcess.stdin.write(blob)
-    except IOError:
-        logger.error('Could not execute image downscaler!')
-    else:
-        convertProcess.stdin.close()
-        time.sleep(0)
-        resizedImage = convertProcess.stdout.read()
-        time.sleep(0)
-        convertProcess.wait()
-
-        filenameIn = os.path.join(APP_STORAGE_PATH, uuid4().hex)
-        filenameOut = os.path.join(APP_STORAGE_PATH, uuid4().hex)
-        with open(filenameIn, 'wb') as fd:
-            fd.write(resizedImage)
+        convertExe = os.path.join(ASSETS_PATH, 'tools', 'convert.exe')
+        call([convertExe, 'jpg:%s' % filenameIn, '-resize', '%dx%d' % (width, height), 'png:%s' % filenameOut], shell=True)
+        # convertProcess = Popen([convertExe, 'jpg:-', '-resize', '%dx%d' % (width, height), 'png:-'], stdout=PIPE, stdin=PIPE, shell=True)
         time.sleep(0)
 
-        try:
-            encodeExe = os.path.join(ASSETS_PATH, 'tools', 'cwebp.exe')
-            call([encodeExe, '-preset', 'icon', '-sns', '0', '-f', '0', '-m', '0', '-mt', '-lossless', '-noalpha', '-quiet', filenameIn, '-o', filenameOut])
-            time.sleep(0)
-            with open(filenameOut, 'rb') as fp:
-                blobOut = fp.read()
-            time.sleep(0)
-        finally:
-            os.remove(filenameIn)
-            time.sleep(0)
-            os.remove(filenameOut)
-            time.sleep(0)
+        encodeExe = os.path.join(ASSETS_PATH, 'tools', 'cwebp.exe')
+        # call([encodeExe, '-preset', 'icon', '-sns', '0', '-f', '0', '-m', '0', '-mt', '-lossless', '-noalpha', '-quiet', filenameIn, '-o', filenameOut], shell=True)
+        call([encodeExe, '-preset', 'icon', '-sns', '0', '-f', '0', '-m', '0', '-mt', '-noalpha', '-quiet', filenameIn, '-o', filenameOut], shell=True)
+        time.sleep(0)
+        with open(filenameOut, 'rb') as fp:
+            blobOut = fp.read()
+        time.sleep(0)
+    finally:
+        os.remove(filenameIn)
+        time.sleep(0)
+        os.remove(filenameOut)
+        time.sleep(0)
 
     return blobOut

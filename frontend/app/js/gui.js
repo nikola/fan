@@ -47,6 +47,7 @@ ka.state = {
   , isProcessingInitialItems: false
   , processingInitialItemsCount: null
   , isPlayerUpdated: false
+  , occludedGridItems: null
 };
 
 

@@ -450,21 +450,39 @@ ka.lib.selectFocus = function () {
     ka.lib.updateDetailPage(function () {
         ka.lib.updateDetailButtonSelection();
 
-        /* ka.lib.reduceScrollableGrid(); */
+        ka.lib.reduceScrollableGrid();
         $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({translateZ: 0, left: '-=1920'}, 720);
     });
 };
 
 
 ka.lib.reduceScrollableGrid = function () {
-    if (ka.state.gridPage > 0) {
-        $('.boom-movie-grid-item').slice(0, ka.settings.gridMaxColumns * ka.settings.gridMaxRows * ka.state.gridPage)
-            .css('backgroundColor', 'red');
-    }
+    if (ka.state.gridPage > 0 || ka.state.gridPage + 1 < ka.state.gridTotalPages) {
+        var items = $('.boom-movie-grid-item'), keys = $('.boom-movie-grid-key'), buffer = $();
 
-    if (ka.state.gridPage + 1 < ka.state.gridTotalPages) {
-        $('.boom-movie-grid-item').slice(ka.settings.gridMaxColumns * ka.settings.gridMaxRows * (ka.state.gridPage + 1), $('.boom-movie-grid-item').count() - 1)
-            .css('backgroundColor', 'red');
+        if (ka.state.gridPage > 0) {
+            buffer = buffer.add(items.slice(0, ka.settings.gridMaxColumns * ka.settings.gridMaxRows * ka.state.gridPage));
+            buffer = buffer.add(keys.slice(0, ka.settings.gridMaxRows * ka.state.gridPage));
+        }
+
+        if (ka.state.gridPage + 1 < ka.state.gridTotalPages) {
+            buffer = buffer.add(items.slice(ka.settings.gridMaxColumns * ka.settings.gridMaxRows * (ka.state.gridPage + 1)));
+            buffer = buffer.add(keys.slice(ka.settings.gridMaxRows * (ka.state.gridPage + 1)));
+        }
+
+        ka.state.occludedGridItems = buffer;
+
+        buffer.css('display', 'none');
+        $('#boom-movie-grid-container').velocity({translateZ: 0, translateY: '0px'}, 0);
+    }
+};
+
+
+ka.lib.expandScrollableGrid = function () {
+    if (ka.state.occludedGridItems.length > 0) {
+        ka.state.occludedGridItems.css({display: 'inline-block'});
+        $('#boom-movie-grid-container').css('transform', 'translate3d(0,-' + (ka.state.gridPage * 1080) + 'px,0)');
+        $('#boom-movie-grid-container').velocity({translateZ: 0, translateY: '-' + (ka.state.gridPage * 1080) + 'px'}, 0);
     }
 };
 

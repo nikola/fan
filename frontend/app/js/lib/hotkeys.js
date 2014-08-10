@@ -130,9 +130,10 @@ ka.lib.handleKeypressBack = function () {
     } else if (ka.state.currentPageMode == 'detail') {
         ka.state.currentPageMode = 'grid';
 
-        $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({translateZ: 0, left: '+=1920'}, {duration: 720}); /* , complete: function () {
-            ka.state.currentPageMode = 'grid';
-        }}); */
+        $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({translateZ: 0, left: '+=1920'}, {duration: 720, complete: function () {
+            ka.lib.expandScrollableGrid();
+            /* $('#boom-poster-focus').css('opacity', 1); */
+        }});
     } else if (ka.state.currentPageMode == 'grid') {
         ka.state.currentPageMode = 'config';
 

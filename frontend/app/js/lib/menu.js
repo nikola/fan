@@ -24,7 +24,11 @@ ka.lib.executeConfigSelection = function () {
 
         $('#content').velocity('fadeOut', 360);
     } else if (id == 'boom-config-button-change-import') {
-        window.top.location.href = '/configure.asp#return';
+        ka.state.hotkeyListener.reset();
+
+        $('#content').velocity('fadeOut', {duration: 360, complete: function () {
+            window.top.location.href = '/configure.asp#return';
+        }});
     } else if (id == 'boom-config-button-show-credits') {
         if (ka.state.currentPageMode != 'credits') {
             ka.lib.showLicenseTexts();

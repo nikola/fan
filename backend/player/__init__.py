@@ -16,6 +16,7 @@ from subprocess import Popen # , PIPE, CREATE_NEW_PROCESS_GROUP
 import win32api
 from utils.fs import readProcessedStream
 
+from settings import DEBUG
 from settings import LOG_CONFIG, APP_STORAGE_PATH
 from utils.fs import getLogFileHandler
 from updater.lib import *
@@ -26,7 +27,7 @@ PLAYER_AMALGAM_PATH = os.path.join(APP_STORAGE_PATH, 'amalgam')
 
 logging.basicConfig(**LOG_CONFIG)
 logger = logging.getLogger('updater')
-logger.propagate = False
+logger.propagate = DEBUG
 logger.addHandler(getLogFileHandler('updater'))
 
 

@@ -12,13 +12,14 @@ from collections import OrderedDict
 
 import requests
 
+from settings import DEBUG
 from settings import LOG_CONFIG, EXE_PATH, ENTROPY_SEED
 from utils.fs import getLogFileHandler, readProcessedStream
 
 
 logging.basicConfig(**LOG_CONFIG)
 logger = logging.getLogger('requests')
-logger.propagate = False
+logger.propagate = DEBUG
 logger.addHandler(getLogFileHandler('requests'))
 
 REQUESTS_LOGGER = logging.getLogger('requests.packages.urllib3')

@@ -10,6 +10,7 @@ import datetime
 import logging
 from simplejson import JSONDecodeError
 
+from settings import DEBUG
 from settings import LOG_CONFIG
 from utils.net import makeThrottledGetRequest, makeUnthrottledGetRequest
 from utils.fs import getLogFileHandler
@@ -41,7 +42,7 @@ RE_DIR_TAIL = re.compile(r'(?<=\\)[^\\]*$', re.I)
 
 logging.basicConfig(**LOG_CONFIG)
 logger = logging.getLogger('tmdb')
-logger.propagate = False
+logger.propagate = DEBUG
 logger.addHandler(getLogFileHandler('tmdb'))
 
 

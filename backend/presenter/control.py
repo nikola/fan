@@ -38,7 +38,7 @@ from utils.system import getCurrentExeIdentifier
 
 logging.basicConfig(**LOG_CONFIG)
 logger = logging.getLogger('gui')
-logger.propagate = False
+logger.propagate = DEBUG
 logger.addHandler(getLogFileHandler('gui'))
 
 
@@ -54,13 +54,13 @@ class JavascriptBridge(object):
         # self.shutdownCallback = shutdownCallback
 
     def log(self, message):
-        print(message)
+        logger.info(message)
 
     def debug(self, message):
-        print(message)
+        logger.debug(message)
 
     def warn(self, message):
-        print(message)
+        logger.warning(message)
 
     def error(self, message):
         logger.error(message)
@@ -68,36 +68,36 @@ class JavascriptBridge(object):
     def shutdown(self):
         stop()
 
-    def Print(self, message):
-        print(message)
+    # def Print(self, message):
+    #     print(message)
 
-    def TestAllTypes(self, *args):
-        print(args)
+    # def TestAllTypes(self, *args):
+    #     print(args)
 
-    def ExecuteFunction(self, *args):
-        self.mainBrowser.GetMainFrame().ExecuteFunction(*args)
+    # def ExecuteFunction(self, *args):
+    #     self.mainBrowser.GetMainFrame().ExecuteFunction(*args)
 
-    def TestJSCallback(self, jsCallback):
-        print("jsCallback.GetFunctionName() = %s" % jsCallback.GetFunctionName())
-        print("jsCallback.GetFrame().GetIdentifier() = %s" % \
-                jsCallback.GetFrame().GetIdentifier())
-        jsCallback.Call("This message was sent from python using js callback")
+    # def TestJSCallback(self, jsCallback):
+    #     print("jsCallback.GetFunctionName() = %s" % jsCallback.GetFunctionName())
+    #     print("jsCallback.GetFrame().GetIdentifier() = %s" % \
+    #             jsCallback.GetFrame().GetIdentifier())
+    #     jsCallback.Call("This message was sent from python using js callback")
 
-    def TestJSCallbackComplexArguments(self, jsObject):
-        jsCallback = jsObject["myCallback"];
-        jsCallback.Call(1, None, 2.14, "string", ["list", ["nested list", \
-                {"nested object":None}]], \
-                {"nested list next":[{"deeply nested object":1}]})
+    # def TestJSCallbackComplexArguments(self, jsObject):
+    #     jsCallback = jsObject["myCallback"];
+    #     jsCallback.Call(1, None, 2.14, "string", ["list", ["nested list", \
+    #             {"nested object":None}]], \
+    #             {"nested list next":[{"deeply nested object":1}]})
 
-    def TestPythonCallback(self, jsCallback):
-        jsCallback.Call(self.PyCallback)
+    # def TestPythonCallback(self, jsCallback):
+    #     jsCallback.Call(self.PyCallback)
 
-    def PyCallback(self, *args):
-        message = "PyCallback() was executed successfully! Arguments: %s" \
-                % str(args)
-        print(message)
-        self.mainBrowser.GetMainFrame().ExecuteJavascript(
-                "window.alert(\"%s\")" % message)
+    # def PyCallback(self, *args):
+    #     message = "PyCallback() was executed successfully! Arguments: %s" \
+    #             % str(args)
+    #     print(message)
+    #     self.mainBrowser.GetMainFrame().ExecuteJavascript(
+    #             "window.alert(\"%s\")" % message)
 
     # def GetSource(self):
     #     # Must keep a strong reference to the StringVisitor object

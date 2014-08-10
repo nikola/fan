@@ -8,8 +8,6 @@
 
 
 ka.lib.updateDetailPage = function (callback) {
-
-
     var movie = ka.lib.getMovieFromGridFocus();
     if (movie) {
         $('#boom-movie-detail .boom-button').data('boom.select-color', movie.primaryPosterColor);
@@ -26,7 +24,7 @@ ka.lib.updateDetailPage = function (callback) {
         $('#boom-movie-detail').css('backgroundImage', 'none');
 
         if (callback) {
-            setTimeout(callback, 50);
+            setTimeout(callback, 80);
         }
 
         $('#boom-movie-detail-top img')

@@ -27,7 +27,7 @@ def _startDownloader(queue):
                 # TODO: only launch this when all poster images have been downloaded in frontend
 
                 doDownloadAssets = True
-                # logger.info('Downloader main loop started.')
+                logger.debug('Downloader main loop started.')
 
                 queue.task_done()
             elif command.startswith('configuration:image-base-url:'):

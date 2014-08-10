@@ -119,30 +119,31 @@ def downscalePoster(streamManager, movieUuid, urlOriginal):
 def _downscaleImage(blob, width, height):
     blobOut = None
 
-    filenameIn = os.path.join(APP_STORAGE_PATH, uuid4().hex)
-    filenameOut = os.path.join(APP_STORAGE_PATH, uuid4().hex)
+    filenameRaw = os.path.join(APP_STORAGE_PATH, uuid4().hex)
+    filenameResized = os.path.join(APP_STORAGE_PATH, uuid4().hex)
+    filenameRecoded = os.path.join(APP_STORAGE_PATH, uuid4().hex)
 
-    with open(filenameIn, 'wb') as fd:
+    with open(filenameRaw, 'wb') as fd:
         fd.write(blob)
     time.sleep(0)
 
     try:
         convertExe = os.path.join(ASSETS_PATH, 'tools', 'convert.exe')
-        call([convertExe, 'jpg:%s' % filenameIn, '-resize', '%dx%d' % (width, height), 'png:%s' % filenameOut], shell=True)
-        # convertProcess = Popen([convertExe, 'jpg:-', '-resize', '%dx%d' % (width, height), 'png:-'], stdout=PIPE, stdin=PIPE, shell=True)
+        call([convertExe, 'jpg:%s' % filenameRaw, '-resize', '%dx%d' % (width, height), 'png:%s' % filenameResized], shell=True)
         time.sleep(0)
 
         encodeExe = os.path.join(ASSETS_PATH, 'tools', 'cwebp.exe')
-        # call([encodeExe, '-preset', 'icon', '-sns', '0', '-f', '0', '-m', '0', '-mt', '-lossless', '-noalpha', '-quiet', filenameIn, '-o', filenameOut], shell=True)
-        call([encodeExe, '-preset', 'icon', '-sns', '0', '-f', '0', '-m', '0', '-mt', '-noalpha', '-quiet', filenameIn, '-o', filenameOut], shell=True)
+        call([encodeExe, '-preset', 'icon', '-sns', '0', '-f', '0', '-m', '0', '-lossless', '-mt', '-noalpha', '-quiet', filenameResized, '-o', filenameRecoded], shell=True)
         time.sleep(0)
-        with open(filenameOut, 'rb') as fp:
+        with open(filenameRecoded, 'rb') as fp:
             blobOut = fp.read()
         time.sleep(0)
     finally:
-        os.remove(filenameIn)
+        os.remove(filenameRaw)
         time.sleep(0)
-        os.remove(filenameOut)
+        os.remove(filenameResized)
+        time.sleep(0)
+        os.remove(filenameRecoded)
         time.sleep(0)
 
     return blobOut

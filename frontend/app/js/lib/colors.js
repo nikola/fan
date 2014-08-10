@@ -23,21 +23,22 @@ ka.lib.desaturateVisiblePosters = function () {
 
     var start = ka.state.gridPage * ka.settings.gridMaxRows, end = (ka.state.gridPage + 1) * ka.settings.gridMaxRows;
     for (var row = start; row < end; row++) {
-        for (var item, i = 0; i < 4; i++) {
-            item = ka.state.gridLookupMatrix[row][i];
-            if (item) {
-                var element = $('#boom-poster-' + item.uuid);
-                ka.state.desaturationImageCache.push(element);
-                element.removeClass('undesaturate').addClass('desaturate');
+        if (row < ka.state.gridLookupMatrix.length) {
+            for (var item, i = 0; i < 4; i++) {
+                item = ka.state.gridLookupMatrix[row][i];
+                if (item) {
+                    var element = $('#boom-poster-' + item.uuid);
+                    ka.state.desaturationImageCache.push(element);
+                    element.removeClass('undesaturate desaturated').addClass('desaturate');
+                }
             }
-            // TODO: use same logic to display: none posters when scrolling to details page
         }
     }
 };
 
 ka.lib.undesaturateVisiblePosters = function () {
     for (var element, e = 0; element = ka.state.desaturationImageCache[e]; e++) {
-        element.removeClass('desaturate desaturated').addClass('undesaturate');
+        element.removeClass('desaturated desaturate').addClass('undesaturate');
     }
     ka.state.desaturationImageCache = [];
 };

@@ -195,9 +195,9 @@ ka.lib.updateMovieGrid = function () {
                 if (row >= ka.state.gridPage * ka.settings.gridMaxRows
                         && row < (ka.state.gridPage + 1) * ka.settings.gridMaxRows
                         && column < 4) {
-                    ka.state.desaturationImageCache.push($('#boom-poster-' + movie.uuid).addClass('desaturated'));
+                    ka.state.desaturationImageCache.push($('#boom-poster-' + movie.uuid).removeClass('desaturate undesaturate').addClass('desaturated'));
                 } else {
-                    $('#boom-poster-' + movie.uuid).removeClass('desaturate desaturated');
+                    $('#boom-poster-' + movie.uuid).removeClass('desaturate desaturated undesaturate');
                 }
             }
 
@@ -211,7 +211,7 @@ ka.lib.updateMovieGrid = function () {
 
     if (ka.state.gridLookupMatrix.length) {
         if (ka.state.currentPageMode == 'config' || ka.state.currentPageMode == 'grid') {
-            ka.lib.updateDetailPage();
+            /* ka.lib.updateDetailPage(); */
         }
         if (ka.state.currentPageMode == 'grid') {
             if (ka.state.shouldFocusFadeIn) {
@@ -235,8 +235,8 @@ ka.lib.renderMovieGridCell = function (movie, operation, context) {
                 movieTitle = movieTitle.substr(0, movieTitle.indexOf(':') + 1) + '<br>' + movieTitle.substr(movieTitle.indexOf(':') + 1);
             }
             var cell = $(
-                '<div class="boom-movie-grid-item">'
-                  + '<div id="boom-movie-grid-item-' + movie.uuid + '" class="boom-movie-grid-info-overlay">'
+                '<div id="boom-movie-grid-item-' + movie.uuid + '" class="boom-movie-grid-item">'
+                  + '<div class="boom-movie-grid-info-overlay">'
                       + '<div class="boom-movie-grid-info-overlay-image">'
                           + '<img id="boom-poster-' + movie.uuid + '" src="/movie/poster/' + movie.uuid + '-200.image" width="200" height="300">'
                       + '</div>'
@@ -427,7 +427,7 @@ ka.lib.moveFocusRight = function () {
 ka.lib.toggleFocus = function () {
     var uuid = ka.state.gridLookupMatrix[ka.lib.getGridFocusAbsoluteY()][ka.state.gridFocusX].uuid;
 
-    $('#boom-movie-grid-item-' + uuid)
+    $('#boom-movie-grid-item-' + uuid + ' .boom-movie-grid-info-overlay')
         .toggleClass('active')
         .find('.boom-movie-grid-info-overlay-title').text(ka.lib.getLocalizedTitleByUuid(uuid));
 };
@@ -449,8 +449,23 @@ ka.lib.selectFocus = function () {
 
     ka.lib.updateDetailPage(function () {
         ka.lib.updateDetailButtonSelection();
+
+        /* ka.lib.reduceScrollableGrid(); */
         $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({translateZ: 0, left: '-=1920'}, 720);
     });
+};
+
+
+ka.lib.reduceScrollableGrid = function () {
+    if (ka.state.gridPage > 0) {
+        $('.boom-movie-grid-item').slice(0, ka.settings.gridMaxColumns * ka.settings.gridMaxRows * ka.state.gridPage)
+            .css('backgroundColor', 'red');
+    }
+
+    if (ka.state.gridPage + 1 < ka.state.gridTotalPages) {
+        $('.boom-movie-grid-item').slice(ka.settings.gridMaxColumns * ka.settings.gridMaxRows * (ka.state.gridPage + 1), $('.boom-movie-grid-item').count() - 1)
+            .css('backgroundColor', 'red');
+    }
 };
 
 

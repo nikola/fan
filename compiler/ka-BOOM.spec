@@ -47,14 +47,13 @@ a.datas.append(('tools/convert.exe',  '../tools/convert.exe', 'DATA'))
 a.datas.append(('tools/cwebp.exe',    '../tools/cwebp.exe',   'DATA'))
 a.datas.append(('tools/vcomp100.dll', '../tools/vcomp100.dll','DATA'))
 
-# a.binaries = [x for x in a.binaries if x[0].lower() != 'kernel32.dll']
 pyz = PYZ(
     a.pure, cipher=block_cipher,
 )
 
 exe = EXE(
     pyz,
-    a.scripts, #  + [('O','','OPTION')],
+    a.scripts,
     a.binaries,
     a.zipfiles,
     a.datas,
@@ -63,7 +62,7 @@ exe = EXE(
     strip=None,
     upx=True,
     console=False,
-    manifest='./ka-BOOM.exe.manifest',
-    version='./ka-BOOM.version',
-    icon='./ka-BOOM.ico',
+    # manifest='ka-boom.exe.manifest',
+    version='ka-BOOM.version',
+    icon='ka-BOOM.ico',
 )

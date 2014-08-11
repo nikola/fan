@@ -11,7 +11,7 @@
     -webkit-perspective: 1000;
 
     margin-top: 130px;
-    display: none;
+    opacity: 0;
     }
 
 #boom-panel-description {

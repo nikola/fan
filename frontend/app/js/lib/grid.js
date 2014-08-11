@@ -225,6 +225,28 @@ ka.lib.updateMovieGrid = function () {
 };
 
 
+ka.lib.updateMovieGridAfterAddition = function () {
+    var isDetailScreenActive = ka.state.currentPageMode == 'detail' || ka.state.currentPageMode == 'play:movie' || ka.state.currentPageMode == 'play:trailer';
+
+    if (isDetailScreenActive) {
+        var uuid = ka.lib.getMovieFromGridFocus().uuid;
+    }
+
+    ka.lib.recalcMovieGrid();
+
+    if (isDetailScreenActive) {
+        ka.lib.recallFocusByUuid(uuid);
+    }
+
+    ka.lib.updateMovieGrid();
+
+    if (isDetailScreenActive) {
+        ka.lib.refocusGrid();
+        $('#boom-poster-focus').velocity({translateZ: 0, left: '-=1920'}, 0);
+    }
+};
+
+
 ka.lib.renderMovieGridCell = function (movie, operation, context) {
     if (movie !== null) {
         if (movie.uuid in ka.state.detachedGridCells) {
@@ -479,7 +501,7 @@ ka.lib.reduceScrollableGrid = function () {
 
 
 ka.lib.expandScrollableGrid = function () {
-    if (ka.state.occludedGridItems.length > 0) {
+    if (ka.state.occludedGridItems !== null && ka.state.occludedGridItems.length > 0) {
         ka.state.occludedGridItems.css({display: 'inline-block'});
         $('#boom-movie-grid-container').css('transform', 'translate3d(0,-' + (ka.state.gridPage * 1080) + 'px,0)');
         $('#boom-movie-grid-container').velocity({translateZ: 0, translateY: '-' + (ka.state.gridPage * 1080) + 'px'}, 0);
@@ -538,4 +560,15 @@ ka.lib.recallFocusByUuid = function (uuid) {
     ka.state.gridPage = Math.floor(coordinates[1] / ka.settings.gridMaxRows);
     ka.state.gridFocusX = coordinates[0];
     ka.state.gridFocusY = coordinates[1] % ka.settings.gridMaxRows;
+};
+
+
+ka.lib.scrollBackToGrid = function () {
+    ka.state.currentPageMode = 'grid';
+
+    $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({translateZ: 0, left: '+=1920'}, {duration: 720, complete: function () {
+        ka.lib.expandScrollableGrid();
+
+        ka.lib.updateMovieGridAfterAddition();
+    }});
 };

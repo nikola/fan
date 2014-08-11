@@ -128,12 +128,7 @@ ka.lib.handleKeypressBack = function () {
     if (ka.state.currentPageMode == 'config') {
         ka.lib.closeMenu();
     } else if (ka.state.currentPageMode == 'detail') {
-        ka.state.currentPageMode = 'grid';
-
-        $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({translateZ: 0, left: '+=1920'}, {duration: 720, complete: function () {
-            ka.lib.expandScrollableGrid();
-            /* $('#boom-poster-focus').css('opacity', 1); */
-        }});
+        ka.lib.scrollBackToGrid();
     } else if (ka.state.currentPageMode == 'grid') {
         ka.state.currentPageMode = 'config';
 
@@ -149,9 +144,6 @@ ka.lib.handleKeypressBack = function () {
     } else if (ka.state.currentPageMode == 'credits') {
         ka.state.licenseTextIndex = -1;
         $('#boom-credit-text').stop();
-
-
-        /* ka.lib.stopLicenseTextDisplay(); */
     }
 };
 

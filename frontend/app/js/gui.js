@@ -58,22 +58,7 @@ function listen() {
     ka.state.socketDispatcher.bind('receive:movie:item', function (movie) {
         ka.lib.addMovieToCortex(movie);
 
-        if (ka.state.currentPageMode == 'detail' || ka.state.currentPageMode == 'play:movie' || ka.state.currentPageMode == 'play:trailer') {
-            var uuid = ka.lib.getMovieFromGridFocus().uuid;
-        }
-
-        ka.lib.recalcMovieGrid();
-
-        if (ka.state.currentPageMode == 'detail' || ka.state.currentPageMode == 'play:movie' || ka.state.currentPageMode == 'play:trailer') {
-            ka.lib.recallFocusByUuid(uuid);
-        }
-
-        ka.lib.updateMovieGrid();
-
-        if (ka.state.currentPageMode == 'detail' || ka.state.currentPageMode == 'play:movie' || ka.state.currentPageMode == 'play:trailer') {
-            ka.lib.refocusGrid();
-            $('#boom-poster-focus').velocity({translateZ: 0, left: '-=1920'}, 0);
-        }
+        ka.lib.updateMovieGridAfterAddition();
     });
 
     ka.state.socketDispatcher.bind('receive:command:token', function (command) {

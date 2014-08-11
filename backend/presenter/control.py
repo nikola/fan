@@ -15,9 +15,9 @@ __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 import os
-import time
+# import time
 import traceback
-import codecs
+# import codecs
 import uuid
 import imp
 import logging
@@ -30,8 +30,8 @@ from settings import DEBUG
 from settings import LOG_CONFIG
 from settings import ENTROPY_SEED, ASSETS_PATH, APP_STORAGE_PATH
 from settings.presenter import *
-from presenter.hooks import ClientHandler
-from utils.win32 import getColorBrush # getNormalizedPathname,
+# from presenter.hooks import ClientHandler
+# from utils.win32 import getColorBrush # getNormalizedPathname,
 from utils.fs import getLogFileHandler
 from utils.system import getCurrentExeIdentifier
 

@@ -6,7 +6,7 @@ __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 import os
 import time
-from subprocess import Popen, PIPE, call
+from subprocess import call
 from uuid import uuid4
 from contextlib import closing
 from cStringIO import StringIO

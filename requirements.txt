@@ -3,3 +3,4 @@ SQLAlchemy-utils
 requests
 pylzma
 simplejson
+pants

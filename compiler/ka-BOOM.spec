@@ -62,7 +62,7 @@ exe = EXE(
     strip=None,
     upx=True,
     console=False,
-    # manifest='ka-boom.exe.manifest',
+    # manifest='ka-BOOM.exe.manifest',
     version='ka-BOOM.version',
     icon='ka-BOOM.ico',
 )

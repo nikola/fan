@@ -242,7 +242,11 @@ ka.lib.updateMovieGridAfterAddition = function () {
 
     if (isDetailScreenActive) {
         ka.lib.refocusGrid();
-        $('#boom-poster-focus').velocity({translateZ: 0, left: '-=1920'}, 0);
+
+        var currentLeftPos = parseInt($('#boom-poster-focus').css('left'));
+        if (currentLeftPos > 0 && currentLeftPos < 1920) {
+            $('#boom-poster-focus').css('left', (currentLeftPos - 1920) + 'px');
+        }
     }
 };
 

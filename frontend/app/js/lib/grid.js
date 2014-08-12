@@ -85,7 +85,7 @@ ka.lib.recalcMovieGrid = function () {
     for (var key, keyIndex = 0; keyIndex < keyCount; keyIndex++) {
         key = keys[keyIndex];
         if (key in ka.data[ka.state.gridSortCriterion]) {
-            var items = ka.data[ka.state.gridSortCriterion][key], count = items.count();
+            var items = ka.data[ka.state.gridSortCriterion][key], count = items.length;
             if (count) {
                 currentColumnIndex = 0;
                 for (var movieIndex = 0; movieIndex < count; movieIndex++) {
@@ -94,9 +94,9 @@ ka.lib.recalcMovieGrid = function () {
                     }
 
                     currentLineIndex =  ka.state.gridLookupMatrix.length - 1;
-                    ka.state.gridLookupMatrix[currentLineIndex][currentColumnIndex] = items.values()[movieIndex];
+                    ka.state.gridLookupMatrix[currentLineIndex][currentColumnIndex] = items[movieIndex];
                     ka.state.gridLookupKeyByLine[currentLineIndex] = key;
-                    ka.state.gridLookupCoordByUuid[items.values()[movieIndex].uuid] = [currentColumnIndex, currentLineIndex];
+                    ka.state.gridLookupCoordByUuid[items[movieIndex].uuid] = [currentColumnIndex, currentLineIndex];
 
                     var currentLine = Math.floor(currentCellIndex / ka.settings.gridMaxColumns);
                     if (key in ka.state.gridLookupLinesByKey) {

@@ -8,8 +8,7 @@
 ; var ka = ka || {};
 
 ka.data = {
-    all: new Cortex([])
-    , byUuid: {}
+    byUuid: {}
     , byYear: {}
     , byTitleOriginal: {}
     , byTitleLocalized: {}

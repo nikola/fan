@@ -53,7 +53,6 @@ RESOURCES_GUI_CSS = [
 ]
 
 RESOURCES_GUI_JS = [
-    'frontend/app/js/thirdparty/cortex.min.js',
     'frontend/app/js/thirdparty/jquery.min.js',
 
     'frontend/app/js/thirdparty/protovis.js',

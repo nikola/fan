@@ -4,7 +4,8 @@
 __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
-from sqlalchemy import Column, SmallInteger, Integer, BigInteger, String, Unicode, Boolean
+from sqlalchemy import ForeignKey, Column, SmallInteger, Integer, BigInteger, String, Unicode, Boolean
+from sqlalchemy.orm import relationship, backref
 
 from models import Base, GUID, createUuid
 
@@ -45,6 +46,8 @@ class Movie(Base):
     __tablename__ = 'movies'
 
     id = Column(Integer, primary_key=True)
+    compilationId = Column(Integer, ForeignKey('compilations.id'))
+
     uuid = Column(GUID, default=createUuid)
     streamless = Column(Boolean, default=True)
 
@@ -70,6 +73,8 @@ class Movie(Base):
 
     # Many-to-many Movies <-> Genres.
     # genres = relationship('Genre', secondary=movie_genres, backref='movies')
+
+    compilation = relationship('Compilation', backref=backref('movies', order_by=id), cascade='all, delete, delete-orphan', single_parent=True)
 
     def __init__(self, **kwargs):
         for key, value in kwargs.iteritems():

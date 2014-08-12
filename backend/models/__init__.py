@@ -20,6 +20,7 @@ from models.streams import Stream
 from models.movies import Movie
 from models.images import Image
 from models.localizations import Localization
+from models.compilations import Compilation
 
 
 # logging.basicConfig(**LOG_CONFIG)
@@ -142,16 +143,30 @@ class StreamManager(object):
                 try:
                     movieObject = session.query(Movie).filter("titleOriginal=:title and releaseYear=:year").params(title=movieDict["titleOriginal"], year=movieDict["releaseYear"]).one()
                 except NoResultFound:
-                    localization = Localization(
+                    localizationObject = Localization(
                         locale = movieDict['locale'],
                         title = movieDict['title'],
                         storyline = movieDict['storyline'],
                     )
                     if not streamLocation.startswith('\\\\03cab2fbe3354d838578b09178ac2a1a\\ka-BOOM\\'):
                         movieDict['streamless'] = False
+
                     movieObject = Movie(**movieDict)
-                    localization.movie = movieObject
-                    session.add_all([movieObject, localization])
+
+                    if movieDict['compilationId'] is not None:
+                        try:
+                            compilationObject = session.query(Compilation).filter(Compilation.id == movieDict['compilationId']).one()
+                        except NoResultFound:
+                            compilationObject = Compilation(
+                                id = movieDict['compilationId'],
+                                name = movieDict['compilationName']
+                            )
+                            session.add(compilationObject)
+
+                        movieObject.compilation = compilationObject
+
+                    localizationObject.movie = movieObject
+                    session.add_all([movieObject, localizationObject])
 
                 if streamObject is not None:
                     movieObject.streams.append(streamObject)
@@ -172,6 +187,16 @@ class StreamManager(object):
                 return False
             else:
                 return True
+
+
+    def getCompilationById(self, identifier):
+        with self._session() as session:
+            try:
+                compilation = session.query(Compilation).filter(Compilation.id == identifier).one()
+            except NoResultFound:
+                return None
+            else:
+                return compilation
 
 
     def getMovieFromStreamLocation(self, streamLocation):

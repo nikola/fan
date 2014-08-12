@@ -312,27 +312,36 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
             else:
                 idYoutubeTrailer = None
 
+            belongsToCollection = response['belongs_to_collection']
+            if belongsToCollection is not None:
+                collectionId, collectionName = belongsToCollection['id'], belongsToCollection['name'].replace(' Collection', '')
+            else:
+                collectionId, collectionName = None, None
+
             record = dict(
                 idTheMovieDb  = movieId,
                 idImdb        = idImdb,
                 idYoutubeTrailer = idYoutubeTrailer,
 
-                titleOriginal = response['original_title'],
-                releaseYear   = datetime.datetime.strptime(response['release_date'], '%Y-%m-%d').year,
-                runtime       = response['runtime'] or None,
+                titleOriginal   = response['original_title'],
+                releaseYear     = datetime.datetime.strptime(response['release_date'], '%Y-%m-%d').year,
+                runtime         = response['runtime'] or None,
 
-                urlBackdrop   = response['backdrop_path'],
-                urlPoster     = response['poster_path'],
+                urlBackdrop     = response['backdrop_path'],
+                urlPoster       = response['poster_path'],
 
-                homepage      = response['homepage'],
-                budget        = response['budget'] or None,
-                revenue       = response['revenue'] or None,
+                homepage        = response['homepage'],
+                budget          = response['budget'] or None,
+                revenue         = response['revenue'] or None,
 
-                rating        = rating,
+                rating          = rating,
 
-                locale        = language,
-                title         = response['title'] or response['original_title'],
-                storyline     = overview,
+                locale          = language,
+                title           = response['title'] or response['original_title'],
+                storyline       = overview,
+
+                compilationId   = collectionId,
+                compilationName = collectionName,
             )
     except JSONDecodeError:
         logger.error('Error while querying themoviedb.org for "%s" or "%s".', searchTitlePrimary, searchTitleSecondary)

@@ -1,8 +1,5 @@
 # coding: utf-8
-""" Implant CEF library into .EXE:
-        http://www.pyinstaller.org/export/v2.0/project/doc/Manual.html#collect
-
-    Extended Window Styles:
+""" Extended Window Styles:
         http://msdn.microsoft.com/en-us/library/windows/desktop/ff700543(v=vs.85).aspx
 
     SetWindowPos function:
@@ -239,6 +236,8 @@ def start(callback, userAgent, serverPort, bridgeToken, bootToken, mustSecure, u
     jsBindings.SetObject('console', bridge)
     jsBindings.SetProperty('navigator', {'userAgent': ENTROPY_SEED})
     browser.SetJavascriptBindings(jsBindings)
+
+    win32api.ShowCursor(0)
 
     msie.MessageLoop()
     msie.Shutdown()

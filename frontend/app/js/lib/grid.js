@@ -10,7 +10,7 @@
 ka.lib.setPrimaryPosterColor = function () {
     var gridItem = $(this).closest('.boom-movie-grid-item'),
         uuid = gridItem.data('boom.uuid');
-    if ('primaryPosterColor' in ka.data.cortex.byUuid[uuid]) {
+    if ('primaryPosterColor' in ka.data.byUuid[uuid]) {
         /*  Weird bug:
          *  Trigger full render of grid by painting every single poster on canvas.
          */
@@ -21,7 +21,7 @@ ka.lib.setPrimaryPosterColor = function () {
         context.canvas.height = image.height;
         context.drawImage(image, 0, 0, image.width, image.height);
 
-        gridItem.find('.boom-movie-grid-info-overlay-title').css('backgroundColor', '#' + ka.data.cortex.byUuid[uuid].primaryPosterColor);
+        gridItem.find('.boom-movie-grid-info-overlay-title').css('backgroundColor', '#' + ka.data.byUuid[uuid].primaryPosterColor);
     } else {
         var pixelArray = ka.lib.getPixelsFromImage($(this));
         pixelArray.unshift(uuid);
@@ -49,7 +49,7 @@ ka.lib.processPixelArray = function () {
         primaryColorHex = ((1 << 24) + (primaryColorRGB[0] << 16) + (primaryColorRGB[1] << 8) + primaryColorRGB[2]).toString(16).slice(1);
 
     $('#boom-movie-grid-item-' + uuid + ' .boom-movie-grid-info-overlay-title').css('backgroundColor', '#' + primaryColorHex);
-    ka.data.cortex.byUuid[uuid].primaryPosterColor = primaryColorHex;
+    ka.data.byUuid[uuid].primaryPosterColor = primaryColorHex;
     ka.state.imagePosterPrimaryColorByUuid[uuid] = primaryColorHex;
 
     $.get('/update/' + uuid + '/poster-color/' + primaryColorHex);
@@ -76,7 +76,7 @@ ka.lib.recalcMovieGrid = function () {
     ka.state.gridLookupKeyByLine = [];
     ka.state.gridLookupCoordByUuid = {};
 
-    var keys = Object.getOwnPropertyNames(ka.data.cortex[ka.state.gridSortCriterion]).sort(), keyCount = keys.length;
+    var keys = Object.getOwnPropertyNames(ka.data[ka.state.gridSortCriterion]).sort(), keyCount = keys.length;
     if (ka.state.gridSortOrder == 'desc') {
         keys.reverse();
     }
@@ -84,8 +84,8 @@ ka.lib.recalcMovieGrid = function () {
     var currentRowIndex = 0, currentColumnIndex, currentCellIndex = 0, currentLineIndex;
     for (var key, keyIndex = 0; keyIndex < keyCount; keyIndex++) {
         key = keys[keyIndex];
-        if (key in ka.data.cortex[ka.state.gridSortCriterion]) {
-            var items = ka.data.cortex[ka.state.gridSortCriterion][key], count = items.count();
+        if (key in ka.data[ka.state.gridSortCriterion]) {
+            var items = ka.data[ka.state.gridSortCriterion][key], count = items.count();
             if (count) {
                 currentColumnIndex = 0;
                 for (var movieIndex = 0; movieIndex < count; movieIndex++) {

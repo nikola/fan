@@ -14,7 +14,7 @@ ka.lib.localizeButtons = function () {
 
 
 ka.lib.getLocalizedTitleByUuid = function (uuid) {
-    var movie = ka.data.cortex.byUuid[uuid],
+    var movie = ka.data.byUuid[uuid],
         title = (ka.state.gridSortDisplayLanguage == 'localized') ? movie.titleLocalized : movie.titleOriginal;
     return title;
 };

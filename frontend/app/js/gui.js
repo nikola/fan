@@ -8,14 +8,12 @@
 ; var ka = ka || {};
 
 ka.data = {
-    cortex: {
-        all: new Cortex([])
-        , byUuid: {}
-        , byYear: {}
-        , byTitleOriginal: {}
-        , byTitleLocalized: {}
-        , byRating: {}
-    }
+    all: new Cortex([])
+    , byUuid: {}
+    , byYear: {}
+    , byTitleOriginal: {}
+    , byTitleLocalized: {}
+    , byRating: {}
 };
 
 ka.settings = {
@@ -56,7 +54,7 @@ function listen() {
     ka.state.socketDispatcher = new ka.lib.WebSocketDispatcher(url);
 
     ka.state.socketDispatcher.bind('receive:movie:item', function (movie) {
-        ka.lib.addMovieToCortex(movie);
+        ka.lib.addMovie(movie);
 
         ka.lib.updateMovieGridAfterAddition();
     });
@@ -107,7 +105,7 @@ function ready() {
                 ka.state.processingInitialItemsCount = index;
 
                 while (index--) {
-                    ka.lib.addMovieToCortex(list[index]);
+                    ka.lib.addMovie(list[index]);
                 }
                 ka.lib.recalcMovieGrid();
                 ka.lib.updateMovieGrid();

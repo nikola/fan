@@ -117,7 +117,7 @@ ka.lib.handleKeypressSelect = function () {
             $('#boom-movie-detail').velocity('fadeOut', {duration: 360, complete: function () {
                 ka.state.currentPageMode = 'play:trailer';
 
-                ka.lib.startTrailerPlayer(ka.data.cortex.byUuid[ka.state.currentGridMovieUuid].trailer);
+                ka.lib.startTrailerPlayer(ka.data.byUuid[ka.state.currentGridMovieUuid].trailer);
             }});
         }
     }

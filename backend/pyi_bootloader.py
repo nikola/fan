@@ -156,5 +156,5 @@ if __name__ == '__main__':
 
         # TODO: implement SIGINT handler
         # http://stackoverflow.com/a/1112350
-    except:
-        logger.exception()
+    except Exception, e:
+        logger.exception(e)

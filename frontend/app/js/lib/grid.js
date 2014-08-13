@@ -81,57 +81,62 @@ ka.lib.recalcMovieGrid = function () {
         keys.reverse();
     }
 
-    var currentRowIndex = 0, currentColumnIndex, currentCellIndex = 0, currentLineIndex;
+    var currentScreenLine = 0, currentScreenColumn,
+        currentGlobalCellCounter = 0, currentGlobalLine,
+        movieDict;
     for (var key, keyIndex = 0; keyIndex < keyCount; keyIndex++) {
         key = keys[keyIndex];
         if (key in ka.data[ka.state.gridSortCriterion]) {
             var items = ka.data[ka.state.gridSortCriterion][key], count = items.length;
             if (count) {
-                currentColumnIndex = 0;
+                currentScreenColumn = 0;
                 for (var movieIndex = 0; movieIndex < count; movieIndex++) {
+                    movieDict = items[movieIndex];
+
                     if (movieIndex % ka.settings.gridMaxColumns == 0) {
                         ka.state.gridLookupMatrix.push([]);
                     }
 
-                    currentLineIndex =  ka.state.gridLookupMatrix.length - 1;
+                    currentGlobalLine =  Math.floor(currentGlobalCellCounter / ka.settings.gridMaxColumns);
 
-                    ka.state.gridLookupMatrix[currentLineIndex][currentColumnIndex] = items[movieIndex];
-                    ka.state.gridLookupKeyByLine[currentLineIndex] = key;
-                    ka.state.gridLookupCoordByUuid[items[movieIndex].uuid] = [currentColumnIndex, currentLineIndex];
+                    
+                    ka.state.gridLookupMatrix[currentGlobalLine][currentScreenColumn] = movieDict;
 
-                    var currentLine = Math.floor(currentCellIndex / ka.settings.gridMaxColumns);
+                    ka.state.gridLookupKeyByLine[currentGlobalLine] = key;
+                    ka.state.gridLookupCoordByUuid[movieDict.uuid] = [currentScreenColumn, currentGlobalLine];
+
                     if (key in ka.state.gridLookupLinesByKey) {
                         var lines = ka.state.gridLookupLinesByKey[key];
-                        if (lines.indexOf(currentLine) == -1) {
-                            lines.push(currentLine);
+                        if (lines.indexOf(currentGlobalLine) == -1) {
+                            lines.push(currentGlobalLine);
                         }
                     } else {
-                        var lines = [currentLine];
+                        var lines = [currentGlobalLine];
                     }
                     ka.state.gridLookupLinesByKey[key] = lines;
 
-                    currentCellIndex++;
-                    currentColumnIndex++;
+                    currentGlobalCellCounter++;
+                    currentScreenColumn++;
 
-                    if (currentColumnIndex == ka.settings.gridMaxColumns) {
-                        currentRowIndex++;
-                        currentColumnIndex = 0;
+                    if (currentScreenColumn == ka.settings.gridMaxColumns) {
+                        currentScreenLine++;
+                        currentScreenColumn = 0;
                     }
 
-                    if (currentRowIndex == ka.settings.gridMaxRows) {
-                        currentRowIndex = 0;
+                    if (currentScreenLine == ka.settings.gridMaxRows) {
+                        currentScreenLine = 0;
                     }
                 }
 
-                if (currentColumnIndex) {
-                    for (; currentColumnIndex < ka.settings.gridMaxColumns; currentColumnIndex++) {
-                        ka.state.gridLookupMatrix[ka.state.gridLookupMatrix.length - 1][currentColumnIndex] = null;
-                        currentCellIndex++;
+                if (currentScreenColumn) {
+                    for (; currentScreenColumn < ka.settings.gridMaxColumns; currentScreenColumn++) {
+                        ka.state.gridLookupMatrix[ka.state.gridLookupMatrix.length - 1][currentScreenColumn] = null;
+                        currentGlobalCellCounter++;
                     }
-                    currentRowIndex++;
+                    currentScreenLine++;
 
-                    if (currentRowIndex == ka.settings.gridMaxRows) {
-                        currentRowIndex = 0;
+                    if (currentScreenLine == ka.settings.gridMaxRows) {
+                        currentScreenLine = 0;
                     }
                 }
             }

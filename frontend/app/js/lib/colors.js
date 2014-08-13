@@ -25,7 +25,7 @@ ka.lib.desaturateVisiblePosters = function () {
     for (var row = start; row < end; row++) {
         if (row < ka.state.gridLookupMatrix.length) {
             for (var item, i = 0; i < 4; i++) {
-                item = ka.state.gridLookupMatrix[row][i];
+                item = ka.lib.getMovieObjectFromCoord(i, row);
                 if (item) {
                     var element = $('#boom-poster-' + item.uuid);
                     ka.state.desaturationImageCache.push(element);

@@ -94,6 +94,7 @@ ka.lib.recalcMovieGrid = function () {
                     }
 
                     currentLineIndex =  ka.state.gridLookupMatrix.length - 1;
+
                     ka.state.gridLookupMatrix[currentLineIndex][currentColumnIndex] = items[movieIndex];
                     ka.state.gridLookupKeyByLine[currentLineIndex] = key;
                     ka.state.gridLookupCoordByUuid[items[movieIndex].uuid] = [currentColumnIndex, currentLineIndex];
@@ -172,7 +173,8 @@ ka.lib.updateMovieGrid = function () {
         }
 
         for (var column = 0, line = matrix[row], columns = line.length; column < columns; column++) {
-            movie = ka.state.gridLookupMatrix[row][column];
+            movie = ka.lib.getMovieObjectFromCoord(column, row);
+
             if (movie !== null) {
                 ka.state.gridLookupItemsPerLine[row] = column + 1;
             }
@@ -293,6 +295,17 @@ ka.lib.scrollGrid = function () {
 };
 
 
+ka.lib.getMovieObjectFromCoord = function (x, y) {
+    var obj = ka.state.gridLookupMatrix[y][x];
+
+    if ($.isArray(obj)) {
+        obj = obj[0];
+    }
+
+    return obj;
+};
+
+
 ka.lib.moveFocusFirstItem = function () {
     if (ka.state.gridFocusX > 0) {
         var distance = 260 * ka.state.gridFocusX;
@@ -316,7 +329,6 @@ ka.lib.moveFocusLastItem = function () {
 
 ka.lib.moveFocusPageUp = function () {
     if (ka.state.gridPage > 0) {
-        /* ka.lib.moveFocusX(-ka.settings.gridMaxRows); */
         var transition = ka.lib.moveFocusX(-ka.settings.gridMaxRows);
         if (transition !== null) {
             $('#boom-poster-focus').velocity(transition[0], transition[1]);
@@ -447,7 +459,7 @@ ka.lib.moveFocusRight = function () {
 
 
 ka.lib.toggleFocus = function () {
-    var uuid = ka.state.gridLookupMatrix[ka.lib.getGridFocusAbsoluteY()][ka.state.gridFocusX].uuid;
+    var uuid = ka.lib.getMovieObjectFromCoord(ka.state.gridFocusX, ka.lib.getGridFocusAbsoluteY()).uuid;
 
     $('#boom-movie-grid-item-' + uuid + ' .boom-movie-grid-info-overlay')
         .toggleClass('active')
@@ -546,7 +558,7 @@ ka.lib.moveFocusX = function (offsetY) {
 
 
 ka.lib.getMovieFromGridFocus = function () {
-    return ka.state.gridLookupMatrix[ka.lib.getGridFocusAbsoluteY()][ka.state.gridFocusX];
+    return ka.lib.getMovieObjectFromCoord(ka.state.gridFocusX, ka.lib.getGridFocusAbsoluteY());
 };
 
 ka.lib.refocusGrid = function () {

@@ -256,10 +256,6 @@ ka.lib.renderMovieGridCell = function (movie, operation, context) {
         if (movie.uuid in ka.state.detachedGridCells) {
             var cell = ka.state.detachedGridCells[movie.uuid];
         } else {
-            var movieTitle = movie.titleOriginal;
-            if (movieTitle.indexOf(':') > 9) {
-                movieTitle = movieTitle.substr(0, movieTitle.indexOf(':') + 1) + '<br>' + movieTitle.substr(movieTitle.indexOf(':') + 1);
-            }
             var cell = $(
                 '<div id="boom-movie-grid-item-' + movie.uuid + '" class="boom-movie-grid-item">'
                   + '<div class="boom-movie-grid-info-overlay">'
@@ -267,7 +263,7 @@ ka.lib.renderMovieGridCell = function (movie, operation, context) {
                           + '<img id="boom-poster-' + movie.uuid + '" src="/movie/poster/' + movie.uuid + '-200.image" width="200" height="300">'
                       + '</div>'
                       + '<div class="boom-movie-grid-info-overlay-text">'
-                          + '<div class="boom-movie-grid-info-overlay-title">' + movieTitle + '</div>'
+                          + '<div class="boom-movie-grid-info-overlay-title"></div>'
                           + '<div class="boom-movie-grid-info-overlay-text-additional">' + movie.releaseYear + '<br>' + movie.runtime + ' minutes</div>'
                       + '</div>'
                   + '</div>'
@@ -455,7 +451,7 @@ ka.lib.toggleFocus = function () {
 
     $('#boom-movie-grid-item-' + uuid + ' .boom-movie-grid-info-overlay')
         .toggleClass('active')
-        .find('.boom-movie-grid-info-overlay-title').text(ka.lib.getLocalizedTitleByUuid(uuid));
+        .find('.boom-movie-grid-info-overlay-title').html(ka.lib.getLocalizedTitleByUuid(uuid, true));
 };
 
 

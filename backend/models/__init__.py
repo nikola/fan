@@ -346,8 +346,10 @@ class StreamManager(object):
     def getAllMoviesAsJson(self):
         with self._session() as session:
             compilationNameById = {}
-            for compilation in session.query(Compilation).values(Compilation.id, Compilation.name):
-                 compilationNameById[compilation[0]] = compilation[1]
+            compilationMovieCountById = {}
+            for compilation in session.query(Compilation).all():
+                compilationNameById[compilation.id] = compilation.name
+                compilationMovieCountById[compilation.id] = len(compilation.movies)
 
             movieList = []
             for movie in session.query(Movie, Localization, Image, Compilation).filter(Movie.id == Localization.movieId, Movie.id == Image.movieId, Image.imageType == 'Poster', Image.primaryColor != None, Localization.locale == 'en').distinct() \
@@ -364,6 +366,7 @@ class StreamManager(object):
                     'primaryPosterColor': movie[8],
                     'streamless': movie[9],
                     'compilation': compilationNameById.get(movie[10]),
+                    'isCompiled': compilationMovieCountById.get(movie[10], 0) > 1,
                 })
             return json.dumps(movieList, separators=(',',':'))
 

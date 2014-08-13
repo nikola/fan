@@ -1,12 +1,11 @@
 /**
- *  Receive movie details over WebSockets.
+ *  Store movie details received over WebSockets.
  *
  *  @author Nikola Klaric (nikola@generic.company)
  *  @copyright Copyright (c) 2013-2014 Nikola Klaric
  */
 ; var ka = ka || {}; if (!('lib' in ka)) ka.lib = {};
 
-// ka.data.cortex.all.forEach(function (item, index) { console.log(item.titleOriginal.getValue(), '->', item.criterion.getValue())})
 
 ka.lib.addMovie = function (movieDict) {
     if (movieDict.uuid in ka.data.byUuid) {
@@ -19,16 +18,15 @@ ka.lib.addMovie = function (movieDict) {
     var title, key, sortCriterionKey, sortedList;
 
     for (var orders = ['titleOriginal', 'titleLocalized', 'year', 'rating'], order, o = 0; order = orders[o]; o++) {
-        /* if (movieDict.compilation) {
+        if (movieDict.compilation && movieDict.isCompiled) {
             title = movieDict.compilation;
-        } else { */
-            if (order == 'titleOriginal') {
-                title = movieDict.titleOriginal;
-            } else {
-                title = movieDict.titleLocalized;
-            }
-        /* }
-        movieDict.titleComparable = title; */
+        } else if (order == 'titleOriginal') {
+            title = movieDict.titleOriginal;
+        } else {
+            title = movieDict.titleLocalized;
+        }
+
+        title = ka.lib._getComparableTitle(title);
 
         if (order == 'titleOriginal' || order == 'titleLocalized') {
             key = ka.lib._getCollatedKey(new RegExp('^(?:' + ka.lib.getLocalizedArticles() + ' )?([\\S])', 'i').exec(title)[1].toLocaleUpperCase().replace(/[0-9]/, '123'));
@@ -42,10 +40,9 @@ ka.lib.addMovie = function (movieDict) {
         if (key in ka.data[sortCriterionKey]) {
             sortedList = ka.data[sortCriterionKey][key];
         } else {
-            /* sortedList = new Cortex([]); */
             sortedList = [];
         }
-        ka.lib._insertSorted(sortedList, movieDict, ka.lib._getComparableTitle(title), sortCriterionKey);
+        ka.lib._insertSorted(sortedList, movieDict, title, sortCriterionKey);
         ka.data[sortCriterionKey][key] = sortedList;
     }
 
@@ -68,14 +65,18 @@ ka.lib._insertSorted  = function (sortedListRef, movieDict, comparableTitle, sor
         }
     } else {
         var position = -1;
+
         for (var index = 0; index < sortedListRef.length; index++) {
-            if (index == 0 || index == sortedListRef.length - 1) {
+            if (compare(comparableTitle, sortedListRef[index][sortCriterion]) == 0) {
+                position = index;
+                break;
+            } else if (index == 0 || index == sortedListRef.length - 1) {
                 if (compare(comparableTitle, sortedListRef[index][sortCriterion]) < 0) {
                     position = index;
                     break;
                 }
             } else {
-                if (compare(comparableTitle, sortedListRef[index][sortCriterion]) < 0 && compare(comparableTitle, sortedListRef[index -1][sortCriterion]) > 0) {
+                if (compare(comparableTitle, sortedListRef[index][sortCriterion]) < 0 && compare(comparableTitle, sortedListRef[index - 1][sortCriterion]) > 0) {
                     position = index;
                     break;
                 }

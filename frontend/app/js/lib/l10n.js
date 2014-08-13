@@ -13,9 +13,21 @@ ka.lib.localizeButtons = function () {
 };
 
 
-ka.lib.getLocalizedTitleByUuid = function (uuid) {
-    var movie = ka.data.byUuid[uuid],
-        title = (ka.state.gridSortDisplayLanguage == 'localized') ? movie.titleLocalized : movie.titleOriginal;
+ka.lib.getLocalizedTitleByUuid = function (uuid, insertHardBreak) {
+    var movie = ka.data.byUuid[uuid], title;
+
+    if (movie.compilation && movie.isCompiled) {
+        title = movie.compilation + ' Collection';
+    } else if (ka.state.gridSortDisplayLanguage == 'localized') {
+        title = movie.titleLocalized;
+    } else {
+        title = movie.titleOriginal;
+    }
+
+    if (insertHardBreak && title.indexOf(':') > 9) {
+        title = title.substr(0, title.indexOf(':') + 1) + '<br>' + title.substr(title.indexOf(':') + 1);
+    }
+
     return title;
 };
 

@@ -18,7 +18,7 @@ ka.lib.addMovie = function (movieDict) {
     var title, key, sortCriterionKey, sortedList;
 
     for (var orders = ['titleOriginal', 'titleLocalized', 'year', 'rating'], order, o = 0; order = orders[o]; o++) {
-        if (movieDict.compilation && movieDict.isCompiled) {
+        if (movieDict.isCompiled) {
             title = movieDict.compilation;
         } else if (order == 'titleOriginal') {
             title = movieDict.titleOriginal;

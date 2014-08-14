@@ -30,7 +30,16 @@ ka.lib.setPrimaryPosterColor = function () {
         setTimeout(ka.lib.processPixelArray, 0);
     }
 
-    ka.lib.onPosterLoaded();
+    if (ka.state.isProcessingInitialItems) {
+        ka.state.processingInitialItemsCount -= 1;
+
+        if (ka.state.processingInitialItemsCount == 0) {
+            ka.state.isProcessingInitialItems = false;
+            ka.state.processingInitialItemsCount = null;
+
+            window.top.postMessage('', location.protocol + '//' + location.host);
+        }
+    }
 };
 
 
@@ -56,20 +65,6 @@ ka.lib.processPixelArray = function () {
 };
 
 
-ka.lib.onPosterLoaded = function () {
-    if (ka.state.isProcessingInitialItems) {
-        ka.state.processingInitialItemsCount -= 1;
-
-        if (ka.state.processingInitialItemsCount == 0) {
-            ka.state.isProcessingInitialItems = false;
-            ka.state.processingInitialItemsCount = null;
-
-            window.top.postMessage('', location.protocol + '//' + location.host);
-        }
-    }
-};
-
-
 ka.lib.recalcMovieGrid = function () {
     ka.state.gridLookupMatrix = [];
     ka.state.gridLookupLinesByKey = {};
@@ -83,6 +78,7 @@ ka.lib.recalcMovieGrid = function () {
 
     var currentScreenLine = 0, currentScreenColumn,
         currentGlobalCellCounter = 0, currentGlobalLine,
+        lastCompilationName,
         movieDict;
     for (var key, keyIndex = 0; keyIndex < keyCount; keyIndex++) {
         key = keys[keyIndex];
@@ -90,6 +86,7 @@ ka.lib.recalcMovieGrid = function () {
             var items = ka.data[ka.state.gridSortCriterion][key], count = items.length;
             if (count) {
                 currentScreenColumn = 0;
+                lastCompilationName = null;
                 for (var movieIndex = 0; movieIndex < count; movieIndex++) {
                     movieDict = items[movieIndex];
 
@@ -99,8 +96,24 @@ ka.lib.recalcMovieGrid = function () {
 
                     currentGlobalLine =  Math.floor(currentGlobalCellCounter / ka.settings.gridMaxColumns);
 
-                    
-                    ka.state.gridLookupMatrix[currentGlobalLine][currentScreenColumn] = movieDict;
+                    if (movieDict.isCompiled) {
+                        if (ka.state.isProcessingInitialItems && lastCompilationName == movieDict.compilation) {
+                            ka.state.processingInitialItemsCount -= 1;
+                        }
+
+                        lastCompilationName = movieDict.compilation;
+
+                        var item = ka.state.gridLookupMatrix[currentGlobalLine][currentScreenColumn];
+                        if ($.isArray(item)) {
+                            item.push(movieDict);
+                        } else {
+                            ka.state.gridLookupMatrix[currentGlobalLine][currentScreenColumn] = [movieDict];
+                        }
+                    } else {
+                        lastCompilationName = null;
+
+                        ka.state.gridLookupMatrix[currentGlobalLine][currentScreenColumn] = movieDict;
+                    }
 
                     ka.state.gridLookupKeyByLine[currentGlobalLine] = key;
                     ka.state.gridLookupCoordByUuid[movieDict.uuid] = [currentScreenColumn, currentGlobalLine];
@@ -115,22 +128,24 @@ ka.lib.recalcMovieGrid = function () {
                     }
                     ka.state.gridLookupLinesByKey[key] = lines;
 
-                    currentGlobalCellCounter++;
-                    currentScreenColumn++;
+                    if (!(movieDict.isCompiled && movieIndex < (count - 1) && items[movieIndex + 1].compilation == movieDict.compilation)) {
+                        currentGlobalCellCounter++;
+                        currentScreenColumn++;
 
-                    if (currentScreenColumn == ka.settings.gridMaxColumns) {
-                        currentScreenLine++;
-                        currentScreenColumn = 0;
-                    }
+                        if (currentScreenColumn == ka.settings.gridMaxColumns) {
+                            currentScreenLine++;
+                            currentScreenColumn = 0;
+                        }
 
-                    if (currentScreenLine == ka.settings.gridMaxRows) {
-                        currentScreenLine = 0;
+                        if (currentScreenLine == ka.settings.gridMaxRows) {
+                            currentScreenLine = 0;
+                        }
                     }
                 }
 
                 if (currentScreenColumn) {
                     for (; currentScreenColumn < ka.settings.gridMaxColumns; currentScreenColumn++) {
-                        ka.state.gridLookupMatrix[ka.state.gridLookupMatrix.length - 1][currentScreenColumn] = null;
+                        ka.state.gridLookupMatrix[currentGlobalLine][currentScreenColumn] = null;
                         currentGlobalCellCounter++;
                     }
                     currentScreenLine++;
@@ -259,7 +274,7 @@ ka.lib.updateMovieGridAfterAddition = function () {
 
 
 ka.lib.renderMovieGridCell = function (movie, operation, context) {
-    if (movie !== null) {
+    if (typeof movie != 'undefined' && movie != null) {
         if (movie.uuid in ka.state.detachedGridCells) {
             var cell = ka.state.detachedGridCells[movie.uuid];
         } else {
@@ -289,7 +304,7 @@ ka.lib.renderMovieGridCell = function (movie, operation, context) {
         cell[operation](context);
     }
 
-    if (movie !== null && movie.uuid in ka.state.detachedGridCells) {
+    if (typeof movie != 'undefined' &&  movie != null && movie.uuid in ka.state.detachedGridCells) {
         delete ka.state.detachedGridCells[movie.uuid];
     }
 };
@@ -304,10 +319,10 @@ ka.lib.getMovieObjectFromCoord = function (x, y) {
     var obj = ka.state.gridLookupMatrix[y][x];
 
     if ($.isArray(obj)) {
-        obj = obj[0];
+        return obj[0];
+    } else {
+        return obj;
     }
-
-    return obj;
 };
 
 

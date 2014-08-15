@@ -326,6 +326,25 @@ ka.lib.getMovieObjectFromCoord = function (x, y) {
 };
 
 
+ka.lib.updateMovieOverlayFromFocus = function (element) {
+    var obj = ka.state.gridLookupMatrix[ka.lib.getGridFocusAbsoluteY()][ka.state.gridFocusX],
+        source;
+
+    if ($.isArray(obj)) {
+        source = obj[0];
+
+        for (var movie, years = [], index = 0; movie = obj[index]; index++) {
+            years.push(movie.releaseYear);
+        }
+        element.find('.boom-movie-grid-info-overlay-text-additional').html(Math.min.apply(Math, years) + ' - ' + Math.max.apply(Math, years));
+    } else {
+        source = obj;
+    }
+
+    element.find('.boom-movie-grid-info-overlay-title').html(ka.lib.getLocalizedTitleByUuid(source.uuid, true));
+};
+
+
 ka.lib.moveFocusFirstItem = function () {
     if (ka.state.gridFocusX > 0) {
         var distance = 260 * ka.state.gridFocusX;
@@ -479,11 +498,9 @@ ka.lib.moveFocusRight = function () {
 
 
 ka.lib.toggleFocus = function () {
-    var uuid = ka.lib.getMovieObjectFromCoord(ka.state.gridFocusX, ka.lib.getGridFocusAbsoluteY()).uuid;
-
-    $('#boom-movie-grid-item-' + uuid + ' .boom-movie-grid-info-overlay')
-        .toggleClass('active')
-        .find('.boom-movie-grid-info-overlay-title').html(ka.lib.getLocalizedTitleByUuid(uuid, true));
+    var element = $('#boom-movie-grid-item-' + ka.lib.getMovieObjectFromCoord(ka.state.gridFocusX, ka.lib.getGridFocusAbsoluteY()).uuid + ' .boom-movie-grid-info-overlay')
+        .toggleClass('active');
+    ka.lib.updateMovieOverlayFromFocus(element);
 };
 
 

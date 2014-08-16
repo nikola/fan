@@ -567,14 +567,17 @@ ka.lib.zoomOutGridPage = function () {
         relativePosX = [100, 84, 66, 50, 34, 16, 0],
         relativePosY = [100, 50, 0];
 
-    $('#boom-poster-focus').velocity('fadeOut', 360);
+    $('#boom-poster-focus').velocity('fadeOut', 180);
 
     for (var index = 0; index < posterArray.length; index++) {
         if (posterArray[index] != null) {
             posterArray[index]
-                .css('-webkit-transform-origin', relativePosX[index % ka.settings.gridMaxColumns] + '% ' + relativePosY[Math.floor(index / ka.settings.gridMaxColumns)] + '%')
-                .velocity({scaleX: 0.9, scaleY: 0.9, opacity: 0.25}, {duration: 360, progress: function(elements, percentComplete, timeRemaining, timeStart) {
-                    elements[0].style.webkitFilter = 'blur(' + Math.round(2 * percentComplete) + 'px)';
+                .css({
+                    '-webkit-transform-origin': relativePosX[index % ka.settings.gridMaxColumns] + '% ' + relativePosY[Math.floor(index / ka.settings.gridMaxColumns)] + '%'
+                    , '-webkit-transform': 'scale3d(1, 1, 1)'
+                })
+                .velocity({scaleX: 0.9, scaleY: 0.9, scaleZ: 1, opacity: 0.25}, {duration: 360, progress: function(elements, percentComplete, timeRemaining, timeStart) {
+                    elements[0].style.webkitFilter = 'blur(' + Math.round(4 * percentComplete) + 'px)';
                 }});
         }
     }

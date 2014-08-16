@@ -80,4 +80,4 @@ ka.lib.closeTrailerPlayer = function () {
     $('#boom-movie-detail').velocity('fadeIn', 360);
 
     window.focus();
-}
+};

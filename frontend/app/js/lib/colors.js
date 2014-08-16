@@ -21,17 +21,10 @@ ka.lib.getLuminance = function (color) {
 ka.lib.desaturateVisiblePosters = function () {
     ka.state.desaturationImageCache = [];
 
-    var start = ka.state.gridPage * ka.settings.gridMaxRows, end = (ka.state.gridPage + 1) * ka.settings.gridMaxRows;
-    for (var row = start; row < end; row++) {
-        if (row < ka.state.gridLookupMatrix.length) {
-            for (var item, i = 0; i < 4; i++) {
-                item = ka.lib.getMovieObjectFromCoord(i, row);
-                if (item) {
-                    var element = $('#boom-poster-' + item.uuid);
-                    ka.state.desaturationImageCache.push(element);
-                    element.removeClass('undesaturate desaturated').addClass('desaturate');
-                }
-            }
+    for (var index = 0, elements = ka.lib.getCurrentScreenPosters(4), element; element = elements[index]; index++) {
+        if (element != null) {
+            ka.state.desaturationImageCache.push(element);
+            element.removeClass('undesaturate desaturated').addClass('desaturate');
         }
     }
 };

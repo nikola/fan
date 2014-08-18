@@ -158,6 +158,8 @@ ka.lib.recalcMovieGrid = function () {
         }
     }
 
+    // TODO: remove empty compilations at end of matrix
+
     ka.state.gridTotalPages = Math.ceil(ka.state.gridLookupMatrix.length / ka.settings.gridMaxRows);
 };
 
@@ -198,6 +200,7 @@ ka.lib.updateMovieGrid = function () {
             if (movie !== null) {
                 ka.state.gridLookupItemsPerLine[row] = column + 1;
             }
+
             if (!hasCells || currentCellIndex >= renderedCells.length) {
                 ka.lib.renderMovieGridCell(movie, 'appendTo', $('#boom-movie-grid-container'));
             } else {
@@ -232,9 +235,6 @@ ka.lib.updateMovieGrid = function () {
     $('.boom-movie-grid-key').slice(ka.state.gridLookupMatrix.length).remove();
 
     if (ka.state.gridLookupMatrix.length) {
-        if (ka.state.currentPageMode == 'config' || ka.state.currentPageMode == 'grid') {
-            /* ka.lib.updateDetailPage(); */
-        }
         if (ka.state.currentPageMode == 'grid') {
             if (ka.state.shouldFocusFadeIn) {
                 $('#boom-poster-focus').velocity('fadeIn', 720);
@@ -278,19 +278,12 @@ ka.lib.renderMovieGridCell = function (movie, operation, context) {
         if (movie.uuid in ka.state.detachedGridCells) {
             var cell = ka.state.detachedGridCells[movie.uuid];
         } else {
-            var cell = $(
-                '<div id="boom-movie-grid-item-' + movie.uuid + '" class="boom-movie-grid-item">'
-                  + '<div class="boom-movie-grid-info-overlay">'
-                      + '<div class="boom-movie-grid-info-overlay-image">'
-                          + '<img id="boom-poster-' + movie.uuid + '" src="/movie/poster/' + movie.uuid + '-200.image" width="200" height="300">'
-                      + '</div>'
-                      + '<div class="boom-movie-grid-info-overlay-text">'
-                          + '<div class="boom-movie-grid-info-overlay-title"></div>'
-                          + '<div class="boom-movie-grid-info-overlay-text-additional">' + movie.releaseYear + '<br>' + movie.runtime + ' minutes</div>'
-                      + '</div>'
-                  + '</div>'
-              + '</div>'
-            ).data('boom.uuid', movie.uuid);
+            var cell = ka.lib.renderMovieObject(
+                movie
+              , 'boom-movie-grid-item-' + movie.uuid
+              , 'boom-poster-' + movie.uuid
+              , 200, 300
+            );
 
             cell.find('img').on('load', ka.lib.setPrimaryPosterColor);
         }
@@ -307,6 +300,29 @@ ka.lib.renderMovieGridCell = function (movie, operation, context) {
     if (typeof movie != 'undefined' &&  movie != null && movie.uuid in ka.state.detachedGridCells) {
         delete ka.state.detachedGridCells[movie.uuid];
     }
+};
+
+
+ka.lib.renderMovieObject = function (movieObj, movieId, posterId, posterWidth, posterHeight, extraClass) {
+    if (!extraClass) {
+        extraClass = '';
+    } else {
+        extraClass = ' ' + extraClass;
+    }
+
+    return $(
+        '<div id="' + movieId + '" class="boom-movie-grid-item' + extraClass + '">'
+          + '<div class="boom-movie-grid-info-overlay">'
+              + '<div class="boom-movie-grid-info-overlay-image">'
+                  + '<img id="' + posterId + '" src="/movie/poster/' + movieObj.uuid + '-' + posterWidth + '.image" width="' + posterWidth + '" height="' + posterHeight + '">'
+              + '</div>'
+              + '<div class="boom-movie-grid-info-overlay-text">'
+                  + '<div class="boom-movie-grid-info-overlay-title"></div>'
+                  + '<div class="boom-movie-grid-info-overlay-text-additional">' + movieObj.releaseYear + '<br>' + movieObj.runtime + ' minutes</div>'
+              + '</div>'
+          + '</div>'
+      + '</div>'
+    ).data('boom.uuid', movieObj.uuid);
 };
 
 
@@ -508,7 +524,12 @@ ka.lib.selectFocus = function () {
     var obj = ka.lib.getVariantFromGridFocus();
 
     if ($.isArray(obj)) {
+        ka.lib.populateCompilationGrid();
+
+
         ka.lib.zoomOutGridPage();
+
+        $('#boom-boom-compilation-container').velocity('transition.expandIn', {display: 'flex', duration: 360});
     } else {
         ka.state.currentPageMode = 'detail';
         ka.state.currentGridMovieUuid = ka.lib.getMovieFromGridFocus().uuid;
@@ -562,9 +583,34 @@ ka.lib.expandScrollableGrid = function () {
 };
 
 
+ka.lib.populateCompilationGrid = function () {
+    var compilation = ka.lib.getVariantFromGridFocus();
+    compilation.sort(function (a, b) {
+        if (a.releaseYear > b.releaseYear) {
+            return 1;
+        } else if (a.releaseYear < b.releaseYear) {
+            return -1;
+        } else {
+            return 0;
+        }
+    });
+
+    $('#boom-boom-compilation-grid').empty();
+    for (var movieObj, index = 0; movieObj = compilation[index]; index++) {
+        ka.lib.renderMovieObject(
+            movieObj
+          , 'boom-movie-compilation-item-' + movieObj.uuid
+          , 'boom-movie-compilation-poster-' + movieObj.uuid
+          , 200, 300
+          , null
+        ).appendTo('#boom-boom-compilation-grid');
+    }
+};
+
+
 ka.lib.zoomOutGridPage = function () {
     var posterArray = ka.lib.getCurrentScreenPosters(ka.settings.gridMaxColumns),
-        relativePosX = [100, 84, 66, 50, 34, 16, 0],
+        relativePosX = [100, 83, 66, 50, 34, 17, 0],
         relativePosY = [100, 50, 0];
 
     $('#boom-poster-focus').velocity('fadeOut', 180);
@@ -572,11 +618,12 @@ ka.lib.zoomOutGridPage = function () {
     for (var index = 0; index < posterArray.length; index++) {
         if (posterArray[index] != null) {
             posterArray[index]
+                .removeClass('undesaturate')
                 .css({
                     '-webkit-transform-origin': relativePosX[index % ka.settings.gridMaxColumns] + '% ' + relativePosY[Math.floor(index / ka.settings.gridMaxColumns)] + '%'
-                    , '-webkit-transform': 'scale3d(1, 1, 1)'
+                  , '-webkit-transform': 'scale3d(1, 1, 1)'
                 })
-                .velocity({scaleX: 0.9, scaleY: 0.9, scaleZ: 1, opacity: 0.25}, {duration: 360, progress: function(elements, percentComplete, timeRemaining, timeStart) {
+                .velocity({scaleX: 0.75, scaleY: 0.75, scaleZ: 1, opacity: 0.15}, {duration: 360, progress: function(elements, percentComplete, timeRemaining, timeStart) {
                     elements[0].style.webkitFilter = 'blur(' + Math.round(4 * percentComplete) + 'px)';
                 }});
         }
@@ -585,19 +632,27 @@ ka.lib.zoomOutGridPage = function () {
 
 
 ka.lib.getCurrentScreenPosters = function (maxColumn) {
-    var elements = [],
-        start = ka.state.gridPage * ka.settings.gridMaxRows, end = (ka.state.gridPage + 1) * ka.settings.gridMaxRows;
+    var elements = [], items = $('.boom-movie-grid-item'),
+        start = ka.state.gridPage * ka.settings.gridMaxRows, end = (ka.state.gridPage + 1) * ka.settings.gridMaxRows,
+        counter = ka.state.gridPage * ka.settings.gridMaxRows * ka.settings.gridMaxColumns;
 
     for (var row = start; row < end; row++) {
         if (row < ka.state.gridLookupMatrix.length) {
-            for (var item, i = 0; i < maxColumn; i++) {
-                item = ka.lib.getMovieObjectFromCoord(i, row);
+            for (var i = 0; i < maxColumn; i++) {
+                elements.push(items.eq(counter).find('img'));
+                counter++;
+            }
+            for (; i < ka.settings.gridMaxColumns; i++) {
+                counter++;
+            }
+            // TODO: OPTIMIZE!!!
+                /* item = ka.lib.getMovieObjectFromCoord(i, row);
                 if (item) {
                     elements.push($('#boom-poster-' + item.uuid));
                 } else {
                     elements.push(null);
-                }
-            }
+                } */
+
         }
     }
 

@@ -66,7 +66,7 @@ ka.lib.processPixelArray = function () {
 
 
 ka.lib.recalcMovieGrid = function () {
-    ka.state.gridLookupMatrix = [];
+    var lookupMatrix = ka.state.gridLookupMatrix = [];
     ka.state.gridLookupLinesByKey = {};
     ka.state.gridLookupKeyByLine = [];
     ka.state.gridLookupCoordByUuid = {};
@@ -93,7 +93,7 @@ ka.lib.recalcMovieGrid = function () {
                     currentGlobalLine =  Math.floor(currentGlobalCellCounter / ka.settings.gridMaxColumns);
 
                     if (movieIndex % ka.settings.gridMaxColumns == 0) {
-                        ka.state.gridLookupMatrix.push([]);
+                        lookupMatrix.push([]);
                     }
 
                     if (movieDict.isCompiled) {
@@ -103,16 +103,16 @@ ka.lib.recalcMovieGrid = function () {
 
                         lastCompilationName = movieDict.compilation;
 
-                        var item = ka.state.gridLookupMatrix[currentGlobalLine][currentScreenColumn];
+                        var item = lookupMatrix[currentGlobalLine][currentScreenColumn];
                         if ($.isArray(item)) {
                             item.push(movieDict);
                         } else {
-                            ka.state.gridLookupMatrix[currentGlobalLine][currentScreenColumn] = [movieDict];
+                            lookupMatrix[currentGlobalLine][currentScreenColumn] = [movieDict];
                         }
                     } else {
                         lastCompilationName = null;
 
-                        ka.state.gridLookupMatrix[currentGlobalLine][currentScreenColumn] = movieDict;
+                        lookupMatrix[currentGlobalLine][currentScreenColumn] = movieDict;
                     }
 
                     ka.state.gridLookupKeyByLine[currentGlobalLine] = key;
@@ -145,7 +145,7 @@ ka.lib.recalcMovieGrid = function () {
 
                 if (currentScreenColumn) {
                     for (; currentScreenColumn < ka.settings.gridMaxColumns; currentScreenColumn++) {
-                        ka.state.gridLookupMatrix[currentGlobalLine][currentScreenColumn] = null;
+                        lookupMatrix[currentGlobalLine][currentScreenColumn] = null;
                         currentGlobalCellCounter++;
                     }
                     currentScreenLine++;
@@ -159,21 +159,25 @@ ka.lib.recalcMovieGrid = function () {
     }
 
     /* Remove trailing empty compilations. */
-    while (!ka.state.gridLookupMatrix[ka.state.gridLookupMatrix.length - 1].length) {
-        ka.state.gridLookupMatrix.pop();
+    while (!lookupMatrix[lookupMatrix.length - 1].length) {
+        lookupMatrix.pop();
     }
 
-    for (var row = 0; row < ka.state.gridLookupMatrix.length; row++) {
+    for (var row = 0; row < lookupMatrix.length; row++) {
         for (var column = 0; column < ka.settings.gridMaxColumns; column++) {
-            var item = ka.state.gridLookupMatrix[row][column];
+            var item = lookupMatrix[row][column];
             if ($.isArray(item)) {
                 if (item.length == 1) {
-                    ka.state.gridLookupMatrix[row][column] = item[0];
+                    lookupMatrix[row][column] = item[0];
                 } else {
                     item.sort(function (a, b) {
                         if (a.releaseYear > b.releaseYear) {
                             return 1;
                         } else if (a.releaseYear < b.releaseYear) {
+                            return -1;
+                        } else if (a[ka.state.gridSortCriterion] > b[ka.state.gridSortCriterion]) {
+                            return 1;
+                        } else if (a[ka.state.gridSortCriterion] < b[ka.state.gridSortCriterion]) {
                             return -1;
                         } else {
                             return 0;
@@ -184,7 +188,7 @@ ka.lib.recalcMovieGrid = function () {
         }
     }
 
-    ka.state.gridTotalPages = Math.ceil(ka.state.gridLookupMatrix.length / ka.settings.gridMaxRows);
+    ka.state.gridTotalPages = Math.ceil(lookupMatrix.length / ka.settings.gridMaxRows);
 };
 
 

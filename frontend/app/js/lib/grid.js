@@ -167,15 +167,19 @@ ka.lib.recalcMovieGrid = function () {
         for (var column = 0; column < ka.settings.gridMaxColumns; column++) {
             var item = ka.state.gridLookupMatrix[row][column];
             if ($.isArray(item)) {
-                item.sort(function (a, b) {
-                    if (a.releaseYear > b.releaseYear) {
-                        return 1;
-                    } else if (a.releaseYear < b.releaseYear) {
-                        return -1;
-                    } else {
-                        return 0;
-                    }
-                });
+                if (item.length == 1) {
+                    ka.state.gridLookupMatrix[row][column] = item[0];
+                } else {
+                    item.sort(function (a, b) {
+                        if (a.releaseYear > b.releaseYear) {
+                            return 1;
+                        } else if (a.releaseYear < b.releaseYear) {
+                            return -1;
+                        } else {
+                            return 0;
+                        }
+                    });
+                }
             }
         }
     }
@@ -338,7 +342,7 @@ ka.lib.renderMovieObject = function (movieObj, movieId, posterId, posterWidth, p
               + '</div>'
               + '<div class="boom-movie-grid-info-overlay-text">'
                   + '<div class="boom-movie-grid-info-overlay-title"></div>'
-                  + '<div class="boom-movie-grid-info-overlay-text-additional">' + movieObj.releaseYear + '<br>' + movieObj.runtime + ' minutes</div>'
+                  + '<div class="boom-movie-grid-info-overlay-text-additional"></div>'
               + '</div>'
           + '</div>'
       + '</div>'
@@ -363,21 +367,24 @@ ka.lib.getMovieObjectFromCoord = function (x, y) {
 
 
 ka.lib.updateMovieOverlayFromFocus = function (element) {
-    var obj = ka.lib.getVariantFromGridFocus(),
-        source;
+    var movieObj = ka.lib.getVariantFromGridFocus(),
+        source, additionalHtml;
 
-    if ($.isArray(obj)) {
-        source = obj[0];
+    if ($.isArray(movieObj)) {
+        source = movieObj[0];
 
-        for (var movie, years = [], index = 0; movie = obj[index]; index++) {
+        for (var movie, years = [], index = 0; movie = movieObj[index]; index++) {
             years.push(movie.releaseYear);
         }
-        element.find('.boom-movie-grid-info-overlay-text-additional').html(Math.min.apply(Math, years) + ' - ' + Math.max.apply(Math, years));
+        additionalHtml = Math.min.apply(Math, years) + ' - ' + Math.max.apply(Math, years);
     } else {
-        source = obj;
+        source = movieObj;
+
+        additionalHtml = movieObj.releaseYear + '<br>' + movieObj.runtime + ' minutes';
     }
 
     element.find('.boom-movie-grid-info-overlay-title').html(ka.lib.getLocalizedTitleByUuid(source.uuid, true));
+    element.find('.boom-movie-grid-info-overlay-text-additional').html(additionalHtml);
 };
 
 

@@ -584,8 +584,6 @@ ka.lib.enterCompilationMode = function () {
     ka.lib.populateCompilationGrid();
 
     ka.lib.zoomOutGridPage();
-
-    $('#boom-boom-compilation-container').velocity('transition.expandIn', {display: 'flex', duration: 360});
 };
 
 
@@ -593,10 +591,6 @@ ka.lib.leaveCompilationMode = function () {
     ka.state.currentPageMode = 'grid';
 
     ka.lib.zoomInGridPage();
-
-    $('#boom-boom-compilation-container').velocity('transition.expandOut', {display: 'none', duration: 360, complete: function () {
-        $('#boom-boom-compilation-grid').empty();
-    }});
 };
 
 
@@ -648,7 +642,7 @@ ka.lib.populateCompilationGrid = function () {
 
 
 ka.lib.zoomInGridPage = function () {
-    $('#boom-poster-focus').velocity('fadeIn', 180);
+    $('#boom-poster-focus').velocity('fadeIn', 360);
 
     var posterArray = ka.lib.getCurrentScreenPosters(ka.settings.gridMaxColumns);
 
@@ -662,6 +656,13 @@ ka.lib.zoomInGridPage = function () {
                 }});
         }
     }
+
+    $('.boom-movie-grid-key').slice(ka.state.gridPage * ka.settings.gridMaxRows, (ka.state.gridPage + 1) * ka.settings.gridMaxRows)
+        .velocity({opacity: 1}, 360);
+
+    $('#boom-boom-compilation-container').velocity('transition.expandOut', {display: 'none', duration: 360, complete: function () {
+        $('#boom-boom-compilation-grid').empty();
+    }});
 };
 
 
@@ -685,6 +686,28 @@ ka.lib.zoomOutGridPage = function () {
                 }});
         }
     }
+
+    $('.boom-movie-grid-key').slice(ka.state.gridPage * ka.settings.gridMaxRows, (ka.state.gridPage + 1) * ka.settings.gridMaxRows)
+        .velocity({opacity: 0}, 180);
+
+    var movieCount = ka.lib.getVariantFromGridFocus().length,
+        width;
+    if (movieCount < 6) {
+        width = 360 * movieCount;
+    } else if (movieCount == 6) {
+        width = 360 * 3;
+    } else if (movieCount < 9) {
+        width = 360 * 4;
+    } else {
+        width = 360 * 5;
+    }
+
+    $('#boom-boom-compilation-container')
+        .css({
+            width: width
+          , marginLeft: (1920 - width + 100) / 2
+        })
+        .velocity('transition.expandIn', {display: 'flex', duration: 360});
 };
 
 

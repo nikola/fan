@@ -163,8 +163,7 @@
     flex-direction: column;
     justify-content: center;
     position: absolute; left: 0; top: 0;
-    width: 1920px; height: 1080px;
-    padding-left: 45px;
+    height: 1080px;
 
     -webkit-transform: translateZ(0);
     -webkit-backface-visibility: hidden;

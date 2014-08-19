@@ -134,11 +134,14 @@ ka.lib.handleKeypressBack = function () {
 
         $('#boom-movie-grid-container, #boom-movie-detail').velocity({translateZ: 0, left: '+=780', opacity: '-=0.5'}, 360);
         $('#boom-poster-focus').velocity({translateZ: 0, left: '+=780', opacity: '-=1'}, 360);
-        $('#boom-movie-config').velocity({translateZ: 0, left: '+=780'}, {duration: 360}); /*, complete: function () {
-            ka.state.currentPageMode = 'config';
-        }}); */
+        $('#boom-movie-config').velocity({translateZ: 0, left: '+=780'}, {duration: 360});
+        /*, complete: function () {
+         ka.state.currentPageMode = 'config';
+         }}); */
 
         ka.lib.desaturateVisiblePosters();
+    } else if (ka.state.currentPageMode == 'grid-compilation') {
+        ka.lib.leaveCompilationMode();
     } else if (ka.state.currentPageMode == 'play:trailer') {
         ka.lib.closeTrailerPlayer();
     } else if (ka.state.currentPageMode == 'credits') {

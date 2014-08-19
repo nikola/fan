@@ -90,11 +90,11 @@ ka.lib.recalcMovieGrid = function () {
                 for (var movieIndex = 0; movieIndex < count; movieIndex++) {
                     movieDict = items[movieIndex];
 
+                    currentGlobalLine =  Math.floor(currentGlobalCellCounter / ka.settings.gridMaxColumns);
+
                     if (movieIndex % ka.settings.gridMaxColumns == 0) {
                         ka.state.gridLookupMatrix.push([]);
                     }
-
-                    currentGlobalLine =  Math.floor(currentGlobalCellCounter / ka.settings.gridMaxColumns);
 
                     if (movieDict.isCompiled) {
                         if (ka.state.isProcessingInitialItems && lastCompilationName == movieDict.compilation) {
@@ -158,7 +158,27 @@ ka.lib.recalcMovieGrid = function () {
         }
     }
 
-    // TODO: remove empty compilations at end of matrix
+    /* Remove trailing empty compilations. */
+    while (!ka.state.gridLookupMatrix[ka.state.gridLookupMatrix.length - 1].length) {
+        ka.state.gridLookupMatrix.pop();
+    }
+
+    for (var row = 0; row < ka.state.gridLookupMatrix.length; row++) {
+        for (var column = 0; column < ka.settings.gridMaxColumns; column++) {
+            var item = ka.state.gridLookupMatrix[row][column];
+            if ($.isArray(item)) {
+                item.sort(function (a, b) {
+                    if (a.releaseYear > b.releaseYear) {
+                        return 1;
+                    } else if (a.releaseYear < b.releaseYear) {
+                        return -1;
+                    } else {
+                        return 0;
+                    }
+                });
+            }
+        }
+    }
 
     ka.state.gridTotalPages = Math.ceil(ka.state.gridLookupMatrix.length / ka.settings.gridMaxRows);
 };
@@ -524,12 +544,7 @@ ka.lib.selectFocus = function () {
     var obj = ka.lib.getVariantFromGridFocus();
 
     if ($.isArray(obj)) {
-        ka.lib.populateCompilationGrid();
-
-
-        ka.lib.zoomOutGridPage();
-
-        $('#boom-boom-compilation-container').velocity('transition.expandIn', {display: 'flex', duration: 360});
+        ka.lib.enterCompilationMode();
     } else {
         ka.state.currentPageMode = 'detail';
         ka.state.currentGridMovieUuid = ka.lib.getMovieFromGridFocus().uuid;
@@ -549,6 +564,26 @@ ka.lib.selectFocus = function () {
             $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({translateZ: 0, left: '-=1920'}, 720);
         });
     }
+};
+
+
+ka.lib.enterCompilationMode = function () {
+    ka.state.currentPageMode = 'grid-compilation';
+
+    ka.lib.populateCompilationGrid();
+
+    ka.lib.zoomOutGridPage();
+
+    $('#boom-boom-compilation-container').velocity('transition.expandIn', {display: 'flex', duration: 360});
+};
+
+
+ka.lib.leaveCompilationMode = function () {
+    ka.state.currentPageMode = 'grid';
+
+    ka.lib.zoomInGridPage();
+
+    $('#boom-boom-compilation-container').velocity('transition.expandOut', {display: 'none', duration: 360});
 };
 
 
@@ -585,15 +620,6 @@ ka.lib.expandScrollableGrid = function () {
 
 ka.lib.populateCompilationGrid = function () {
     var compilation = ka.lib.getVariantFromGridFocus();
-    compilation.sort(function (a, b) {
-        if (a.releaseYear > b.releaseYear) {
-            return 1;
-        } else if (a.releaseYear < b.releaseYear) {
-            return -1;
-        } else {
-            return 0;
-        }
-    });
 
     $('#boom-boom-compilation-grid').empty();
     for (var movieObj, index = 0; movieObj = compilation[index]; index++) {
@@ -608,12 +634,30 @@ ka.lib.populateCompilationGrid = function () {
 };
 
 
+ka.lib.zoomInGridPage = function () {
+    $('#boom-poster-focus').velocity('fadeIn', 180);
+
+    var posterArray = ka.lib.getCurrentScreenPosters(ka.settings.gridMaxColumns);
+
+    for (var index = 0; index < posterArray.length; index++) {
+        if (posterArray[index] != null) {
+            posterArray[index]
+                .velocity({scaleX: 1, scaleY: 1, scaleZ: 1, opacity: 1}, {duration: 360, progress: function(elements, percentComplete, timeRemaining, timeStart) {
+                    elements[0].style.webkitFilter = 'blur(' + Math.round(4 - 4 * percentComplete) + 'px)';
+                }, complete: function (elements) {
+                    elements[0].style.webkitFilter = null;
+                }});
+        }
+    }
+};
+
+
 ka.lib.zoomOutGridPage = function () {
+    $('#boom-poster-focus').velocity('fadeOut', 180);
+
     var posterArray = ka.lib.getCurrentScreenPosters(ka.settings.gridMaxColumns),
         relativePosX = [100, 83, 66, 50, 34, 17, 0],
         relativePosY = [100, 50, 0];
-
-    $('#boom-poster-focus').velocity('fadeOut', 180);
 
     for (var index = 0; index < posterArray.length; index++) {
         if (posterArray[index] != null) {

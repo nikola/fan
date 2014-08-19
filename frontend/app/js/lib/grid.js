@@ -594,7 +594,9 @@ ka.lib.leaveCompilationMode = function () {
 
     ka.lib.zoomInGridPage();
 
-    $('#boom-boom-compilation-container').velocity('transition.expandOut', {display: 'none', duration: 360});
+    $('#boom-boom-compilation-container').velocity('transition.expandOut', {display: 'none', duration: 360, complete: function () {
+        $('#boom-boom-compilation-grid').empty();
+    }});
 };
 
 
@@ -638,8 +640,8 @@ ka.lib.populateCompilationGrid = function () {
             movieObj
           , 'boom-movie-compilation-item-' + movieObj.uuid
           , 'boom-movie-compilation-poster-' + movieObj.uuid
-          , 200, 300
-          , null
+          , 300, 450
+          , 'boom-large'
         ).appendTo('#boom-boom-compilation-grid');
     }
 };

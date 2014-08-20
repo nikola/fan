@@ -597,14 +597,14 @@ ka.lib.toggleCompilationFocus = function () {
 }; */
 
 
-ka.lib.selectFocus = function () {
+ka.lib.selectGridFocus = function () {
     var obj = ka.lib.getVariantFromGridFocus();
 
     if ($.isArray(obj)) {
         ka.lib.enterCompilationMode();
     } else {
         ka.state.currentPageMode = 'detail';
-        ka.state.currentGridMovieUuid = ka.lib.getMovieFromGridFocus().uuid;
+        ka.state.currentGridMovieUuid = obj.uuid;
 
         if (!obj.streamless) {
             ka.state.currentDetailButton = 'play';
@@ -614,13 +614,37 @@ ka.lib.selectFocus = function () {
             ka.state.currentDetailButton = 'details';
         }
 
-        ka.lib.updateDetailPage(function () {
+        ka.lib.updateDetailPage(obj, function () {
             ka.lib.updateDetailButtonSelection();
 
             ka.lib.reduceScrollableGrid();
             $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({translateZ: 0, left: '-=1920'}, 720);
         });
     }
+};
+
+
+ka.lib.selectCompilationFocus = function () {
+    var movieObj = ka.lib.getVariantFromGridFocus()[ka.state.currentCompilationFocusIndex];
+
+    ka.state.currentPageMode = 'detail';
+    ka.state.currentGridMovieUuid = movieObj.uuid;
+
+    if (!movieObj.streamless) {
+        ka.state.currentDetailButton = 'play';
+    } else if (movieObj.trailer) {
+        ka.state.currentDetailButton = 'trailer';
+    } else {
+        ka.state.currentDetailButton = 'details';
+    }
+
+    ka.lib.updateDetailPage(movieObj, function () {
+        ka.lib.updateDetailButtonSelection();
+
+        $('#boom-compilation-container, #boom-compilation-focus, #boom-movie-detail').velocity({translateZ: 0, left: '-=1920'}, {duration: 720, complete: function () {
+            $('#boom-movie-grid-container').css('display', 'none');
+        }});
+    });
 };
 
 
@@ -905,11 +929,18 @@ ka.lib.recallFocusByUuid = function (uuid) {
 
 
 ka.lib.scrollBackToGrid = function () {
-    ka.state.currentPageMode = 'grid';
+    if ($('#boom-compilation-grid .boom-movie-grid-item').size()) {
+        ka.state.currentPageMode = 'grid-compilation';
 
-    $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({translateZ: 0, left: '+=1920'}, {duration: 720, complete: function () {
-        ka.lib.expandScrollableGrid();
+        $('#boom-movie-grid-container').css('display', 'block');
+        $('#boom-compilation-container, #boom-compilation-focus, #boom-movie-detail').velocity({translateZ: 0, left: '+=1920'}, 720);
+    } else {
+        ka.state.currentPageMode = 'grid';
 
-        ka.lib.updateMovieGridAfterAddition();
-    }});
+        $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({translateZ: 0, left: '+=1920'}, {duration: 720, complete: function () {
+            ka.lib.expandScrollableGrid();
+
+            ka.lib.updateMovieGridAfterAddition();
+        }});
+    }
 };

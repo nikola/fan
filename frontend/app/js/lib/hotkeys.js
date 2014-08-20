@@ -109,7 +109,9 @@ ka.lib.handleKeypressSelect = function () {
     if (ka.state.currentPageMode == 'config') {
         ka.lib.executeConfigSelection();
     } else if (ka.state.currentPageMode == 'grid') {
-        ka.lib.selectFocus();
+        ka.lib.selectGridFocus();
+    } else if (ka.state.currentPageMode == 'grid-compilation') {
+        ka.lib.selectCompilationFocus();
     } else if (ka.state.currentPageMode == 'detail') {
         if (ka.state.currentDetailButton == 'play') {
             $('#boom-movie-detail').velocity('fadeOut', {duration: 360, complete: function () {

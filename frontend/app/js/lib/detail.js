@@ -7,8 +7,7 @@
 ; var ka = ka || {}; if (!('lib' in ka)) ka.lib = {};
 
 
-ka.lib.updateDetailPage = function (callback) {
-    var movie = ka.lib.getMovieFromGridFocus();
+ka.lib.updateDetailPage = function (movie, callback) {
     if (movie) {
         $('#boom-movie-detail .boom-button').data('boom.select-color', movie.primaryPosterColor);
 

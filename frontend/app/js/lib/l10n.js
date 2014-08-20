@@ -16,7 +16,7 @@ ka.lib.localizeButtons = function () {
 ka.lib.getLocalizedTitleByUuid = function (uuid, insertHardBreak) {
     var movie = ka.data.byUuid[uuid], title;
 
-    if (movie.isCompiled && $.isArray(ka.lib.getVariantFromGridFocus())) {
+    if (movie.isCompiled && $.isArray(ka.lib.getVariantFromGridFocus()) && ka.state.currentPageMode != 'grid-compilation') {
         title = movie.compilation + ' Collection';
     } else if (ka.state.gridSortDisplayLanguage == 'localized') {
         title = movie.titleLocalized;

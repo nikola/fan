@@ -98,7 +98,9 @@ ka.lib.handleKeypressRight = function () {
 
 ka.lib.handleKeypressToggle = function () {
     if (ka.state.currentPageMode == 'grid') {
-        ka.lib.toggleFocus();
+        ka.lib.toggleGridFocus();
+    } else if (ka.state.currentPageMode == 'grid-compilation') {
+        ka.lib.toggleCompilationFocus();
     }
 };
 

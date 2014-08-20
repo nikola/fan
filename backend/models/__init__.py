@@ -4,7 +4,8 @@
 __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
-import logging
+import os
+# import logging
 import json
 from contextlib import contextmanager
 from sqlite3 import dbapi2 as sqlite
@@ -352,22 +353,28 @@ class StreamManager(object):
                 compilationMovieCountById[compilation.id] = len(compilation.movies)
 
             movieList = []
-            for movie in session.query(Movie, Localization, Image, Compilation).filter(Movie.id == Localization.movieId, Movie.id == Image.movieId, Image.imageType == 'Poster', Image.primaryColor != None, Localization.locale == 'en').distinct() \
-                .values(Movie.uuid, Movie.titleOriginal, Localization.title, Movie.releaseYear, Movie.runtime, Localization.storyline, Movie.rating, Movie.idYoutubeTrailer, Image.primaryColor, Movie.streamless, Movie.compilationId):
-                movieList.append({
-                    'uuid': movie[0],
-                    'titleOriginal': movie[1],
-                    'titleLocalized': movie[2],
-                    'releaseYear': movie[3],
-                    'runtime': movie[4],
-                    'storyline': movie[5],
-                    'rating': movie[6],
-                    'trailer': movie[7],
-                    'primaryPosterColor': movie[8],
-                    'streamless': movie[9],
-                    'compilation': compilationNameById.get(movie[10]),
-                    'isCompiled': compilationMovieCountById.get(movie[10], 0) > 1,
-                })
+            for movie, localization, poster in session.query(Movie, Localization, Image).filter(
+                        Movie.id == Localization.movieId,
+                        Movie.id == Image.movieId,
+                        Image.imageType == 'Poster',
+                        Image.primaryColor != None,
+                        Localization.locale == 'en'
+                    ).group_by(Movie.id).distinct():
+                if any([True for stream in movie.streams if os.path.exists(stream.location)]):
+                    movieList.append({
+                        'uuid': movie.uuid,
+                        'titleOriginal': movie.titleOriginal,
+                        'titleLocalized': localization.title,
+                        'releaseYear': movie.releaseYear,
+                        'runtime': movie.runtime,
+                        'storyline': localization.storyline,
+                        'rating': movie.rating,
+                        'trailer': movie.idYoutubeTrailer,
+                        'primaryPosterColor': poster.primaryColor,
+                        'streamless': movie.streamless,
+                        'compilation': compilationNameById.get(movie.compilationId),
+                        'isCompiled': compilationMovieCountById.get(movie.compilationId, 0) > 1,
+                    })
             return json.dumps(movieList, separators=(',',':'))
 
 

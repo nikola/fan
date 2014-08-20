@@ -51,6 +51,8 @@ ka.lib.handleKeypressUp = function () {
         }
     } else if (ka.state.currentPageMode == 'grid') {
         ka.lib.moveFocusUp();
+    } else if (ka.state.currentPageMode == 'grid-compilation') {
+        ka.lib.moveCompilationFocusUp();
     }
 };
 
@@ -68,6 +70,8 @@ ka.lib.handleKeypressDown = function () {
         }
     } else if (ka.state.currentPageMode == 'grid') {
         ka.lib.moveFocusDown();
+    } else if (ka.state.currentPageMode == 'grid-compilation') {
+        ka.lib.moveCompilationFocusDown();
     }
 };
 
@@ -75,6 +79,8 @@ ka.lib.handleKeypressDown = function () {
 ka.lib.handleKeypressLeft = function () {
     if (ka.state.currentPageMode == 'grid') {
         ka.lib.moveFocusLeft();
+    } else if (ka.state.currentPageMode == 'grid-compilation') {
+        ka.lib.moveCompilationFocusLeft();
     }
 };
 
@@ -82,6 +88,8 @@ ka.lib.handleKeypressLeft = function () {
 ka.lib.handleKeypressRight = function () {
     if (ka.state.currentPageMode == 'grid') {
         ka.lib.moveFocusRight();
+    } else if (ka.state.currentPageMode == 'grid-compilation') {
+        ka.lib.moveCompilationFocusRight();
     } else if (ka.state.currentPageMode == 'config') {
         ka.lib.closeMenu();
     }

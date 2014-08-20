@@ -579,11 +579,13 @@ ka.lib.selectFocus = function () {
 
 
 ka.lib.enterCompilationMode = function () {
-    ka.state.currentPageMode = 'grid-compilation';
+    ka.state.currentPageMode = 'limbo';
 
     ka.lib.populateCompilationGrid();
 
-    ka.lib.zoomOutGridPage();
+    ka.lib.zoomOutGridPage(function () {
+        ka.state.currentPageMode = 'grid-compilation';
+    });
 };
 
 
@@ -591,6 +593,51 @@ ka.lib.leaveCompilationMode = function () {
     ka.state.currentPageMode = 'grid';
 
     ka.lib.zoomInGridPage();
+};
+
+
+ka.lib.moveCompilationFocusLeft = function () {
+    if (ka.state.currentCompilationFocusIndex > 0) {
+        ka.state.currentCompilationFocusIndex -= 1;
+
+        ka.lib.repositionCompilationFocus();
+    }
+};
+
+
+ka.lib.moveCompilationFocusRight = function () {
+    if (ka.state.currentCompilationFocusIndex + 1 < ka.state.currentCompilationPosterCount) {
+        ka.state.currentCompilationFocusIndex += 1;
+
+        ka.lib.repositionCompilationFocus();
+    }
+};
+
+
+ka.lib.moveCompilationFocusUp = function () {
+    if (ka.state.currentCompilationFocusIndex + 1 > ka.state.currentCompilationColumnSize) {
+        ka.state.currentCompilationFocusIndex -= ka.state.currentCompilationColumnSize;
+
+        ka.lib.repositionCompilationFocus();
+    }
+};
+
+
+ka.lib.moveCompilationFocusDown = function () {
+    if (ka.state.currentCompilationFocusIndex + ka.state.currentCompilationColumnSize < ka.state.currentCompilationPosterCount) {
+        ka.state.currentCompilationFocusIndex += ka.state.currentCompilationColumnSize;
+
+        ka.lib.repositionCompilationFocus();
+    }
+};
+
+
+ka.lib.repositionCompilationFocus = function () {
+    var target = $('#boom-compilation-grid .boom-movie-grid-item:nth-child(' + (ka.state.currentCompilationFocusIndex + 1) + ')').offset();
+    $('#boom-compilation-focus').velocity({
+        top: target.top + ka.settings.compilationPosterOffsetTop
+      , left: target.left + ka.settings.compilationPosterOffsetLeft
+    }, 360);
 };
 
 
@@ -627,6 +674,8 @@ ka.lib.expandScrollableGrid = function () {
 
 ka.lib.populateCompilationGrid = function () {
     var compilation = ka.lib.getVariantFromGridFocus();
+    ka.state.currentCompilationPosterCount = compilation.length;
+    ka.state.currentCompilationFocusIndex = 0;
 
     $('#boom-compilation-grid').empty();
     for (var movieObj, index = 0; movieObj = compilation[index]; index++) {
@@ -660,13 +709,15 @@ ka.lib.zoomInGridPage = function () {
     $('.boom-movie-grid-key').slice(ka.state.gridPage * ka.settings.gridMaxRows, (ka.state.gridPage + 1) * ka.settings.gridMaxRows)
         .velocity({opacity: 1}, 360);
 
+    $('#boom-compilation-focus').velocity('fadeOut', 180);
+
     $('#boom-compilation-container').velocity('transition.expandOut', {display: 'none', duration: 360, complete: function () {
         $('#boom-compilation-grid').empty();
     }});
 };
 
 
-ka.lib.zoomOutGridPage = function () {
+ka.lib.zoomOutGridPage = function (callback) {
     $('#boom-poster-focus').velocity('fadeOut', 180);
 
     var posterArray = ka.lib.getCurrentScreenPosters(ka.settings.gridMaxColumns),
@@ -690,24 +741,31 @@ ka.lib.zoomOutGridPage = function () {
     $('.boom-movie-grid-key').slice(ka.state.gridPage * ka.settings.gridMaxRows, (ka.state.gridPage + 1) * ka.settings.gridMaxRows)
         .velocity({opacity: 0}, 180);
 
-    var movieCount = ka.lib.getVariantFromGridFocus().length,
-        width;
+    var movieCount = ka.lib.getVariantFromGridFocus().length;
     if (movieCount < 6) {
-        width = 360 * movieCount;
+        ka.state.currentCompilationColumnSize = movieCount;
     } else if (movieCount == 6) {
-        width = 360 * 3;
+        ka.state.currentCompilationColumnSize = 3;
     } else if (movieCount < 9) {
-        width = 360 * 4;
+        ka.state.currentCompilationColumnSize = 4;
     } else {
-        width = 360 * 5;
+        ka.state.currentCompilationColumnSize = 5;
     }
 
     $('#boom-compilation-container')
         .css({
-            width: width
-          , marginLeft: (1920 - width + 100) / 2
+            width: 360 * ka.state.currentCompilationColumnSize
+          , marginLeft: (1920 - (360 * ka.state.currentCompilationColumnSize) + 100) / 2
         })
-        .velocity('transition.expandIn', {display: 'flex', duration: 360});
+        .velocity('transition.expandIn', {display: 'flex', duration: 360, complete: function () {
+            var coord = $('#boom-compilation-grid .boom-movie-grid-item:first-child').offset();
+            $('#boom-compilation-focus')
+                .css({
+                    top: coord.top + ka.settings.compilationPosterOffsetTop
+                  , left: coord.left + ka.settings.compilationPosterOffsetLeft
+                })
+                .velocity('fadeIn', {duration: 180, complete: callback});
+        }});
 };
 
 

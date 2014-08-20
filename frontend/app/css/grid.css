@@ -35,6 +35,15 @@
     left: 116px;
     }
 
+#boom-compilation-focus {
+    display: none;
+
+    position: fixed;
+    border: 8px solid white;
+    width: 320px;
+    height: 470px;
+    }
+
 .boom-movie-grid-key {
     width: 120px; height: 360px;
     margin-right: -20px;

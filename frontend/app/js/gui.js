@@ -18,12 +18,17 @@ ka.data = {
 ka.settings = {
     gridMaxRows: 3
   , gridMaxColumns: 7
+  , compilationPosterOffsetTop: -18
+  , compilationPosterOffsetLeft: 12
 };
 
 ka.state = {
     currentPageMode: 'grid'
   , currentConfigButton: 1
   , currentGridMovieUuid: null
+  , currentCompilationFocusIndex: null
+  , currentCompilationPosterCount: null
+  , currentCompilationColumnSize: null
   , gridSortCriterion: 'byTitleLocalized'
   , gridSortDisplayLanguage: 'localized'
   , gridSortOrder: 'asc'

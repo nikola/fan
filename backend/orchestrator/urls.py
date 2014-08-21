@@ -56,7 +56,7 @@ def _getImageResponse(request, imageModified, imageBlob):
 
 
 @module.route('/<path:pathname>', methods=('PATCH',), headers=SERVER_HEADERS, content_type='text/plain')
-def presenterReady(request, pathname):
+def d84349a839a6400aa7494cd609f61cb0(request, pathname):
     if DEBUG or pathname == module.bootToken:
         module.imageBaseUrl, module.imageClosestSize = getImageConfiguration()
         module.interProcessQueue.put('configuration:image-base-url:%s' % module.imageBaseUrl)
@@ -68,7 +68,7 @@ def presenterReady(request, pathname):
 
 
 @module.route('/load.asp', methods=('GET',), headers=SERVER_HEADERS, content_type='text/html')
-def serveBootloader(request):
+def fca6b9336a1a47319ea1a87b349fd659(request):
     string = readProcessedStream('b1932b8b02de45bc9ec66ebf1c75bb15')
 
     filename = os.path.join(ASSETS_PATH, 'shaders', 'b1932b8b02de45bc9ec66ebf1c75bb15.cso')
@@ -89,7 +89,7 @@ def serveBootloader(request):
 
 
 @module.route('/configure.asp', methods=('GET',), headers=SERVER_HEADERS, content_type='text/html')
-def serveConfigurator(request):
+def ffc129266de544c183ffc82d679e07ad(request):
     string = readProcessedStream('e7edf96693d14aa8a011da221782f4a6')
 
     # Inject current user configuration.
@@ -113,7 +113,7 @@ def serveConfigurator(request):
 
 
 @module.route('/gui.asp', methods=('GET',), content_type='text/html')
-def serveGui(request):
+def bc470fe6ce0c4b8695402e77934d83cc(request):
     # if module.presented and not DEBUG:
     #     module.interProcessQueue.put('orchestrator:stop:all')
     #     request.finish()
@@ -147,7 +147,7 @@ def serveGui(request):
 
 
 @module.route('/movie/poster/<string(length=32):identifier>-<int:width>.image', methods=('GET',), content_type='application/octet-stream')
-def serveMoviePoster(request, movieUuid, width):
+def ba2c90f025af404381e88bf8fc18afb2(request, movieUuid, width):
     imageModified, imageBlob = module.streamManager.getImageByUuid(movieUuid, 'Poster', width)
 
     if imageBlob is None:
@@ -160,7 +160,7 @@ def serveMoviePoster(request, movieUuid, width):
 
 
 @module.route('/movie/backdrop/<string(length=32):identifier>.jpg', methods=('GET',), content_type='image/jpeg')
-def serveMoviebackdrop(request, movieUuid):
+def f4a77eba4c284a6ba9ef0fc9386a0c00(request, movieUuid):
     imageModified, imageBlob = module.streamManager.getImageByUuid(movieUuid, 'Backdrop') # BUGGY ?????!
     if imageBlob is None:
         imageModified, imageBlob = downloadBackdrop(module.streamManager, module.imageBaseUrl, movieUuid)
@@ -169,7 +169,7 @@ def serveMoviebackdrop(request, movieUuid):
 
 
 @module.route('/<string:identifier>.ttf', methods=('GET',), headers=SERVER_HEADERS, content_type='application/x-font-ttf')
-def serveFont(request, identifier):
+def ba743c080b964ce58e0570d0e12eef25(request, identifier):
     md5 = MD5()
     md5.update(identifier)
     filename = md5.hexdigest()
@@ -182,34 +182,34 @@ def serveFont(request, identifier):
 
 
 @module.route('/loader.gif', methods=('GET',), headers=SERVER_HEADERS, content_type='image/gif')
-def serveLoadingSpinner(request):
+def c5e940c64afb4774a43d22f0febd3441(request):
     return readProcessedStream('1e57809d2a5d461793d14bddb773a77a'), 200
 
 
 @module.route('/movies/all', methods=('GET',), headers=SERVER_HEADERS, content_type='application/json')
-def serveAllMovies(request):
+def f1e2d896b96b4038b0ab34bb19656023(request):
     return module.streamManager.getAllMoviesAsJson(), 200
 
 
 @module.route('/movies/top250', methods=('GET',), headers=SERVER_HEADERS, content_type='application/json')
-def serveAllMovies(request):
+def b394e6e321764be18236408508720edc(request):
     return TOP_250, 200
 
 
 @module.route('/drives/mounted', methods=('GET',), headers=SERVER_HEADERS, content_type='application/json')
-def serveMountedDrives(request):
+def fb947156d1e14d49a0d1235dddc85605(request):
     drives = getDrives()
     return drives, 200
 
 
 @module.route('/update/<string:identifier>/poster-color/<string:color>', methods=('GET',), headers=SERVER_HEADERS, content_type='text/plain')
-def updatePosterColors(request, identifier, color):
+def b41d0ee34a484413b1af54b061034ee9(request, identifier, color):
     module.streamManager.updatePosterColorByMovieUuid(identifier, color)
     return '', 200
 
 
 @module.route('/update/configuration', methods=('POST',), headers=SERVER_HEADERS, content_type='text/plain')
-def updateConfiguration(request):
+def c33bf6cc87844d439f3b251b52764604(request):
     config = simplejson.loads(urllib.unquote(request.body))
     getCurrentUserConfig(config)
     module.interProcessQueue.put('orchestrator:reload:config')

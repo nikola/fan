@@ -133,7 +133,7 @@ def _downscaleImage(blob, width, height):
         time.sleep(0)
 
         encodeExe = os.path.join(ASSETS_PATH, 'tools', 'cwebp.exe')
-        call([encodeExe, '-preset', 'icon', '-sns', '0', '-f', '0', '-m', '0', '-lossless', '-mt', '-noalpha', '-quiet', filenameResized, '-o', filenameRecoded], shell=True)
+        call([encodeExe, '-preset', 'picture', '-hint', 'picture', '-sns', '0', '-f', '0', '-m', '0', '-lossless', '-af', '-noalpha', '-quiet', filenameResized, '-o', filenameRecoded], shell=True)
         time.sleep(0)
         with open(filenameRecoded, 'rb') as fp:
             blobOut = fp.read()

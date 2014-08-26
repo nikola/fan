@@ -44,7 +44,15 @@ ka.lib.stopLicenseTextDisplay = function () {
 
 ka.lib.getLicenseTexts = function () {
     return [
-    (function () {/*
+
+        (function () {/*
+<span>ka-BOOM</span>
+Copyright 2013-2014 Nikola Klaric.
+<br>
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1]
+
+  , (function () {/*
 <span>jQuery</span>
 Copyright 2005, 2014 jQuery Foundation and other contributors.
 <br>
@@ -121,6 +129,11 @@ Unless required by applicable law or agreed to in writing, software distributed 
 
     , (function () {/*
 <span>All movie metadata and artwork is fetched from TMDb - http://themoviedb.org</span>
+*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1]
+
+    , (function () {/*
+<span>ImageMagick</span>
+Copyright  1999-2014 ImageMagick Studio LLC.
 */}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1]
 ];
 }

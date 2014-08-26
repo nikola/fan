@@ -43,9 +43,10 @@ a.datas.append(('trident/msvcm90.dll',                  '../trident/msvcm90.dll'
 a.datas.append(('trident/msvcp90.dll',                  '../trident/msvcp90.dll',                   'DATA'))
 a.datas.append(('trident/msvcr90.dll',                  '../trident//msvcr90.dll',                  'DATA'))
 
-a.datas.append(('tools/convert.exe',  '../tools/convert.exe', 'DATA'))
-a.datas.append(('tools/cwebp.exe',    '../tools/cwebp.exe',   'DATA'))
-a.datas.append(('tools/vcomp100.dll', '../tools/vcomp100.dll','DATA'))
+a.datas.append(('tools/convert.exe',  '../tools/convert.exe',   'DATA'))
+a.datas.append(('tools/LICENSE',      '../tools/LICENSE',       'DATA'))
+a.datas.append(('tools/cwebp.exe',    '../tools/cwebp.exe',     'DATA'))
+a.datas.append(('tools/vcomp100.dll', '../tools/vcomp100.dll',  'DATA'))
 
 pyz = PYZ(
     a.pure, cipher=block_cipher,

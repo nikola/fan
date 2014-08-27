@@ -105,7 +105,7 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
             if command == 'orchestrator:start:scan':
                 appModule.userConfig = getCurrentUserConfig()
 
-                if appModule.userConfig.get('isDemoMode', False): # and not appModule.userConfig.get('hasDemoMovies', False):
+                if appModule.userConfig.get('isDemoMode', False):
                     appModule.userConfig['hasDemoMovies'] = True
                     appModule.userConfig = getCurrentUserConfig(appModule.userConfig)
 

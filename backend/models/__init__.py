@@ -213,7 +213,7 @@ class StreamManager(object):
     def getUnscaledPosterImage(self):
         with self._session() as session:
             try:
-                image = session.query(Image).filter(Image.isScaled == False, Image.imageType == 'Poster').first()
+                image = session.query(Image).filter(Image.isScaled == False, Image.imageType == 'Poster', Image.urlOriginal != None).first()
             except NoResultFound:
                 return None, None
             else:

@@ -20,9 +20,9 @@ ka.lib.executeConfigSelection = function () {
     if (id == 'boom-config-button-exit') {
         ka.state.hotkeyListener.reset();
 
-        ka.state.socketDispatcher.push('loopback:command', 'shutdown');
-
-        $('#content').velocity('fadeOut', 360);
+        $('#content').velocity('fadeOut', {duration: 360, complete: function () {
+            ka.state.socketDispatcher.push('loopback:command', 'shutdown');
+        }});
     } else if (id == 'boom-config-button-change-import') {
         ka.state.hotkeyListener.reset();
 

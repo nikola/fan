@@ -114,12 +114,6 @@ def ffc129266de544c183ffc82d679e07ad(request):
 
 @module.route('/gui.asp', methods=('GET',), content_type='text/html')
 def bc470fe6ce0c4b8695402e77934d83cc(request):
-    # if module.presented and not DEBUG:
-    #     module.interProcessQueue.put('orchestrator:stop:all')
-    #     request.finish()
-    #     request.connection.close()
-    # else:
-    #     module.presented = True
     content = readProcessedStream('c9d25707d3a84c4d80fdb6b0789bdcf6')
 
     filename = os.path.join(ASSETS_PATH, 'shaders', 'c9d25707d3a84c4d80fdb6b0789bdcf6.cso')

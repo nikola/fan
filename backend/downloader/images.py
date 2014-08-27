@@ -81,26 +81,30 @@ def downscalePoster(streamManager, movieUuid, urlOriginal):
         blobOriginal = _downloadChunks(urlOriginal)
         time.sleep(0)
 
-        blobAtWidth200 = _downscaleImage(blobOriginal, 200, 300)
-        time.sleep(0)
-        if blobAtWidth200 is not None:
-            streamManager.saveImageData(movieUuid, 200, blobAtWidth200, True, 'Poster', 'WebP', urlOriginal)
-            time.sleep(0)
+        if len(blobOriginal) < 5000:
+            streamManager.endPosterDownload(movieUuid)
+            return False
         else:
-            logger.error('Could not downscale image to 200x300!')
-
-        blobAtWidth300 = _downscaleImage(blobOriginal, 300, 450)
-        time.sleep(0)
-        if blobAtWidth300 is not None:
-            streamManager.saveImageData(movieUuid, 300, blobAtWidth300, True, 'Poster', 'WebP', urlOriginal)
+            blobAtWidth200 = _downscaleImage(blobOriginal, 200, 300)
             time.sleep(0)
-        else:
-            logger.error('Could not downscale image to 300x450!')
+            if blobAtWidth200 is not None:
+                streamManager.saveImageData(movieUuid, 200, blobAtWidth200, True, 'Poster', 'WebP', urlOriginal)
+                time.sleep(0)
+            else:
+                logger.error('Could not downscale image to 200x300!')
 
-        streamManager.endPosterDownload(movieUuid)
-        time.sleep(0)
+            blobAtWidth300 = _downscaleImage(blobOriginal, 300, 450)
+            time.sleep(0)
+            if blobAtWidth300 is not None:
+                streamManager.saveImageData(movieUuid, 300, blobAtWidth300, True, 'Poster', 'WebP', urlOriginal)
+                time.sleep(0)
+            else:
+                logger.error('Could not downscale image to 300x450!')
 
-        return True
+            streamManager.endPosterDownload(movieUuid)
+            time.sleep(0)
+
+            return True
     else:
         return False
 
@@ -135,15 +139,21 @@ def _downscaleImage(blob, width, height):
         encodeExe = os.path.join(ASSETS_PATH, 'tools', 'cwebp.exe')
         call([encodeExe, '-preset', 'picture', '-hint', 'picture', '-sns', '0', '-f', '0', '-m', '0', '-lossless', '-af', '-noalpha', '-quiet', filenameResized, '-o', filenameRecoded], shell=True)
         time.sleep(0)
-        with open(filenameRecoded, 'rb') as fp:
-            blobOut = fp.read()
+        try:
+            with open(filenameRecoded, 'rb') as fp:
+                blobOut = fp.read()
+        except IOError:
+            logger.error('Could not convert image.')
         time.sleep(0)
     finally:
-        os.remove(filenameRaw)
-        time.sleep(0)
-        os.remove(filenameResized)
-        time.sleep(0)
-        os.remove(filenameRecoded)
-        time.sleep(0)
+        try:
+            os.remove(filenameRaw)
+            time.sleep(0)
+            os.remove(filenameResized)
+            time.sleep(0)
+            os.remove(filenameRecoded)
+            time.sleep(0)
+        except WindowsError:
+            pass
 
     return blobOut

@@ -212,11 +212,7 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
         searchTitlePrimary, searchTitleSecondary = titleSecondary, titlePrimary
         searchYearPrimary, searchYearSecondary = yearSecondary, yearPrimary
 
-    # searchTitlePrimary = searchTitlePrimary.encode('utf-8')
-    # searchTitleSecondary = searchTitleSecondary.encode('utf-8')
-
     record = None
-    # identified = False
 
     try:
         logger.info('Trying to identify "%s" at themoviedb.org ...' % searchTitlePrimary)
@@ -287,62 +283,63 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
             }
             response = makeThrottledGetRequest(url, params).json()
 
-            logger.info('Movie identified at themoviedb.org as "%s" with ID: %d.' % (response['original_title'], movieId))
+            if response.get('poster_path', None) is not None:
+                logger.info('Movie identified at themoviedb.org as "%s" with ID: %d.' % (response['original_title'], movieId))
 
-            overview = response.get('overview', None)
-            if overview is None:
-                logger.info('Movie has no overview in locale "%s", falling back to English ...' % language)
-                params['language'] = 'en'
-                response = makeThrottledGetRequest(url, params).json()
+                overview = response.get('overview', None)
+                if overview is None:
+                    logger.info('Movie has no overview in locale "%s", falling back to English ...' % language)
+                    params['language'] = 'en'
+                    response = makeThrottledGetRequest(url, params).json()
 
-            # Fetch rating from IMDB instead of TheMovieDB.
-            rating = None
-            idImdb = response['imdb_id']
-            if idImdb is not None:
-                url = 'http://www.imdb.com/title/%s/' % idImdb
-                html = makeUnthrottledGetRequest(url).text
-                ratingSearch = re.search('<span itemprop="ratingValue">\s*([^<]+)', html)
-                if ratingSearch is not None:
-                    rating = float(ratingSearch.group(1)) * 10
+                # Fetch rating from IMDB instead of TheMovieDB.
+                rating = None
+                idImdb = response['imdb_id']
+                if idImdb is not None:
+                    url = 'http://www.imdb.com/title/%s/' % idImdb
+                    html = makeUnthrottledGetRequest(url).text
+                    ratingSearch = re.search('<span itemprop="ratingValue">\s*([^<]+)', html)
+                    if ratingSearch is not None:
+                        rating = float(ratingSearch.group(1)) * 10
 
-            if TRAILERS_HD.has_key(movieId):
-                idYoutubeTrailer = TRAILERS_HD[movieId]
-            elif response['trailers'].has_key('youtube') and len(response['trailers']['youtube']):
-                idYoutubeTrailer = response['trailers']['youtube'][0].get('source')
-            else:
-                idYoutubeTrailer = None
+                if TRAILERS_HD.has_key(movieId):
+                    idYoutubeTrailer = TRAILERS_HD[movieId]
+                elif response['trailers'].has_key('youtube') and len(response['trailers']['youtube']):
+                    idYoutubeTrailer = response['trailers']['youtube'][0].get('source')
+                else:
+                    idYoutubeTrailer = None
 
-            belongsToCollection = response['belongs_to_collection']
-            if belongsToCollection is not None:
-                collectionId, collectionName = belongsToCollection['id'], belongsToCollection['name'].replace(' Collection', '')
-            else:
-                collectionId, collectionName = None, None
+                belongsToCollection = response['belongs_to_collection']
+                if belongsToCollection is not None:
+                    collectionId, collectionName = belongsToCollection['id'], belongsToCollection['name'].replace(' Collection', '')
+                else:
+                    collectionId, collectionName = None, None
 
-            record = dict(
-                idTheMovieDb  = movieId,
-                idImdb        = idImdb,
-                idYoutubeTrailer = idYoutubeTrailer,
+                record = dict(
+                    idTheMovieDb  = movieId,
+                    idImdb        = idImdb,
+                    idYoutubeTrailer = idYoutubeTrailer,
 
-                titleOriginal   = response['original_title'],
-                releaseYear     = datetime.datetime.strptime(response['release_date'], '%Y-%m-%d').year,
-                runtime         = response['runtime'] or None,
+                    titleOriginal   = response['original_title'],
+                    releaseYear     = datetime.datetime.strptime(response['release_date'], '%Y-%m-%d').year,
+                    runtime         = response['runtime'] or None,
 
-                urlBackdrop     = response['backdrop_path'],
-                urlPoster       = response['poster_path'],
+                    urlBackdrop     = response['backdrop_path'],
+                    urlPoster       = response['poster_path'],
 
-                homepage        = response['homepage'],
-                budget          = response['budget'] or None,
-                revenue         = response['revenue'] or None,
+                    homepage        = response['homepage'],
+                    budget          = response['budget'] or None,
+                    revenue         = response['revenue'] or None,
 
-                rating          = rating,
+                    rating          = rating,
 
-                locale          = language,
-                title           = response['title'] or response['original_title'],
-                storyline       = overview,
+                    locale          = language,
+                    title           = response['title'] or response['original_title'],
+                    storyline       = overview,
 
-                compilationId   = collectionId,
-                compilationName = collectionName,
-            )
+                    compilationId   = collectionId,
+                    compilationName = collectionName,
+                )
     except JSONDecodeError:
         logger.error('Error while querying themoviedb.org for "%s" or "%s".', searchTitlePrimary, searchTitleSecondary)
 

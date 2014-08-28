@@ -236,10 +236,7 @@ document.oncontextmenu = document.onmousedown = function (event) { event.prevent
 
 
 $(document).ready(function () {
-    /* ... */
     registerListener();
-
-    /* ... */
     registerHotkeys();
 
     /* Preload spinner. */

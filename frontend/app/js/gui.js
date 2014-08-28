@@ -89,10 +89,8 @@ function listen() {
 
 
 function ready() {
-    /* ... */
     registerHotkeys();
 
-    /* ... */
     ka.lib.setupCollator();
 
     ka.lib.localizeButtons();
@@ -159,7 +157,6 @@ window.onerror = function (message, filename, lineno, colno, error) {
 
 $(document).ready(function () {
     ka.state.maxConfigButton = $('#boom-config-button-group .boom-button').length;
-    // ka.state.maxDetailButton = $('#boom-detail-button-group .boom-button:visible').length;
     ka.state.canvasContext = $('#boom-image-color-canvas').get(0).getContext('2d');
 
     $.get(
@@ -172,6 +169,6 @@ $(document).ready(function () {
     );
 
     /* Notify backend that UI is ready. */
-    var v = 'http://localhost:65432/verify';
+    var v = 'http://localhost:59741/verify';
     $.ajax({url: ᴠ, type: 'PATCH', success: ready});
 });

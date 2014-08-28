@@ -370,30 +370,6 @@ ka.lib.getMovieObjectFromCoord = function (x, y) {
 };
 
 
-/*
-ka.lib.updateMovieOverlayFromFocus = function (element) {
-    var movieObj = ka.lib.getVariantFromGridFocus(),
-        source, additionalHtml;
-
-    if ($.isArray(movieObj)) {
-        source = movieObj[0];
-
-        for (var movie, years = [], index = 0; movie = movieObj[index]; index++) {
-            years.push(movie.releaseYear);
-        }
-        additionalHtml = Math.min.apply(Math, years) + ' - ' + Math.max.apply(Math, years);
-    } else {
-        source = movieObj;
-
-        additionalHtml = movieObj.releaseYear + '<br>' + movieObj.runtime + ' minutes';
-    }
-
-    element.find('.boom-movie-grid-info-overlay-title').html(ka.lib.getLocalizedTitleByUuid(source.uuid, true));
-    element.find('.boom-movie-grid-info-overlay-text-additional').html(additionalHtml);
-};
-*/
-
-
 ka.lib.moveFocusFirstItem = function () {
     if (ka.state.gridFocusX > 0) {
         var distance = 260 * ka.state.gridFocusX;
@@ -547,9 +523,9 @@ ka.lib.moveFocusRight = function () {
 
 
 ka.lib.toggleGridFocus = function () {
-    var element = $('#boom-movie-grid-item-' + ka.lib.getMovieObjectFromCoord(ka.state.gridFocusX, ka.lib.getGridFocusAbsoluteY()).uuid + ' .boom-movie-grid-info-overlay');
-
-    var movieObj = ka.lib.getVariantFromGridFocus(),
+    var uuid = ka.lib.getMovieObjectFromCoord(ka.state.gridFocusX, ka.lib.getGridFocusAbsoluteY()).uuid,
+        element = $('#boom-movie-grid-item-' + uuid + ' .boom-movie-grid-info-overlay'),
+        movieObj = ka.lib.getVariantFromGridFocus(),
         source, additionalHtml;
 
     if ($.isArray(movieObj)) {
@@ -641,9 +617,7 @@ ka.lib.selectCompilationFocus = function () {
     ka.lib.updateDetailPage(movieObj, function () {
         ka.lib.updateDetailButtonSelection();
 
-        $('#boom-compilation-container, #boom-compilation-focus, #boom-movie-detail').velocity({translateZ: 0, left: '-=1920'}, {duration: 720, complete: function () {
-            /* $('#boom-movie-grid-container').css('display', 'none'); */
-        }});
+        $('#boom-compilation-container, #boom-compilation-focus, #boom-movie-detail').velocity({translateZ: 0, left: '-=1920'}, 720);
     });
 };
 
@@ -771,8 +745,8 @@ ka.lib.zoomInGridPage = function () {
     for (var index = 0; index < posterArray.length; index++) {
         if (posterArray[index] != null) {
             posterArray[index]
-                .velocity({scaleX: 1, scaleY: 1, scaleZ: 1, opacity: 1}, {duration: 360, progress: function(elements, percentComplete, timeRemaining, timeStart) {
-                    elements[0].style.webkitFilter = 'blur(' + Math.round(4 - 4 * percentComplete) + 'px)';
+                .velocity({scaleX: 1, scaleY: 1, scaleZ: 1, opacity: 1}, {duration: 360, progress: function(elements, percentComplete) {
+                    elements[0].style.webkitFilter = 'blur(' + Math.round(4 - 4 * percentComplete) + 'px)'; /* TODO: optimize! */
                 }, complete: function (elements) {
                     elements[0].style.webkitFilter = null;
                 }});
@@ -795,7 +769,8 @@ ka.lib.zoomInGridPage = function () {
 ka.lib.zoomOutGridPage = function (callback) {
     $('#boom-poster-focus').velocity('fadeOut', 180);
 
-    var posterArray = ka.lib.getCurrentScreenPosters(ka.settings.gridMaxColumns),
+    var gridMaxColumns = ka.settings.gridMaxColumns,
+        posterArray = ka.lib.getCurrentScreenPosters(gridMaxColumns),
         relativePosX = [100, 83, 66, 50, 34, 17, 0],
         relativePosY = [100, 50, 0];
 
@@ -804,10 +779,10 @@ ka.lib.zoomOutGridPage = function (callback) {
             posterArray[index]
                 .removeClass('undesaturate')
                 .css({
-                    '-webkit-transform-origin': relativePosX[index % ka.settings.gridMaxColumns] + '% ' + relativePosY[Math.floor(index / ka.settings.gridMaxColumns)] + '%'
+                    '-webkit-transform-origin': relativePosX[index % gridMaxColumns] + '% ' + relativePosY[Math.floor(index / gridMaxColumns)] + '%'
                   , '-webkit-transform': 'scale3d(1, 1, 1)'
                 })
-                .velocity({scaleX: 0.75, scaleY: 0.75, scaleZ: 1, opacity: 0.15}, {duration: 360, progress: function(elements, percentComplete, timeRemaining, timeStart) {
+                .velocity({scaleX: 0.75, scaleY: 0.75, scaleZ: 1, opacity: 0.15}, {duration: 360, progress: function(elements, percentComplete) {
                     elements[0].style.webkitFilter = 'blur(' + Math.round(4 * percentComplete) + 'px)';
                 }});
         }
@@ -853,6 +828,7 @@ ka.lib.getCurrentScreenPosters = function (maxColumn) {
         start = ka.state.gridPage * ka.settings.gridMaxRows, end = (ka.state.gridPage + 1) * ka.settings.gridMaxRows,
         counter = ka.state.gridPage * ka.settings.gridMaxRows * ka.settings.gridMaxColumns;
 
+    // TODO: OPTIMIZE!!!
     for (var row = start; row < end; row++) {
         if (row < ka.state.gridLookupMatrix.length) {
             for (var i = 0; i < maxColumn; i++) {
@@ -862,14 +838,6 @@ ka.lib.getCurrentScreenPosters = function (maxColumn) {
             for (; i < ka.settings.gridMaxColumns; i++) {
                 counter++;
             }
-            // TODO: OPTIMIZE!!!
-                /* item = ka.lib.getMovieObjectFromCoord(i, row);
-                if (item) {
-                    elements.push($('#boom-poster-' + item.uuid));
-                } else {
-                    elements.push(null);
-                } */
-
         }
     }
 
@@ -940,10 +908,7 @@ ka.lib.scrollBackToGrid = function () {
     if ($('#boom-compilation-grid .boom-movie-grid-item').size()) {
         ka.state.currentPageMode = 'grid-compilation';
 
-        /* $('#boom-movie-grid-container').css('display', 'block'); */
-        $('#boom-compilation-container, #boom-compilation-focus, #boom-movie-detail').velocity({translateZ: 0, left: '+=1920'}, {duration: 720, complete: function () {
-            /* $('#boom-movie-grid-container').velocity('fadeIn', 360); */
-        }});
+        $('#boom-compilation-container, #boom-compilation-focus, #boom-movie-detail').velocity({translateZ: 0, left: '+=1920'}, 720);
     } else {
         ka.state.currentPageMode = 'grid';
 

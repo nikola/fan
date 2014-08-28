@@ -28,7 +28,7 @@ CEF_CMD_LINE_SETTINGS = {
     'disable-volume-adjust-sound':          '',
     'disable-webaudio':                     '',
     'dns-prefetch-disable':                 '',
-    'enable-benchmarking':                  '',
+    # 'enable-benchmarking':                  '',
     # 'no-displaying-insecure-content':       '',
     'no-pings':                             '',
     'no-referrers':                         '',
@@ -38,6 +38,7 @@ CEF_CMD_LINE_SETTINGS = {
     # 'disable-accelerated-compositing':      '',
     # 'enable-software-compositing':          '',
     # 'disable-gpu-compositing':              '',
+    # 'disable-gpu-vsync': '',
 }
 
 CEF_APP_SETTINGS = {

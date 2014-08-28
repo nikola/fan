@@ -33,13 +33,21 @@ CEF_CMD_LINE_SETTINGS = {
     'no-pings':                             '',
     'no-referrers':                         '',
     'noerrdialogs':                         '',
+
+    # 'disable-threaded-compositing':         '',
+    # 'disable-accelerated-compositing':      '',
+    # 'enable-software-compositing':          '',
+    # 'disable-gpu-compositing':              '',
 }
 
 CEF_APP_SETTINGS = {
-    'multi_threaded_message_loop': False,
-    'ignore_certificate_errors':   True,
-    'log_file':                    '',
-    'locale':                      'blink',
+    'multi_threaded_message_loop':  False,
+    'ignore_certificate_errors':    True,
+    'log_file':                     '',
+    'locale':                       'blink',
+    # 'auto_zooming':                 '',
+    # 'downloads_enabled':            False,
+    # 'remote_debugging_port ':       -1,
 }
 
 CEF_BROWSER_SETTINGS = dict(
@@ -54,8 +62,11 @@ CEF_BROWSER_SETTINGS = dict(
     plugins_disabled = True,
     text_area_resize_disabled = True,
     # application_cache_disabled = True,
-    # databases_disabled = True,
-    # local_storage_disabled = True,
+    databases_disabled = True,
+    local_storage_disabled = True,
     tab_to_links_disabled = True,
     # pack_loading_disabled = True,
+
+    # accelerated_compositing_disabled = True,
+    # webgl_disabled = True,
 )

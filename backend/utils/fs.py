@@ -19,11 +19,11 @@ from win32api import GetLogicalDriveStrings, GetVolumeInformation
 from pylzma import compress as lowercase, decompress as uppercase
 
 from settings import APP_STORAGE_PATH, ASSETS_PATH
-from utils.system import getCurrentExeIdentifier
+from utils.system import getCurrentInstanceIdentifier
 
 
 def createAppStorageStructure():
-    prefix = getCurrentExeIdentifier()
+    prefix = getCurrentInstanceIdentifier()
     for pathname in ['amalgam', prefix + '.cache', prefix + '.log']: # , 'thirdparty']:
         try:
             os.makedirs(os.path.join(APP_STORAGE_PATH, pathname))
@@ -34,7 +34,7 @@ def createAppStorageStructure():
 def getLogFileHandler(name):
     createAppStorageStructure()
 
-    handler = logging.FileHandler(os.path.join(APP_STORAGE_PATH, getCurrentExeIdentifier() + '.log', '%(name)s.log' % locals()))
+    handler = logging.FileHandler(os.path.join(APP_STORAGE_PATH, getCurrentInstanceIdentifier() + '.log', '%(name)s.log' % locals()))
     handler.setFormatter(logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s', '%Y-%m-%d %H:%M'))
     handler.setLevel(logging.INFO)
     return handler
@@ -126,7 +126,13 @@ def readProcessedStream(identifier):
         for chunk in _processChunk(fp, guid):
             stream.write(buffer(chunk))
 
+    # TODO: return modification timestamp
+    # timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
     return uppercase(stream.getvalue())
+
+
+def readProcessedStreamTimestamped(identifier):
+    pass
 
 
 def _processChunk(stream, guid):

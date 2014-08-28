@@ -11,10 +11,14 @@ import ctypes
 import multiprocessing
 import multiprocessing.forking
 from hashlib import md5 as MD5
+from array import array
 
 import win32api
 
-from settings import BASE_DIR, EXE_PATH
+from settings import BASE_DIR, EXE_PATH, ASSETS_PATH
+
+
+TRIDENT_ID = None
 
 
 VERSION_TO_TOKEN = {
@@ -81,9 +85,36 @@ def isDesktopCompositionEnabled():
     return retcode == 0 and b.value
 
 
-def getCurrentExeIdentifier():
-    md5 = MD5()
-    md5.update(EXE_PATH)
-    identifier = md5.hexdigest()[:8]
+def getCurrentInstanceIdentifier():
+    global TRIDENT_ID
 
-    return identifier
+    if TRIDENT_ID is None:
+        version = getProductVersion(os.path.join(ASSETS_PATH, 'trident', 'libcef.dll'))
+
+        md5 = MD5()
+        md5.update(os.path.join(EXE_PATH, version))
+        TRIDENT_ID = md5.hexdigest()[:16]
+
+    return TRIDENT_ID
+
+
+def getProductVersion(pathname):
+    if os.path.exists(pathname) and os.path.isfile(pathname):
+        filename = unicode(pathname)
+
+        size = ctypes.windll.version.GetFileVersionInfoSizeW(filename, None)
+        if size:
+            res = ctypes.create_string_buffer(size)
+            ctypes.windll.version.GetFileVersionInfoW(filename, None, size, res)
+            r = ctypes.c_uint()
+            l = ctypes.c_uint()
+            ctypes.windll.version.VerQueryValueA(res, '\\VarFileInfo\\Translation', ctypes.byref(r), ctypes.byref(l))
+            if l.value:
+                ctypes.windll.version.VerQueryValueA(
+                    res,
+                    '\\StringFileInfo\\%04x%04x\\FileVersion' % tuple(array('H', ctypes.string_at(r.value, l.value))[:2].tolist()),
+                    ctypes.byref(r), ctypes.byref(l),
+                )
+                return '.'.join([num.rstrip('\x00') for num in ctypes.string_at(r.value, l.value).split('.')])
+
+    raise ValueError

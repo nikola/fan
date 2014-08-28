@@ -76,6 +76,8 @@ ka.lib.closeTrailerPlayer = function () {
 
     $('#boom-movie-trailer').css('display', 'none');
 
+    $('#boom-movie-grid-container').css('display', 'block');
+
     $('#boom-movie-detail').velocity('fadeIn', 360);
 
     window.focus();

@@ -68,6 +68,7 @@ function listen() {
     });
 
     ka.state.socketDispatcher.bind('resume:detail:screen', function () {
+        $('#boom-movie-grid-container').css('display', 'block');
         $('#boom-movie-detail').velocity('fadeIn', {duration: 360, complete: function () {
             ka.state.currentPageMode = 'detail';
         }});

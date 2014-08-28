@@ -114,6 +114,7 @@ ka.lib.handleKeypressSelect = function () {
         ka.lib.selectCompilationFocus();
     } else if (ka.state.currentPageMode == 'detail') {
         if (ka.state.currentDetailButton == 'play') {
+            $('#boom-movie-grid-container').css('display', 'none');
             $('#boom-movie-detail').velocity('fadeOut', {duration: 360, complete: function () {
                 ka.state.currentPageMode = 'play:movie';
 
@@ -126,6 +127,7 @@ ka.lib.handleKeypressSelect = function () {
                 }
             }});
         } else if (ka.state.currentDetailButton == 'trailer') {
+            $('#boom-movie-grid-container').css('display', 'none');
             $('#boom-movie-detail').velocity('fadeOut', {duration: 360, complete: function () {
                 ka.state.currentPageMode = 'play:trailer';
 

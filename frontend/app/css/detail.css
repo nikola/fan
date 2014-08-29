@@ -15,6 +15,7 @@
     background-size: cover;
     background-position-x: 160px;
     background-repeat: no-repeat;
+    background-color: black;
 
     -webkit-transform: translate3d(0, 0, 0);
     -webkit-backface-visibility: hidden;

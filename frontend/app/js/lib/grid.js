@@ -542,7 +542,7 @@ ka.lib.toggleGridFocus = function () {
     }
 
     element
-        .find('.boom-movie-grid-info-overlay-title').html(ka.lib.getLocalizedTitleByUuid(source, true)).end()
+        .find('.boom-movie-grid-info-overlay-title').html(ka.lib.getLocalizedTitle(source, true)).end()
         .find('.boom-movie-grid-info-overlay-text-additional').html(additionalHtml).end()
         .toggleClass('active');
 };
@@ -556,7 +556,7 @@ ka.lib.toggleCompilationFocus = function () {
         .find('.boom-movie-grid-info-overlay-title')
             .css('backgroundColor', '#' + movieObj.primaryPosterColor)
             .html(
-                ka.lib.getLocalizedTitleByUuid(movieObj, true)
+                ka.lib.getLocalizedTitle(movieObj, true)
             ).end()
         .find('.boom-movie-grid-info-overlay-text-additional').html(
                 movieObj.releaseYear + '<br>' + movieObj.runtime + ' minutes'

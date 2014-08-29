@@ -13,7 +13,7 @@ ka.lib.localizeButtons = function () {
 };
 
 
-ka.lib.getLocalizedTitleByUuid = function (movieObj, insertHardBreak) {
+ka.lib.getLocalizedTitle = function (movieObj, insertHardBreak) {
     var title;
 
     if (movieObj.isCompiled && $.isArray(ka.lib.getVariantFromGridFocus()) && ka.state.currentPageMode != 'grid-compilation') {

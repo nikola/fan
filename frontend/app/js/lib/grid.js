@@ -276,7 +276,7 @@ ka.lib.updateMovieGridOnChange = function () {
 
 
 ka.lib.updateMovieGridOnAdd = function () {
-    if (ka.state.currentPageMode == 'detail' || ka.state.currentPageMode == 'play:movie' || ka.state.currentPageMode == 'play:trailer') {
+    if (!ka.state.currentCompilationPosterCount && (ka.state.currentPageMode == 'detail' || ka.state.currentPageMode == 'play:movie' || ka.state.currentPageMode == 'play:trailer')) {
         ka.lib.updateMovieGridRefocused(
             ka.lib.unoccludeMovieGrid
         );
@@ -290,7 +290,7 @@ ka.lib.updateMovieGridOnAdd = function () {
                 $('#boom-poster-focus').velocity({translateZ: 0, left: (currentLeftPos - 1920) + 'px'}, 0);
             }
         /* }, 15); */
-    } else {
+    } else if (ka.state.currentPageMode == 'config') {
         ka.lib.recalcMovieGrid();
 
         ka.lib.updateMovieGridOnChange();

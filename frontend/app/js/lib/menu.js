@@ -59,16 +59,10 @@ ka.lib.executeConfigSelection = function () {
         }
 
         if (ka.state.gridSortCriterion != lastCriterion || ka.state.gridSortOrder != lastOrder) {
-            var uuid = ka.lib.getMovieFromGridFocus().uuid;
-            ka.lib.recalcMovieGrid();
+            ka.lib.updateMovieGridRefocused(function () {
+                ka.state.desaturationImageCache = [];
+            });
 
-            ka.lib.recallFocusByUuid(uuid);
-
-            ka.state.desaturationImageCache = [];
-
-            ka.lib.updateMovieGrid();
-
-            ka.lib.refocusGrid();
             $('#boom-poster-focus').velocity({translateZ: 0, left: '+=780'}, 0);
         }
     }

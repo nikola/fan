@@ -192,7 +192,7 @@ ka.lib.recalcMovieGrid = function () {
 };
 
 
-ka.lib.updateMovieGrid = function () {
+ka.lib.updateMovieGridOnChange = function () {
     var currentCellIndex = 0,
         renderedCells = $('.boom-movie-grid-item'), detachedCell,
         renderedKeyContainers = $('.boom-movie-grid-key'),
@@ -275,32 +275,25 @@ ka.lib.updateMovieGrid = function () {
 };
 
 
-ka.lib.updateMovieGridAfterAddition = function () {
+ka.lib.updateMovieGridOnAdd = function () {
     if (ka.state.currentPageMode == 'detail' || ka.state.currentPageMode == 'play:movie' || ka.state.currentPageMode == 'play:trailer') {
-        var uuid = ka.lib.getMovieFromGridFocus().uuid;
+        ka.lib.updateMovieGridRefocused(
+            ka.lib.unoccludeMovieGrid
+        );
 
-        ka.lib.recalcMovieGrid();
-
-        ka.lib.recallFocusByUuid(uuid);
-
-        ka.lib.unoccludeMovieGrid();
-
-        ka.lib.updateMovieGrid();
-
-        ka.lib.refocusGrid();
-
-        setTimeout(function () {
+        /* setTimeout(function () { */
             ka.lib.occludeMovieGrid();
 
             var currentLeftPos = parseInt($('#boom-poster-focus').css('left'));
             if (currentLeftPos > 0 && currentLeftPos < 1920) {
-                $('#boom-poster-focus').css('left', (currentLeftPos - 1920) + 'px');
+                /* $('#boom-poster-focus').css('left', (currentLeftPos - 1920) + 'px'); */
+                $('#boom-poster-focus').velocity({translateZ: 0, left: (currentLeftPos - 1920) + 'px'}, 0);
             }
-        }, 15);
+        /* }, 15); */
     } else {
         ka.lib.recalcMovieGrid();
 
-        ka.lib.updateMovieGrid();
+        ka.lib.updateMovieGridOnChange();
     }
 };
 
@@ -310,7 +303,22 @@ ka.lib.updateMovieGridOnReturn = function () {
 
     ka.lib.recalcMovieGrid();
 
-    ka.lib.updateMovieGrid();
+    ka.lib.updateMovieGridOnChange();
+};
+
+
+ka.lib.updateMovieGridRefocused = function (intermediateFunc) {
+    var uuid = ka.lib.getMovieFromGridFocus().uuid;
+
+    ka.lib.recalcMovieGrid();
+
+    ka.lib.recallFocusByUuid(uuid);
+
+    intermediateFunc();
+
+    ka.lib.updateMovieGridOnChange();
+
+    ka.lib.refocusGrid();
 };
 
 

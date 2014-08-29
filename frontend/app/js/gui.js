@@ -60,7 +60,7 @@ function listen() {
     ka.state.socketDispatcher.bind('receive:movie:item', function (movie) {
         ka.lib.addMovie(movie);
 
-        ka.lib.updateMovieGridAfterAddition();
+        ka.lib.updateMovieGridOnAdd();
     });
 
     ka.state.socketDispatcher.bind('receive:command:token', function (command) {
@@ -111,7 +111,7 @@ function ready() {
                     ka.lib.addMovie(list[index]);
                 }
                 ka.lib.recalcMovieGrid();
-                ka.lib.updateMovieGrid();
+                ka.lib.updateMovieGridOnChange();
             } else {
                 window.top.postMessage('', location.protocol + '//' + location.host);
             }

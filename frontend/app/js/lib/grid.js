@@ -290,7 +290,7 @@ ka.lib.updateMovieGridAfterAddition = function () {
         ka.lib.refocusGrid();
 
         setTimeout(function () {
-            ka.lib.reduceScrollableGrid();
+            ka.lib.occludeMovieGrid();
 
             var currentLeftPos = parseInt($('#boom-poster-focus').css('left'));
             if (currentLeftPos > 0 && currentLeftPos < 1920) {
@@ -565,10 +565,19 @@ ka.lib.toggleCompilationFocus = function () {
 
 
 ka.lib.selectGridFocus = function () {
+    ka.lib.occludeMovieGrid();
+
     var obj = ka.lib.getVariantFromGridFocus();
 
     if ($.isArray(obj)) {
-        ka.lib.enterCompilationMode();
+        ka.state.currentPageMode = 'limbo';
+
+        ka.lib.populateCompilationGrid();
+
+        $('.boom-movie-grid-info-overlay').removeClass('active');
+        ka.lib.zoomOutGridPage(function () {
+            ka.state.currentPageMode = 'grid-compilation';
+        });
     } else {
         ka.state.currentPageMode = 'detail';
         ka.state.currentGridMovieUuid = obj.uuid;
@@ -584,7 +593,6 @@ ka.lib.selectGridFocus = function () {
         ka.lib.updateDetailPage(obj, function () {
             ka.lib.updateDetailButtonSelection();
 
-            ka.lib.reduceScrollableGrid();
             $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({translateZ: 0, left: '-=1920'}, 720);
         });
     }
@@ -611,25 +619,6 @@ ka.lib.selectCompilationFocus = function () {
 
         $('#boom-compilation-container, #boom-compilation-focus, #boom-movie-detail').velocity({translateZ: 0, left: '-=1920'}, 720);
     });
-};
-
-
-ka.lib.enterCompilationMode = function () {
-    ka.state.currentPageMode = 'limbo';
-
-    ka.lib.populateCompilationGrid();
-
-    $('.boom-movie-grid-info-overlay').removeClass('active');
-    ka.lib.zoomOutGridPage(function () {
-        ka.state.currentPageMode = 'grid-compilation';
-    });
-};
-
-
-ka.lib.leaveCompilationMode = function () {
-    ka.state.currentPageMode = 'grid';
-
-    ka.lib.zoomInGridPage();
 };
 
 
@@ -678,7 +667,7 @@ ka.lib.repositionCompilationFocus = function () {
 };
 
 
-ka.lib.reduceScrollableGrid = function () {
+ka.lib.occludeMovieGrid = function () {
     if (ka.state.gridPage > 0 || ka.state.gridPage + 1 < ka.state.gridTotalPages) {
         var items = $('.boom-movie-grid-item'), keys = $('.boom-movie-grid-key'), buffer = $();
 
@@ -729,7 +718,7 @@ ka.lib.populateCompilationGrid = function () {
 };
 
 
-ka.lib.zoomInGridPage = function () {
+ka.lib.zoomInGridPage = function (callback) {
     $('#boom-poster-focus').velocity('fadeIn', 360);
 
     var posterArray = ka.lib.getCurrentScreenPosters(ka.settings.gridMaxColumns);
@@ -737,11 +726,15 @@ ka.lib.zoomInGridPage = function () {
     for (var index = 0; index < posterArray.length; index++) {
         if (posterArray[index] != null) {
             posterArray[index]
-                .velocity({scaleX: 1, scaleY: 1, scaleZ: 1, opacity: 1}, {duration: 360, progress: function(elements, percentComplete) {
-                    elements[0].style.webkitFilter = 'blur(' + Math.round(4 - 4 * percentComplete) + 'px)'; /* TODO: optimize! */
-                }, complete: function (elements) {
-                    elements[0].style.webkitFilter = null;
-                }});
+                .velocity({scaleX: 1, scaleY: 1, scaleZ: 1, opacity: 1}, {
+                    duration: 360
+                  , progress: function(elements, percentComplete) {
+                        elements[0].style.webkitFilter = 'blur(' + Math.round(4 - 4 * percentComplete) + 'px)'; /* TODO: optimize! */
+                    }
+                  , complete: function (elements) {
+                        elements[0].style.webkitFilter = null;
+                    }
+                });
         }
     }
 
@@ -754,7 +747,7 @@ ka.lib.zoomInGridPage = function () {
         $('#boom-compilation-grid').empty();
         ka.state.currentCompilationPosterCount = null;
 
-        ka.lib.expandScrollableGrid();
+        callback();
     }});
 };
 
@@ -791,10 +784,6 @@ ka.lib.zoomOutGridPage = function (callback) {
     } else {
         ka.state.currentCompilationColumnSize = 5;
     }
-
-    ka.lib.reduceScrollableGrid();
-
-    /* $('#boom-movie-grid-container').velocity({translateZ: '-=100', translateX: 0, translateY: 0}, 360); */
 
     $('.boom-movie-grid-key').slice(ka.state.gridPage * ka.settings.gridMaxRows, (ka.state.gridPage + 1) * ka.settings.gridMaxRows)
         .velocity({opacity: 0}, 180);

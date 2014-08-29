@@ -13,15 +13,15 @@ ka.lib.localizeButtons = function () {
 };
 
 
-ka.lib.getLocalizedTitleByUuid = function (uuid, insertHardBreak) {
-    var movie = ka.data.byUuid[uuid], title;
+ka.lib.getLocalizedTitleByUuid = function (movieObj, insertHardBreak) {
+    var title;
 
-    if (movie.isCompiled && $.isArray(ka.lib.getVariantFromGridFocus()) && ka.state.currentPageMode != 'grid-compilation') {
-        title = movie.compilation + ' Collection';
+    if (movieObj.isCompiled && $.isArray(ka.lib.getVariantFromGridFocus()) && ka.state.currentPageMode != 'grid-compilation') {
+        title = movieObj.compilation + ' Collection';
     } else if (ka.state.gridSortDisplayLanguage == 'localized') {
-        title = movie.titleLocalized;
+        title = movieObj.titleLocalized;
     } else {
-        title = movie.titleOriginal;
+        title = movieObj.titleOriginal;
     }
 
     if (insertHardBreak && title.indexOf(':') > 9) {

@@ -542,7 +542,7 @@ ka.lib.toggleGridFocus = function () {
     }
 
     element
-        .find('.boom-movie-grid-info-overlay-title').html(ka.lib.getLocalizedTitleByUuid(source.uuid, true)).end()
+        .find('.boom-movie-grid-info-overlay-title').html(ka.lib.getLocalizedTitleByUuid(source, true)).end()
         .find('.boom-movie-grid-info-overlay-text-additional').html(additionalHtml).end()
         .toggleClass('active');
 };
@@ -556,7 +556,7 @@ ka.lib.toggleCompilationFocus = function () {
         .find('.boom-movie-grid-info-overlay-title')
             .css('backgroundColor', '#' + movieObj.primaryPosterColor)
             .html(
-                ka.lib.getLocalizedTitleByUuid(movieObj.uuid, true)
+                ka.lib.getLocalizedTitleByUuid(movieObj, true)
             ).end()
         .find('.boom-movie-grid-info-overlay-text-additional').html(
                 movieObj.releaseYear + '<br>' + movieObj.runtime + ' minutes'
@@ -603,7 +603,6 @@ ka.lib.selectGridFocus = function () {
 ka.lib.selectCompilationFocus = function () {
     var movieObj = ka.lib.getVariantFromGridFocus()[ka.state.currentCompilationFocusIndex];
 
-    ka.state.currentPageMode = 'detail';
     ka.state.currentGridMovieUuid = movieObj.uuid;
 
     if (!movieObj.streamless) {
@@ -615,6 +614,8 @@ ka.lib.selectCompilationFocus = function () {
     }
 
     ka.lib.updateDetailPage(movieObj, function () {
+        ka.state.currentPageMode = 'detail';
+
         ka.lib.updateDetailButtonSelection();
 
         $('#boom-compilation-container, #boom-compilation-focus, #boom-movie-detail').velocity({translateZ: 0, left: '-=1920'}, 720);

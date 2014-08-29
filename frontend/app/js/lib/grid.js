@@ -283,7 +283,7 @@ ka.lib.updateMovieGridAfterAddition = function () {
 
         ka.lib.recallFocusByUuid(uuid);
 
-        ka.lib.expandScrollableGrid();
+        ka.lib.unoccludeMovieGrid();
 
         ka.lib.updateMovieGrid();
 
@@ -302,6 +302,15 @@ ka.lib.updateMovieGridAfterAddition = function () {
 
         ka.lib.updateMovieGrid();
     }
+};
+
+
+ka.lib.updateMovieGridOnReturn = function () {
+    ka.lib.unoccludeMovieGrid();
+
+    ka.lib.recalcMovieGrid();
+
+    ka.lib.updateMovieGrid();
 };
 
 
@@ -689,7 +698,7 @@ ka.lib.occludeMovieGrid = function () {
 };
 
 
-ka.lib.expandScrollableGrid = function () {
+ka.lib.unoccludeMovieGrid = function () {
     if (ka.state.occludedGridItems !== null && ka.state.occludedGridItems.length > 0) {
         ka.state.occludedGridItems.css({display: 'inline-block'});
         var offsetY = '-' + (ka.state.gridPage * 1080) + 'px';

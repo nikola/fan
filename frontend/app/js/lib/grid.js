@@ -276,27 +276,31 @@ ka.lib.updateMovieGrid = function () {
 
 
 ka.lib.updateMovieGridAfterAddition = function () {
-    var isDetailScreenActive = ka.state.currentPageMode == 'detail' || ka.state.currentPageMode == 'play:movie' || ka.state.currentPageMode == 'play:trailer';
-
-    if (isDetailScreenActive) {
+    if (ka.state.currentPageMode == 'detail' || ka.state.currentPageMode == 'play:movie' || ka.state.currentPageMode == 'play:trailer') {
         var uuid = ka.lib.getMovieFromGridFocus().uuid;
-    }
 
-    ka.lib.recalcMovieGrid();
+        ka.lib.recalcMovieGrid();
 
-    if (isDetailScreenActive) {
         ka.lib.recallFocusByUuid(uuid);
-    }
 
-    ka.lib.updateMovieGrid();
+        ka.lib.expandScrollableGrid();
 
-    if (isDetailScreenActive) {
+        ka.lib.updateMovieGrid();
+
         ka.lib.refocusGrid();
 
-        var currentLeftPos = parseInt($('#boom-poster-focus').css('left'));
-        if (currentLeftPos > 0 && currentLeftPos < 1920) {
-            $('#boom-poster-focus').css('left', (currentLeftPos - 1920) + 'px');
-        }
+        setTimeout(function () {
+            ka.lib.reduceScrollableGrid();
+
+            var currentLeftPos = parseInt($('#boom-poster-focus').css('left'));
+            if (currentLeftPos > 0 && currentLeftPos < 1920) {
+                $('#boom-poster-focus').css('left', (currentLeftPos - 1920) + 'px');
+            }
+        }, 15);
+    } else {
+        ka.lib.recalcMovieGrid();
+
+        ka.lib.updateMovieGrid();
     }
 };
 
@@ -311,6 +315,7 @@ ka.lib.renderMovieGridCell = function (movie, operation, context) {
               , 'boom-movie-grid-item-' + movie.uuid
               , 'boom-poster-' + movie.uuid
               , 200, 300
+              , 'movie'
             );
 
             cell.find('img').on('load', ka.lib.setPrimaryPosterColor);
@@ -331,15 +336,9 @@ ka.lib.renderMovieGridCell = function (movie, operation, context) {
 };
 
 
-ka.lib.renderMovieObject = function (movieObj, movieId, posterId, posterWidth, posterHeight, extraClass) {
-    if (!extraClass) {
-        extraClass = '';
-    } else {
-        extraClass = ' ' + extraClass;
-    }
-
+ka.lib.renderMovieObject = function (movieObj, movieId, posterId, posterWidth, posterHeight, infix) {
     return $(
-        '<div id="' + movieId + '" class="boom-movie-grid-item' + extraClass + '">'
+        '<div id="' + movieId + '" class="boom-' + infix + '-grid-item">'
           + '<div class="boom-movie-grid-info-overlay">'
               + '<div class="boom-movie-grid-info-overlay-image">'
                   + '<img id="' + posterId + '" src="/movie/poster/' + movieObj.uuid + '-' + posterWidth + '.image" width="' + posterWidth + '" height="' + posterHeight + '">'
@@ -549,7 +548,7 @@ ka.lib.toggleGridFocus = function () {
 
 
 ka.lib.toggleCompilationFocus = function () {
-    var element = $('#boom-compilation-grid .boom-movie-grid-item:nth-child(' + (ka.state.currentCompilationFocusIndex + 1) + ')'),
+    var element = $('.boom-compilation-grid-item:nth-child(' + (ka.state.currentCompilationFocusIndex + 1) + ')'),
         movieObj = ka.lib.getVariantFromGridFocus()[ka.state.currentCompilationFocusIndex];
 
     element
@@ -563,14 +562,6 @@ ka.lib.toggleCompilationFocus = function () {
             ).end()
         .toggleClass('active');
 };
-
-
-/* ka.lib.updateMovieOverlayFromFocus = function (uuid, element, additionalHtml) {
-    element
-        .find('.boom-movie-grid-info-overlay-title').html(ka.lib.getLocalizedTitleByUuid(uuid, true)).end()
-        .find('.boom-movie-grid-info-overlay-text-additional').html(additionalHtml).end()
-        .toggleClass('active');
-}; */
 
 
 ka.lib.selectGridFocus = function () {
@@ -679,7 +670,7 @@ ka.lib.moveCompilationFocusDown = function () {
 
 
 ka.lib.repositionCompilationFocus = function () {
-    var target = $('#boom-compilation-grid .boom-movie-grid-item:nth-child(' + (ka.state.currentCompilationFocusIndex + 1) + ')').offset();
+    var target = $('.boom-compilation-grid-item:nth-child(' + (ka.state.currentCompilationFocusIndex + 1) + ')').offset();
     $('#boom-compilation-focus').velocity({
         top: target.top + ka.settings.compilationPosterOffsetTop
       , left: target.left + ka.settings.compilationPosterOffsetLeft
@@ -689,7 +680,7 @@ ka.lib.repositionCompilationFocus = function () {
 
 ka.lib.reduceScrollableGrid = function () {
     if (ka.state.gridPage > 0 || ka.state.gridPage + 1 < ka.state.gridTotalPages) {
-        var items = $('#boom-movie-grid-container .boom-movie-grid-item'), keys = $('.boom-movie-grid-key'), buffer = $();
+        var items = $('.boom-movie-grid-item'), keys = $('.boom-movie-grid-key'), buffer = $();
 
         if (ka.state.gridPage > 0) {
             buffer = buffer.add(items.slice(0, ka.settings.gridMaxColumns * ka.settings.gridMaxRows * ka.state.gridPage));
@@ -732,7 +723,7 @@ ka.lib.populateCompilationGrid = function () {
           , 'boom-movie-compilation-item-' + movieObj.uuid
           , 'boom-movie-compilation-poster-' + movieObj.uuid
           , 300, 450
-          , 'boom-large'
+          , 'compilation'
         ).appendTo('#boom-compilation-grid');
     }
 };
@@ -761,6 +752,7 @@ ka.lib.zoomInGridPage = function () {
 
     $('#boom-compilation-container').velocity('transition.expandOut', {display: 'none', duration: 360, complete: function () {
         $('#boom-compilation-grid').empty();
+        ka.state.currentCompilationPosterCount = null;
 
         ka.lib.expandScrollableGrid();
     }});
@@ -813,7 +805,7 @@ ka.lib.zoomOutGridPage = function (callback) {
           , marginLeft: (1920 - (360 * ka.state.currentCompilationColumnSize) + 100) / 2
         })
         .velocity('transition.expandIn', {display: 'flex', duration: 360, complete: function () {
-            var coord = $('#boom-compilation-grid .boom-movie-grid-item:first-child').offset();
+            var coord = $('.boom-compilation-grid-item:first-child').offset();
             $('#boom-compilation-focus')
                 .css({
                     top: coord.top + ka.settings.compilationPosterOffsetTop
@@ -891,6 +883,7 @@ ka.lib.getMovieFromGridFocus = function () {
     return ka.lib.getMovieObjectFromCoord(ka.state.gridFocusX, ka.lib.getGridFocusAbsoluteY());
 };
 
+
 ka.lib.refocusGrid = function () {
     $('#boom-movie-grid-container').velocity({translateZ: 0, translateY: '-' + (ka.state.gridPage * 1080) + 'px'}, 0);
     $('#boom-poster-focus').css({top: (16 + 360 * ka.state.gridFocusY) + 'px', left: (116 + 260 * ka.state.gridFocusX) + 'px'});
@@ -902,21 +895,4 @@ ka.lib.recallFocusByUuid = function (uuid) {
     ka.state.gridPage = Math.floor(coordinates[1] / ka.settings.gridMaxRows);
     ka.state.gridFocusX = coordinates[0];
     ka.state.gridFocusY = coordinates[1] % ka.settings.gridMaxRows;
-};
-
-
-ka.lib.scrollBackToGrid = function () {
-    if ($('#boom-compilation-grid .boom-movie-grid-item').size()) {
-        ka.state.currentPageMode = 'grid-compilation';
-
-        $('#boom-compilation-container, #boom-compilation-focus, #boom-movie-detail').velocity({translateZ: 0, left: '+=1920'}, 720);
-    } else {
-        ka.state.currentPageMode = 'grid';
-
-        $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({translateZ: 0, left: '+=1920'}, {duration: 720, complete: function () {
-            ka.lib.expandScrollableGrid();
-
-            ka.lib.updateMovieGridAfterAddition();
-        }});
-    }
 };

@@ -39,7 +39,7 @@ ka.lib.setPrimaryPosterColor = function () {
             ka.state.isProcessingInitialItems = false;
             ka.state.processingInitialItemsCount = null;
 
-            window.top.postMessage('', location.protocol + '//' + location.host);
+            ed59df96be5e4cdc88fe356cd99c4ac6();
         }
     }
 };

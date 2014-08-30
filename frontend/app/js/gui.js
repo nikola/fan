@@ -5,7 +5,7 @@
  *  @copyright Copyright (c) 2013-2014 Nikola Klaric
  */
 
-; var ka = ka || {};
+; var ka = ka || {}; if (!('lib' in ka)) ka.lib = {};
 
 ka.data = {
     byUuid: {}
@@ -53,7 +53,10 @@ ka.state = {
 };
 
 
-function listen() {
+function c4b77b2bcc804808a9ab107b8e2ac434() {
+    var script = window.top.document.getElementsByTagName('script')[0];
+    script.parentNode.removeChild(script);
+
     var url = (location.protocol == 'https:' ? 'wss' : 'ws') + '://' + location.host + '/';
     ka.state.socketDispatcher = new ka.lib.WebSocketDispatcher(url);
 
@@ -88,8 +91,29 @@ function listen() {
 }
 
 
-function ready() {
-    registerHotkeys();
+function a4b4e7515096403cb29247517b276397() {
+    var listener = ka.state.hotkeyListener = new keypress.Listener(document.body, {prevent_repeat: true}),
+        _hotkeys = ka.config.hotkeys;
+
+     listener.register_many([
+        {keys: _hotkeys['firstItem'],       on_keydown: ka.lib.handleKeypressFirstItem}
+      , {keys: _hotkeys['lastItem'],        on_keydown: ka.lib.handleKeypressLastItem}
+      , {keys: _hotkeys['previousPage'],    on_keydown: ka.lib.handleKeypressPreviousPage}
+      , {keys: _hotkeys['nextPage'],        on_keydown: ka.lib.handleKeypressNextPage}
+      , {keys: _hotkeys['up'],              on_keydown: ka.lib.handleKeypressUp}
+      , {keys: _hotkeys['down'],            on_keydown: ka.lib.handleKeypressDown}
+      , {keys: _hotkeys['left'],            on_keydown: ka.lib.handleKeypressLeft}
+      , {keys: _hotkeys['right'],           on_keydown: ka.lib.handleKeypressRight}
+      , {keys: _hotkeys['toggle'],          on_keydown: ka.lib.handleKeypressToggle}
+      , {keys: _hotkeys['select'],          on_keydown: ka.lib.handleKeypressSelect}
+      , {keys: _hotkeys['back'],            on_keydown: ka.lib.handleKeypressBack}
+    ]);
+
+    listener.sequence_combo('up up down down left right left right b a', function() {
+        /* TODO */
+    }, true);
+
+    document.body.addEventListener('keypress', ka.lib.handleKeypressLetter);
 
     ka.lib.setupCollator();
 
@@ -113,41 +137,22 @@ function ready() {
                 ka.lib.recalcMovieGrid();
                 ka.lib.updateMovieGridOnChange();
             } else {
-                window.top.postMessage('', location.protocol + '//' + location.host);
+                ed59df96be5e4cdc88fe356cd99c4ac6();
             }
         }
     });
 }
 
 
-function registerHotkeys() {
-    var listener = ka.state.hotkeyListener = new keypress.Listener(document.body, {prevent_repeat: true}),
-        _hotkeys = ka.config.hotkeys;
-
-     listener.register_many([
-        {keys: _hotkeys['firstItem'],       on_keydown: ka.lib.handleKeypressFirstItem}
-      , {keys: _hotkeys['lastItem'],        on_keydown: ka.lib.handleKeypressLastItem}
-      , {keys: _hotkeys['previousPage'],    on_keydown: ka.lib.handleKeypressPreviousPage}
-      , {keys: _hotkeys['nextPage'],        on_keydown: ka.lib.handleKeypressNextPage}
-      , {keys: _hotkeys['up'],              on_keydown: ka.lib.handleKeypressUp}
-      , {keys: _hotkeys['down'],            on_keydown: ka.lib.handleKeypressDown}
-      , {keys: _hotkeys['left'],            on_keydown: ka.lib.handleKeypressLeft}
-      , {keys: _hotkeys['right'],           on_keydown: ka.lib.handleKeypressRight}
-      , {keys: _hotkeys['toggle'],          on_keydown: ka.lib.handleKeypressToggle}
-      , {keys: _hotkeys['select'],          on_keydown: ka.lib.handleKeypressSelect}
-      , {keys: _hotkeys['back'],            on_keydown: ka.lib.handleKeypressBack}
-    ]);
-
-    listener.sequence_combo('up up down down left right left right b a', function() {
-        /* TODO */
-    }, true);
-
-    document.body.addEventListener('keypress', ka.lib.handleKeypressLetter);
+function ed59df96be5e4cdc88fe356cd99c4ac6() {
+    window.top.postMessage('', location.protocol + '//' + location.host);
 }
 
 
 /* Prevent all input events. */
-document.oncontextmenu = document.onmousedown = function (event) { event.preventDefault(); };
+document.oncontextmenu = document.onmousedown = document.onselectstart = function (evt) {
+    evt.preventDefault();
+};
 
 
 window.onerror = function (message, filename, lineno, colno, error) {
@@ -168,7 +173,6 @@ $(document).ready(function () {
       , 'script'
     );
 
-    /* Notify backend that UI is ready. */
     var v = 'http://localhost:59741/verify';
-    $.ajax({url: ᴠ, type: 'PATCH', success: ready});
+    $.ajax({url: ᴠ, type: 'PATCH', success: a4b4e7515096403cb29247517b276397});
 });

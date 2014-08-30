@@ -353,14 +353,13 @@ class StreamManager(object):
                 compilationMovieCountById[compilation.id] = len(compilation.movies)
 
             movieList = []
-            for movie, localization, poster in session.query(Movie, Localization, Image).filter(
-                        Movie.id == Localization.movieId,
-                        Movie.id == Image.movieId,
-                        Image.imageType == 'Poster',
-                        Image.primaryColor != None,
-                        Localization.locale == 'en'
-                    ).group_by(Movie.id).distinct():
+            for movie, localization in session.query(Movie, Localization).filter(Movie.id == Localization.movieId, Localization.locale == 'en').group_by(Movie.id).distinct():
                 if any([True for stream in movie.streams if os.path.exists(stream.location)]):
+                    try:
+                        primaryPosterColor = list(session.query(Image).filter(Image.movieId == movie.id).values(Image.primaryColor))[0][0]
+                    except (NoResultFound, IndexError):
+                        primaryPosterColor = None
+
                     movieList.append({
                         'uuid': movie.uuid,
                         'titleOriginal': movie.titleOriginal,
@@ -370,7 +369,7 @@ class StreamManager(object):
                         'storyline': localization.storyline,
                         'rating': movie.rating,
                         'trailer': movie.idYoutubeTrailer,
-                        'primaryPosterColor': poster.primaryColor,
+                        'primaryPosterColor': primaryPosterColor,
                         'streamless': movie.streamless,
                         'compilation': compilationNameById.get(movie.compilationId),
                         'isCompiled': compilationMovieCountById.get(movie.compilationId, 0) > 1,

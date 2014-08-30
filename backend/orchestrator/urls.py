@@ -13,7 +13,7 @@ from hashlib import md5 as MD5
 
 import simplejson
 import requests
-from pants.web.application import Module
+from pants.web.application import Module, error
 from pants.http.utils import HTTPHeaders
 
 from settings import DEBUG
@@ -25,7 +25,7 @@ from utils.fs import getDrives, readProcessedStream
 from utils.config import getCurrentUserConfig
 from identifier.fixture import TOP_250
 
-from . import SERVER_HEADERS
+from . import SERVER_HEADERS, logger
 
 IMG_MIME_TYPES = {
     'JPEG': 'image/jpeg',
@@ -147,8 +147,13 @@ def ba2c90f025af404381e88bf8fc18afb2(request, movieUuid, width):
     if imageBlob is None:
         pathPoster = module.streamManager.getMovieByUuid(movieUuid).urlPoster
         urlPoster = '%s%s%s' % (module.imageBaseUrl, module.imageClosestSize, pathPoster)
-        blob = requests.get(urlPoster, headers={'User-Agent': ENTROPY_SEED}).content
-        imageModified, imageBlob = module.streamManager.saveImageData(movieUuid, width, blob, False, 'Poster', 'JPEG', '%soriginal%s' % (module.imageBaseUrl, pathPoster))
+        try:
+            blob = requests.get(urlPoster, headers={'User-Agent': ENTROPY_SEED}).content
+        except:
+            logger.error('Could not download poster from %s', urlPoster)
+            return error(500)
+        else:
+            imageModified, imageBlob = module.streamManager.saveImageData(movieUuid, width, blob, False, 'Poster', 'JPEG', '%soriginal%s' % (module.imageBaseUrl, pathPoster))
 
     return _getImageResponse(request, imageModified, imageBlob)
 

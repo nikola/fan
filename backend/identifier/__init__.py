@@ -12,7 +12,7 @@ from simplejson import JSONDecodeError
 
 from settings import DEBUG
 from settings import LOG_CONFIG
-from utils.net import makeThrottledGetRequest, makeUnthrottledGetRequest
+from utils.net import getThrottledJsonResponse, makeUnthrottledGetRequest
 from utils.fs import getLogFileHandler
 from identifier.fixture import TRAILERS_HD, TOP_250
 
@@ -47,8 +47,7 @@ logger.addHandler(getLogFileHandler('tmdb'))
 
 
 def getImageConfiguration():
-    response = makeThrottledGetRequest('https://api.themoviedb.org/3/configuration', params={'api_key': THEMOVIEDB_API_KEY})
-    configuration = response.json()
+    configuration = getThrottledJsonResponse('https://api.themoviedb.org/3/configuration', params={'api_key': THEMOVIEDB_API_KEY})
 
     sizes = configuration.get('images').get('poster_sizes')
     if 'original' in sizes: sizes.remove('original')
@@ -228,19 +227,19 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
         if searchYearPrimary is not None:
             params['year'] = searchYearPrimary
 
-        response = makeThrottledGetRequest(url, params).json()
+        response = getThrottledJsonResponse(url, params)
 
         if response['total_results'] == 0 and params.has_key('year'):
             logger.warning('Movie with title "%s" not found at themoviedb.org, omitting year ...', searchTitlePrimary)
             del params['year']
-            response = makeThrottledGetRequest(url, params).json()
+            response = getThrottledJsonResponse(url, params)
 
         if response['total_results'] == 0 and searchTitleSecondary is not None:
             logger.warning('Movie with title "%s" not found at themoviedb.org, retrying with title "%s" ...', searchTitlePrimary, searchTitleSecondary)
             params['query'] = searchTitleSecondary.encode('utf-8')
             if searchYearSecondary is not None:
                 params['year'] = searchYearSecondary
-            response = makeThrottledGetRequest(url, params).json()
+            response = getThrottledJsonResponse(url, params)
 
         if response['total_results'] == 0:
             logger.warning('Movie with title "%s" still not found at themoviedb.org, retrying with title "%s" and search type "ngram" ...', searchTitleSecondary, searchTitlePrimary)
@@ -248,14 +247,14 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
             params['search_type'] = 'ngram'
             if searchYearPrimary is not None:
                 params['year'] = searchYearPrimary
-            response = makeThrottledGetRequest(url, params).json()
+            response = getThrottledJsonResponse(url, params)
 
         if response['total_results'] == 0 and searchTitleSecondary is not None:
             logger.warning('Movie with title "%s" still not found at themoviedb.org, retrying with title "%s" and search type "ngram" ...', searchTitlePrimary, searchTitleSecondary)
             params['query'] = searchTitleSecondary.encode('utf-8')
             if searchYearSecondary is not None:
                 params['year'] = searchYearSecondary
-            response = makeThrottledGetRequest(url, params).json()
+            response = getThrottledJsonResponse(url, params)
 
         if response['total_results'] == 0:
             logger.warning('Movie with title "%s" still not found at themoviedb.org, retrying with title "%s", omitting year ...', searchTitleSecondary, searchTitlePrimary)
@@ -263,12 +262,12 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
             if params.has_key('year'):
                 del params['year']
             del params['search_type']
-            response = makeThrottledGetRequest(url, params).json()
+            response = getThrottledJsonResponse(url, params)
 
         if response['total_results'] == 0 and searchTitleSecondary is not None:
             logger.warning('Movie with title "%s" still not found at themoviedb.org, retrying with title "%s", omitting year ...', searchTitlePrimary, searchTitleSecondary)
             params['query'] = searchTitleSecondary.encode('utf-8')
-            response = makeThrottledGetRequest(url, params).json()
+            response = getThrottledJsonResponse(url, params)
 
         if response['total_results'] == 0:
             logger.warning('Movie with title "%s" not found at themoviedb.org, giving up for now.', searchTitlePrimary)
@@ -281,7 +280,7 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
                 'language': language,
                 'append_to_response': 'trailers',
             }
-            response = makeThrottledGetRequest(url, params).json()
+            response = getThrottledJsonResponse(url, params)
 
             if response.get('poster_path', None) is not None:
                 logger.info('Movie identified at themoviedb.org as "%s" with ID: %d.' % (response['original_title'], movieId))
@@ -290,7 +289,7 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
                 if overview is None:
                     logger.info('Movie has no overview in locale "%s", falling back to English ...' % language)
                     params['language'] = 'en'
-                    response = makeThrottledGetRequest(url, params).json()
+                    response = getThrottledJsonResponse(url, params)
 
                 # Fetch rating from IMDB instead of TheMovieDB.
                 rating = None

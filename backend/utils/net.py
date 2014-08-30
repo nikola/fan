@@ -30,7 +30,9 @@ LAST_TMDB_ACCESS = time.clock()
 TMDB_RESPONSE_CACHE = {}
 
 
-def makeThrottledGetRequest(url, params):
+def getThrottledJsonResponse(url, params):
+    global TMDB_RESPONSE_CACHE, LAST_TMDB_ACCESS
+
     tuples = []
     for k, v in OrderedDict(sorted(params.items(), key=lambda t: t[0])).iteritems():
         if k == 'query':
@@ -38,12 +40,7 @@ def makeThrottledGetRequest(url, params):
         tuples.append('%s:%s' % (k, v))
     key = '%s;%s' % (url, ';'.join(tuples))
 
-    global TMDB_RESPONSE_CACHE
-    if TMDB_RESPONSE_CACHE.has_key(key):
-        # logger.info('Found cached response from themoviedb.org.')
-        return TMDB_RESPONSE_CACHE.get(key)
-    else:
-        global LAST_TMDB_ACCESS
+    if not TMDB_RESPONSE_CACHE.has_key(key):
         now = time.clock()
         diff = now - LAST_TMDB_ACCESS
 
@@ -57,11 +54,11 @@ def makeThrottledGetRequest(url, params):
             response = requests.get(url, params=params, headers={'User-Agent': ENTROPY_SEED}, timeout=5)
         except requests.ConnectionError:
             logger.error('Could not GET %s' % url)
-            response = None
+            return None
         else:
-            TMDB_RESPONSE_CACHE[key] = response
+            TMDB_RESPONSE_CACHE[key] = response.json()
 
-        return response
+    return TMDB_RESPONSE_CACHE.get(key)
 
 
 def makeUnthrottledGetRequest(url):

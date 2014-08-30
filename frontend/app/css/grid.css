@@ -192,8 +192,13 @@
 .boom-movie-grid-info-overlay {
     position: relative;
     overflow: hidden;
+    width: 260px; height: 300px;
 
     -webkit-transition: all 0.35s ease-in-out;
+    }
+
+.boom-compilation-grid-item .boom-movie-grid-info-overlay {
+    width: 360px; height: 450px;
     }
 
 .boom-movie-grid-info-overlay, .boom-movie-grid-info-overlay * {

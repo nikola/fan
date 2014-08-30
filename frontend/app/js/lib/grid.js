@@ -30,6 +30,8 @@ ka.lib.setPrimaryPosterColor = function () {
         setTimeout(ka.lib.processPixelArray, 0);
     }
 
+    gridItem.find('.boom-movie-grid-info-overlay').removeClass('active');
+
     if (ka.state.isProcessingInitialItems) {
         ka.state.processingInitialItemsCount -= 1;
 
@@ -290,7 +292,7 @@ ka.lib.updateMovieGridOnAdd = function () {
                 $('#boom-poster-focus').velocity({translateZ: 0, left: (currentLeftPos - 1920) + 'px'}, 0);
             }
         /* }, 15); */
-    } else if (ka.state.currentPageMode == 'config') {
+    } else if (ka.state.currentPageMode == 'config' || ka.state.currentPageMode == 'grid') {
         ka.lib.recalcMovieGrid();
 
         ka.lib.updateMovieGridOnChange();
@@ -356,13 +358,13 @@ ka.lib.renderMovieGridCell = function (movie, operation, context) {
 ka.lib.renderMovieObject = function (movieObj, movieId, posterId, posterWidth, posterHeight, infix) {
     return $(
         '<div id="' + movieId + '" class="boom-' + infix + '-grid-item">'
-          + '<div class="boom-movie-grid-info-overlay">'
+          + '<div class="boom-movie-grid-info-overlay active">'
               + '<div class="boom-movie-grid-info-overlay-image">'
                   + '<img id="' + posterId + '" src="/movie/poster/' + movieObj.uuid + '-' + posterWidth + '.image" width="' + posterWidth + '" height="' + posterHeight + '">'
               + '</div>'
               + '<div class="boom-movie-grid-info-overlay-text">'
-                  + '<div class="boom-movie-grid-info-overlay-title"></div>'
-                  + '<div class="boom-movie-grid-info-overlay-text-additional"></div>'
+                  + '<div class="boom-movie-grid-info-overlay-title">' + ka.lib.getLocalizedTitle(movieObj, true) + '</div>'
+                  + '<div class="boom-movie-grid-info-overlay-text-additional">' + movieObj.releaseYear + '<br>' + movieObj.runtime + ' minutes</div>'
               + '</div>'
           + '</div>'
       + '</div>'

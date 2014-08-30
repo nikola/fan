@@ -65,3 +65,7 @@ iframe[seamless] {
 #boom-credit-text span {
     font-weight: bold;
     }
+
+img[src='']  {
+    visibility: hidden;
+    }

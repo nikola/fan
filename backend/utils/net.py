@@ -65,7 +65,19 @@ def makeThrottledGetRequest(url, params):
 
 
 def makeUnthrottledGetRequest(url):
-    return requests.get(url, headers={'User-Agent': ENTROPY_SEED}, timeout=5)
+    try:
+        response = requests.get(url, headers={'User-Agent': ENTROPY_SEED}, timeout=5)
+    except requests.Timeout:
+        return None
+    else:
+        return response
+
+
+def deleteResponseCache():
+    global TMDB_RESPONSE_CACHE
+    TMDB_RESPONSE_CACHE = None
+    time.sleep(0)
+    TMDB_RESPONSE_CACHE = {}
 
 
 def getVacantPort():

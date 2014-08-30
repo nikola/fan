@@ -18,6 +18,7 @@ from orchestrator.pubsub import PubSub
 from models import StreamManager
 from identifier import getStreamRecords, getFixedRecords, identifyMovieByTitleYear
 from utils.config import getCurrentUserConfig
+from utils.net import deleteResponseCache
 
 from . import logger
 
@@ -225,6 +226,8 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                                 queue.put('downloader:resume')
 
             elif syncFinished is True:
+                deleteResponseCache()
+
                 syncFinished = None
 
                 # queue.put('orchestrator:watch')

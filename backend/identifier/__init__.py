@@ -297,10 +297,11 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
                 idImdb = response['imdb_id']
                 if idImdb is not None:
                     url = 'http://www.imdb.com/title/%s/' % idImdb
-                    html = makeUnthrottledGetRequest(url).text
-                    ratingSearch = re.search('<span itemprop="ratingValue">\s*([^<]+)', html)
-                    if ratingSearch is not None:
-                        rating = float(ratingSearch.group(1)) * 10
+                    responseImdb = makeUnthrottledGetRequest(url)
+                    if responseImdb is not None:
+                        ratingSearch = re.search('<span itemprop="ratingValue">\s*([^<]+)', responseImdb.text)
+                        if ratingSearch is not None:
+                            rating = float(ratingSearch.group(1)) * 10
 
                 if TRAILERS_HD.has_key(movieId):
                     idYoutubeTrailer = TRAILERS_HD[movieId]

@@ -113,13 +113,16 @@
     width: 360px; height: 450px;
     }
 
-.boom-movie-grid-item img, .boom-compilation-grid-item img {
+.boom-movie-grid-image, .boom-compilation-grid-item img {
     display: block;
     max-width: 200px;
     max-height: 300px;
     width: auto;
     height: auto;
     margin: 0 auto;
+
+    -webkit-transform: translate3d(0, 0, 0);
+    -webkit-backface-visibility: hidden;
     }
 
 .boom-compilation-grid-item img {
@@ -127,7 +130,7 @@
     max-height: 450px;
     }
 
-.boom-movie-grid-item img.desaturate {
+/* .boom-movie-grid-item img.desaturate {
     -webkit-animation: fx-desaturate 0.36s 1 normal linear forwards;
     }
 
@@ -156,7 +159,7 @@
         -webkit-filter: grayscale(0%);
     }
 }
-
+*/
 
 /* .boom-movie-grid-item-title {
     text-align: center;

@@ -247,12 +247,17 @@ ka.lib.updateMovieGridOnChange = function () {
             }
 
             if (ka.state.currentPageMode == 'config' && movie !== null) {
+                var element = $('#boom-poster-' + movie.uuid);
                 if (row >= ka.state.gridPage * ka.settings.gridMaxRows
                         && row < (ka.state.gridPage + 1) * ka.settings.gridMaxRows
                         && column < 4) {
-                    ka.state.desaturationImageCache.push($('#boom-poster-' + movie.uuid).removeClass('desaturate undesaturate').addClass('desaturated'));
+                    ka.state.desaturationImageCache[movie.uuid] = element;
+                    element.get(0).style.webkitFilter = 'grayscale(100%)';
                 } else {
-                    $('#boom-poster-' + movie.uuid).removeClass('desaturate desaturated undesaturate');
+                    if (movie.uuid in ka.state.desaturationImageCache) {
+                        delete ka.state.desaturationImageCache[movie.uuid];
+                    }
+                    element.get(0).style.webkitFilter = null;
                 }
             }
 
@@ -360,7 +365,7 @@ ka.lib.renderMovieObject = function (movieObj, movieId, posterId, posterWidth, p
         '<div id="' + movieId + '" class="boom-' + infix + '-grid-item">'
           + '<div class="boom-movie-grid-info-overlay active">'
               + '<div class="boom-movie-grid-info-overlay-image">'
-                  + '<img id="' + posterId + '" src="/movie/poster/' + movieObj.uuid + '-' + posterWidth + '.image" width="' + posterWidth + '" height="' + posterHeight + '">'
+                  + '<img class="boom-movie-grid-image" id="' + posterId + '" src="/movie/poster/' + movieObj.uuid + '-' + posterWidth + '.image" width="' + posterWidth + '" height="' + posterHeight + '">'
               + '</div>'
               + '<div class="boom-movie-grid-info-overlay-text">'
                   + '<div class="boom-movie-grid-info-overlay-title">' + ka.lib.getLocalizedTitle(movieObj, true) + '</div>'
@@ -724,7 +729,6 @@ ka.lib.zoomOutGridPage = function (callback) {
     for (var index = 0; index < posterArray.length; index++) {
         if (posterArray[index] != null) {
             posterArray[index]
-                .removeClass('undesaturate')
                 .css({
                     '-webkit-transform-origin': relativePosX[index % gridMaxColumns] + '% ' + relativePosY[Math.floor(index / gridMaxColumns)] + '%'
                   , '-webkit-transform': 'scale3d(1, 1, 1)'

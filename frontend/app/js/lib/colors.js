@@ -18,24 +18,6 @@ ka.lib.getLuminance = function (color) {
     return 0.2126 * luminanceRed + 0.7152 * luminanceGreen + 0.0722 * luminanceBlue;
 };
 
-ka.lib.desaturateVisiblePosters = function () {
-    ka.state.desaturationImageCache = [];
-
-    for (var index = 0, elements = ka.lib.getCurrentScreenPosters(4), element; element = elements[index]; index++) {
-        if (element != null) {
-            ka.state.desaturationImageCache.push(element);
-            element.removeClass('undesaturate desaturated').addClass('desaturate');
-        }
-    }
-};
-
-ka.lib.undesaturateVisiblePosters = function () {
-    for (var element, e = 0; element = ka.state.desaturationImageCache[e]; e++) {
-        element.removeClass('desaturated desaturate').addClass('undesaturate');
-    }
-    ka.state.desaturationImageCache = [];
-};
-
 
 ka.lib.getPixelsFromImage = function (element) {
     var image = element.get(0),

@@ -19,7 +19,21 @@ ka.transition.menu = {to: {
             ka.state.currentPageMode = 'grid';
         }});
 
-        ka.lib.undesaturateVisiblePosters();
+        for (var poster in ka.state.desaturationImageCache) {
+            if (ka.state.desaturationImageCache.hasOwnProperty(poster)) {
+                ka.state.desaturationImageCache[poster]
+                    .velocity({translateZ: 0}, {
+                        duration: 360
+                      , progress: function (elements, percentComplete) {
+                            elements[0].style.webkitFilter = 'grayscale(' + Math.round(100 - 100 * percentComplete) + '%)';
+                        }
+                      , complete: function (elements) {
+                            elements[0].style.webkitFilter = null;
+                        }
+                    });
+            }
+        }
+        ka.state.desaturationImageCache = {};
     }
 
 }};
@@ -36,7 +50,26 @@ ka.transition.grid = {to: {
             ka.state.currentPageMode = 'config';
         }});
 
-        ka.lib.desaturateVisiblePosters();
+        ka.state.desaturationImageCache = {};
+
+        var start = ka.state.gridPage * ka.settings.gridMaxRows, end = (ka.state.gridPage + 1) * ka.settings.gridMaxRows,
+            item;
+
+        for (var row = start; row < end; row++) {
+            if (row < ka.state.gridLookupMatrix.length) {
+                for (var column = 0; column < 4; column++) {
+                    item = ka.lib.getFirstMovieObjectFromCoord(column, row);
+                    if (item !== null) {
+                        ka.state.desaturationImageCache[item.uuid] = $('#boom-poster-' + item.uuid)
+                            .velocity({translateZ: 0}, {
+                                duration: 360, progress: function (elements, percentComplete) {
+                                    elements[0].style.webkitFilter = 'grayscale(' + Math.round(100 * percentComplete) + '%)';
+                                }
+                            });
+                    }
+                }
+            }
+        }
     }
 
   , detail: function () {   /* screen state transition: OK */

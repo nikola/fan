@@ -120,7 +120,7 @@ function a4b4e7515096403cb29247517b276397() {
     ka.lib.localizeButtons();
 
     /* Reset config button selection to default. */
-    ka.lib.updateConfigButtonSelection();
+    ka.lib.updateMenuButtonSelection();
 
     $.ajax({
         url: '/movies/all',

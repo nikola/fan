@@ -583,64 +583,6 @@ ka.lib.toggleCompilationFocus = function () {
 };
 
 
-ka.lib.selectGridFocus = function () {
-    ka.lib.occludeMovieGrid();
-
-    var obj = ka.lib.getVariantFromGridFocus();
-
-    if ($.isArray(obj)) {
-        ka.state.currentPageMode = 'limbo';
-
-        ka.lib.populateCompilationGrid();
-
-        $('.boom-movie-grid-info-overlay').removeClass('active');
-        ka.lib.zoomOutGridPage(function () {
-            ka.state.currentPageMode = 'grid-compilation';
-        });
-    } else {
-        ka.state.currentPageMode = 'detail';
-        ka.state.currentGridMovieUuid = obj.uuid;
-
-        if (!obj.streamless) {
-            ka.state.currentDetailButton = 'play';
-        } else if (obj.trailer) {
-            ka.state.currentDetailButton = 'trailer';
-        } else {
-            ka.state.currentDetailButton = 'details';
-        }
-
-        ka.lib.updateDetailPage(obj, function () {
-            ka.lib.updateDetailButtonSelection();
-
-            $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({translateZ: 0, left: '-=1920'}, 720);
-        });
-    }
-};
-
-
-ka.lib.selectCompilationFocus = function () {
-    var movieObj = ka.lib.getVariantFromGridFocus()[ka.state.currentCompilationFocusIndex];
-
-    ka.state.currentGridMovieUuid = movieObj.uuid;
-
-    if (!movieObj.streamless) {
-        ka.state.currentDetailButton = 'play';
-    } else if (movieObj.trailer) {
-        ka.state.currentDetailButton = 'trailer';
-    } else {
-        ka.state.currentDetailButton = 'details';
-    }
-
-    ka.lib.updateDetailPage(movieObj, function () {
-        ka.state.currentPageMode = 'detail';
-
-        ka.lib.updateDetailButtonSelection();
-
-        $('#boom-compilation-container, #boom-compilation-focus, #boom-movie-detail').velocity({translateZ: 0, left: '-=1920'}, 720);
-    });
-};
-
-
 ka.lib.moveCompilationFocusLeft = function () {
     if (ka.state.currentCompilationFocusIndex > 0) {
         ka.state.currentCompilationFocusIndex -= 1;
@@ -884,6 +826,11 @@ ka.lib.moveFocusX = function (offsetY) {
 
 ka.lib.getVariantFromGridFocus = function () {
      return ka.state.gridLookupMatrix[ka.lib.getGridFocusAbsoluteY()][ka.state.gridFocusX];
+};
+
+
+ka.lib.isCompilationAtFocus = function () {
+  return $.isArray(ka.lib.getVariantFromGridFocus());
 };
 
 

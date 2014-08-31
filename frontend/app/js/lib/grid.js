@@ -225,7 +225,7 @@ ka.lib.updateMovieGridOnChange = function () {
         }
 
         for (var column = 0, line = matrix[row], columns = line.length; column < columns; column++) {
-            movie = ka.lib.getMovieObjectFromCoord(column, row);
+            movie = ka.lib.getFirstMovieObjectFromCoord(column, row);
 
             if (movie !== null) {
                 ka.state.gridLookupItemsPerLine[row] = column + 1;
@@ -310,7 +310,7 @@ ka.lib.updateMovieGridOnReturn = function () {
 
 
 ka.lib.updateMovieGridRefocused = function (intermediateFunc) {
-    var uuid = ka.lib.getMovieFromGridFocus().uuid;
+    var uuid = ka.lib.getFirstMovieObjectFromCoord(ka.state.gridFocusX, ka.lib.getGridFocusAbsoluteY()).uuid;
 
     ka.lib.recalcMovieGrid();
 
@@ -377,7 +377,7 @@ ka.lib.scrollGrid = function () {
 };
 
 
-ka.lib.getMovieObjectFromCoord = function (x, y) {
+ka.lib.getFirstMovieObjectFromCoord = function (x, y) {
     var obj = ka.state.gridLookupMatrix[y][x];
 
     if ($.isArray(obj)) {
@@ -541,7 +541,7 @@ ka.lib.moveFocusRight = function () {
 
 
 ka.lib.toggleGridFocus = function () {
-    var uuid = ka.lib.getMovieObjectFromCoord(ka.state.gridFocusX, ka.lib.getGridFocusAbsoluteY()).uuid,
+    var uuid = ka.lib.getFirstMovieObjectFromCoord(ka.state.gridFocusX, ka.lib.getGridFocusAbsoluteY()).uuid,
         element = $('#boom-movie-grid-item-' + uuid + ' .boom-movie-grid-info-overlay'),
         movieObj = ka.lib.getVariantFromGridFocus(),
         source, additionalHtml;
@@ -831,11 +831,6 @@ ka.lib.getVariantFromGridFocus = function () {
 
 ka.lib.isCompilationAtFocus = function () {
   return $.isArray(ka.lib.getVariantFromGridFocus());
-};
-
-
-ka.lib.getMovieFromGridFocus = function () {
-    return ka.lib.getMovieObjectFromCoord(ka.state.gridFocusX, ka.lib.getGridFocusAbsoluteY());
 };
 
 

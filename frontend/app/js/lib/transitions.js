@@ -13,29 +13,33 @@ ka.transition.menu = {to: {
     grid: function () {     /* screen state transition: OK */
         ka.state.currentPageMode = 'limbo';
 
-        for (var poster in ka.state.desaturationImageCache) {
-            if (ka.state.desaturationImageCache.hasOwnProperty(poster)) {
-                ka.state.desaturationImageCache[poster]
-                    .velocity({translateZ: 0}, {
-                        duration: 360
-                      , progress: function (elements, percentComplete) {
-                            elements[0].style.webkitFilter = 'grayscale(' + Math.round(100 - 100 * percentComplete) + '%)';
-                        }
-                      , complete: function (elements) {
-                            elements[0].style.webkitFilter = null;
-                        }
+        $('#boom-movie-config, #boom-movie-grid-container, #boom-poster-focus').velocity(
+            {translateZ: 0, left: '-=780'}
+          , {
+                duration: 360
+              , progress: function (elements, percentComplete) {
+                    elements[1].style.opacity = 0.5 + percentComplete / 2;
+                    elements[2].style.opacity = percentComplete;
+
+                    $.each(ka.state.desaturationImageCache, function (key, value) {
+                        value.style.webkitFilter = 'grayscale(' + Math.round(100 - 100 * percentComplete) + '%)';
                     });
+                }
+              , complete: function () {
+                    ka.state.currentPageMode = 'grid';
+
+                    ka.lib.unoccludeMovieGrid();
+
+                    $.each(ka.state.desaturationImageCache, function (key, value) {
+                        value.style.webkitFilter = null;
+                        value.style.webkitTransform = 'none';
+                    });
+                    ka.state.desaturationImageCache = {};
+
+                    $('#boom-movie-detail').css('display', 'block');
+                }
             }
-        }
-        ka.state.desaturationImageCache = {};
-
-        $('#boom-movie-grid-container, #boom-movie-detail').velocity({translateZ: 0, left: '-=780', opacity: '+=0.5'}, 360);
-        $('#boom-poster-focus').velocity({translateZ: 0, left: '-=780', opacity: '+=1'}, 360);
-        $('#boom-movie-config').velocity({translateZ: 0, left: '-=780'}, {duration: 360, complete: function () {
-            ka.state.currentPageMode = 'grid';
-
-            ka.lib.unoccludeMovieGrid();
-        }});
+        );
     }
 
 }};
@@ -46,34 +50,44 @@ ka.transition.grid = {to: {
     menu: function () {     /* screen state transition: OK */
         ka.state.currentPageMode = 'limbo';
 
-        ka.lib.occludeMovieGrid();
+        $('#boom-movie-detail').css('display', 'none');
 
-        $('#boom-movie-grid-container, #boom-movie-detail').velocity({translateZ: 0, left: '+=780', opacity: '-=0.5'}, 360);
-        $('#boom-poster-focus').velocity({translateZ: 0, left: '+=780', opacity: '-=1'}, 360);
-        $('#boom-movie-config').velocity({translateZ: 0, left: '+=780'}, {duration: 360, complete: function () {
-            ka.state.currentPageMode = 'config';
-        }});
+        ka.lib.occludeMovieGrid();
 
         ka.state.desaturationImageCache = {};
 
         var start = ka.state.gridPage * ka.settings.gridMaxRows, end = (ka.state.gridPage + 1) * ka.settings.gridMaxRows,
             item;
-
         for (var row = start; row < end; row++) {
             if (row < ka.state.gridLookupMatrix.length) {
                 for (var column = 0; column < 4; column++) {
                     item = ka.lib.getFirstMovieObjectFromCoord(column, row);
                     if (item !== null) {
                         ka.state.desaturationImageCache[item.uuid] = $('#boom-poster-' + item.uuid)
-                            .velocity({translateZ: 0}, {
-                                duration: 360, progress: function (elements, percentComplete) {
-                                    elements[0].style.webkitFilter = 'grayscale(' + Math.round(100 * percentComplete) + '%)';
-                                }
-                            });
+                            .css('-webkit-transform', 'translate3d(0, 0, 0)')
+                            .get(0);
                     }
                 }
             }
         }
+
+        $('#boom-movie-config, #boom-movie-grid-container, #boom-poster-focus').velocity(
+            {translateZ: 0, left: '+=780'}
+          , {
+                duration: 360
+              , progress: function (elements, percentComplete) {
+                    elements[1].style.opacity = 1 - percentComplete / 2;
+                    elements[2].style.opacity = 1 - percentComplete;
+
+                    $.each(ka.state.desaturationImageCache, function (key, value) {
+                        value.style.webkitFilter = 'grayscale(' + Math.round(100 * percentComplete) + '%)';
+                    });
+                }
+              , complete: function () {
+                    ka.state.currentPageMode = 'config';
+                }
+            }
+        );
     }
 
   , detail: function () {   /* screen state transition: OK */

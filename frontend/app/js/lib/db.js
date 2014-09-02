@@ -7,6 +7,42 @@
 ; var ka = ka || {}; if (!('lib' in ka)) ka.lib = {};
 
 
+ka.lib.sortExpandedKeys = function (a, b) {
+    a = a.replace('m', '000000');
+    b = b.replace('m', '000000');
+    a = a.replace('k', '000');
+    b = b.replace('k', '000');
+    if (a.indexOf('.') != -1) {
+        a = parseInt(a.replace('.', ''));
+        a = a / 10;
+    } else {
+        a = parseInt(a);
+    }
+    if (b.indexOf('.') != -1) {
+        b = parseInt(b.replace('.', ''));
+        b = b / 10;
+    } else {
+        b = parseInt(b);
+    }
+
+    if (isNaN(a)) {
+        a = 0;
+    }
+
+    if (isNaN(b)) {
+        b = 0;
+    }
+
+    if (a > b) {
+        return 1;
+    } else if (a < b) {
+        return -1;
+    } else {
+        return 0;
+    }
+};
+
+
 ka.lib.addMovie = function (movieDict) {
     if (movieDict.uuid in ka.data.byUuid) {
         if (ka.state.isProcessingInitialItems) {
@@ -17,7 +53,7 @@ ka.lib.addMovie = function (movieDict) {
 
     var title, key, sortCriterionKey, sortedList;
 
-    for (var orders = ['titleOriginal', 'titleLocalized', 'year', 'rating'], order, o = 0; order = orders[o]; o++) {
+    for (var orders = ['titleOriginal', 'titleLocalized', 'year', 'rating', 'budget'], order, o = 0; order = orders[o]; o++) {
         if (movieDict.isCompiled) {
             title = movieDict.compilation;
         } else if (order == 'titleOriginal') {
@@ -34,6 +70,8 @@ ka.lib.addMovie = function (movieDict) {
             key = movieDict.releaseYear;
         } else if (order == 'rating') {
             key = ka.lib._keyByRating(movieDict.rating / 10);
+        } else if (order == 'budget') {
+            key = ka.lib._keyByBudget(movieDict.budget);
         }
 
         sortCriterionKey = 'by' + order[0].toUpperCase() + order.slice(1);
@@ -121,6 +159,52 @@ ka.lib._keyByRating = function (rating) {
     }
 };
 
+
+ka.lib._keyByBudget = function (budget) {
+    if (!budget) {
+        return '?';
+    } else if (budget >= 250000000) {
+        return '250m';
+    } else if (budget >= 200000000) {
+        return '200m';
+    } else if (budget >= 175000000) {
+        return '175m';
+    } else if (budget >= 150000000) {
+        return '150m';
+    } else if (budget >= 125000000) {
+        return '125m';
+    } else if (budget >= 100000000) {
+        return '100m';
+    } else if (budget >=  75000000) {
+        return '75m';
+    } else if (budget >=  50000000) {
+        return '50m';
+    } else if (budget >=  25000000) {
+        return '25m';
+    } else if (budget >=  10000000) {
+        return '10m';
+    } else if (budget >=   5000000) {
+        return '5m';
+    } else if (budget >=   2500000) {
+        return '2.5m';
+    } else if (budget >=   1000000) {
+        return '1m';
+    } else if (budget >=    500000) {
+        return '500k';
+    } else if (budget >=    250000) {
+        return '250k';
+    } else if (budget >=    100000) {
+        return '100k';
+    } else if (budget >=     50000) {
+        return '50k';
+    } else if (budget >=     10000) {
+        return '10k';
+    } else if (budget >=      1000) {
+        return '1k';
+    } else {
+        return '< 1k';
+    }
+};
 
 ka.lib._getCollatedKey = function (key) {
     var alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''),

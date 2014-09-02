@@ -77,7 +77,12 @@ ka.lib.recalcMovieGrid = function () {
     ka.state.gridLookupKeyByLine = [];
     ka.state.gridLookupCoordByUuid = {};
 
-    var keys = Object.getOwnPropertyNames(ka.data[ka.state.gridSortCriterion]).sort(), keyCount = keys.length;
+    if (ka.state.gridSortCriterion == 'byBudget') {
+        var keys = Object.getOwnPropertyNames(ka.data[ka.state.gridSortCriterion]).sort(ka.lib.sortExpandedKeys);
+    } else {
+        var keys = Object.getOwnPropertyNames(ka.data[ka.state.gridSortCriterion]).sort();
+    }
+    var keyCount = keys.length;
     if (ka.state.gridSortOrder == 'desc') {
         keys.reverse();
     }
@@ -251,20 +256,20 @@ ka.lib.updateMovieGridOnChange = function () {
             }
 
             if (movie !== null) {
-                var element = $('#boom-poster-' + movie.uuid);
+                var element = $('#boom-poster-' + movie.uuid).get(0);
                 if (row >= ka.state.gridPage * ka.settings.gridMaxRows
                         && row < (ka.state.gridPage + 1) * ka.settings.gridMaxRows
                         && column < 4) {
                     if (ka.state.currentPageMode == 'config') {
                         ka.state.desaturationImageCache[movie.uuid] = element;
-                        element.get(0).style.webkitFilter = 'grayscale(100%)';
+                        element.style.webkitFilter = 'grayscale(100%)';
                     }
                 } else {
                     if (ka.state.currentPageMode == 'config') {
                         if (movie.uuid in ka.state.desaturationImageCache) {
                             delete ka.state.desaturationImageCache[movie.uuid];
                         }
-                        element.get(0).style.webkitFilter = null;
+                        element.style.webkitFilter = null;
                     }
                 }
             }

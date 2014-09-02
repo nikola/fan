@@ -13,6 +13,7 @@ ka.data = {
     , byTitleOriginal: {}
     , byTitleLocalized: {}
     , byRating: {}
+    , byBudget: {}
 };
 
 ka.settings = {

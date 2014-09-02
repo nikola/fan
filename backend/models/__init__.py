@@ -368,6 +368,7 @@ class StreamManager(object):
                         'runtime': movie.runtime,
                         'storyline': localization.storyline,
                         'rating': movie.rating,
+                        'budget': movie.budget,
                         'trailer': movie.idYoutubeTrailer,
                         'primaryPosterColor': primaryPosterColor,
                         'streamless': movie.streamless,
@@ -381,7 +382,7 @@ class StreamManager(object):
         with self._session() as session:
             try:
                 movie = list(session.query(Movie, Localization).filter(Movie.uuid == identifier, Movie.id == Localization.movieId, Localization.locale == 'en').distinct() \
-                    .values(Movie.uuid, Movie.titleOriginal, Localization.title, Movie.releaseYear, Movie.runtime, Localization.storyline, Movie.rating, Movie.idYoutubeTrailer, Movie.streamless))[0]
+                    .values(Movie.uuid, Movie.titleOriginal, Localization.title, Movie.releaseYear, Movie.runtime, Localization.storyline, Movie.rating, Movie.budget, Movie.idYoutubeTrailer, Movie.streamless))[0]
             except NoResultFound:
                 return None
             else:
@@ -393,8 +394,9 @@ class StreamManager(object):
                     'runtime': movie[4],
                     'storyline': movie[5],
                     'rating': movie[6],
-                    'trailer': movie[7],
-                    'streamless': movie[8],
+                    'budget': movie[7],
+                    'trailer': movie[8],
+                    'streamless': movie[9],
                 }
                 try:
                     poster = session.query(Image).join(Movie).filter(Image.imageType == 'Poster', Image.movie.has(Movie.uuid == identifier)).first()

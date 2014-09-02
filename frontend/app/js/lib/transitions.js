@@ -13,12 +13,6 @@ ka.transition.menu = {to: {
     grid: function () {     /* screen state transition: OK */
         ka.state.currentPageMode = 'limbo';
 
-        $('#boom-movie-grid-container, #boom-movie-detail').velocity({translateZ: 0, left: '-=780', opacity: '+=0.5'}, 360);
-        $('#boom-poster-focus').velocity({translateZ: 0, left: '-=780', opacity: '+=1'}, 360);
-        $('#boom-movie-config').velocity({translateZ: 0, left: '-=780'}, {duration: 360, complete: function () {
-            ka.state.currentPageMode = 'grid';
-        }});
-
         for (var poster in ka.state.desaturationImageCache) {
             if (ka.state.desaturationImageCache.hasOwnProperty(poster)) {
                 ka.state.desaturationImageCache[poster]
@@ -34,6 +28,12 @@ ka.transition.menu = {to: {
             }
         }
         ka.state.desaturationImageCache = {};
+
+        $('#boom-movie-grid-container, #boom-movie-detail').velocity({translateZ: 0, left: '-=780', opacity: '+=0.5'}, 360);
+        $('#boom-poster-focus').velocity({translateZ: 0, left: '-=780', opacity: '+=1'}, 360);
+        $('#boom-movie-config').velocity({translateZ: 0, left: '-=780'}, {duration: 360, complete: function () {
+            ka.state.currentPageMode = 'grid';
+        }});
     }
 
 }};

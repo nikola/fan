@@ -56,13 +56,17 @@ ka.lib.executeMenuSelection = function () {
             ka.state.gridSortCriterion = 'byRating';
             ka.state.gridSortDisplayLanguage = 'localized';
             ka.state.gridSortOrder = 'desc';
+        } else if (id == 'boom-config-button-sort-budget-desc') {
+            ka.state.gridSortCriterion = 'byBudget';
+            ka.state.gridSortDisplayLanguage = 'localized';
+            ka.state.gridSortOrder = 'desc';
         }
 
         if (ka.state.gridSortCriterion != lastCriterion || ka.state.gridSortOrder != lastOrder) {
             ka.lib.unoccludeMovieGrid();
 
             ka.lib.updateMovieGridRefocused(function () {
-                ka.state.desaturationImageCache = [];
+                ka.state.desaturationImageCache = {};
             });
 
             $('#boom-poster-focus').velocity({translateZ: 0, left: '+=780'}, 0);

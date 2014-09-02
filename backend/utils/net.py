@@ -52,7 +52,7 @@ def getThrottledJsonResponse(url, params):
 
         try:
             response = requests.get(url, params=params, headers={'User-Agent': ENTROPY_SEED}, timeout=5)
-        except requests.ConnectionError:
+        except (requests.ConnectionError, requests.Timeout):
             logger.error('Could not GET %s' % url)
             return None
         else:

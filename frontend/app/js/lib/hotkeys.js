@@ -164,7 +164,7 @@ ka.lib.handleKeypressBack = function () {
 };
 
 
-ka.lib.handleKeypressLetter = function (evt) {
+ka.lib.handleKeypressAny = function (evt) {
     if (ka.state.currentPageMode != 'grid') {
         return;
     } else {
@@ -188,8 +188,8 @@ ka.lib.handleKeypressLetter = function (evt) {
             } else {
                 $('#boom-movie-grid-container').velocity('callout.shake');
             }
-        } else if (/^[0-9]$/.test(character)) {
-
+        } else if (/^[1-7]$/.test(character)) {
+            ka.lib.moveFocusToIndex(character - 1);
         }
     }
 

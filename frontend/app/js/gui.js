@@ -118,7 +118,7 @@ function a4b4e7515096403cb29247517b276397() {
         /* TODO */
     }, true);
 
-    document.body.addEventListener('keypress', ka.lib.handleKeypressLetter);
+    document.body.addEventListener('keypress', ka.lib.handleKeypressAny);
 
     ka.lib.setupCollator();
 

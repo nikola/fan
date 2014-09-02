@@ -555,6 +555,16 @@ ka.lib.moveFocusRight = function () {
 };
 
 
+ka.lib.moveFocusToIndex = function (index) {
+    if (index < ka.lib.getItemsPerLineAtFocus() && index != ka.state.gridFocusX) {
+        var distance = 260 * (index - ka.state.gridFocusX), operator = (distance < 0) ? '-' : '+';
+        ka.state.gridFocusX = index;
+
+        $('#boom-poster-focus').css('display', 'block').velocity({left: operator + '=' + Math.abs(distance)}, 260);
+    }
+};
+
+
 ka.lib.toggleGridFocus = function () {
     var uuid = ka.lib.getFirstMovieObjectFromCoord(ka.state.gridFocusX, ka.lib.getGridFocusAbsoluteY()).uuid,
         element = $('#boom-movie-grid-item-' + uuid + ' .boom-movie-grid-info-overlay'),

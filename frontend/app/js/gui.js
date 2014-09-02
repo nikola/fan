@@ -24,6 +24,8 @@ ka.settings = {
 
 ka.state = {
     currentPageMode: 'grid'
+  , actualScreenMode: null
+
   , currentConfigButton: 1
   , currentGridMovieUuid: null
   , currentCompilationFocusIndex: null

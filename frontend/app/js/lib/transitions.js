@@ -92,6 +92,7 @@ ka.transition.grid = {to: {
 
             $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({translateZ: 0, left: '-=1920'}, {duration: 720, complete: function () {
                 ka.state.currentPageMode = 'detail';
+                ka.state.actualScreenMode = null;
             }});
         });
 
@@ -118,12 +119,17 @@ ka.transition.compilation = {to: {
         ka.state.currentPageMode = 'limbo';
 
         ka.lib.zoomInGridPage(function () {
-            ka.lib.updateMovieGridOnReturn();
+            ka.lib.unoccludeMovieGrid();
+
+            ka.lib.updateMovieGridRefocused();
+
+            /* ka.lib.updateMovieGridOnReturn(); */
             ka.state.currentPageMode = 'grid';
         });
     }
 
   , detail: function () {   /* screen state transition: OK */
+        ka.state.actualScreenMode = 'grid-compilation';
         ka.state.currentPageMode = 'limbo';
 
         var movieObj = ka.lib.getVariantFromGridFocus()[ka.state.currentCompilationFocusIndex];
@@ -139,6 +145,8 @@ ka.transition.compilation = {to: {
         }
 
         ka.lib.updateDetailPage(movieObj, function () {
+            ka.state.actualScreenMode = 'null';
+
             ka.lib.updateDetailButtonSelection();
 
             $('#boom-compilation-container, #boom-compilation-focus, #boom-movie-detail').velocity({translateZ: 0, left: '-=1920'}, {duration: 720, complete: function () {
@@ -157,6 +165,7 @@ ka.transition.detail = {to: {
 
         $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail')
             .velocity({translateZ: 0, left: '+=1920'}, {duration: 720, complete: function () {
+                /* No refocus necessary here, as ka.lib.updateMovieGridOnAdd() has been called previously. */
                 ka.lib.updateMovieGridOnReturn();
                 ka.state.currentPageMode = 'grid';
             }});

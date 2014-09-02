@@ -13,10 +13,10 @@ ka.lib.localizeButtons = function () {
 };
 
 
-ka.lib.getLocalizedTitle = function (movieObj, insertHardBreak) {
+ka.lib.getLocalizedTitle = function (movieObj, insertHardBreak, noCollection) {
     var title;
 
-    if (movieObj.isCompiled && $.isArray(ka.lib.getVariantFromGridFocus()) && ka.state.currentPageMode != 'grid-compilation') {
+    if (!noCollection && movieObj.isCompiled && ka.lib.isCompilationAtFocus() && ka.state.actualScreenMode != 'grid-compilation') {
         title = movieObj.compilation + ' Collection';
     } else if (ka.state.gridSortDisplayLanguage == 'localized') {
         title = movieObj.titleLocalized;

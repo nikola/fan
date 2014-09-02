@@ -329,7 +329,9 @@ ka.lib.updateMovieGridRefocused = function (intermediateFunc) {
 
     ka.lib.recallFocusByUuid(uuid);
 
-    intermediateFunc();
+    if (intermediateFunc) {
+        intermediateFunc();
+    }
 
     ka.lib.updateMovieGridOnChange();
 
@@ -369,7 +371,14 @@ ka.lib.renderMovieGridCell = function (movie, operation, context) {
 
 
 ka.lib.renderMovieObject = function (movieObj, movieId, posterId, posterWidth, posterHeight, infix) {
-    var extraClass = (movieObj.uuid in ka.state.setOfUnknownPosters || !(movieObj.uuid in ka.state.setOfKnownPosters)) ? ' active' : '';
+    if (movieObj.uuid in ka.state.setOfUnknownPosters || !(movieObj.uuid in ka.state.setOfKnownPosters)) {
+        var extraClass =  ' active',
+            title = ka.lib.getLocalizedTitle(movieObj, true),
+            additional = movieObj.releaseYear + '<br>' + movieObj.runtime;
+    } else {
+        var extraClass = title = additional = '';
+    }
+
 
     return $(
         '<div id="' + movieId + '" class="boom-' + infix + '-grid-item">'
@@ -378,8 +387,8 @@ ka.lib.renderMovieObject = function (movieObj, movieId, posterId, posterWidth, p
                   + '<img class="boom-movie-grid-image" id="' + posterId + '" src="/movie/poster/' + movieObj.uuid + '-' + posterWidth + '.image" width="' + posterWidth + '" height="' + posterHeight + '">'
               + '</div>'
               + '<div class="boom-movie-grid-info-overlay-text">'
-                  + '<div class="boom-movie-grid-info-overlay-title">' + ka.lib.getLocalizedTitle(movieObj, true) + '</div>'
-                  + '<div class="boom-movie-grid-info-overlay-text-additional">' + movieObj.releaseYear + '<br>' + movieObj.runtime + ' minutes</div>'
+                  + '<div class="boom-movie-grid-info-overlay-title">' + title + '</div>'
+                  + '<div class="boom-movie-grid-info-overlay-text-additional">' + additional + ' minutes</div>'
               + '</div>'
           + '</div>'
       + '</div>'
@@ -567,27 +576,32 @@ ka.lib.moveFocusToIndex = function (index) {
 
 ka.lib.toggleGridFocus = function () {
     var uuid = ka.lib.getFirstMovieObjectFromCoord(ka.state.gridFocusX, ka.lib.getGridFocusAbsoluteY()).uuid,
-        element = $('#boom-movie-grid-item-' + uuid + ' .boom-movie-grid-info-overlay'),
-        movieObj = ka.lib.getVariantFromGridFocus(),
-        source, additionalHtml;
+        element = $('#boom-movie-grid-item-' + uuid + ' .boom-movie-grid-info-overlay');
 
-    if ($.isArray(movieObj)) {
-        source = movieObj[0];
+    if (!element.hasClass('active')) {
+        var movieObj = ka.lib.getVariantFromGridFocus(),
+            source, additionalHtml;
 
-        for (var movie, years = [], index = 0; movie = movieObj[index]; index++) {
-            years.push(movie.releaseYear);
+        if ($.isArray(movieObj)) {
+            source = movieObj[0];
+
+            for (var movie, years = [], index = 0; movie = movieObj[index]; index++) {
+                years.push(movie.releaseYear);
+            }
+            additionalHtml = Math.min.apply(Math, years) + ' - ' + Math.max.apply(Math, years);
+        } else {
+            source = movieObj;
+
+            additionalHtml = movieObj.releaseYear + '<br>' + movieObj.runtime + ' minutes';
         }
-        additionalHtml = Math.min.apply(Math, years) + ' - ' + Math.max.apply(Math, years);
+
+        element
+            .find('.boom-movie-grid-info-overlay-title').html(ka.lib.getLocalizedTitle(source, true)).end()
+            .find('.boom-movie-grid-info-overlay-text-additional').html(additionalHtml).end()
+            .addClass('active');
     } else {
-        source = movieObj;
-
-        additionalHtml = movieObj.releaseYear + '<br>' + movieObj.runtime + ' minutes';
+        element.removeClass('active');
     }
-
-    element
-        .find('.boom-movie-grid-info-overlay-title').html(ka.lib.getLocalizedTitle(source, true)).end()
-        .find('.boom-movie-grid-info-overlay-text-additional').html(additionalHtml).end()
-        .toggleClass('active');
 };
 
 
@@ -599,7 +613,7 @@ ka.lib.toggleCompilationFocus = function () {
         .find('.boom-movie-grid-info-overlay-title')
             .css('backgroundColor', '#' + movieObj.primaryPosterColor)
             .html(
-                ka.lib.getLocalizedTitle(movieObj, true)
+                ka.lib.getLocalizedTitle(movieObj, true, true)
             ).end()
         .find('.boom-movie-grid-info-overlay-text-additional').html(
                 movieObj.releaseYear + '<br>' + movieObj.runtime + ' minutes'

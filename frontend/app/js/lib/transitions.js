@@ -33,6 +33,8 @@ ka.transition.menu = {to: {
         $('#boom-poster-focus').velocity({translateZ: 0, left: '-=780', opacity: '+=1'}, 360);
         $('#boom-movie-config').velocity({translateZ: 0, left: '-=780'}, {duration: 360, complete: function () {
             ka.state.currentPageMode = 'grid';
+
+            ka.lib.unoccludeMovieGrid();
         }});
     }
 
@@ -43,6 +45,8 @@ ka.transition.grid = {to: {
 
     menu: function () {     /* screen state transition: OK */
         ka.state.currentPageMode = 'limbo';
+
+        ka.lib.occludeMovieGrid();
 
         $('#boom-movie-grid-container, #boom-movie-detail').velocity({translateZ: 0, left: '+=780', opacity: '-=0.5'}, 360);
         $('#boom-poster-focus').velocity({translateZ: 0, left: '+=780', opacity: '-=1'}, 360);

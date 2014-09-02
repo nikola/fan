@@ -59,11 +59,15 @@ ka.lib.executeMenuSelection = function () {
         }
 
         if (ka.state.gridSortCriterion != lastCriterion || ka.state.gridSortOrder != lastOrder) {
+            ka.lib.unoccludeMovieGrid();
+
             ka.lib.updateMovieGridRefocused(function () {
                 ka.state.desaturationImageCache = [];
             });
 
             $('#boom-poster-focus').velocity({translateZ: 0, left: '+=780'}, 0);
+
+            ka.lib.occludeMovieGrid();
         }
     }
 };

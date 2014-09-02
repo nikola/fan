@@ -121,8 +121,12 @@
     height: auto;
     margin: 0 auto;
 
+    /*
+     DON'T ENABLE THIS AS IT CAUSES STUTTERING DURING SCROLLS!
+
     -webkit-transform: translate3d(0, 0, 0);
     -webkit-backface-visibility: hidden;
+    */
     }
 
 .boom-compilation-grid-item img {

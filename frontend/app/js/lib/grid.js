@@ -31,6 +31,10 @@ ka.lib.setPrimaryPosterColor = function () {
     }
 
     gridItem.find('.boom-movie-grid-info-overlay').removeClass('active');
+    ka.state.setOfKnownPosters[uuid] = true;
+    if (uuid in ka.state.setOfUnknownPosters) {
+        delete ka.state.setOfUnknownPosters[uuid];
+    }
 
     if (ka.state.isProcessingInitialItems) {
         ka.state.processingInitialItemsCount -= 1;
@@ -246,18 +250,22 @@ ka.lib.updateMovieGridOnChange = function () {
                 }
             }
 
-            if (ka.state.currentPageMode == 'config' && movie !== null) {
+            if (movie !== null) {
                 var element = $('#boom-poster-' + movie.uuid);
                 if (row >= ka.state.gridPage * ka.settings.gridMaxRows
                         && row < (ka.state.gridPage + 1) * ka.settings.gridMaxRows
                         && column < 4) {
-                    ka.state.desaturationImageCache[movie.uuid] = element;
-                    element.get(0).style.webkitFilter = 'grayscale(100%)';
-                } else {
-                    if (movie.uuid in ka.state.desaturationImageCache) {
-                        delete ka.state.desaturationImageCache[movie.uuid];
+                    if (ka.state.currentPageMode == 'config') {
+                        ka.state.desaturationImageCache[movie.uuid] = element;
+                        element.get(0).style.webkitFilter = 'grayscale(100%)';
                     }
-                    element.get(0).style.webkitFilter = null;
+                } else {
+                    if (ka.state.currentPageMode == 'config') {
+                        if (movie.uuid in ka.state.desaturationImageCache) {
+                            delete ka.state.desaturationImageCache[movie.uuid];
+                        }
+                        element.get(0).style.webkitFilter = null;
+                    }
                 }
             }
 
@@ -361,9 +369,11 @@ ka.lib.renderMovieGridCell = function (movie, operation, context) {
 
 
 ka.lib.renderMovieObject = function (movieObj, movieId, posterId, posterWidth, posterHeight, infix) {
+    var extraClass = (movieObj.uuid in ka.state.setOfUnknownPosters || !(movieObj.uuid in ka.state.setOfKnownPosters)) ? ' active' : '';
+
     return $(
         '<div id="' + movieId + '" class="boom-' + infix + '-grid-item">'
-          + '<div class="boom-movie-grid-info-overlay active">'
+          + '<div class="boom-movie-grid-info-overlay' + extraClass + '">'
               + '<div class="boom-movie-grid-info-overlay-image">'
                   + '<img class="boom-movie-grid-image" id="' + posterId + '" src="/movie/poster/' + movieObj.uuid + '-' + posterWidth + '.image" width="' + posterWidth + '" height="' + posterHeight + '">'
               + '</div>'

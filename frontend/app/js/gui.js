@@ -50,6 +50,9 @@ ka.state = {
   , processingInitialItemsCount: null
   , isPlayerUpdated: false
   , occludedGridItems: null
+
+  , setOfKnownPosters: {}
+  , setOfUnknownPosters: {}
 };
 
 
@@ -61,6 +64,8 @@ function c4b77b2bcc804808a9ab107b8e2ac434() {
     ka.state.socketDispatcher = new ka.lib.WebSocketDispatcher(url);
 
     ka.state.socketDispatcher.bind('receive:movie:item', function (movie) {
+        ka.state.setOfUnknownPosters[movie.uuid] = true;
+
         ka.lib.addMovie(movie);
 
         ka.lib.updateMovieGridOnAdd();
@@ -125,14 +130,16 @@ function a4b4e7515096403cb29247517b276397() {
     $.ajax({
         url: '/movies/all',
         success: function (list) {
-            var index = list.length;
+            var index = list.length, movie;
             if (index) {
                 ka.state.shouldFocusFadeIn = false;
                 ka.state.isProcessingInitialItems = true;
                 ka.state.processingInitialItemsCount = index;
 
                 while (index--) {
-                    ka.lib.addMovie(list[index]);
+                    movie = list[index];
+                    ka.state.setOfKnownPosters[movie.uuid] = true;
+                    ka.lib.addMovie(movie);
                 }
                 ka.lib.recalcMovieGrid();
                 ka.lib.updateMovieGridOnChange();

@@ -139,7 +139,7 @@ def start(callback, userAgent, serverPort, bridgeToken, bootToken, mustSecure, u
     appSettings.update({
         'cache_path':              os.path.join(APP_STORAGE_PATH, getCurrentInstanceIdentifier() + '.cache'),
         'log_severity':            msie.LOGSEVERITY_DISABLE,
-        'browser_subprocess_path': os.path.join(ASSETS_PATH, 'trident', 'iexplore'),
+        'browser_subprocess_path': os.path.join(ASSETS_PATH, 'trident', 'ka-BOOM-GUI'),
         'user_agent':              userAgent,
         'locales_dir_path':        os.path.join(ASSETS_PATH, 'trident'),
     })

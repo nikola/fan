@@ -38,10 +38,10 @@ a.datas.append(('trident/libcef.dll',                   '../trident/libcef.dll',
 a.datas.append(('trident/libEGL.dll',                   '../trident/libEGL.dll',                    'DATA'))
 a.datas.append(('trident/libgfx.dll',                   '../trident/libgfx.dll',                    'DATA'))
 a.datas.append(('trident/libGLESv2.dll',                '../trident/libGLESv2.dll',                 'DATA'))
-a.datas.append(('trident/Microsoft.VC90.CRT.manifest',  '../trident/Microsoft.VC90.CRT.manifest',   'DATA'))
+# a.datas.append(('trident/Microsoft.VC90.CRT.manifest',  '../trident/Microsoft.VC90.CRT.manifest',   'DATA'))
 a.datas.append(('trident/msvcm90.dll',                  '../trident/msvcm90.dll',                   'DATA'))
 a.datas.append(('trident/msvcp90.dll',                  '../trident/msvcp90.dll',                   'DATA'))
-a.datas.append(('trident/msvcr90.dll',                  '../trident//msvcr90.dll',                  'DATA'))
+a.datas.append(('trident/msvcr90.dll',                  '../trident/msvcr90.dll',                   'DATA'))
 
 a.datas.append(('tools/convert.exe',  '../tools/convert.exe',   'DATA'))
 a.datas.append(('tools/LICENSE',      '../tools/LICENSE',       'DATA'))

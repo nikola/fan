@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <assembly xmlns="urn:schemas-microsoft-com:asm.v1" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3" manifestVersion="1.0">
-    <assemblyIdentity version="1.0.0.0" processorArchitecture="*" name="ka-BOOM" type="win32"/>
-    <description>Compile HD movies from any drive. Play back in ultra-high quality thanks to best-of-breed components. Sort by title, rating, or year. Watch trailers. Access movies by shortcuts. And more.</description>
+    <assemblyIdentity version="0.11.1.0" processorArchitecture="*" name="ka-BOOM" type="win32"/>
+    <description>A movie compilation and playback app for Windows. Fast. Lean. No weather widget.</description>
 
     <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
         <application>

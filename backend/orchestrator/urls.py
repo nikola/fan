@@ -71,8 +71,8 @@ def d84349a839a6400aa7494cd609f61cb0(request, pathname):
 def fca6b9336a1a47319ea1a87b349fd659(request):
     string = readProcessedStream('b1932b8b02de45bc9ec66ebf1c75bb15')
 
-    filename = os.path.join(ASSETS_PATH, 'shaders', 'b1932b8b02de45bc9ec66ebf1c75bb15.cso')
-    timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
+    # filename = os.path.join(ASSETS_PATH, 'shaders', 'b1932b8b02de45bc9ec66ebf1c75bb15.cso')
+    # timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
 
     stream = StringIO()
     with gzip.GzipFile(filename='dummy', mode='wb', fileobj=stream) as gzipStream:
@@ -80,8 +80,8 @@ def fca6b9336a1a47319ea1a87b349fd659(request):
 
     headers = SERVER_HEADERS.copy()
     headers.update({
-        'Last-modified': getRfc1123Timestamp(timestamp),
-        'Cache-Control': 'max-age=0, must-revalidate',
+        # 'Last-modified': getRfc1123Timestamp(timestamp),
+        'Cache-Control': 'no-cache', # max-age=0, must-revalidate',
         'Content-Encoding': 'gzip',
     })
 
@@ -95,8 +95,8 @@ def ffc129266de544c183ffc82d679e07ad(request):
     # Inject current user configuration.
     string = string.replace('</script>', '; ka.config = %s;</script>' % simplejson.dumps(module.userConfig))
 
-    filename = os.path.join(ASSETS_PATH, 'shaders', 'e7edf96693d14aa8a011da221782f4a6.cso')
-    timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
+    # filename = os.path.join(ASSETS_PATH, 'shaders', 'e7edf96693d14aa8a011da221782f4a6.cso')
+    # timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
 
     stream = StringIO()
     with gzip.GzipFile(filename='dummy', mode='wb', fileobj=stream) as gzipStream:
@@ -104,8 +104,8 @@ def ffc129266de544c183ffc82d679e07ad(request):
 
     headers = SERVER_HEADERS.copy()
     headers.update({
-        'Last-modified': getRfc1123Timestamp(timestamp),
-        'Cache-Control': 'max-age=0, must-revalidate',
+        # 'Last-modified': getRfc1123Timestamp(timestamp),
+        'Cache-Control': 'no-cache', # 'max-age=0, must-revalidate',
         'Content-Encoding': 'gzip',
     })
 
@@ -116,8 +116,8 @@ def ffc129266de544c183ffc82d679e07ad(request):
 def bc470fe6ce0c4b8695402e77934d83cc(request):
     content = readProcessedStream('c9d25707d3a84c4d80fdb6b0789bdcf6')
 
-    filename = os.path.join(ASSETS_PATH, 'shaders', 'c9d25707d3a84c4d80fdb6b0789bdcf6.cso')
-    timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
+    # filename = os.path.join(ASSETS_PATH, 'shaders', 'c9d25707d3a84c4d80fdb6b0789bdcf6.cso')
+    # timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
 
     # Inject current user configuration.
     content = content.replace('</script>', '; ka.config = %s;</script>' % simplejson.dumps(module.userConfig))
@@ -132,8 +132,8 @@ def bc470fe6ce0c4b8695402e77934d83cc(request):
 
     headers = SERVER_HEADERS.copy()
     headers.update({
-        'Last-modified': getRfc1123Timestamp(timestamp),
-        'Cache-Control': 'max-age=0, must-revalidate',
+        # 'Last-modified': getRfc1123Timestamp(timestamp),
+        'Cache-Control': 'no-cache', # 'max-age=0, must-revalidate',
         'Content-Encoding': 'gzip',
     })
 

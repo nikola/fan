@@ -340,7 +340,7 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
                     compilationId   = collectionId,
                     compilationName = collectionName,
                 )
-    except (JSONDecodeError, AttributeError, TypeError):
+    except (JSONDecodeError, AttributeError, TypeError, KeyError):
         logger.error('Error while querying themoviedb.org for "%s" or "%s".', searchTitlePrimary, searchTitleSecondary)
 
     return record

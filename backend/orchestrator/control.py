@@ -213,12 +213,11 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
 
                         if movieRecord is None:
                             logger.warning('Could not identify file: %s' % streamLocation) # TODO: handle this! perhaps try again when app is re-launched?
+                        else:
+                            movieUuid = streamManager.addMovieStream(movieRecord, streamLocation) # TODO: re-wire stream to correct movie if necessary
 
-                        movieUuid = streamManager.addMovieStream(movieRecord, streamLocation) # TODO: re-wire stream to correct movie if necessary
+                            _processRequests()
 
-                        _processRequests()
-
-                        if movieRecord is not None:
                             if pubSubReference.connected:
                                 pubSubReference.write(unicode('["receive:movie:item", %s]' % streamManager.getMovieAsJson(movieUuid)))
                                 _processRequests()

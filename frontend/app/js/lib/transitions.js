@@ -13,6 +13,8 @@ ka.transition.menu = {to: {
     grid: function () {     /* screen state transition: OK */
         ka.state.currentPageMode = 'limbo';
 
+        ka.lib.occludeMovieGrid();
+
         $('#boom-movie-config, #boom-movie-grid-container, #boom-poster-focus').velocity(
             {translateZ: 0, left: '-=780'}
           , {
@@ -26,9 +28,9 @@ ka.transition.menu = {to: {
                     });
                 }
               , complete: function () {
-                    ka.state.currentPageMode = 'grid';
-
                     ka.lib.unoccludeMovieGrid();
+
+                    ka.state.currentPageMode = 'grid';
 
                     $.each(ka.state.desaturationImageCache, function (key, value) {
                         value.style.webkitFilter = null;
@@ -84,6 +86,8 @@ ka.transition.grid = {to: {
                     });
                 }
               , complete: function () {
+                    ka.lib.unoccludeMovieGrid();
+
                     ka.state.currentPageMode = 'config';
                 }
             }

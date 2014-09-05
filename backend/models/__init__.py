@@ -354,7 +354,7 @@ class StreamManager(object):
 
             movieList = []
             for movie, localization in session.query(Movie, Localization).filter(Movie.id == Localization.movieId, Localization.locale == 'en').group_by(Movie.id).distinct():
-                if any([True for stream in movie.streams if os.path.exists(stream.location)]):
+                if movie.streamless or any([True for stream in movie.streams if os.path.exists(stream.location)]):
                     try:
                         primaryPosterColor = list(session.query(Image).filter(Image.movieId == movie.id).values(Image.primaryColor))[0][0]
                     except (NoResultFound, IndexError):

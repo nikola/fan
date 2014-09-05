@@ -49,13 +49,17 @@ logger.addHandler(getLogFileHandler('tmdb'))
 def getImageConfiguration():
     configuration = getThrottledJsonResponse('https://api.themoviedb.org/3/configuration', params={'api_key': THEMOVIEDB_API_KEY})
 
-    sizes = configuration.get('images').get('poster_sizes')
-    if 'original' in sizes: sizes.remove('original')
-    closestWidth = min(sizes, key=lambda x: abs(int(x[1:]) - 300))
-    if int(closestWidth[1:]) < 300:
-        closestWidth = sizes[sizes.index(closestWidth) + 1]
+    try:
+        sizes = configuration.get('images').get('poster_sizes')
+    except AttributeError:
+        return None, None
+    else:
+        if 'original' in sizes: sizes.remove('original')
+        closestWidth = min(sizes, key=lambda x: abs(int(x[1:]) - 300))
+        if int(closestWidth[1:]) < 300:
+            closestWidth = sizes[sizes.index(closestWidth) + 1]
 
-    return configuration.get('images').get('secure_base_url'), closestWidth
+        return configuration.get('images').get('secure_base_url'), closestWidth
 
 
 def getFixedRecords():

@@ -59,7 +59,9 @@ def _getImageResponse(request, imageModified, imageBlob):
 def d84349a839a6400aa7494cd609f61cb0(request, pathname):
     if DEBUG or pathname == module.bootToken:
         module.imageBaseUrl, module.imageClosestSize = getImageConfiguration()
-        module.interProcessQueue.put('configuration:image-base-url:%s' % module.imageBaseUrl)
+
+        if module.imageBaseUrl is not None:
+            module.interProcessQueue.put('configuration:image-base-url:%s' % module.imageBaseUrl)
 
         return '', 200
     else:
@@ -146,12 +148,14 @@ def ba2c90f025af404381e88bf8fc18afb2(request, movieUuid, width):
 
     if imageBlob is None:
         pathPoster = module.streamManager.getMovieByUuid(movieUuid).urlPoster
-        urlPoster = '%s%s%s' % (module.imageBaseUrl, module.imageClosestSize, pathPoster)
+
         try:
+            if module.imageBaseUrl is None: raise
+            urlPoster = '%s%s%s' % (module.imageBaseUrl, module.imageClosestSize, pathPoster)
             blob = requests.get(urlPoster, headers={'User-Agent': ENTROPY_SEED}).content
         except:
-            logger.error('Could not download poster from %s', urlPoster)
-            return error(500)
+            logger.error('Could not download poster for %s.', module.streamManager.getMovieTitleByUuid(movieUuid))
+            return '', 200
         else:
             imageModified, imageBlob = module.streamManager.saveImageData(movieUuid, width, blob, False, 'Poster', 'JPEG', '%soriginal%s' % (module.imageBaseUrl, pathPoster))
 
@@ -162,7 +166,11 @@ def ba2c90f025af404381e88bf8fc18afb2(request, movieUuid, width):
 def f4a77eba4c284a6ba9ef0fc9386a0c00(request, movieUuid):
     imageModified, imageBlob = module.streamManager.getImageByUuid(movieUuid, 'Backdrop') # BUGGY ?????!
     if imageBlob is None:
-        imageModified, imageBlob = downloadBackdrop(module.streamManager, module.imageBaseUrl, movieUuid)
+        if module.imageBaseUrl is None:
+            logger.error('Could not download backdrop for %s.', module.streamManager.getMovieTitleByUuid(movieUuid))
+            return '', 200
+        else:
+            imageModified, imageBlob = downloadBackdrop(module.streamManager, module.imageBaseUrl, movieUuid)
 
     return _getImageResponse(request, imageModified, imageBlob)
 

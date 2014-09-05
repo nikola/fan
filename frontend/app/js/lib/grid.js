@@ -7,9 +7,38 @@
 ; var ka = ka || {}; if (!('lib' in ka)) ka.lib = {};
 
 
+ka.lib.onPosterLoaded = function () {
+    if (ka.state.isProcessingInitialItems) {
+        ka.state.processingInitialItemsCount -= 1;
+
+        if (ka.state.processingInitialItemsCount == 0) {
+            ka.state.isProcessingInitialItems = false;
+            ka.state.processingInitialItemsCount = null;
+
+            ed59df96be5e4cdc88fe356cd99c4ac6();
+        }
+    }
+};
+
+
+ka.lib.hideBrokenPoster = function () {
+    var overlayElement = $(this).closest('.boom-movie-grid-info-overlay'),
+        movieObj = ka.data.byUuid[$(this).closest('.boom-grid-item').data('boom.uuid')];
+
+    ka.lib.activatePosterOverlay(movieObj, overlayElement);
+
+    overlayElement.addClass('boom-blocked');
+
+    $(this).hide();
+
+    ka.lib.onPosterLoaded();
+};
+
+
 ka.lib.setPrimaryPosterColor = function () {
     var gridItem = $(this).closest('.boom-movie-grid-item'),
         uuid = gridItem.data('boom.uuid');
+
     if ('primaryPosterColor' in ka.data.byUuid[uuid]) {
         /*  Weird bug:
          *  Trigger full render of grid by painting every single poster on canvas.
@@ -36,16 +65,7 @@ ka.lib.setPrimaryPosterColor = function () {
         delete ka.state.setOfUnknownPosters[uuid];
     }
 
-    if (ka.state.isProcessingInitialItems) {
-        ka.state.processingInitialItemsCount -= 1;
-
-        if (ka.state.processingInitialItemsCount == 0) {
-            ka.state.isProcessingInitialItems = false;
-            ka.state.processingInitialItemsCount = null;
-
-            ed59df96be5e4cdc88fe356cd99c4ac6();
-        }
-    }
+    ka.lib.onPosterLoaded();
 };
 
 
@@ -355,9 +375,9 @@ ka.lib.renderMovieGridCell = function (movie, operation, context) {
               , 'boom-poster-' + movie.uuid
               , 200, 300
               , 'movie'
+              , ka.lib.setPrimaryPosterColor
+              , ka.lib.hideBrokenPoster
             );
-
-            cell.find('img').on('load', ka.lib.setPrimaryPosterColor);
         }
     } else {
         var cell = $('<div class="boom-movie-grid-item empty"></div>');
@@ -375,7 +395,7 @@ ka.lib.renderMovieGridCell = function (movie, operation, context) {
 };
 
 
-ka.lib.renderMovieObject = function (movieObj, movieId, posterId, posterWidth, posterHeight, infix) {
+ka.lib.renderMovieObject = function (movieObj, movieId, posterId, posterWidth, posterHeight, infix, onLoaded, onError) {
     if (movieObj.uuid in ka.state.setOfUnknownPosters || !(movieObj.uuid in ka.state.setOfKnownPosters)) {
         var extraClass =  ' active',
             title = ka.lib.getLocalizedTitle(movieObj, true),
@@ -384,20 +404,23 @@ ka.lib.renderMovieObject = function (movieObj, movieId, posterId, posterWidth, p
         var extraClass = title = additional = '';
     }
 
-
     return $(
-        '<div id="' + movieId + '" class="boom-' + infix + '-grid-item">'
+        '<div id="' + movieId + '" class="boom-' + infix + '-grid-item boom-grid-item">'
           + '<div class="boom-movie-grid-info-overlay' + extraClass + '">'
               + '<div class="boom-movie-grid-info-overlay-image">'
-                  + '<img class="boom-movie-grid-image" id="' + posterId + '" src="/movie/poster/' + movieObj.uuid + '-' + posterWidth + '.image" width="' + posterWidth + '" height="' + posterHeight + '">'
+                  + '<img class="boom-movie-grid-image" id="' + posterId + '" width="' + posterWidth + '" height="' + posterHeight + '">'
               + '</div>'
               + '<div class="boom-movie-grid-info-overlay-text">'
                   + '<div class="boom-movie-grid-info-overlay-title">' + title + '</div>'
                   + '<div class="boom-movie-grid-info-overlay-text-additional">' + additional + ' minutes</div>'
               + '</div>'
           + '</div>'
-      + '</div>'
-    ).data('boom.uuid', movieObj.uuid);
+      + '</div>').data('boom.uuid', movieObj.uuid)
+        .find('img')
+            .error(onError)
+            .on('load', onLoaded)
+            .attr('src', '/movie/poster/' + movieObj.uuid + '-' + posterWidth + '.image')
+        .end();
 };
 
 
@@ -579,31 +602,39 @@ ka.lib.moveFocusToIndex = function (index) {
 };
 
 
+ka.lib.activatePosterOverlay = function (movieObj, element) {
+    var source, additionalHtml;
+
+    if ($.isArray(movieObj)) {
+        source = movieObj[0];
+
+        for (var movie, years = [], index = 0; movie = movieObj[index]; index++) {
+            years.push(movie.releaseYear);
+        }
+        additionalHtml = Math.min.apply(Math, years) + ' - ' + Math.max.apply(Math, years);
+    } else {
+        source = movieObj;
+
+        additionalHtml = movieObj.releaseYear + '<br>' + movieObj.runtime + ' minutes';
+    }
+
+    element
+        .find('.boom-movie-grid-info-overlay-title').html(ka.lib.getLocalizedTitle(source, true)).end()
+        .find('.boom-movie-grid-info-overlay-text-additional').html(additionalHtml).end()
+        .addClass('active');
+};
+
+
 ka.lib.toggleGridFocus = function () {
     var uuid = ka.lib.getFirstMovieObjectFromCoord(ka.state.gridFocusX, ka.lib.getGridFocusAbsoluteY()).uuid,
         element = $('#boom-movie-grid-item-' + uuid + ' .boom-movie-grid-info-overlay');
 
-    if (!element.hasClass('active')) {
-        var movieObj = ka.lib.getVariantFromGridFocus(),
-            source, additionalHtml;
+    if (element.hasClass('boom-blocked')) {
+        return;
+    } else if (!element.hasClass('active')) {
+        var movieObj = ka.lib.getVariantFromGridFocus();
 
-        if ($.isArray(movieObj)) {
-            source = movieObj[0];
-
-            for (var movie, years = [], index = 0; movie = movieObj[index]; index++) {
-                years.push(movie.releaseYear);
-            }
-            additionalHtml = Math.min.apply(Math, years) + ' - ' + Math.max.apply(Math, years);
-        } else {
-            source = movieObj;
-
-            additionalHtml = movieObj.releaseYear + '<br>' + movieObj.runtime + ' minutes';
-        }
-
-        element
-            .find('.boom-movie-grid-info-overlay-title').html(ka.lib.getLocalizedTitle(source, true)).end()
-            .find('.boom-movie-grid-info-overlay-text-additional').html(additionalHtml).end()
-            .addClass('active');
+        ka.lib.activatePosterOverlay(movieObj, element);
     } else {
         element.removeClass('active');
     }
@@ -718,6 +749,8 @@ ka.lib.populateCompilationGrid = function () {
           , 'boom-movie-compilation-poster-' + movieObj.uuid
           , 300, 450
           , 'compilation'
+          , null
+          , ka.lib.hideBrokenPoster
         ).appendTo('#boom-compilation-grid');
     }
 };

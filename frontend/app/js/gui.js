@@ -170,6 +170,13 @@ window.onerror = function (message, filename, lineno, colno, error) {
 };
 
 
+/* Disable back button. */
+window.history.pushState(null, null, 'c7b4165ce062400e90f943066564582a');
+window.onpopstate = function () {
+    window.history.pushState(null, null, 'c7b4165ce062400e90f943066564582a');
+};
+
+
 $(document).ready(function () {
     ka.state.maxConfigButton = $('#boom-config-button-group .boom-button').length;
     ka.state.canvasContext = $('#boom-image-color-canvas').get(0).getContext('2d');

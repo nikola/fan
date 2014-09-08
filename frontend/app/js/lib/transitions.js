@@ -112,7 +112,7 @@ ka.transition.grid = {to: {
         ka.lib.updateDetailPage(obj, function () {
             ka.lib.updateDetailButtonSelection();
 
-            $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({translateZ: 0, left: '-=1920'}, {duration: 720, complete: function () {
+            $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({translateZ: 0, left: '-=1920'}, {duration: ka.settings.durationLong, complete: function () {
                 ka.state.currentPageMode = 'detail';
                 ka.state.actualScreenMode = null;
             }});
@@ -171,7 +171,7 @@ ka.transition.compilation = {to: {
 
             ka.lib.updateDetailButtonSelection();
 
-            $('#boom-compilation-container, #boom-compilation-focus, #boom-movie-detail').velocity({translateZ: 0, left: '-=1920'}, {duration: 720, complete: function () {
+            $('#boom-compilation-container, #boom-compilation-focus, #boom-movie-detail').velocity({translateZ: 0, left: '-=1920'}, {duration: ka.settings.durationLong, complete: function () {
                 ka.state.currentPageMode = 'detail';
             }});
         });
@@ -186,7 +186,7 @@ ka.transition.detail = {to: {
         ka.state.currentPageMode = 'limbo';
 
         $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail')
-            .velocity({translateZ: 0, left: '+=1920'}, {duration: 720, complete: function () {
+            .velocity({translateZ: 0, left: '+=1920'}, {duration: ka.settings.durationLong, complete: function () {
                 /* No refocus necessary here, as ka.lib.updateMovieGridOnAdd() has been called previously. */
                 ka.lib.updateMovieGridOnReturn();
                 ka.state.currentPageMode = 'grid';
@@ -197,7 +197,7 @@ ka.transition.detail = {to: {
         ka.state.currentPageMode = 'limbo';
 
         $('#boom-compilation-container, #boom-compilation-focus, #boom-movie-detail')
-            .velocity({translateZ: 0, left: '+=1920'}, {duration: 720, complete: function () {
+            .velocity({translateZ: 0, left: '+=1920'}, {duration: ka.settings.durationLong, complete: function () {
                 ka.state.currentPageMode = 'grid-compilation';
             }});
     }

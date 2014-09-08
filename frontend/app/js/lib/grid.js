@@ -305,7 +305,7 @@ ka.lib.updateMovieGridOnChange = function () {
     if (ka.state.gridLookupMatrix.length) {
         if (ka.state.currentPageMode == 'grid') {
             if (ka.state.shouldFocusFadeIn) {
-                $('#boom-poster-focus').velocity('fadeIn', 720);
+                $('#boom-poster-focus').velocity('fadeIn', ka.settings.durationLong);
                 ka.state.shouldFocusFadeIn = false;
             } else {
                 $('#boom-poster-focus').css('display', 'block');
@@ -425,7 +425,7 @@ ka.lib.renderMovieObject = function (movieObj, movieId, posterId, posterWidth, p
 
 
 ka.lib.scrollGrid = function () {
-    $('#boom-movie-grid-container').velocity({translateZ: 0, translateY: '-' + (ka.state.gridPage * 1080) + 'px'}, {duration: 720, easing: 'ease-out'});
+    $('#boom-movie-grid-container').velocity({translateZ: 0, translateY: '-' + (ka.state.gridPage * 1080) + 'px'}, {duration: ka.settings.durationLong, easing: 'ease-out'});
 };
 
 
@@ -527,7 +527,7 @@ ka.lib.moveFocusUp = function () {
             ka.state.gridFocusY -= 1;
         } else {
             props.top = '+=720';
-            options.duration = 720;
+            options.duration = ka.settings.durationLong;
 
             ka.state.gridFocusY = ka.settings.gridMaxRows - 1;
             ka.state.gridPage -= 1;
@@ -562,7 +562,7 @@ ka.lib.moveFocusDown = function () {
             ka.state.gridFocusY += 1;
         } else {
             props.top = '-=720';
-            options.duration = 720;
+            options.duration = ka.settings.durationLong;
 
             ka.state.gridFocusY = 0;
             ka.state.gridPage += 1;
@@ -779,7 +779,7 @@ ka.lib.zoomInGridPage = function (callback) {
     $('.boom-movie-grid-key').slice(ka.state.gridPage * ka.settings.gridMaxRows, (ka.state.gridPage + 1) * ka.settings.gridMaxRows)
         .velocity({opacity: 1}, ka.settings.durationNormal);
 
-    $('#boom-compilation-focus').velocity('fadeOut', 180);
+    $('#boom-compilation-focus').velocity('fadeOut', ka.settings.durationShort);
 
     $('#boom-compilation-container').velocity('transition.expandOut', {display: 'none', duration: ka.settings.durationNormal, complete: function () {
         $('#boom-compilation-grid').empty();
@@ -791,7 +791,7 @@ ka.lib.zoomInGridPage = function (callback) {
 
 
 ka.lib.zoomOutGridPage = function (callback) {
-    $('#boom-poster-focus').velocity('fadeOut', 180);
+    $('#boom-poster-focus').velocity('fadeOut', ka.settings.durationShort);
 
     var gridMaxColumns = ka.settings.gridMaxColumns,
         posterArray = ka.lib.getCurrentScreenPosters(gridMaxColumns),
@@ -823,7 +823,7 @@ ka.lib.zoomOutGridPage = function (callback) {
     }
 
     $('.boom-movie-grid-key').slice(ka.state.gridPage * ka.settings.gridMaxRows, (ka.state.gridPage + 1) * ka.settings.gridMaxRows)
-        .velocity({opacity: 0}, 180);
+        .velocity({opacity: 0}, ka.settings.durationShort);
 
     $('#boom-compilation-container')
         .css({
@@ -837,7 +837,7 @@ ka.lib.zoomOutGridPage = function (callback) {
                     top: coord.top + ka.settings.compilationPosterOffsetTop
                   , left: coord.left + ka.settings.compilationPosterOffsetLeft
                 })
-                .velocity('fadeIn', {duration: 180, complete: callback});
+                .velocity('fadeIn', {duration: ka.settings.durationShort, complete: callback});
         }});
 };
 
@@ -893,7 +893,7 @@ ka.lib.moveFocusX = function (offsetY) {
     var itemsPerLineAtTarget = ka.state.gridLookupItemsPerLine[gridFocusTargetY];
 
     if (itemsPerLineAtTarget <= ka.state.gridFocusX) {
-        return [{left: ka.lib.repositionFocusX(gridFocusTargetY)}, {duration: 720, easing: 'easeOutSine'}];
+        return [{left: ka.lib.repositionFocusX(gridFocusTargetY)}, {duration: ka.settings.durationLong, easing: 'easeOutSine'}];
     } else {
         return null;
     }

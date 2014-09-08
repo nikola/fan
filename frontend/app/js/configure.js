@@ -85,7 +85,7 @@ function handleKeypressLeft() {
         }
     } else {
         if (!ka.state.isStartButtonSelected) {
-            $('#boom-button-start-floater').velocity({opacity: 0, backgroundColorGreen: 0, backgroundColorBlue: 0}, {duration: 720});
+            $('#boom-button-start-floater').velocity({opacity: 0, backgroundColorGreen: 0, backgroundColorBlue: 0}, ka.settings.durationLong);
         }
 
         $("#boom-split-choices").velocity({marginLeft: '+=420'}, {duration: ka.settings.durationNormal, easing: 'ease-in'});
@@ -124,7 +124,7 @@ function handleKeypressRight() {
         $('#boom-choice-confirm .boom-button').velocity('fadeIn', {display: 'inline-block', duration: ka.settings.durationNormal});
     } else {
         $('#boom-button-selection-floater').css('opacity', 0);
-        $('#boom-button-start-floater').velocity({opacity: 1, backgroundColorGreen: 116, backgroundColorBlue: 217}, {duration: 720});
+        $('#boom-button-start-floater').velocity({opacity: 1, backgroundColorGreen: 116, backgroundColorBlue: 217}, ka.settings.durationLong);
 
         $("#boom-split-choices").velocity({marginLeft: '-=420'}, {duration: ka.settings.durationNormal, easing: 'ease-in'});
         $('#boom-choice-right, #boom-choice-splitter').velocity('fadeIn', {display: null, duration: ka.settings.durationNormal});

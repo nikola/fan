@@ -22,7 +22,9 @@ ka.settings = {
   , compilationPosterOffsetTop: -18
   , compilationPosterOffsetLeft: 12
 
+  , durationShort: 180
   , durationNormal: 360
+  , durationLong: 720
 };
 
 ka.state = {

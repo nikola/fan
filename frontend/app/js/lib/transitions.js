@@ -18,7 +18,7 @@ ka.transition.menu = {to: {
         $('#boom-movie-config, #boom-movie-grid-container, #boom-poster-focus').velocity(
             {translateZ: 0, left: '-=780'}
           , {
-                duration: 360
+                duration: ka.settings.durationNormal
               , progress: function (elements, percentComplete) {
                     elements[1].style.opacity = 0.5 + percentComplete / 2;
                     elements[2].style.opacity = percentComplete;

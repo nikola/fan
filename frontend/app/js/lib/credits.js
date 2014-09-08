@@ -10,7 +10,7 @@
 ka.lib.showLicenseTexts = function () {
     ka.state.currentPageMode = 'credits';
 
-    $('#content').velocity('fadeOut', {duration: 360, complete: function () {
+    $('#content').velocity('fadeOut', {duration: ka.settings.durationNormal, complete: function () {
         ka.state.licenses = ka.lib.getLicenseTexts().reverse();
         ka.state.licenseTextIndex = ka.state.licenses.length - 1;
         ka.lib.showNextLicense();
@@ -22,8 +22,8 @@ ka.lib.showNextLicense = function () {
     if (ka.state.licenseTextIndex > -1) {
         var licenseText = ka.state.licenses[ka.state.licenseTextIndex].trim();
         $('#boom-credit-text').html(licenseText)
-            .velocity('fadeIn', {duration: 360, display: 'flex', complete: function () {
-                $('#boom-credit-text').velocity('fadeOut', {delay: 5000, duration: 360, complete: function () {
+            .velocity('fadeIn', {duration: ka.settings.durationNormal, display: 'flex', complete: function () {
+                $('#boom-credit-text').velocity('fadeOut', {delay: 5000, duration: ka.settings.durationNormal, complete: function () {
                     ka.state.licenseTextIndex -= 1;
 
                     ka.lib.showNextLicense();
@@ -36,7 +36,7 @@ ka.lib.showNextLicense = function () {
 
 
 ka.lib.stopLicenseTextDisplay = function () {
-    $('#content').velocity('fadeIn', {duration: 360, complete: function () {
+    $('#content').velocity('fadeIn', {duration: ka.settings.durationNormal, complete: function () {
         ka.state.currentPageMode = 'config';
     }});
 };

@@ -119,11 +119,11 @@ ka.lib.handleKeypressSelect = function () {
     } else if (ka.state.currentPageMode == 'detail') {
         if (ka.state.currentDetailButton == 'play') {
             $('#boom-movie-grid-container').css('display', 'none');
-            $('#boom-movie-detail').velocity('fadeOut', {duration: 360, complete: function () {
+            $('#boom-movie-detail').velocity('fadeOut', {duration: ka.settings.durationNormal, complete: function () {
                 ka.state.currentPageMode = 'play:movie';
 
                 if (!ka.state.isPlayerUpdated) {
-                    $('#boom-playback-wait').velocity('fadeIn', {display: 'flex', duration: 360, complete: function () {
+                    $('#boom-playback-wait').velocity('fadeIn', {display: 'flex', duration: ka.settings.durationNormal, complete: function () {
                         ka.state.socketDispatcher.push('movie:play', ka.state.currentGridMovieUuid);
                     }});
                 } else {
@@ -132,7 +132,7 @@ ka.lib.handleKeypressSelect = function () {
             }});
         } else if (ka.state.currentDetailButton == 'trailer') {
             $('#boom-movie-grid-container').css('display', 'none');
-            $('#boom-movie-detail').velocity('fadeOut', {duration: 360, complete: function () {
+            $('#boom-movie-detail').velocity('fadeOut', {duration: ka.settings.durationNormal, complete: function () {
                 ka.state.currentPageMode = 'play:trailer';
 
                 ka.lib.startTrailerPlayer(ka.data.byUuid[ka.state.currentGridMovieUuid].trailer);
@@ -184,7 +184,7 @@ ka.lib.handleKeypressAny = function (evt) {
                     color: '#000000'
                   , backgroundColor: '#ffffff'
                   , borderColor: '#ffffff'
-                }, {duration: 360}).velocity('reverse');
+                }, ka.settings.durationNormal).velocity('reverse');
             } else {
                 $('#boom-movie-grid-container').velocity('callout.shake');
             }

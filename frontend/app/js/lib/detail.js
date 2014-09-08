@@ -49,11 +49,11 @@ ka.lib.updateDetailButtonSelection = function () {
         .css('backgroundColor', '#' + button.data('boom.select-color'));
 
     if (ka.state.currentDetailButton == 'details') {
-        $('#boom-movie-detail-shade').velocity({opacity: 0.75}, {duration: 360});
-        $('#boom-movie-detail-description').velocity('transition.expandIn', {duration: 360, display: 'flex'});
+        $('#boom-movie-detail-shade').velocity({opacity: 0.75}, {duration: ka.settings.durationNormal});
+        $('#boom-movie-detail-description').velocity('transition.expandIn', {duration: ka.settings.durationNormal, display: 'flex'});
     } else {
-        $('#boom-movie-detail-shade').velocity({opacity: 0}, {duration: 360});
-        $('#boom-movie-detail-description').velocity('transition.expandOut', 360);
+        $('#boom-movie-detail-shade').velocity({opacity: 0}, ka.settings.durationNormal);
+        $('#boom-movie-detail-description').velocity('transition.expandOut', ka.settings.durationNormal);
     }
 };
 
@@ -78,7 +78,7 @@ ka.lib.closeTrailerPlayer = function () {
 
     $('#boom-movie-grid-container').css('display', 'block');
 
-    $('#boom-movie-detail').velocity('fadeIn', 360);
+    $('#boom-movie-detail').velocity('fadeIn', ka.settings.durationNormal);
 
     window.focus();
 };

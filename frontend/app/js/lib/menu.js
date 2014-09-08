@@ -20,7 +20,7 @@ ka.lib.executeMenuSelection = function () {
     if (id == 'boom-config-button-exit') {
         ka.state.hotkeyListener.reset();
 
-        $('#content').velocity('fadeOut', {duration: 360, complete: function () {
+        $('#content').velocity('fadeOut', {duration: ka.settings.durationNormal, complete: function () {
             ka.state.socketDispatcher.push('loopback:command', 'shutdown');
         }});
     } else if (id == 'boom-config-button-change-import') {

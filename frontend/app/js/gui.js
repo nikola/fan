@@ -21,6 +21,8 @@ ka.settings = {
   , gridMaxColumns: 7
   , compilationPosterOffsetTop: -18
   , compilationPosterOffsetLeft: 12
+
+  , durationNormal: 360
 };
 
 ka.state = {
@@ -80,7 +82,7 @@ function c4b77b2bcc804808a9ab107b8e2ac434() {
 
     ka.state.socketDispatcher.bind('resume:detail:screen', function () {
         $('#boom-movie-grid-container').css('display', 'block');
-        $('#boom-movie-detail').velocity('fadeIn', {duration: 360, complete: function () {
+        $('#boom-movie-detail').velocity('fadeIn', {duration: ka.settings.durationNormal, complete: function () {
             ka.state.currentPageMode = 'detail';
         }});
     });

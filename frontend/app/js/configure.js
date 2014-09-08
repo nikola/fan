@@ -75,28 +75,28 @@ function handleKeypressLeft() {
         ka.state.currentDriveIndex = 0;
         ka.state.initialChoiceMade = true;
 
-        $('#boom-choice-right, #boom-choice-splitter').velocity('fadeOut', {display: null, duration: 360});
-        $("#boom-split-choices").velocity({marginLeft: '+=420'}, {duration: 360, complete: function (elements) {
+        $('#boom-choice-right, #boom-choice-splitter').velocity('fadeOut', {display: null, duration: ka.settings.durationNormal});
+        $("#boom-split-choices").velocity({marginLeft: '+=420'}, {duration: ka.settings.durationNormal, complete: function (elements) {
             $('#boom-button-selection-floater').css('opacity', 1);
         }});
 
         if (ka.state.hasDrivesSelected) {
-            $('#boom-choice-confirm .boom-button').velocity('fadeIn', {display: 'inline-block', duration: 360});
+            $('#boom-choice-confirm .boom-button').velocity('fadeIn', {display: 'inline-block', duration: ka.settings.durationNormal});
         }
     } else {
         if (!ka.state.isStartButtonSelected) {
             $('#boom-button-start-floater').velocity({opacity: 0, backgroundColorGreen: 0, backgroundColorBlue: 0}, {duration: 720});
         }
 
-        $("#boom-split-choices").velocity({marginLeft: '+=420'}, {duration: 360, easing: 'ease-in'});
-        $('#boom-choice-left, #boom-choice-splitter').velocity('fadeIn', {display: null, duration: 360});
-        $('#boom-choice-right').velocity('fadeOut', {display: null, duration: 360, complete: function (elements) {
+        $("#boom-split-choices").velocity({marginLeft: '+=420'}, {duration: ka.settings.durationNormal, easing: 'ease-in'});
+        $('#boom-choice-left, #boom-choice-splitter').velocity('fadeIn', {display: null, duration: ka.settings.durationNormal});
+        $('#boom-choice-right').velocity('fadeOut', {display: null, duration: ka.settings.durationNormal, complete: function (elements) {
             if (!ka.state.hasDrivesSelected) {
-                $('#boom-choice-confirm .boom-button').velocity('fadeOut', {display: 'inline-block', duration: 360});
+                $('#boom-choice-confirm .boom-button').velocity('fadeOut', {display: 'inline-block', duration: ka.settings.durationNormal});
             }
 
-            $('#boom-choice-splitter').velocity('fadeOut', {display: null, duration: 360});
-            $("#boom-split-choices").velocity({marginLeft: '+=420'}, {duration: 360, easing: 'ease-out', complete: function () {
+            $('#boom-choice-splitter').velocity('fadeOut', {display: null, duration: ka.settings.durationNormal});
+            $("#boom-split-choices").velocity({marginLeft: '+=420'}, {duration: ka.settings.durationNormal, easing: 'ease-out', complete: function () {
                 if (!ka.state.isStartButtonSelected) {
                     $('#boom-button-selection-floater').css('opacity', 1);
                 }
@@ -116,23 +116,24 @@ function handleKeypressRight() {
     if (ka.state.currentChoice === null) {
         ka.state.initialChoiceMade = true;
 
-        $('#boom-button-start-floater').velocity({opacity: 1, backgroundColorGreen: 116, backgroundColorBlue: 217}, {duration: 360});
+        $('#boom-button-start-floater').velocity({opacity: 1, backgroundColorGreen: 116, backgroundColorBlue: 217}, ka.settings.durationNormal);
 
-        $('#boom-choice-left, #boom-choice-splitter').velocity('fadeOut', {display: null, duration: 360});
-        $("#boom-split-choices").velocity({marginLeft: '-=420'}, {duration: 360});
-        $('#boom-choice-confirm .boom-button').velocity('fadeIn', {display: 'inline-block', duration: 360});
+        /* TODO: 'null' correct? */
+        $('#boom-choice-left, #boom-choice-splitter').velocity('fadeOut', {display: null, duration: ka.settings.durationNormal});
+        $("#boom-split-choices").velocity({marginLeft: '-=420'}, {duration: ka.settings.durationNormal});
+        $('#boom-choice-confirm .boom-button').velocity('fadeIn', {display: 'inline-block', duration: ka.settings.durationNormal});
     } else {
         $('#boom-button-selection-floater').css('opacity', 0);
         $('#boom-button-start-floater').velocity({opacity: 1, backgroundColorGreen: 116, backgroundColorBlue: 217}, {duration: 720});
 
-        $("#boom-split-choices").velocity({marginLeft: '-=420'}, {duration: 360, easing: 'ease-in'});
-        $('#boom-choice-right, #boom-choice-splitter').velocity('fadeIn', {display: null, duration: 360});
-        $('#boom-choice-left').velocity('fadeOut', {display: null, duration: 360, complete: function (elements) {
-            $('#boom-choice-splitter').velocity('fadeOut', {display: null, duration: 360});
-            $("#boom-split-choices").velocity({marginLeft: '-=420'}, {duration: 360, easing: 'ease-out'});
+        $("#boom-split-choices").velocity({marginLeft: '-=420'}, {duration: ka.settings.durationNormal, easing: 'ease-in'});
+        $('#boom-choice-right, #boom-choice-splitter').velocity('fadeIn', {display: null, duration: ka.settings.durationNormal});
+        $('#boom-choice-left').velocity('fadeOut', {display: null, duration: ka.settings.durationNormal, complete: function (elements) {
+            $('#boom-choice-splitter').velocity('fadeOut', {display: null, duration: ka.settings.durationNormal});
+            $("#boom-split-choices").velocity({marginLeft: '-=420'}, {duration: ka.settings.durationNormal, easing: 'ease-out'});
 
             if (!ka.state.hasDrivesSelected) {
-                $('#boom-choice-confirm .boom-button').velocity('fadeIn', {display: 'inline-block', duration: 360});
+                $('#boom-choice-confirm .boom-button').velocity('fadeIn', {display: 'inline-block', duration: ka.settings.durationNormal});
             }
         }});
     }
@@ -158,9 +159,9 @@ function handleKeypressSelect() {
             var previouslySelected = ka.state.hasDrivesSelected;
             ka.state.hasDrivesSelected = $('#boom-drives-list li .fa-check-square').size() > 0;
             if (ka.state.hasDrivesSelected && !previouslySelected) {
-                $('#boom-choice-confirm .boom-button').velocity('fadeIn', {display: 'inline-block', duration: 360});
+                $('#boom-choice-confirm .boom-button').velocity('fadeIn', {display: 'inline-block', duration: ka.settings.durationNormal});
             } else if (!ka.state.hasDrivesSelected && previouslySelected) {
-                $('#boom-choice-confirm .boom-button').velocity('fadeOut', {display: 'none', duration: 360});
+                $('#boom-choice-confirm .boom-button').velocity('fadeOut', {display: 'none', duration: ka.settings.durationNormal});
             }
         }
     } else if (ka.state.currentChoice == 'right') {
@@ -271,7 +272,7 @@ $(document).ready(function () {
                         }).appendTo('#boom-drives-list');
                     }
 
-                    $('#boom-panel').velocity('fadeIn', 360);
+                    $('#boom-panel').velocity('fadeIn', ka.settings.durationNormal);
                 }
             });
         }

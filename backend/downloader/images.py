@@ -85,6 +85,14 @@ def downscalePoster(streamManager, movieUuid, urlOriginal):
             streamManager.endPosterDownload(movieUuid)
             return False
         else:
+            blobAtWidth150 = _downscaleImage(blobOriginal, 150, 225)
+            time.sleep(0)
+            if blobAtWidth150 is not None:
+                streamManager.saveImageData(movieUuid, 150, blobAtWidth150, True, 'Poster', 'WebP', urlOriginal)
+                time.sleep(0)
+            else:
+                logger.error('Could not downscale image to 150x225!')
+
             blobAtWidth200 = _downscaleImage(blobOriginal, 200, 300)
             time.sleep(0)
             if blobAtWidth200 is not None:

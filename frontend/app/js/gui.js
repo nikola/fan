@@ -187,6 +187,8 @@ $(document).ready(function () {
     ka.state.maxConfigButton = $('#boom-config-button-group .boom-button').length;
     ka.state.canvasContext = $('#boom-image-color-canvas').get(0).getContext('2d');
 
+    $('#boom-movie-detail-poster-fade-in').on('load', ka.lib.onBackdropLoaded);
+
     $.get(
         'https://www.youtube.com/iframe_api'
       , null

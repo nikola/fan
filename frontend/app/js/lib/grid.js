@@ -194,6 +194,9 @@ ka.lib.recalcMovieGrid = function () {
         lookupMatrix.pop();
     }
 
+    ka.data.asList = [];
+    ka.data.indexByUuid = {};
+
     for (var row = 0; row < lookupMatrix.length; row++) {
         for (var column = 0; column < ka.settings.gridMaxColumns; column++) {
             var item = lookupMatrix[row][column];
@@ -214,6 +217,16 @@ ka.lib.recalcMovieGrid = function () {
                             return 0;
                         }
                     });
+                }
+
+                for (var index = 0, movieObj; movieObj = item[index]; index++) {
+                    ka.data.indexByUuid[movieObj.uuid] = ka.data.asList.length;
+                    ka.data.asList.push(movieObj);
+                }
+            } else {
+                if (item !== null) {
+                    ka.data.indexByUuid[item.uuid] = ka.data.asList.length;
+                    ka.data.asList.push(item);
                 }
             }
         }
@@ -316,7 +329,7 @@ ka.lib.updateMovieGridOnChange = function () {
 
 
 ka.lib.updateMovieGridOnAdd = function () {
-    if (!ka.state.currentCompilationPosterCount && (ka.state.currentPageMode == 'detail' || ka.state.currentPageMode == 'play:movie' || ka.state.currentPageMode == 'play:trailer')) {
+    if (!ka.state.currentCompilationPosterCount && (ka.state.currentPageMode == 'detail' || ka.state.currentPageMode == 'detail-browser' || ka.state.currentPageMode == 'play:movie' || ka.state.currentPageMode == 'play:trailer')) {
         ka.lib.updateMovieGridRefocused(
             ka.lib.unoccludeMovieGrid
         );

@@ -9,11 +9,13 @@
 
 ka.data = {
     byUuid: {}
-    , byYear: {}
-    , byTitleOriginal: {}
-    , byTitleLocalized: {}
-    , byRating: {}
-    , byBudget: {}
+  , byYear: {}
+  , byTitleOriginal: {}
+  , byTitleLocalized: {}
+  , byRating: {}
+  , byBudget: {}
+  , asList: []
+  , indexByUuid: {}
 };
 
 ka.settings = {

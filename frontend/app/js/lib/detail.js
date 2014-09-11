@@ -82,3 +82,34 @@ ka.lib.closeTrailerPlayer = function () {
 
     window.focus();
 };
+
+
+ka.lib.moveDetailBrowserFocusLeft = function () {
+
+};
+
+
+ka.lib.moveDetailBrowserFocusRight = function () {
+    var dummyImage = $('#boom-movie-detail-poster-browser img').eq(0),
+        previouslyFocusedImage = $('#boom-movie-detail-poster-browser img').eq(3).get(0),
+        upcomingFocusedImage = $('#boom-movie-detail-poster-browser img').eq(4).get(0);
+
+    dummyImage.velocity({width: 0, marginLeft: 0}, {
+        duration: ka.settings.durationNormal
+      , progress: function (elements, percentComplete) {
+            if (percentComplete < 1) {
+                previouslyFocusedImage.style.webkitFilter = 'grayscale(' + Math.round(percentComplete * 100) + '%)';
+                previouslyFocusedImage.style.opacity = Math.round(100 - 50 * percentComplete) / 100;
+                upcomingFocusedImage.style.webkitFilter = 'grayscale(' + (100 - Math.round(percentComplete * 100)) + '%)';
+                upcomingFocusedImage.style.opacity = Math.round(50 + 50 * percentComplete) / 100;
+            }
+        }
+      , complete: function () {
+            previouslyFocusedImage.style.webkitFilter = 'grayscale(100%)';
+            previouslyFocusedImage.style.opacity = 0.5;
+            upcomingFocusedImage.style.webkitFilter = null;
+            upcomingFocusedImage.style.opacity = 1;
+
+            dummyImage.remove();
+    }});
+};

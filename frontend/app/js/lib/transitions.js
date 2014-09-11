@@ -202,4 +202,55 @@ ka.transition.detail = {to: {
             }});
     }
 
+  , browser: function () {
+        ka.state.currentPageMode = 'limbo';
+
+        $('#boom-movie-detail-poster-browser').empty();
+        $('<img>', {
+              width: 150
+            , height: 225
+        }).appendTo('#boom-movie-detail-poster-browser');
+
+        var index = ka.data.indexByUuid[ka.state.currentGridMovieUuid],
+            start = index - 2, element;
+        for (var counter = 0; counter < 5; counter++) { /* position = start, element; position <= end; position++) { */
+            element = $('<img>', {
+                src: '/movie/poster/' + ka.data.asList[start + counter].uuid + '-150.image'
+              , width: 150
+              , height: 225
+            }).appendTo('#boom-movie-detail-poster-browser');
+            if (counter != 2) {
+                element.css('opacity', '0.5').get(0).style.webkitFilter = 'grayscale(100%)';
+            }
+        }
+
+        $('#boom-movie-detail').velocity({backgroundPositionX: '+=20', backgroundPositionY: '+=200'}, ka.settings.durationNormal);
+        $('#boom-movie-detail-left').velocity({left: '-=360'}, ka.settings.durationNormal);
+        $('#boom-movie-detail-browser-focus').velocity({left: 3 + 160 * 3}, 0);
+        $('#boom-movie-detail-head').velocity('fadeIn', {duration: 0, complete: function () {
+            $('#boom-movie-detail-head, #boom-movie-detail-browser-focus').velocity({top: '+=245'}, ka.settings.durationNormal);
+        }});
+        $('#boom-movie-detail-right').velocity({marginLeft: '+=40'}, {duration: ka.settings.durationNormal, complete: function () {
+            ka.state.currentPageMode = 'detail-browser';
+        }});
+    }
+
+}};
+
+
+ka.transition.browser = {to: {
+
+    detail: function () {
+        ka.state.currentPageMode = 'limbo';
+
+        $('#boom-movie-detail').velocity({backgroundPositionX: '-=20', backgroundPositionY: '-=200'}, ka.settings.durationNormal);
+        $('#boom-movie-detail-left').velocity({left: '+=360'}, ka.settings.durationNormal);
+        $('#boom-movie-detail-head, #boom-movie-detail-browser-focus').velocity({top: '-=245'}, {duration: ka.settings.durationNormal, complete: function () {
+            $('#boom-movie-detail-head').velocity('fadeOut', 0);
+        }});
+        $('#boom-movie-detail-right').velocity({marginLeft: '-=40'}, {duration: ka.settings.durationNormal, complete: function () {
+            ka.state.currentPageMode = 'detail';
+        }});
+    }
+
 }};

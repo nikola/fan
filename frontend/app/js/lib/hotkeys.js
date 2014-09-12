@@ -146,6 +146,8 @@ ka.lib.handleKeypressSelect = function () {
                 ka.lib.startTrailerPlayer(ka.data.byUuid[ka.state.currentGridMovieUuid].trailer);
             }});
         }
+    } else if (ka.state.currentPageMode == 'detail-browser') {
+        ka.transition.browser.to.detail();
     }
 };
 
@@ -159,6 +161,8 @@ ka.lib.handleKeypressBack = function () {
         } else {
             ka.transition.detail.to.grid();
         }
+    } else if (ka.state.currentPageMode == 'detail-browser') {
+        ka.transition.browser.to.detail();
     } else if (ka.state.currentPageMode == 'grid-compilation') {
         ka.transition.compilation.to.grid();
     } else if (ka.state.currentPageMode == 'grid') {

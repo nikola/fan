@@ -101,15 +101,15 @@ ka.transition.grid = {to: {
 
         var obj = ka.lib.getVariantFromGridFocus();
         ka.state.currentGridMovieUuid = obj.uuid;
-        if (!obj.streamless) {
+        /* if (!obj.streamless) {
             ka.state.currentDetailButton = 'play';
         } else if (obj.trailer) {
             ka.state.currentDetailButton = 'trailer';
         } else {
             ka.state.currentDetailButton = 'details';
-        }
+        } */
 
-        ka.lib.updateDetailPage(obj, function () {
+        ka.lib.updateDetailPage(obj, true, function () {
             ka.lib.updateDetailButtonSelection();
 
             $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({translateZ: 0, left: '-=1920'}, {duration: ka.settings.durationLong, complete: function () {
@@ -158,15 +158,15 @@ ka.transition.compilation = {to: {
 
         ka.state.currentGridMovieUuid = movieObj.uuid;
 
-        if (!movieObj.streamless) {
+        /* if (!movieObj.streamless) {
             ka.state.currentDetailButton = 'play';
         } else if (movieObj.trailer) {
             ka.state.currentDetailButton = 'trailer';
         } else {
             ka.state.currentDetailButton = 'details';
-        }
+        } */
 
-        ka.lib.updateDetailPage(movieObj, function () {
+        ka.lib.updateDetailPage(movieObj, true, function () {
             ka.state.actualScreenMode = 'null';
 
             ka.lib.updateDetailButtonSelection();
@@ -213,6 +213,11 @@ ka.transition.detail = {to: {
         $('#boom-movie-detail-browser-focus').velocity({left: leftPos}, 0);
 
         $('#boom-movie-detail-head').velocity('fadeIn', {duration: 0, complete: function () {
+            if (ka.state.currentDetailButton == 'details') {
+                $('#boom-movie-detail-shade').velocity({opacity: 0}, ka.settings.durationNormal);
+                $('#boom-movie-detail-description').velocity('transition.expandOut', ka.settings.durationNormal);
+            }
+
             $('#boom-movie-detail-left').velocity({left: '-=360'}, ka.settings.durationNormal);
             $('#boom-movie-detail-head, #boom-movie-detail-browser-focus').velocity({top: '-=245'}, {
                 duration: ka.settings.durationNormal
@@ -231,6 +236,19 @@ ka.transition.browser = {to: {
 
     detail: function () {
         ka.state.currentPageMode = 'limbo';
+
+        var movieObj = ka.data.asList[$('#boom-movie-detail-poster-browser :nth-child('
+            + (ka.state.currentDetailBrowserPosterColumn + 2) + ')').data('boom.index')];
+
+        ka.state.currentGridMovieUuid = movieObj.uuid;
+
+        ka.lib.updateDetailPage(movieObj, false, null);
+        ka.lib.updateDetailButtonSelection(true);
+
+        ka.lib.unoccludeMovieGrid();
+        ka.lib.recallFocusByUuid(movieObj.uuid);
+        ka.lib.refocusGrid(true);
+        ka.lib.occludeMovieGrid();
 
         $('#boom-movie-detail-left').velocity({left: '+=360'}, ka.settings.durationNormal);
         $('#boom-movie-detail-head, #boom-movie-detail-browser-focus').velocity({top: '+=245'}, {duration: ka.settings.durationNormal, complete: function () {

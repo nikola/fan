@@ -334,15 +334,12 @@ ka.lib.updateMovieGridOnAdd = function () {
             ka.lib.unoccludeMovieGrid
         );
 
-        /* setTimeout(function () { */
-            ka.lib.occludeMovieGrid();
+        ka.lib.occludeMovieGrid();
 
-            var currentLeftPos = parseInt($('#boom-poster-focus').css('left'));
-            if (currentLeftPos > 0 && currentLeftPos < 1920) {
-                /* $('#boom-poster-focus').css('left', (currentLeftPos - 1920) + 'px'); */
-                $('#boom-poster-focus').velocity({translateZ: 0, left: (currentLeftPos - 1920) + 'px'}, 0);
-            }
-        /* }, 15); */
+        var currentLeftPos = parseInt($('#boom-poster-focus').css('left'));
+        if (currentLeftPos > 0 && currentLeftPos < 1920) {
+            $('#boom-poster-focus').velocity({left: (currentLeftPos - 1920) + 'px'}, 0);
+        }
     } else if (ka.state.currentPageMode == 'config' || ka.state.currentPageMode == 'grid') {
         ka.lib.recalcMovieGrid();
 
@@ -923,9 +920,15 @@ ka.lib.isCompilationAtFocus = function () {
 };
 
 
-ka.lib.refocusGrid = function () {
-    $('#boom-movie-grid-container').velocity({translateZ: 0, translateY: '-' + (ka.state.gridPage * 1080) + 'px'}, 0);
-    $('#boom-poster-focus').css({top: (16 + 360 * ka.state.gridFocusY) + 'px', left: (116 + 260 * ka.state.gridFocusX) + 'px'});
+ka.lib.refocusGrid = function (offscreen) {
+    /* $('#boom-movie-grid-container').css('webkitTransform', 'translate3d(0,-' + (ka.state.gridPage * 1080) + 'px,0)'); */
+    $('#boom-movie-grid-container').velocity({translateY: '-' + (ka.state.gridPage * 1080) + 'px'}, 0);
+
+    var left = 116 + 260 * ka.state.gridFocusX;
+    if (offscreen) {
+        left -= 1920;
+    }
+    $('#boom-poster-focus').css({top: (16 + 360 * ka.state.gridFocusY) + 'px', left: left + 'px'});
 };
 
 

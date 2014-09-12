@@ -205,19 +205,23 @@ ka.transition.detail = {to: {
   , browser: function () {
         ka.state.currentPageMode = 'limbo';
 
-        ka.lib.populateDetailBrowserGrid();
+        ka.state.currentDetailBrowserPosterColumn = ka.lib.populateDetailBrowserGrid();
 
         ka.lib.updateDetailBrowserInfo(ka.data.byUuid[ka.state.currentGridMovieUuid], false);
 
-        /* $('#boom-movie-detail').velocity({backgroundPositionX: '+=20', backgroundPositionY: '+=200'}, ka.settings.durationNormal); */
-        $('#boom-movie-detail-left').velocity({left: '-=360'}, ka.settings.durationNormal);
-        $('#boom-movie-detail-browser-focus').velocity({left: 3 + 160 * 2}, 0);
+        var leftPos = 3 + 160 * ka.state.currentDetailBrowserPosterColumn;
+        $('#boom-movie-detail-browser-focus').velocity({left: leftPos}, 0);
+
         $('#boom-movie-detail-head').velocity('fadeIn', {duration: 0, complete: function () {
-            $('#boom-movie-detail-head, #boom-movie-detail-browser-focus').velocity({top: '-=245'}, ka.settings.durationNormal);
+            $('#boom-movie-detail-left').velocity({left: '-=360'}, ka.settings.durationNormal);
+            $('#boom-movie-detail-head, #boom-movie-detail-browser-focus').velocity({top: '-=245'}, {
+                duration: ka.settings.durationNormal
+              , complete: function () {
+                    ka.state.currentPageMode = 'detail-browser';
+                }
+            });
         }});
-        $('#boom-movie-detail-right').velocity({marginLeft: '+=40'}, {duration: ka.settings.durationNormal, complete: function () {
-            ka.state.currentPageMode = 'detail-browser';
-        }});
+        $('#boom-movie-detail-right').velocity({marginLeft: '+=40'}, ka.settings.durationNormal);
     }
 
 }};
@@ -228,14 +232,15 @@ ka.transition.browser = {to: {
     detail: function () {
         ka.state.currentPageMode = 'limbo';
 
-        /* $('#boom-movie-detail').velocity({backgroundPositionX: '-=20', backgroundPositionY: '-=200'}, ka.settings.durationNormal); */
         $('#boom-movie-detail-left').velocity({left: '+=360'}, ka.settings.durationNormal);
         $('#boom-movie-detail-head, #boom-movie-detail-browser-focus').velocity({top: '+=245'}, {duration: ka.settings.durationNormal, complete: function () {
-            $('#boom-movie-detail-head').velocity('fadeOut', 0);
+            $('#boom-movie-detail-head').velocity('fadeOut', {duration: 0, complete: function () {
+                $('#boom-movie-detail-poster-browser').empty();
+
+                ka.state.currentPageMode = 'detail';
+            }});
         }});
-        $('#boom-movie-detail-right').velocity({marginLeft: '-=40'}, {duration: ka.settings.durationNormal, complete: function () {
-            ka.state.currentPageMode = 'detail';
-        }});
+        $('#boom-movie-detail-right').velocity({marginLeft: '-=40'}, ka.settings.durationNormal);
     }
 
 }};

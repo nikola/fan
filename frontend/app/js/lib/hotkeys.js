@@ -82,7 +82,7 @@ ka.lib.handleKeypressLeft = function () {
     } else if (ka.state.currentPageMode == 'grid-compilation') {
         ka.lib.moveCompilationFocusLeft();
     } else if (ka.state.currentPageMode == 'detail-browser') {
-        ka.lib.moveDetailBrowserFocusLeft();
+        ka.lib.moveDetailBrowserLeft();
     }
 };
 
@@ -95,7 +95,7 @@ ka.lib.handleKeypressRight = function () {
     } else if (ka.state.currentPageMode == 'config') {
         ka.transition.menu.to.grid();
     } else if (ka.state.currentPageMode == 'detail-browser') {
-        ka.lib.moveDetailBrowserFocusRight();
+        ka.lib.moveDetailBrowserRight();
     }
 };
 

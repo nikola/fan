@@ -60,6 +60,8 @@ ka.state = {
   , isPlayerUpdated: false
   , occludedGridItems: null
 
+  , currentDetailBrowserPosterColumn: null
+
   , setOfKnownPosters: {}
   , setOfUnknownPosters: {}
 };
@@ -139,6 +141,8 @@ function a4b4e7515096403cb29247517b276397() {
     $.ajax({
         url: '/movies/all',
         success: function (list) {
+            /* list = list.slice(0, 9); */
+
             var index = list.length, movie;
             if (index) {
                 ka.state.shouldFocusFadeIn = false;

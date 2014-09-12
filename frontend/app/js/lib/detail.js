@@ -119,11 +119,34 @@ ka.lib.populateDetailBrowserGrid = function () {
         }
     }).appendTo('#boom-movie-detail-poster-browser');
 
-    var index = ka.data.indexByUuid[ka.state.currentGridMovieUuid],
-        start = index - 2;
-    for (var counter = 0; counter < 5; counter++) {
-        ka.lib.addBrowserGridImage(start + counter, counter != 2, 150);
+    var current = ka.data.indexByUuid[ka.state.currentGridMovieUuid],
+        index, end, focused;
+
+    if (ka.data.asList.length < 6) {
+        index = 0;
+        end = ka.data.asList.length;
+        focused = current;
+    } else {
+        index = current - 2;
+        if (index < 0) {
+            focused = 2 + index;
+            index = 0;
+        } else {
+            focused = 2;
+        }
+        end = index + 5;
+        if (end > ka.data.asList.length) {
+            if (focused == 2 && ka.data.asList.length > 5) {
+                focused = 2 + end - ka.data.asList.length;
+                index -= end - ka.data.asList.length;
+            }
+            end = ka.data.asList.length;
+        }
     }
+
+    do {
+        ka.lib.addBrowserGridImage(index, index != current, 150);
+    } while (++index < end);
 
     /* Pre-cache previous/next posters. */
     var lookBehindIndex = index - 3, lookAheadIndex = index + 3;
@@ -133,6 +156,8 @@ ka.lib.populateDetailBrowserGrid = function () {
     if (lookAheadIndex < ka.data.asList.length) {
         new Image().src = '/movie/poster/' + ka.data.asList[lookAheadIndex].uuid + '-150.image';
     }
+
+    return focused;
 };
 
 
@@ -169,85 +194,142 @@ ka.lib._updateDetailBrowserInfo = function (movieObj) {
 };
 
 
-ka.lib.moveDetailBrowserFocusLeft = function () {
-    var images = $('#boom-movie-detail-poster-browser img'),
-        previouslyFocusedImage = images.eq(3).get(0),
-        upcomingFocusedImage = images.eq(2).get(0),
-        firstImageIndex = images.eq(1).data('boom.index');
+ka.lib.moveDetailBrowserLeft = function () {
+    var firstPosterIndex = $('#boom-movie-detail-poster-browser :nth-child(2)').data('boom.index');
+    if (ka.state.currentDetailBrowserPosterColumn > 2 || (firstPosterIndex == 0 && ka.state.currentDetailBrowserPosterColumn > 0)) {
+        ka.lib._moveDetailBrowserFocus('prev', '-=160');
+        ka.state.currentDetailBrowserPosterColumn -= 1;
+    } else if (firstPosterIndex > 0) {
+        ka.state.currentPageMode = 'limbo';
 
-    images.eq(0)
-        .attr('src', '/movie/poster/' + ka.data.asList[firstImageIndex - 1].uuid + '-150.image')
-        .data('boom.index', firstImageIndex - 1);
+        var images = $('#boom-movie-detail-poster-browser img'),
+            previouslyFocusedImage = images.eq(3).get(0),
+            upcomingFocusedImage = images.eq(2).get(0),
+            firstImageIndex = images.eq(1).data('boom.index');
 
-    var dummyImage = $('<img>', {
-        width: 0
-      , height: 225
-      , css: {
-            webkitFilter: 'grayscale(100%)'
-          , webkitTransform: 'translate3d(0, 0, 0)'
-          , opacity: 0.5
-          , marginLeft: 0
-        }
-    }).prependTo('#boom-movie-detail-poster-browser');
-    dummyImage.velocity({width: 150, marginLeft: 10}, ka.settings.durationNormal);
+        images.eq(0)
+            .attr('src', '/movie/poster/' + ka.data.asList[firstImageIndex - 1].uuid + '-150.image')
+            .data('boom.index', firstImageIndex - 1);
 
-    ka.lib.updateDetailBrowserInfo(ka.data.asList[firstImageIndex + 1], true);
-
-    $('#boom-movie-detail-poster-fade-in').attr('src', '/movie/backdrop/' + ka.data.asList[firstImageIndex + 1].uuid +  '.jpg');
-
-    $('#boom-movie-detail-poster-browser img').eq(6).velocity({width: 0, marginLeft: 0}, {
-        duration: ka.settings.durationNormal
-      , progress: function (elements, percentComplete) {
-            if (percentComplete < 1) {
-                previouslyFocusedImage.style.webkitFilter = 'grayscale(' + Math.round(percentComplete * 100) + '%)';
-                previouslyFocusedImage.style.opacity = Math.round(100 - 50 * percentComplete) / 100;
-                upcomingFocusedImage.style.webkitFilter = 'grayscale(' + (100 - Math.round(percentComplete * 100)) + '%)';
-                upcomingFocusedImage.style.opacity = Math.round(50 + 50 * percentComplete) / 100;
+        $('<img>', {
+            width: 0
+          , height: 225
+          , css: {
+                webkitFilter: 'grayscale(100%)'
+              , webkitTransform: 'translate3d(0, 0, 0)'
+              , opacity: 0.5
+              , marginLeft: 0
             }
-        }
-      , complete: function () {
-            previouslyFocusedImage.style.webkitFilter = 'grayscale(100%)';
-            previouslyFocusedImage.style.opacity = 0.5;
-            upcomingFocusedImage.style.webkitFilter = null;
-            upcomingFocusedImage.style.opacity = 1;
+        }).prependTo('#boom-movie-detail-poster-browser').velocity({width: 150, marginLeft: 10}, ka.settings.durationNormal);
 
-            $('#boom-movie-detail-poster-browser img').eq(6).remove();
+        ka.lib._animatePosterVisibility(
+            ka.data.asList[firstImageIndex + 1]
+          , $('#boom-movie-detail-poster-browser img').eq(6)
+          , previouslyFocusedImage
+          , upcomingFocusedImage
+        );
+    }
+};
+
+
+ka.lib.moveDetailBrowserRight = function () {
+    var column = ka.state.currentDetailBrowserPosterColumn,
+        posters = $('#boom-movie-detail-poster-browser img'),
+        currentPosterIndex = posters.eq(column + 1).data('boom.index'),
+        lastPosterIndex = posters.last().data('boom.index');
+    if ((column < 2 && ka.data.asList.length > 2) || (lastPosterIndex == ka.data.asList.length - 1 && lastPosterIndex - currentPosterIndex > 0)) {
+        ka.lib._moveDetailBrowserFocus('next', '+=160');
+        ka.state.currentDetailBrowserPosterColumn += 1;
+    } else if (posters.length == 6 && lastPosterIndex + 1 < ka.data.asList.length) {
+        ka.state.currentPageMode = 'limbo';
+
+        var images = $('#boom-movie-detail-poster-browser img'),
+            dummyImage = images.eq(0),
+            previouslyFocusedImage = images.eq(3).get(0),
+            upcomingFocusedImage = images.eq(4).get(0),
+            lastImageIndex = images.eq(5).data('boom.index');
+
+        ka.lib.addBrowserGridImage(lastImageIndex + 1, true, 0).velocity({width: 150}, ka.settings.durationNormal);
+
+        ka.lib._animatePosterVisibility(
+            ka.data.asList[lastImageIndex - 1]
+          , dummyImage
+          , previouslyFocusedImage
+          , upcomingFocusedImage
+        );
+    }
+};
+
+
+ka.lib._moveDetailBrowserFocus = function (accessor, offset) {
+    ka.state.currentPageMode = 'limbo';
+
+    var currentElement = $('#boom-movie-detail-poster-browser :nth-child(' + (ka.state.currentDetailBrowserPosterColumn + 2) + ')'),
+        targetElement = currentElement[accessor]();
+
+    ka.lib._triggerBrowserUpdate(ka.data.asList[targetElement.data('boom.index')]);
+    ka.lib._focusInPoster(targetElement);
+    ka.lib._focusOutPoster(currentElement);
+
+    $('#boom-movie-detail-browser-focus').velocity({left: offset}, {duration: ka.settings.durationNormal, complete: function () {
+        ka.state.currentPageMode = 'detail-browser';
     }});
 };
 
 
-ka.lib.moveDetailBrowserFocusRight = function () {
-    var images = $('#boom-movie-detail-poster-browser img'),
-        dummyImage = images.eq(0),
-        previouslyFocusedImage = images.eq(3).get(0),
-        upcomingFocusedImage = images.eq(4).get(0),
-        lastImageIndex = images.eq(5).data('boom.index');
+ka.lib._animatePosterVisibility = function (movieObj, targetElement, previouslyFocusedPoster, upcomingFocusedPoster) {
+    ka.lib._triggerBrowserUpdate(movieObj);
 
-    var addedImage = ka.lib.addBrowserGridImage(lastImageIndex + 1, true, 0);
-    addedImage.velocity({width: 150}, ka.settings.durationNormal);
-
-    ka.lib.updateDetailBrowserInfo(ka.data.asList[lastImageIndex - 1], true);
-
-    $('#boom-movie-detail-poster-fade-in').attr('src', '/movie/backdrop/' + ka.data.asList[lastImageIndex - 1].uuid +  '.jpg');
-
-    dummyImage.velocity({width: 0, marginLeft: 0}, {
+    targetElement.velocity({width: 0, marginLeft: 0}, {
         duration: ka.settings.durationNormal
       , progress: function (elements, percentComplete) {
             if (percentComplete < 1) {
-                previouslyFocusedImage.style.webkitFilter = 'grayscale(' + Math.round(percentComplete * 100) + '%)';
-                previouslyFocusedImage.style.opacity = Math.round(100 - 50 * percentComplete) / 100;
-                upcomingFocusedImage.style.webkitFilter = 'grayscale(' + (100 - Math.round(percentComplete * 100)) + '%)';
-                upcomingFocusedImage.style.opacity = Math.round(50 + 50 * percentComplete) / 100;
+                previouslyFocusedPoster.style.webkitFilter = 'grayscale(' + Math.round(percentComplete * 100) + '%)';
+                previouslyFocusedPoster.style.opacity = Math.round(100 - 50 * percentComplete) / 100;
+                upcomingFocusedPoster.style.webkitFilter = 'grayscale(' + (100 - Math.round(percentComplete * 100)) + '%)';
+                upcomingFocusedPoster.style.opacity = Math.round(50 + 50 * percentComplete) / 100;
             }
         }
       , complete: function () {
-            previouslyFocusedImage.style.webkitFilter = 'grayscale(100%)';
-            previouslyFocusedImage.style.opacity = 0.5;
-            upcomingFocusedImage.style.webkitFilter = null;
-            upcomingFocusedImage.style.opacity = 1;
+            previouslyFocusedPoster.style.webkitFilter = 'grayscale(100%)';
+            previouslyFocusedPoster.style.opacity = 0.5;
+            upcomingFocusedPoster.style.webkitFilter = null;
+            upcomingFocusedPoster.style.opacity = 1;
 
-            dummyImage.remove();
+            targetElement.remove();
+
+            ka.state.currentPageMode = 'detail-browser';
     }});
+};
+
+
+ka.lib._triggerBrowserUpdate = function (movieObj) {
+    ka.lib.updateDetailBrowserInfo(movieObj, true);
+
+    $('#boom-movie-detail-poster-fade-in').attr('src', '/movie/backdrop/' + movieObj.uuid +  '.jpg');
+};
+
+
+ka.lib._focusInPoster = function (targetElement) {
+    targetElement.velocity({opacity: 1}, {
+        duration: ka.settings.durationNormal
+      , progress: function (elements, percentComplete) {
+            elements[0].style.webkitFilter = 'grayscale(' + (100 - Math.round(percentComplete * 100)) + '%)';
+        }
+      , complete: function (elements) {
+            elements[0].style.webkitFilter = null;
+        }
+    });
+};
+
+
+ka.lib._focusOutPoster = function (targetElement) {
+    targetElement.velocity({opacity: 0.5}, {
+        duration: ka.settings.durationNormal
+      , progress: function (elements, percentComplete) {
+            elements[0].style.webkitFilter = 'grayscale(' + Math.round(percentComplete * 100) + '%)';
+        }
+    });
 };
 
 
@@ -259,28 +341,3 @@ ka.lib.onBackdropLoaded = function () {
         }, 50);
     }});
 };
-
-
-/*
-ka.lib.moveDetailBrowserFocus = function () {
-    dummyImage.velocity({width: 0, marginLeft: 0}, {
-        duration: ka.settings.durationNormal
-      , progress: function (elements, percentComplete) {
-            if (percentComplete < 1) {
-                previouslyFocusedImage.style.webkitFilter = 'grayscale(' + Math.round(percentComplete * 100) + '%)';
-                previouslyFocusedImage.style.opacity = Math.round(100 - 50 * percentComplete) / 100;
-                upcomingFocusedImage.style.webkitFilter = 'grayscale(' + (100 - Math.round(percentComplete * 100)) + '%)';
-                upcomingFocusedImage.style.opacity = Math.round(50 + 50 * percentComplete) / 100;
-            }
-        }
-      , complete: function () {
-            previouslyFocusedImage.style.webkitFilter = 'grayscale(100%)';
-            previouslyFocusedImage.style.opacity = 0.5;
-            upcomingFocusedImage.style.webkitFilter = null;
-            upcomingFocusedImage.style.opacity = 1;
-
-            dummyImage.remove();
-
-            $('#boom-movie-detail').css('backgroundImage', 'url(/movie/backdrop/' + ka.data.asList[lastImageIndex - 1].uuid +  '.jpg)');
-    }});
-};*/

@@ -24,6 +24,7 @@ ka.settings = {
   , compilationPosterOffsetTop: -18
   , compilationPosterOffsetLeft: 12
 
+  , durationVeryShort: 90
   , durationShort: 180
   , durationNormal: 360
   , durationLong: 720

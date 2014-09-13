@@ -253,6 +253,8 @@ ka.transition.browser = {to: {
             ka.state.actualScreenMode = null;
             ka.state.currentCompilationPosterCount = 0;
 
+            ka.lib.unoccludeMovieGrid();
+
             if (ka.state.mustUndoCompilationChanges) {
                 $('#boom-movie-grid-container, #boom-poster-focus').velocity({left: '-=1920'}, {duration: 0, complete: function () {
                     $('#boom-poster-focus').velocity('fadeIn', 0);
@@ -268,9 +270,9 @@ ka.transition.browser = {to: {
                 ka.state.mustUndoCompilationChanges = false;
             }
 
-            ka.lib.unoccludeMovieGrid();
             ka.lib.recallFocusByUuid(movieObj.uuid);
             ka.lib.refocusGrid(true);
+
             ka.lib.occludeMovieGrid();
         }
 

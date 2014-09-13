@@ -329,7 +329,7 @@ ka.lib.updateMovieGridOnChange = function () {
 
 
 ka.lib.updateMovieGridOnAdd = function () {
-    if (!ka.state.currentCompilationPosterCount && (ka.state.currentPageMode == 'detail' || ka.state.currentPageMode == 'detail-browser' || ka.state.currentPageMode == 'play:movie' || ka.state.currentPageMode == 'play:trailer')) {
+    if (ka.state.currentCompilationPosterCount == 0 && (ka.state.currentPageMode == 'detail' || ka.state.currentPageMode == 'detail-browser' || ka.state.currentPageMode == 'play:movie' || ka.state.currentPageMode == 'play:trailer')) {
         ka.lib.updateMovieGridRefocused(
             ka.lib.unoccludeMovieGrid
         );
@@ -793,7 +793,7 @@ ka.lib.zoomInGridPage = function (callback) {
 
     $('#boom-compilation-container').velocity('transition.expandOut', {display: 'none', duration: ka.settings.durationNormal, complete: function () {
         $('#boom-compilation-grid').empty();
-        ka.state.currentCompilationPosterCount = null;
+        ka.state.currentCompilationPosterCount = 0;
 
         callback();
     }});
@@ -928,7 +928,7 @@ ka.lib.refocusGrid = function (offscreen) {
     if (offscreen) {
         left -= 1920;
     }
-    $('#boom-poster-focus').css({top: (16 + 360 * ka.state.gridFocusY) + 'px', left: left + 'px'});
+    $('#boom-poster-focus').velocity({top: (16 + 360 * ka.state.gridFocusY) + 'px', left: left + 'px'}, 0);
 };
 
 

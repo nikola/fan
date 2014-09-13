@@ -156,7 +156,7 @@ ka.lib.handleKeypressBack = function () {
     if (ka.state.currentPageMode == 'config') {
         ka.transition.menu.to.grid();
     } else if (ka.state.currentPageMode == 'detail') {
-        if (ka.state.currentCompilationPosterCount) {
+        if (ka.state.currentCompilationPosterCount > 0) {
             ka.transition.detail.to.compilation();
         } else {
             ka.transition.detail.to.grid();

@@ -37,8 +37,11 @@ ka.state = {
   , currentConfigButton: 1
   , currentGridMovieUuid: null
   , currentCompilationFocusIndex: null
-  , currentCompilationPosterCount: null
+  , currentCompilationPosterCount: 0
   , currentCompilationColumnSize: null
+
+  , mustUndoCompilationChanges: false
+
   , gridSortCriterion: 'byTitleLocalized'
   , gridSortDisplayLanguage: 'localized'
   , gridSortOrder: 'asc'

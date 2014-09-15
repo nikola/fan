@@ -9,6 +9,8 @@
 
 ka.lib.updateDetailPage = function (movie, refreshBackdrop, callback) {
     if (movie) {
+        $('#boom-movie-detail').data('boom.uuid', movie.uuid);
+
         if (!movie.streamless) {
             ka.state.currentDetailButton = 'play';
         } else if (movie.trailer) {
@@ -133,7 +135,7 @@ ka.lib.populateDetailBrowserGrid = function () {
         }
     }).appendTo('#boom-movie-detail-poster-browser');
 
-    var current = ka.data.indexByUuid[ka.state.currentGridMovieUuid],
+    var current = ka.data.indexByUuid[$('#boom-movie-detail').data('boom.uuid')],
         index, end, focused;
 
     if (ka.data.asList.length < 6) {
@@ -177,14 +179,9 @@ ka.lib.populateDetailBrowserGrid = function () {
 
 ka.lib.updateDetailBrowserInfo = function (movieObj, fade) {
     if (fade) {
-        /* $('#boom-movie-detail-browser-info').velocity({backgroundColor: '#' + movieObj.primaryPosterColor}, ka.settings.durationNormal); */
-
-        setTimeout(function () { ka.lib._updateDetailBrowserInfo(movieObj); }, ka.settings.durationShort);
-        /* $('#boom-movie-detail-browser-info').velocity('fadeOut', {duration: ka.settings.durationShort, complete: function () {
+        setTimeout(function () {
             ka.lib._updateDetailBrowserInfo(movieObj);
-
-            $(this).velocity('fadeIn', ka.settings.durationShort);
-        }}); */
+        }, ka.settings.durationShort);
     } else {
         ka.lib._updateDetailBrowserInfo(movieObj);
     }
@@ -354,4 +351,30 @@ ka.lib.onBackdropLoaded = function () {
             $('#boom-movie-detail-poster-fade-in').velocity('fadeOut', 0);
         }, 50);
     }});
+};
+
+
+ka.lib.transitionBackFromDetailScreen = function () {
+    var currentDetailMovieUuid = $('#boom-movie-detail').data('boom.uuid'),
+        hasOpenCompilation = ka.state.currentCompilationPosterCount > 0;
+    if (currentDetailMovieUuid != ka.state.currentGridMovieUuid) {
+        ka.state.currentGridMovieUuid = currentDetailMovieUuid;
+
+        ka.lib.unoccludeMovieGrid();
+
+        if (hasOpenCompilation) {
+            ka.lib.dissolveCompilation();
+        }
+
+        ka.lib.recallFocusByUuid(currentDetailMovieUuid);
+        ka.lib.refocusGrid(true);
+
+        ka.lib.occludeMovieGrid();
+
+        ka.transition.detail.to.grid();
+    } else if (hasOpenCompilation) {
+        ka.transition.detail.to.compilation();
+    } else {
+        ka.transition.detail.to.grid();
+    }
 };

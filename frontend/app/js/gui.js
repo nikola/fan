@@ -40,7 +40,7 @@ ka.state = {
   , currentCompilationPosterCount: 0
   , currentCompilationColumnSize: null
 
-  , mustUndoCompilationChanges: false
+  /* , mustUndoCompilationChanges: false */
 
   , gridSortCriterion: 'byTitleLocalized'
   , gridSortDisplayLanguage: 'localized'

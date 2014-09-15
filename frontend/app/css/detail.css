@@ -28,7 +28,7 @@
 
     width: 2080px; height: 245px;
     position: absolute; top: 1080px; left: -160px;
-    background-color: rgba(0, 0, 0, 0.25);
+    /* background-color: rgba(0, 0, 0, 0.25); */
 
     -webkit-transform: translate3d(0, 0, 0);
     -webkit-backface-visibility: hidden;
@@ -38,7 +38,9 @@
 
 #boom-movie-detail-poster-browser {
     display: inline-block;
-    height: 245px;
+    width: 990px; height: 245px;
+
+    background-color: rgba(0, 0, 0, 0.25);
     }
 
 #boom-movie-detail-poster-browser img {
@@ -50,13 +52,15 @@
     width: 1090px; height: 225px;
     float: right;
     padding-top: 20px;
-    /* background-color: rgba(0, 0, 0, 0.5); */
+
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0));
     }
 
 #boom-movie-detail-browser-title {
     display: inline-block;
     line-height: 50px;
     font-size: 40px;
+    font-weight: bold;
 
     width: 1060px;
 

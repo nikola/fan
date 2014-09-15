@@ -6,17 +6,24 @@
  */
 ; var ka = ka || {};
 
+ka.data = {
+    drives: null
+  , sourceByPathname: {}
+};
+
+ka.settings = {
+    durationVeryShort: 90
+  , durationShort: 180
+  , durationNormal: 360
+  , durationLong: 720
+};
+
 ka.state = {
     initialChoiceMade: false
   , currentChoice: null
   , hasDrivesSelected: false
   , currentDriveIndex: null
   , isStartButtonSelected: false
-};
-
-ka.data = {
-    drives: null
-  , sourceByPathname: {}
 };
 
 

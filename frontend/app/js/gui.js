@@ -41,6 +41,7 @@ ka.state = {
   , currentCompilationColumnSize: null
 
   /* , mustUndoCompilationChanges: false */
+  , hasDeferredGridUpdate: false
 
   , gridSortCriterion: 'byTitleLocalized'
   , gridSortDisplayLanguage: 'localized'

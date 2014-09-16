@@ -112,10 +112,15 @@ ka.transition.grid = {to: {
         ka.lib.updateDetailPage(obj, true, function () {
             ka.lib.updateDetailButtonSelection();
 
-            $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({translateZ: 0, left: '-=1920'}, {duration: ka.settings.durationLong, complete: function () {
-                ka.state.currentPageMode = 'detail';
-                ka.state.actualScreenMode = null;
-            }});
+            $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({translateZ: 0, left: '-=1920'}, {
+                duration: ka.settings.durationLong
+              , complete: function () {
+                    ka.state.currentPageMode = 'detail';
+                    ka.state.actualScreenMode = null;
+
+                    ka.lib.grid.focus.hide();
+                }
+            });
         });
 
     }
@@ -145,7 +150,7 @@ ka.transition.compilation = {to: {
         ka.lib.closeCompilation(function () {
             ka.lib.unoccludeMovieGrid();
 
-            ka.lib.updateMovieGridRefocused();
+            ka.lib.updateMovieGridRefocused(false);
 
             /* ka.lib.updateMovieGridOnReturn(); */
             ka.state.currentPageMode = 'grid';
@@ -186,6 +191,8 @@ ka.transition.detail = {to: {
 
     grid: function () {     /* screen state transition: OK */
         ka.state.currentPageMode = 'limbo';
+
+        ka.lib.grid.focus.show();
 
         $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail')
             .velocity({translateZ: 0, left: '+=1920'}, {duration: ka.settings.durationLong, complete: function () {
@@ -231,7 +238,7 @@ ka.transition.detail = {to: {
                 }
             });
         }});
-        $('#boom-movie-detail-right').velocity({marginLeft: '+=40'}, ka.settings.durationNormal);
+        $('#boom-movie-detail-right').velocity({marginLeft: '+=40'}, {duration: ka.settings.durationNormal, easing: 'linear'});
     }
 
 }};
@@ -260,7 +267,7 @@ ka.transition.browser = {to: {
                 ka.state.currentPageMode = 'detail';
             }});
         }});
-        $('#boom-movie-detail-right').velocity({marginLeft: '-=40'}, ka.settings.durationNormal);
+        $('#boom-movie-detail-right').velocity({marginLeft: '-=40'}, {duration: ka.settings.durationNormal, easing: 'linear'});
     }
 
 }};

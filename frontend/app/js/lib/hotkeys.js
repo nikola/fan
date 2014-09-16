@@ -191,7 +191,9 @@ ka.lib.handleKeypressAny = function (evt) {
                 ka.state.gridFocusX = 0;
                 ka.state.gridFocusY = line;
 
-                ka.lib.refocusGrid();
+                /* ka.lib.refocusGrid(); */
+                ka.lib.repositionMovieGrid();
+                ka.lib.repositionMovieFocus();
 
                 $('#boom-movie-grid-key-' + key).velocity({
                     color: '#000000'

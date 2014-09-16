@@ -366,8 +366,10 @@ ka.lib.transitionBackFromDetailScreen = function () {
             ka.lib.dissolveCompilation();
         }
 
-        ka.lib.recallFocusByUuid(currentDetailMovieUuid);
-        ka.lib.refocusGrid(true);
+        ka.lib.recalcPositionByUuid(currentDetailMovieUuid);
+        /* ka.lib.refocusGrid(true); */
+        ka.lib.repositionMovieGrid();
+        ka.lib.repositionMovieFocus(true); /* offscreen */
 
         ka.lib.occludeMovieGrid();
 

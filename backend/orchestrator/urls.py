@@ -46,7 +46,8 @@ def _getImageResponse(request, imageModified, imageBlob):
         headers = SERVER_HEADERS.copy()
         headers.update({
             'Last-modified': getRfc1123Timestamp(imageModified),
-            'Cache-Control': 'must-revalidate, max-age=0',
+            # 'Cache-Control': 'must-revalidate, max-age=0',
+            'Cache-Control': 'must-revalidate, max-age=604800', # 1 week
         })
 
         if cachedTimestamp < imageModified:
@@ -144,6 +145,7 @@ def bc470fe6ce0c4b8695402e77934d83cc(request):
 
 @module.route('/movie/poster/<string(length=32):identifier>-<int:width>.image', methods=('GET',), content_type='application/octet-stream')
 def ba2c90f025af404381e88bf8fc18afb2(request, movieUuid, width):
+    # logger.info('serving poster for %s.',module.streamManager.getMovieTitleByUuid(movieUuid))
     imageModified, imageBlob = module.streamManager.getImageByUuid(movieUuid, 'Poster', width)
 
     if imageBlob is None:
@@ -164,7 +166,7 @@ def ba2c90f025af404381e88bf8fc18afb2(request, movieUuid, width):
 
 @module.route('/movie/backdrop/<string(length=32):identifier>.jpg', methods=('GET',), content_type='image/jpeg')
 def f4a77eba4c284a6ba9ef0fc9386a0c00(request, movieUuid):
-    imageModified, imageBlob = module.streamManager.getImageByUuid(movieUuid, 'Backdrop') # BUGGY ?????!
+    imageModified, imageBlob = module.streamManager.getImageByUuid(movieUuid, 'Backdrop')
     if imageBlob is None:
         if module.imageBaseUrl is None:
             logger.error('Could not download backdrop for %s.', module.streamManager.getMovieTitleByUuid(movieUuid))

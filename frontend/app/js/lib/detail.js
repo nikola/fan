@@ -12,8 +12,6 @@ ka.lib.updateDetailPage = function (movie, skipBackdropUpdate) {
         return;
     }
 
-    /* console.log('updateDetailPage: ' + movie.uuid + ' ' + skipBackdropUpdate); */
-
     $('#boom-movie-detail').data('boom.uuid', movie.uuid);
 
     if (!movie.streamless) {
@@ -35,22 +33,24 @@ ka.lib.updateDetailPage = function (movie, skipBackdropUpdate) {
     $('#boom-movie-detail-play-button').css('display', (movie.streamless) ? 'none' : 'inline-block');
     $('#boom-movie-detail-trailer-button').css('display', (movie.trailer) ? 'inline-block' : 'none');
 
-    if (!skipBackdropUpdate) {
-        $('#boom-movie-detail').css('backgroundImage', 'none');
+    var poster = $('#boom-movie-detail-top img')
+    if (poster.data('boom.loadUuid') != movie.uuid) {
+        if (!skipBackdropUpdate) {
+            $('#boom-movie-detail').css('backgroundImage', 'none');
+        }
+
+        poster.css('visibility', 'hidden').data({'boom.isLoading': true, 'boom.loadUuid': movie.uuid})
+            .on('load', function () {
+                if (poster.data('boom.isLoading')) {
+                    poster.data('boom.isLoading', false).css('visibility', 'visible').off();
+                    if (!skipBackdropUpdate) {
+                        $('#boom-movie-detail').css('backgroundImage', 'url(/movie/backdrop/' + poster.data('boom.loadUuid') + '.jpg)');
+                    }
+                }
+            })
+            .attr('src', '/movie/poster/' + movie.uuid + '-300.image');
     }
 
-    $('#boom-movie-detail-top img')
-        .css('visibility', 'hidden')
-        .data({'boom.isLoading': true, 'boom.loadUuid': movie.uuid})
-        .on('load', function () {
-            if ($(this).data('boom.isLoading')) {
-                $(this).data('boom.isLoading', false).css('visibility', 'visible').off();
-                if (!skipBackdropUpdate) {
-                    $('#boom-movie-detail').css('backgroundImage', 'url(/movie/backdrop/' + $(this).data('boom.loadUuid') + '.jpg)');
-                }
-            }
-        })
-        .attr('src', '/movie/poster/' + movie.uuid + '-300.image');
 
 };
 

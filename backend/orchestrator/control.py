@@ -104,24 +104,20 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
             command = queue.get_nowait()
 
             if command == 'orchestrator:start:scan':
-                appModule.userConfig = getCurrentUserConfig()
+                if False:
+                    appModule.userConfig = getCurrentUserConfig()
 
-                if appModule.userConfig.get('isDemoMode', False):
-                    appModule.userConfig['hasDemoMovies'] = True
-                    appModule.userConfig = getCurrentUserConfig(appModule.userConfig)
-
-                    streamGenerator = getFixedRecords()
-                    # isImportingDemoMovies = True
-                else: # if not appModule.userConfig.get('isDemoMode', False):
-                    if appModule.userConfig.get('hasDemoMovies', False):
-                        appModule.userConfig['hasDemoMovies'] = False
+                    if appModule.userConfig.get('isDemoMode', False):
+                        appModule.userConfig['hasDemoMovies'] = True
                         appModule.userConfig = getCurrentUserConfig(appModule.userConfig)
 
-                    streamGenerator = getStreamRecords(appModule.userConfig.get('sources', []))
-                    # isImportingDemoMovies = False
-                # else:
-                #     streamGenerator = None
-                #     isImportingDemoMovies = False
+                        streamGenerator = getFixedRecords()
+                    else:
+                        if appModule.userConfig.get('hasDemoMovies', False):
+                            appModule.userConfig['hasDemoMovies'] = False
+                            appModule.userConfig = getCurrentUserConfig(appModule.userConfig)
+
+                        streamGenerator = getStreamRecords(appModule.userConfig.get('sources', []))
 
                 queue.task_done()
             # elif command == 'orchestrator:watch':

@@ -82,13 +82,13 @@ function c4b77b2bcc804808a9ab107b8e2ac434() {
     var url = (location.protocol == 'https:' ? 'wss' : 'ws') + '://' + location.host + '/';
     ka.state.socketDispatcher = new ka.lib.WebSocketDispatcher(url);
 
-    ka.state.socketDispatcher.bind('receive:movie:item', function (movie) {
+    /* ka.state.socketDispatcher.bind('receive:movie:item', function (movie) {
         ka.state.setOfUnknownPosters[movie.uuid] = true;
 
         ka.lib.addMovie(movie);
 
-        ka.lib.updateMovieGridOnAdd();
-    });
+        ka.lib.updateMovieGridOnAdd(true);
+    }); */
 
     ka.state.socketDispatcher.bind('receive:command:token', function (command) {
         eval(command);

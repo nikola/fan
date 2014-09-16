@@ -32,7 +32,7 @@ ka.lib.grid = {
   , processDeferredUpdates: function () {
         ka.state.currentPageMode = 'grid';
 
-        ka.lib.updateMovieGridOnAdd();
+        ka.lib.updateMovieGridOnAdd(false);
     }
 
   , snapshotMovieList: function () {
@@ -90,7 +90,6 @@ ka.lib.setPrimaryPosterColor = function () {
         /*  Weird bug:
          *  Trigger full render of grid by painting every single poster on canvas.
          */
-        ka.lib.grid.drawPosterImage($(this).get(0));
         /* var image = $(this).get(0),
             context = ka.state.canvasContext;
 
@@ -107,7 +106,7 @@ ka.lib.setPrimaryPosterColor = function () {
         setTimeout(ka.lib.processPixelArray, 0);
     }
 
-    gridItem.find('.boom-movie-grid-info-overlay').removeClass('active');
+    /* gridItem.find('.boom-movie-grid-info-overlay').removeClass('active'); */
     ka.state.setOfKnownPosters[uuid] = true;
     if (uuid in ka.state.setOfUnknownPosters) {
         delete ka.state.setOfUnknownPosters[uuid];
@@ -374,10 +373,10 @@ ka.lib.updateMovieGridOnChange = function () {
 };
 
 
-ka.lib.updateMovieGridOnAdd = function () {
-    if (ka.state.currentPageMode == 'limbo' && !ka.state.hasDeferredGridUpdate) {
+ka.lib.updateMovieGridOnAdd = function (isImmediateUpdate) {
+    if (ka.state.currentPageMode == 'limbo' && isImmediateUpdate) { /* && !ka.state.hasDeferredGridUpdate) { */
         ka.state.hasDeferredGridUpdate = true;
-    } else {
+    } else if (ka.state.currentPageMode != 'limbo' && ka.state.hasDeferredGridUpdate) {
         ka.state.hasDeferredGridUpdate = false;
 
         if (ka.state.currentCompilationPosterCount == 0 && (ka.state.currentPageMode == 'detail' || ka.state.currentPageMode == 'detail-browser' || ka.state.currentPageMode == 'play:movie' || ka.state.currentPageMode == 'play:trailer')) {

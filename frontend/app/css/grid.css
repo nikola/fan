@@ -14,10 +14,12 @@
 
     position: absolute; top: 0; left: 0;
 
-    -webkit-transform: translate3d(0, 0, 0);
+    -webkit-transform: translate(0, 0);
     -webkit-backface-visibility: hidden;
+    /* -webkit-transform: translate3d(0, 0, 0);
+
     -webkit-perspective: 1000;
-    -webkit-transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d; */
 
     font-size: 0;
 
@@ -103,10 +105,10 @@
 .boom-movie-grid-item, .boom-compilation-grid-item {
     padding: 0;
     width: 260px; height: 300px;
-    text-align: center;
+    /* text-align: center; */
     display: inline-block;
     margin: 30px 0;
-    vertical-align: top;
+    /* vertical-align: top; */
     }
 
 .boom-compilation-grid-item {
@@ -115,11 +117,12 @@
 
 .boom-movie-grid-image, .boom-compilation-grid-item img {
     display: block;
-    max-width: 200px;
+    /* max-width: 200px;
     max-height: 300px;
     width: auto;
-    height: auto;
-    margin: 0 auto;
+    height: auto; */
+    width: 200px; height: 300px;
+    margin: 0 30px;
 
     /*
      DON'T ENABLE THIS AS IT CAUSES STUTTERING DURING SCROLLS!
@@ -130,8 +133,9 @@
     }
 
 .boom-compilation-grid-item img {
-    max-width: 300px;
-    max-height: 450px;
+    /* max-width: 300px;
+    max-height: 450px; */
+    width: 300px; height: 450px;
     }
 
 /* .boom-movie-grid-item img.desaturate {
@@ -179,26 +183,26 @@
     position: absolute; left: 0; top: 0;
     height: 1080px;
 
-    -webkit-transform: translate3d(0, 0, 0);
+    /* -webkit-transform: translate3d(0, 0, 0);
     -webkit-backface-visibility: hidden;
     -webkit-perspective: 1000;
-    -webkit-transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d; */
     }
 
 #boom-compilation-grid {
     margin: 0 auto;
 
-    -webkit-transform: translate3d(0, 0, 0);
+    /* -webkit-transform: translate3d(0, 0, 0);
     -webkit-backface-visibility: hidden;
     -webkit-perspective: 1000;
-    -webkit-transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d; */
     }
 
 /* ================================================================================================================== */
 
 .boom-movie-grid-info-overlay {
     position: relative;
-    overflow: hidden;
+    /* overflow: hidden; */
     width: 260px; height: 300px;
 
     -webkit-transition: all 0.35s ease-in-out;
@@ -276,8 +280,8 @@
     text-align: center;
     background: rgba(0, 0, 0, 0.5);
 
-    /* -webkit-transform: translate3d(0, 0, 0);
     -webkit-transition: all 0.35s ease-in-out;
+    /* -webkit-transform: translate3d(0, 0, 0);
     -webkit-backface-visibility: hidden; */
     -webkit-transform: translate(0, 0);
     -webkit-transition: all 0.35s ease-in-out;

@@ -35,6 +35,22 @@ ka.lib.grid = {
         ka.lib.updateMovieGridOnAdd();
     }
 
+  , snapshotMovieList: function () {
+        ka.state.lastGridMovieListSnapshot = ka.data.asList.concat();
+    }
+
+  , getMovieListSnapshot: function () {
+        return ka.state.lastGridMovieListSnapshot;
+    }
+
+  , drawPosterImage: function (image) {
+        var context = ka.state.canvasContext;
+
+        context.canvas.width = image.width;
+        context.canvas.height = image.height;
+        context.drawImage(image, 0, 0, image.width, image.height);
+    }
+
 };
 
 
@@ -74,12 +90,13 @@ ka.lib.setPrimaryPosterColor = function () {
         /*  Weird bug:
          *  Trigger full render of grid by painting every single poster on canvas.
          */
-        var image = $(this).get(0),
+        ka.lib.grid.drawPosterImage($(this).get(0));
+        /* var image = $(this).get(0),
             context = ka.state.canvasContext;
 
         context.canvas.width = image.width;
         context.canvas.height = image.height;
-        context.drawImage(image, 0, 0, image.width, image.height);
+        context.drawImage(image, 0, 0, image.width, image.height); */
 
         gridItem.find('.boom-movie-grid-info-overlay-title').css('backgroundColor', '#' + ka.data.byUuid[uuid].primaryPosterColor);
     } else {

@@ -35,12 +35,14 @@ ka.state = {
   , actualScreenMode: null
 
   , currentConfigButton: 1
+
   , currentGridMovieUuid: null
+  , lastGridMovieListSnapshot: null
+
   , currentCompilationFocusIndex: null
   , currentCompilationPosterCount: 0
   , currentCompilationColumnSize: null
 
-  /* , mustUndoCompilationChanges: false */
   , hasDeferredGridUpdate: false
 
   , gridSortCriterion: 'byTitleLocalized'
@@ -66,6 +68,7 @@ ka.state = {
   , occludedGridItems: null
 
   , currentDetailBrowserPosterColumn: null
+  , backdropDownloadTimer: null
 
   , setOfKnownPosters: {}
   , setOfUnknownPosters: {}
@@ -106,7 +109,13 @@ function c4b77b2bcc804808a9ab107b8e2ac434() {
     ka.state.socketDispatcher.bind('movie:poster:refresh', function (id) {
         var image = $('#boom-poster-' + id);
         if (image.size()) {
-            image.attr('src', image.attr('src') + '#' + new Date().getTime());
+            var preload = new Image(),
+                url = image.attr('src') + '#' + new Date().getTime();
+            preload.onload = function () {
+                /* ka.lib.grid.drawPosterImage(preload); */
+                image.attr('src', url);
+            };
+            preload.src = url;
         }
     });
 }

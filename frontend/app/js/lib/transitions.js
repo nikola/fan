@@ -97,6 +97,8 @@ ka.transition.grid = {to: {
   , detail: function () {   /* screen state transition: OK */
         ka.state.currentPageMode = 'limbo';
 
+        ka.lib.grid.snapshotMovieList();
+
         ka.lib.occludeMovieGrid();
 
         var movieObj = ka.lib.getVariantFromGridFocus();
@@ -152,6 +154,8 @@ ka.transition.compilation = {to: {
   , detail: function () {   /* screen state transition: OK */
         ka.state.actualScreenMode = 'grid-compilation';
         ka.state.currentPageMode = 'limbo';
+
+        ka.lib.grid.snapshotMovieList();
 
         var movieObj = ka.lib.getVariantFromGridFocus()[ka.state.currentCompilationFocusIndex];
 
@@ -240,8 +244,9 @@ ka.transition.browser = {to: {
     detail: function () {
         ka.state.currentPageMode = 'limbo';
 
-        var movieObj = ka.data.asList[$('#boom-movie-detail-poster-browser :nth-child('
-            + (ka.state.currentDetailBrowserPosterColumn + 2) + ')').data('boom.index')];
+        var snapshot = ka.lib.grid.getMovieListSnapshot(),
+            movieObj = snapshot[$('#boom-movie-detail-poster-browser :nth-child('
+                        + (ka.state.currentDetailBrowserPosterColumn + 2) + ')').data('boom.index')];
 
         if (movieObj.uuid != $('#boom-movie-detail').data('boom.uuid')) {
             $('#boom-movie-detail').data('boom.uuid', movieObj.uuid);

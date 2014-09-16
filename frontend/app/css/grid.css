@@ -256,7 +256,8 @@
     width: 200px;
     margin: 130px 10px 0 30px;
 
-    -webkit-transform: translate3d(0, -100%, 0);
+    /* -webkit-transform: translate3d(0, -100%, 0); */
+    -webkit-transform: translate(0, -100%);
     -webkit-transition: all 0.35s ease-in-out;
     }
 
@@ -275,9 +276,11 @@
     text-align: center;
     background: rgba(0, 0, 0, 0.5);
 
-    -webkit-transform: translate3d(0, 0, 0);
+    /* -webkit-transform: translate3d(0, 0, 0);
     -webkit-transition: all 0.35s ease-in-out;
-    -webkit-backface-visibility: hidden;
+    -webkit-backface-visibility: hidden; */
+    -webkit-transform: translate(0, 0);
+    -webkit-transition: all 0.35s ease-in-out;
     }
 
 .active .boom-movie-grid-info-overlay-text {
@@ -297,7 +300,8 @@
 
     position: relative;
 
-    -webkit-transform: translate3d(0, -100%, 0);
+    /* -webkit-transform: translate3d(0, -100%, 0); */
+    -webkit-transform: translate(0, -100%);
     -webkit-transition: all 0.35s 0.1s linear;
     }
 
@@ -308,5 +312,6 @@
     }
 
 .active .boom-movie-grid-info-overlay-title, .active .boom-movie-grid-info-overlay-text-additional {
-    -webkit-transform: translate3d(0, 0, 0);
+    /* -webkit-transform: translate3d(0, 0, 0); */
+    -webkit-transform: translate(0, 0);
     }

@@ -198,7 +198,6 @@ ka.lib._updateDetailBrowserInfo = function (movieObj) {
     }
 
     var additionalInfo = $('#boom-movie-detail-browser-additional span');
-    /* additionalInfo.eq(0).text(movieObj.releaseYear); */
     additionalInfo.eq(0).text(movieObj.runtime);
     additionalInfo.eq(1).text((movieObj.rating) ? (movieObj.rating / 10) : '?');
 };
@@ -366,7 +365,6 @@ ka.lib.transitionBackFromDetailScreen = function () {
         }
 
         ka.lib.recalcPositionByUuid(currentDetailMovieUuid);
-        /* ka.lib.refocusGrid(true); */
         ka.lib.repositionMovieGrid();
         ka.lib.repositionMovieFocus(true); /* offscreen */
 

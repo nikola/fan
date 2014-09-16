@@ -99,30 +99,22 @@ ka.transition.grid = {to: {
 
         ka.lib.occludeMovieGrid();
 
-        var obj = ka.lib.getVariantFromGridFocus();
-        ka.state.currentGridMovieUuid = obj.uuid;
-        /* if (!obj.streamless) {
-            ka.state.currentDetailButton = 'play';
-        } else if (obj.trailer) {
-            ka.state.currentDetailButton = 'trailer';
-        } else {
-            ka.state.currentDetailButton = 'details';
-        } */
+        var movieObj = ka.lib.getVariantFromGridFocus();
+        ka.state.currentGridMovieUuid = movieObj.uuid;
 
-        ka.lib.updateDetailPage(obj, true, function () {
-            ka.lib.updateDetailButtonSelection();
+        ka.lib.updateDetailPage(movieObj); /* refresh backdrop, too */
+        ka.lib.updateDetailButtonSelection();
 
-            $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({translateZ: 0, left: '-=1920'}, {
-                duration: ka.settings.durationLong
-              , complete: function () {
-                    ka.state.currentPageMode = 'detail';
-                    ka.state.actualScreenMode = null;
+        $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({translateZ: 0, left: '-=1920'}, {
+            duration: ka.settings.durationLong
+          /* , delay: ka.settings.durationVeryShort */
+          , complete: function () {
+                ka.state.currentPageMode = 'detail';
+                ka.state.actualScreenMode = null;
 
-                    ka.lib.grid.focus.hide();
-                }
-            });
+                ka.lib.grid.focus.hide();
+            }
         });
-
     }
 
   , compilation: function () {  /* screen state transition: OK */
@@ -164,23 +156,17 @@ ka.transition.compilation = {to: {
         var movieObj = ka.lib.getVariantFromGridFocus()[ka.state.currentCompilationFocusIndex];
 
         ka.state.currentGridMovieUuid = movieObj.uuid;
+        ka.state.actualScreenMode = null;
 
-        /* if (!movieObj.streamless) {
-            ka.state.currentDetailButton = 'play';
-        } else if (movieObj.trailer) {
-            ka.state.currentDetailButton = 'trailer';
-        } else {
-            ka.state.currentDetailButton = 'details';
-        } */
+        ka.lib.updateDetailPage(movieObj); /* refresh backdrop, too */
+        ka.lib.updateDetailButtonSelection();
 
-        ka.lib.updateDetailPage(movieObj, true, function () {
-            ka.state.actualScreenMode = null;
-
-            ka.lib.updateDetailButtonSelection();
-
-            $('#boom-compilation-container, #boom-compilation-focus, #boom-movie-detail').velocity({translateZ: 0, left: '-=1920'}, {duration: ka.settings.durationLong, complete: function () {
+        $('#boom-compilation-container, #boom-compilation-focus, #boom-movie-detail').velocity({translateZ: 0, left: '-=1920'}, {
+            duration: ka.settings.durationLong
+          /* , delay: ka.settings.durationVeryShort */
+          , complete: function () {
                 ka.state.currentPageMode = 'detail';
-            }});
+            }
         });
     }
 
@@ -255,8 +241,8 @@ ka.transition.browser = {to: {
         if (movieObj.uuid != $('#boom-movie-detail').data('boom.uuid')) {
             $('#boom-movie-detail').data('boom.uuid', movieObj.uuid);
 
-            ka.lib.updateDetailPage(movieObj, false, null);
-            ka.lib.updateDetailButtonSelection(true);
+            ka.lib.updateDetailPage(movieObj, true); /* don't refresh backdrop */
+            ka.lib.updateDetailButtonSelection(true); /* don't animate backdrop shade */
         }
 
         $('#boom-movie-detail-left').velocity({left: '+=360'}, ka.settings.durationNormal);

@@ -7,50 +7,49 @@
 ; var ka = ka || {}; if (!('lib' in ka)) ka.lib = {};
 
 
-ka.lib.updateDetailPage = function (movie, refreshBackdrop, callback) {
-    if (movie) {
-        $('#boom-movie-detail').data('boom.uuid', movie.uuid);
-
-        if (!movie.streamless) {
-            ka.state.currentDetailButton = 'play';
-        } else if (movie.trailer) {
-            ka.state.currentDetailButton = 'trailer';
-        } else {
-            ka.state.currentDetailButton = 'details';
-        }
-
-        $('#boom-movie-detail .boom-button').data('boom.select-color', movie.primaryPosterColor);
-
-        $('#boom-detail-release span').text(movie.releaseYear);
-        $('#boom-detail-runtime span').text(movie.runtime);
-        $('#boom-detail-rating span').text((movie.rating) ? (movie.rating / 10) : '?');
-        $('#boom-movie-detail-title').text(ka.lib.getLocalizedTitle(movie, false));
-        $('#boom-movie-detail-description').text(movie.storyline);
-
-        $('#boom-movie-detail-play-button').css('display', (movie.streamless) ? 'none' : 'inline-block');
-        $('#boom-movie-detail-trailer-button').css('display', (movie.trailer) ? 'inline-block' : 'none');
-
-        if (refreshBackdrop) {
-            $('#boom-movie-detail').css('backgroundImage', 'none');
-        }
-
-        if (callback) {
-            setTimeout(callback, ka.settings.durationVeryShort);
-        }
-
-        $('#boom-movie-detail-top img')
-            .css('visibility', 'hidden')
-            .data({'boom.isLoading': true, 'boom.loadUuid': movie.uuid})
-            .on('load', function () {
-                if ($(this).data('boom.isLoading')) {
-                    $(this).data('boom.isLoading', false).css('visibility', 'visible').off();
-                    if (refreshBackdrop) {
-                        $('#boom-movie-detail').css('backgroundImage', 'url(/movie/backdrop/' + $(this).data('boom.loadUuid') + '.jpg)');
-                    }
-                }
-            })
-            .attr('src', '/movie/poster/' + movie.uuid + '-300.image');
+ka.lib.updateDetailPage = function (movie, skipBackdropUpdate) {
+    if (!movie) {
+        return;
     }
+
+    $('#boom-movie-detail').data('boom.uuid', movie.uuid);
+
+    if (!movie.streamless) {
+        ka.state.currentDetailButton = 'play';
+    } else if (movie.trailer) {
+        ka.state.currentDetailButton = 'trailer';
+    } else {
+        ka.state.currentDetailButton = 'details';
+    }
+
+    $('#boom-movie-detail .boom-button').data('boom.select-color', movie.primaryPosterColor);
+
+    $('#boom-detail-release span').text(movie.releaseYear);
+    $('#boom-detail-runtime span').text(movie.runtime);
+    $('#boom-detail-rating span').text((movie.rating) ? (movie.rating / 10) : '?');
+    $('#boom-movie-detail-title').text(ka.lib.getLocalizedTitle(movie, false));
+    $('#boom-movie-detail-description').text(movie.storyline);
+
+    $('#boom-movie-detail-play-button').css('display', (movie.streamless) ? 'none' : 'inline-block');
+    $('#boom-movie-detail-trailer-button').css('display', (movie.trailer) ? 'inline-block' : 'none');
+
+    if (!skipBackdropUpdate) {
+        $('#boom-movie-detail').css('backgroundImage', 'none');
+    }
+
+    $('#boom-movie-detail-top img')
+        .css('visibility', 'hidden')
+        .data({'boom.isLoading': true, 'boom.loadUuid': movie.uuid})
+        .on('load', function () {
+            if ($(this).data('boom.isLoading')) {
+                $(this).data('boom.isLoading', false).css('visibility', 'visible').off();
+                if (!skipBackdropUpdate) {
+                    $('#boom-movie-detail').css('backgroundImage', 'url(/movie/backdrop/' + $(this).data('boom.loadUuid') + '.jpg)');
+                }
+            }
+        })
+        .attr('src', '/movie/poster/' + movie.uuid + '-300.image');
+
 };
 
 

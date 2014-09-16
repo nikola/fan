@@ -29,7 +29,7 @@ ka.lib.grid = {
 
     }
 
-  , processedDeferredUpdates: function () {
+  , processDeferredUpdates: function () {
         ka.state.currentPageMode = 'grid';
 
         ka.lib.updateMovieGridOnAdd();
@@ -374,22 +374,19 @@ ka.lib.updateMovieGridOnAdd = function () {
             }
         } else if (ka.state.currentPageMode == 'config' || ka.state.currentPageMode == 'grid') {
             ka.lib.recalcMovieGrid();
-
-
-
             ka.lib.updateMovieGridOnChange();
         }
     }
 };
 
 
-ka.lib.updateMovieGridOnReturn = function () {
+/* ka.lib.updateMovieGridOnReturn = function () {
     ka.lib.unoccludeMovieGrid();
 
     ka.lib.recalcMovieGrid();
 
     ka.lib.updateMovieGridOnChange();
-};
+}; */
 
 
 ka.lib.updateMovieGridRefocused = function (offscreen, intermediateFunc) {
@@ -405,7 +402,6 @@ ka.lib.updateMovieGridRefocused = function (offscreen, intermediateFunc) {
 
     ka.lib.updateMovieGridOnChange();
 
-    /* ka.lib.refocusGrid(); */
     ka.lib.repositionMovieGrid();
     ka.lib.repositionMovieFocus(offscreen);
 };
@@ -476,10 +472,7 @@ ka.lib.scrollGrid = function (skipEvents) {
 
     if (!skipEvents) {
         ka.state.currentPageMode = 'limbo';
-        options.complete = function () {
-            ka.state.currentPageMode = 'grid';
-            ka.lib.updateMovieGridOnAdd();
-        }
+        options.complete = ka.lib.grid.processDeferredUpdates;
     }
 
     $('#boom-movie-grid-container').velocity({translateZ: 0, translateY: '-' + (ka.state.gridPage * 1080) + 'px'}, options);
@@ -574,7 +567,7 @@ ka.lib.moveFocusUp = function () {
         ka.state.currentPageMode = 'limbo';
 
         var props = {}, options = {
-            complete: ka.lib.grid.processedDeferredUpdates
+            complete: ka.lib.grid.processDeferredUpdates
         };
 
         if (ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY - 1] <= ka.state.gridFocusX) {
@@ -611,7 +604,7 @@ ka.lib.moveFocusDown = function () {
 
     if (gridFocusAbsoluteY + 1 < ka.state.gridLookupMatrix.length && (notLastRow || notLastPage)) {
         var props = {}, options = {
-            complete: ka.lib.grid.processedDeferredUpdates
+            complete: ka.lib.grid.processDeferredUpdates
         };
 
         if (ka.state.gridLookupItemsPerLine[gridFocusAbsoluteY + 1] <= ka.state.gridFocusX) {
@@ -644,7 +637,7 @@ ka.lib.moveFocusDown = function () {
 ka.lib.moveMovieFocusHorizontally = function (offset) {
     ka.state.currentPageMode = 'limbo';
 
-    ka.lib.grid.focus.show().velocity({left: offset}, {duration: 260, complete: ka.lib.grid.processedDeferredUpdates});
+    ka.lib.grid.focus.show().velocity({left: offset}, {duration: 260, complete: ka.lib.grid.processDeferredUpdates});
 };
 
 

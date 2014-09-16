@@ -183,7 +183,12 @@ ka.transition.detail = {to: {
         $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail')
             .velocity({translateZ: 0, left: '+=1920'}, {duration: ka.settings.durationLong, complete: function () {
                 /* No refocus necessary here, as ka.lib.updateMovieGridOnAdd() has been called previously. */
-                ka.lib.updateMovieGridOnReturn();
+                /* ka.lib.updateMovieGridOnReturn(); */
+                ka.lib.unoccludeMovieGrid();
+
+                ka.lib.recalcMovieGrid();
+                ka.lib.updateMovieGridOnChange();
+
                 ka.state.currentPageMode = 'grid';
                 /* ka.state.mustUndoCompilationChanges = false; */
             }});

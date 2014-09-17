@@ -97,15 +97,13 @@ ka.transition.grid = {to: {
   , detail: function () {   /* screen state transition: OK */
         ka.state.currentPageMode = 'limbo';
 
-        ka.lib.grid.snapshotMovieList();
-
-        ka.lib.occludeMovieGrid();
-
         var movieObj = ka.lib.getVariantFromGridFocus();
-        ka.state.currentGridMovieUuid = movieObj.uuid;
+        ka.state.lastGridMovieUuid = movieObj.uuid;
 
         ka.lib.updateDetailPage(movieObj); /* refresh backdrop, too */
         ka.lib.updateDetailButtonSelection();
+
+        ka.lib.occludeMovieGrid();
 
         $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({translateZ: 0, left: '-=1920'}, {
             duration: ka.settings.durationLong
@@ -113,6 +111,8 @@ ka.transition.grid = {to: {
           , complete: function () {
                 ka.state.currentPageMode = 'detail';
                 ka.state.actualScreenMode = null;
+
+                ka.lib.grid.snapshotMovieLookups();
 
                 ka.lib.grid.focus.hide();
             }
@@ -155,11 +155,11 @@ ka.transition.compilation = {to: {
         ka.state.actualScreenMode = 'grid-compilation';
         ka.state.currentPageMode = 'limbo';
 
-        ka.lib.grid.snapshotMovieList();
+        ka.lib.grid.snapshotMovieLookups();
 
         var movieObj = ka.lib.getVariantFromGridFocus()[ka.state.currentCompilationFocusIndex];
 
-        ka.state.currentGridMovieUuid = movieObj.uuid;
+        ka.state.lastGridMovieUuid = movieObj.uuid;
         ka.state.actualScreenMode = null;
 
         ka.lib.updateDetailPage(movieObj); /* refresh backdrop, too */

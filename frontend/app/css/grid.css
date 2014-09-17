@@ -10,16 +10,9 @@
     }
 
 #boom-movie-grid-container {
-    width: 1920px; height: 1080px;
+    width: 1920px; /* height: 1080px; */
 
     position: absolute; top: 0; left: 0;
-
-    -webkit-transform: translate(0, 0);
-    -webkit-backface-visibility: hidden;
-    /* -webkit-transform: translate3d(0, 0, 0);
-
-    -webkit-perspective: 1000;
-    -webkit-transform-style: preserve-3d; */
 
     font-size: 0;
 
@@ -29,21 +22,21 @@
 #boom-poster-focus {
     display: none;
 
-    position: fixed;
+    width: 216px; height: 316px;
+
+    position: fixed; top: 16px; left: 116px;
+
     border: 6px solid white;
-    width: 216px;
-    height: 316px;
-    top: 16px;
-    left: 116px;
     }
 
 #boom-compilation-focus {
     display: none;
 
-    position: fixed;
+    position: fixed; top: 0; left: 0;
+
+    width: 320px; height: 470px;
+
     border: 8px solid white;
-    width: 320px;
-    height: 470px;
     }
 
 .boom-movie-grid-key {
@@ -183,6 +176,8 @@
     position: absolute; left: 0; top: 0;
     height: 1080px;
 
+
+
     /* -webkit-transform: translate3d(0, 0, 0);
     -webkit-backface-visibility: hidden;
     -webkit-perspective: 1000;
@@ -284,7 +279,7 @@
     /* -webkit-transform: translate3d(0, 0, 0);
     -webkit-backface-visibility: hidden; */
     -webkit-transform: translate(0, 0);
-    -webkit-transition: all 0.35s ease-in-out;
+
     }
 
 .active .boom-movie-grid-info-overlay-text {

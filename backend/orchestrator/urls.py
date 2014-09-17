@@ -6,14 +6,14 @@ __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 import os.path
 import gzip
-import datetime
+# import datetime
 import urllib
 from cStringIO import StringIO
 from hashlib import md5 as MD5
 
 import simplejson
 import requests
-from pants.web.application import Module, error
+from pants.web.application import Module # , error
 from pants.http.utils import HTTPHeaders
 
 from settings import DEBUG
@@ -27,10 +27,10 @@ from identifier.fixture import TOP_250
 
 from . import SERVER_HEADERS, logger
 
-IMG_MIME_TYPES = {
-    'JPEG': 'image/jpeg',
-    'WebP': 'application/octet-stream',
-}
+# IMG_MIME_TYPES = {
+#     'JPEG': 'image/jpeg',
+#     'WebP': 'application/octet-stream',
+# }
 
 module = Module()
 
@@ -46,8 +46,7 @@ def _getImageResponse(request, imageModified, imageBlob):
         headers = SERVER_HEADERS.copy()
         headers.update({
             'Last-modified': getRfc1123Timestamp(imageModified),
-            # 'Cache-Control': 'must-revalidate, max-age=0',
-            'Cache-Control': 'must-revalidate, max-age=604800', # 1 week
+            'Cache-Control': 'no-cache, max-age=604800', # actually, no-cache means must-revalidate on each request
         })
 
         if cachedTimestamp < imageModified:

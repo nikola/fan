@@ -10,7 +10,7 @@
 ka.lib.showLicenseTexts = function () {
     ka.state.currentPageMode = 'credits';
 
-    $('#content').velocity('fadeOut', {duration: ka.settings.durationNormal, complete: function () {
+    $('#boom-movie-config, #boom-movie-grid-container').velocity('fadeOut', {duration: ka.settings.durationNormal, complete: function () {
         ka.state.licenses = ka.lib.getLicenseTexts().reverse();
         ka.state.licenseTextIndex = ka.state.licenses.length - 1;
         ka.lib.showNextLicense();
@@ -36,7 +36,7 @@ ka.lib.showNextLicense = function () {
 
 
 ka.lib.stopLicenseTextDisplay = function () {
-    $('#content').velocity('fadeIn', {duration: ka.settings.durationNormal, complete: function () {
+    $('#boom-movie-config, #boom-movie-grid-container').velocity('fadeIn', {duration: ka.settings.durationNormal, complete: function () {
         ka.state.currentPageMode = 'config';
     }});
 };

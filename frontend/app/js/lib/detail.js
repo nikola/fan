@@ -324,10 +324,25 @@ ka.lib._animatePosterVisibility = function (movieObj, targetElement, previouslyF
 ka.lib._triggerBrowserUpdate = function (movieObj) {
     ka.lib.updateDetailBrowserInfo(movieObj, true);
 
-    clearTimeout(ka.state.backdropDownloadTimer);
-    ka.state.backdropDownloadTimer = null;
+    /* clearTimeout(ka.state.backdropDownloadTimer);
+    ka.state.backdropDownloadTimer = null; */
 
-    $('#boom-movie-detail-poster-fade-in').attr('src', '/movie/backdrop/' + movieObj.uuid +  '.jpg');
+    /* $('#boom-movie-detail').css('backgroundImage', 'none'); */
+    $('#boom-movie-detail-poster-fade-in').velocity('fadeOut', {duration: 0, complete: function () {
+        $(this).attr('src', '/movie/backdrop/' + movieObj.uuid +  '.jpg');
+    }});
+};
+
+
+ka.lib.onBackdropLoaded = function () {
+    $('#boom-movie-detail-poster-fade-in').velocity('fadeIn', {duration: ka.settings.durationNormal, complete: function () {
+        $('#boom-movie-detail').css('backgroundImage', 'url(' + $(this).attr('src') + ')');
+        /* ka.state.backdropDownloadTimer = setTimeout(function () {
+            $('#boom-movie-detail-poster-fade-in').velocity('fadeOut', {duration: 0, complete: function () {
+                ka.state.backdropDownloadTimer = null;
+            }});
+        }, ka.settings.durationShort); */
+    }});
 };
 
 
@@ -351,18 +366,6 @@ ka.lib._focusOutPoster = function (targetElement) {
             elements[0].style.webkitFilter = 'grayscale(' + Math.round(percentComplete * 100) + '%)';
         }
     });
-};
-
-
-ka.lib.onBackdropLoaded = function () {
-    $('#boom-movie-detail-poster-fade-in').velocity('fadeIn', {duration: ka.settings.durationNormal, complete: function () {
-        $('#boom-movie-detail').css('backgroundImage', 'url(' + $(this).attr('src') + ')');
-        ka.state.backdropDownloadTimer = setTimeout(function () {
-            $('#boom-movie-detail-poster-fade-in').velocity('fadeOut', {duration: 0, complete: function () {
-                ka.state.backdropDownloadTimer = null;
-            }});
-        }, ka.settings.durationShort);
-    }});
 };
 
 

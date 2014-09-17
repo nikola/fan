@@ -255,6 +255,8 @@ ka.transition.browser = {to: {
             ka.lib.updateDetailButtonSelection(true); /* don't animate backdrop shade */
         }
 
+        $('#boom-movie-detail-poster-fade-in').velocity('fadeOut', 0);
+
         $('#boom-movie-detail-left').velocity({left: '+=360'}, ka.settings.durationNormal);
         $('#boom-movie-detail-head, #boom-movie-detail-browser-focus').velocity({top: '+=245'}, {duration: ka.settings.durationNormal, complete: function () {
             $('#boom-movie-detail-head').velocity('fadeOut', {duration: 0, complete: function () {

@@ -69,7 +69,7 @@ ka.state = {
   , occludedGridItems: null
 
   , currentDetailBrowserPosterColumn: null
-  , backdropDownloadTimer: null
+  /* , backdropDownloadTimer: null */
 
   , setOfKnownPosters: {}
   , setOfUnknownPosters: {}

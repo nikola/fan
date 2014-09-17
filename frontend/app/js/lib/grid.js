@@ -35,21 +35,26 @@ ka.lib.grid = {
         ka.lib.updateMovieGridOnAdd(false);
     }
 
-  , snapshotMovieList: function () {
+  , snapshotMovieLookups: function () {
         ka.state.lastGridMovieListSnapshot = ka.data.asList.concat();
+        ka.state.lastGridMovieIndexSnapshot = JSON.parse(JSON.stringify(ka.data.indexByUuid));
     }
 
   , getMovieListSnapshot: function () {
         return ka.state.lastGridMovieListSnapshot;
     }
 
-  , drawPosterImage: function (image) {
+  , getMovieIndexSnapshot: function () {
+        return ka.state.lastGridMovieIndexSnapshot;
+    }
+
+  /* , drawPosterImage: function (image) {
         var context = ka.state.canvasContext;
 
         context.canvas.width = image.width;
         context.canvas.height = image.height;
         context.drawImage(image, 0, 0, image.width, image.height);
-    }
+    } */
 
 };
 
@@ -106,7 +111,7 @@ ka.lib.setPrimaryPosterColor = function () {
         setTimeout(ka.lib.processPixelArray, 0);
     }
 
-    /* gridItem.find('.boom-movie-grid-info-overlay').removeClass('active'); */
+    gridItem.find('.boom-movie-grid-info-overlay').removeClass('active');
     ka.state.setOfKnownPosters[uuid] = true;
     if (uuid in ka.state.setOfUnknownPosters) {
         delete ka.state.setOfUnknownPosters[uuid];
@@ -376,7 +381,7 @@ ka.lib.updateMovieGridOnChange = function () {
 ka.lib.updateMovieGridOnAdd = function (isImmediateUpdate) {
     if (ka.state.currentPageMode == 'limbo' && isImmediateUpdate) { /* && !ka.state.hasDeferredGridUpdate) { */
         ka.state.hasDeferredGridUpdate = true;
-    } else if (ka.state.currentPageMode != 'limbo' && ka.state.hasDeferredGridUpdate) {
+    } else if (ka.state.currentPageMode != 'limbo' && (ka.state.hasDeferredGridUpdate || isImmediateUpdate)) {
         ka.state.hasDeferredGridUpdate = false;
 
         if (ka.state.currentCompilationPosterCount == 0 && (ka.state.currentPageMode == 'detail' || ka.state.currentPageMode == 'detail-browser' || ka.state.currentPageMode == 'play:movie' || ka.state.currentPageMode == 'play:trailer')) {

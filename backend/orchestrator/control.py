@@ -104,7 +104,7 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
             command = queue.get_nowait()
 
             if command == 'orchestrator:start:scan':
-                if False:
+                if True:
                     appModule.userConfig = getCurrentUserConfig()
 
                     if appModule.userConfig.get('isDemoMode', False):

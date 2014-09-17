@@ -20,13 +20,13 @@ ka.lib.executeMenuSelection = function () {
     if (id == 'boom-config-button-exit') {
         ka.state.hotkeyListener.reset();
 
-        $('#content').velocity('fadeOut', {duration: ka.settings.durationNormal, complete: function () {
+        $('#boom-movie-config, #boom-movie-grid-container').velocity('fadeOut', {duration: ka.settings.durationNormal, complete: function () {
             ka.state.socketDispatcher.push('loopback:command', 'shutdown');
         }});
     } else if (id == 'boom-config-button-change-import') {
         ka.state.hotkeyListener.reset();
 
-        $('#content').velocity('fadeOut', {duration: 360, complete: function () {
+        $('#boom-movie-config, #boom-movie-grid-container').velocity('fadeOut', {duration: 360, complete: function () {
             window.top.location.href = '/configure.asp#return';
         }});
     } else if (id == 'boom-config-button-show-credits') {

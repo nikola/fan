@@ -135,7 +135,7 @@ ka.lib.handleKeypressSelect = function () {
                         ka.state.socketDispatcher.push('movie:play', ka.state.currentGridMovieUuid);
                     }});
                 } else {
-                    ka.state.socketDispatcher.push('movie:play', ka.state.currentGridMovieUuid);
+                    ka.state.socketDispatcher.push('movie:play', ka.state.lastGridMovieUuid);
                 }
             }});
         } else if (ka.state.currentDetailButton == 'trailer') {
@@ -143,7 +143,7 @@ ka.lib.handleKeypressSelect = function () {
             $('#boom-movie-detail').velocity('fadeOut', {duration: ka.settings.durationNormal, complete: function () {
                 ka.state.currentPageMode = 'play:trailer';
 
-                ka.lib.startTrailerPlayer(ka.data.byUuid[ka.state.currentGridMovieUuid].trailer);
+                ka.lib.startTrailerPlayer(ka.data.byUuid[ka.state.lastGridMovieUuid].trailer);
             }});
         }
     } else if (ka.state.currentPageMode == 'detail-browser') {

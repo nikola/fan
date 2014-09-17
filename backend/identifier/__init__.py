@@ -245,32 +245,33 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
                 params['year'] = searchYearSecondary
             response = getThrottledJsonResponse(url, params)
 
-        if response['total_results'] == 0:
-            logger.warning('Movie with title "%s" still not found at themoviedb.org, retrying with title "%s" and search type "ngram" ...', searchTitleSecondary, searchTitlePrimary)
-            params['query'] = searchTitlePrimary.encode('utf-8')
-            params['search_type'] = 'ngram'
-            if searchYearPrimary is not None:
-                params['year'] = searchYearPrimary
-            response = getThrottledJsonResponse(url, params)
+        # if response['total_results'] == 0:
+        #     logger.warning('Movie with title "%s" still not found at themoviedb.org, retrying with title "%s" and search type "ngram" ...', searchTitleSecondary, searchTitlePrimary)
+        #     params['query'] = searchTitlePrimary.encode('utf-8')
+        #     params['search_type'] = 'ngram'
+        #     if searchYearPrimary is not None:
+        #         params['year'] = searchYearPrimary
+        #     response = getThrottledJsonResponse(url, params)
 
-        if response['total_results'] == 0 and searchTitleSecondary is not None:
-            logger.warning('Movie with title "%s" still not found at themoviedb.org, retrying with title "%s" and search type "ngram" ...', searchTitlePrimary, searchTitleSecondary)
-            params['query'] = searchTitleSecondary.encode('utf-8')
-            if searchYearSecondary is not None:
-                params['year'] = searchYearSecondary
-            response = getThrottledJsonResponse(url, params)
+        # if response['total_results'] == 0 and searchTitleSecondary is not None:
+        #     logger.warning('Movie with title "%s" still not found at themoviedb.org, retrying with title "%s" and search type "ngram" ...', searchTitlePrimary, searchTitleSecondary)
+        #     params['query'] = searchTitleSecondary.encode('utf-8')
+        #     if searchYearSecondary is not None:
+        #         params['year'] = searchYearSecondary
+        #     response = getThrottledJsonResponse(url, params)
 
-        if response['total_results'] == 0:
-            logger.warning('Movie with title "%s" still not found at themoviedb.org, retrying with title "%s", omitting year ...', searchTitleSecondary, searchTitlePrimary)
-            params['query'] = searchTitlePrimary.encode('utf-8')
-            if params.has_key('year'):
-                del params['year']
-            del params['search_type']
-            response = getThrottledJsonResponse(url, params)
+        # if response['total_results'] == 0:
+        #     logger.warning('Movie with title "%s" still not found at themoviedb.org, retrying with title "%s", omitting year ...', searchTitleSecondary, searchTitlePrimary)
+        #     params['query'] = searchTitlePrimary.encode('utf-8')
+        #     if params.has_key('year'):
+        #         del params['year']
+        #     # del params['search_type']
+        #     response = getThrottledJsonResponse(url, params)
 
         if response['total_results'] == 0 and searchTitleSecondary is not None:
             logger.warning('Movie with title "%s" still not found at themoviedb.org, retrying with title "%s", omitting year ...', searchTitlePrimary, searchTitleSecondary)
             params['query'] = searchTitleSecondary.encode('utf-8')
+            del params['year']
             response = getThrottledJsonResponse(url, params)
 
         if response['total_results'] == 0:

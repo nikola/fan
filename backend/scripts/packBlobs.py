@@ -11,7 +11,6 @@ from hashlib import md5 as MD5
 from settings import BASE_DIR
 from utils.fs import writeProcessedStream
 
-# BASE_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..')
 FILTERS_DIR = os.path.join(BASE_DIR, 'backend', 'shaders')
 
 
@@ -23,6 +22,8 @@ RESOURCES_CONFIG_CSS = [
 
     'frontend/app/css/buttons.css',
     'frontend/app/css/configure.css',
+
+    'frontend/app/css/ha.css',
 ]
 
 RESOURCES_CONFIG_JS = [
@@ -50,6 +51,8 @@ RESOURCES_GUI_CSS = [
     'frontend/app/css/buttons.css',
     'frontend/app/css/grid.css',
     'frontend/app/css/detail.css',
+
+    'frontend/app/css/ha.css',
 ]
 
 RESOURCES_GUI_JS = [

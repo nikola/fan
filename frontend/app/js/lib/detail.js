@@ -137,13 +137,13 @@ ka.lib.populateDetailBrowserGrid = function () {
         }
     }).appendTo('#boom-movie-detail-poster-browser');
 
-    var current = ka.data.indexByUuid[$('#boom-movie-detail').data('boom.uuid')],
+    var current = ka.lib.grid.getMovieIndexSnapshot()[$('#boom-movie-detail').data('boom.uuid')],
         index, end, focused,
-        snapshot = ka.lib.grid.getMovieListSnapshot();
+        movieList = ka.lib.grid.getMovieListSnapshot();
 
-    if (snapshot.length < 6) {
+    if (movieList.length < 6) {
         index = 0;
-        end = snapshot.length;
+        end = movieList.length;
         focused = current;
     } else {
         index = current - 2;
@@ -154,12 +154,12 @@ ka.lib.populateDetailBrowserGrid = function () {
             focused = 2;
         }
         end = index + 5;
-        if (end > snapshot.length) {
-            if (focused == 2 && snapshot.length > 5) {
-                focused = 2 + end - snapshot.length;
-                index -= end - snapshot.length;
+        if (end > movieList.length) {
+            if (focused == 2 && movieList.length > 5) {
+                focused = 2 + end - movieList.length;
+                index -= end - movieList.length;
             }
-            end = snapshot.length;
+            end = movieList.length;
         }
     }
 
@@ -170,10 +170,10 @@ ka.lib.populateDetailBrowserGrid = function () {
     /* Pre-cache previous/next posters. */
     var lookBehindIndex = index - 3, lookAheadIndex = index + 3;
     if (lookBehindIndex > -1) {
-        new Image().src = '/movie/poster/' + snapshot[lookBehindIndex].uuid + '-150.image';
+        new Image().src = '/movie/poster/' + movieList[lookBehindIndex].uuid + '-150.image';
     }
-    if (lookAheadIndex < snapshot.length) {
-        new Image().src = '/movie/poster/' + snapshot[lookAheadIndex].uuid + '-150.image';
+    if (lookAheadIndex < movieList.length) {
+        new Image().src = '/movie/poster/' + movieList[lookAheadIndex].uuid + '-150.image';
     }
 
     return focused;
@@ -369,8 +369,8 @@ ka.lib.onBackdropLoaded = function () {
 ka.lib.transitionBackFromDetailScreen = function () {
     var currentDetailMovieUuid = $('#boom-movie-detail').data('boom.uuid'),
         hasOpenCompilation = ka.state.currentCompilationPosterCount > 0;
-    if (currentDetailMovieUuid != ka.state.currentGridMovieUuid) {
-        ka.state.currentGridMovieUuid = currentDetailMovieUuid;
+    if (currentDetailMovieUuid != ka.state.lastGridMovieUuid) {
+        ka.state.lastGridMovieUuid = currentDetailMovieUuid;
 
         ka.lib.unoccludeMovieGrid();
 

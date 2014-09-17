@@ -5,33 +5,21 @@
  *  @copyright Copyright (c) 2013-2014 Nikola Klaric
  */
 
-* {
+/* * {
     cursor: none !important;
-    }
+    } */
 
 body {
+    cursor: none !important;
     pointer-events: none !important;
 
-    color: white;
-    background-color: black;
+    font-family: 'Ka Boom', sans-serif;
+    color: white; background-color: black;
 
+    width: 1920px; height: 1080px;
     margin: 0; padding: 0;
     overflow: hidden;
-    font-family: 'Ka Boom', sans-serif;
-    width: 1920px; height: 1080px;
     }
-
-#content {
-    width: 1920px; height: 1080px;
-
-    background-color: black;
-
-    /* -webkit-transform: translate3d(0, 0, 0);
-    -webkit-backface-visibility: hidden;
-    -webkit-perspective: 1000;
-    -webkit-transform-style: preserve-3d; */
-    }
-
 
 #boom-movie-config {
     display: block;

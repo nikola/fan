@@ -65,10 +65,10 @@ ka.lib.updateDetailButtonSelection = function (skipAnimation) {
 
     if (!skipAnimation) {
         if (ka.state.currentDetailButton == 'details') {
-            $('#boom-movie-detail-shade').velocity({opacity: 0.75}, {duration: ka.settings.durationNormal});
+            $('#boom-movie-detail-shade').velocity({translateZ: 0, opacity: 0.75}, {duration: ka.settings.durationNormal});
             $('#boom-movie-detail-description').velocity('transition.expandIn', {duration: ka.settings.durationNormal, display: 'flex'});
         } else {
-            $('#boom-movie-detail-shade').velocity({opacity: 0}, ka.settings.durationNormal);
+            $('#boom-movie-detail-shade').velocity({translateZ: 0, opacity: 0}, ka.settings.durationNormal);
             $('#boom-movie-detail-description').velocity('transition.expandOut', ka.settings.durationNormal);
         }
     }
@@ -235,7 +235,7 @@ ka.lib.moveDetailBrowserLeft = function () {
               , opacity: 0.5
               , marginLeft: 0
             }
-        }).prependTo('#boom-movie-detail-poster-browser').velocity({width: 150, marginLeft: 10}, ka.settings.durationNormal);
+        }).prependTo('#boom-movie-detail-poster-browser').velocity({translateZ: 0, width: 150, marginLeft: 10}, ka.settings.durationNormal);
 
         ka.lib._animatePosterVisibility(
             snapshot[firstImageIndex + 1]
@@ -266,7 +266,7 @@ ka.lib.moveDetailBrowserRight = function () {
             upcomingFocusedImage = images.eq(4).get(0),
             lastImageIndex = images.eq(5).data('boom.index');
 
-        ka.lib.addBrowserGridImage(lastImageIndex + 1, true, 0).velocity({width: 150}, ka.settings.durationNormal);
+        ka.lib.addBrowserGridImage(lastImageIndex + 1, true, 0).velocity({translateZ: 0, width: 150}, ka.settings.durationNormal);
 
         ka.lib._animatePosterVisibility(
             snapshot[lastImageIndex - 1]
@@ -283,13 +283,18 @@ ka.lib._moveDetailBrowserFocus = function (accessor, offset) {
 
     var currentElement = $('#boom-movie-detail-poster-browser :nth-child(' + (ka.state.currentDetailBrowserPosterColumn + 2) + ')'),
         targetElement = currentElement[accessor](),
-        snapshot = ka.lib.grid.getMovieListSnapshot();
+        snapshot = ka.lib.grid.getMovieListSnapshot(),
+        movieObj = snapshot[targetElement.data('boom.index')];
 
-    ka.lib._triggerBrowserUpdate(snapshot[targetElement.data('boom.index')]);
+    ka.lib._triggerBrowserUpdate(movieObj);
     ka.lib._focusInPoster(targetElement);
     ka.lib._focusOutPoster(currentElement);
 
-    $('#boom-movie-detail-browser-focus').velocity({left: offset}, {duration: ka.settings.durationNormal, complete: function () {
+    $('#boom-movie-detail-browser-focus').velocity({translateZ: 0, left: offset}, {duration: ka.settings.durationNormal, complete: function () {
+        $('#boom-movie-detail-poster-fade-in').velocity('fadeOut', {duration: 0, complete: function () {
+            $(this).attr('src', '/movie/backdrop/' + movieObj.uuid +  '.jpg');
+        }});
+
         ka.state.currentPageMode = 'detail-browser';
     }});
 };
@@ -298,7 +303,7 @@ ka.lib._moveDetailBrowserFocus = function (accessor, offset) {
 ka.lib._animatePosterVisibility = function (movieObj, targetElement, previouslyFocusedPoster, upcomingFocusedPoster) {
     ka.lib._triggerBrowserUpdate(movieObj);
 
-    targetElement.velocity({width: 0, marginLeft: 0}, {
+    targetElement.velocity({translateZ: 0, width: 0, marginLeft: 0}, {
         duration: ka.settings.durationNormal
       , progress: function (elements, percentComplete) {
             if (percentComplete < 1) {
@@ -316,6 +321,10 @@ ka.lib._animatePosterVisibility = function (movieObj, targetElement, previouslyF
 
             targetElement.remove();
 
+            $('#boom-movie-detail-poster-fade-in').velocity('fadeOut', {duration: 0, complete: function () {
+                $(this).attr('src', '/movie/backdrop/' + movieObj.uuid +  '.jpg');
+            }});
+
             ka.state.currentPageMode = 'detail-browser';
     }});
 };
@@ -324,13 +333,9 @@ ka.lib._animatePosterVisibility = function (movieObj, targetElement, previouslyF
 ka.lib._triggerBrowserUpdate = function (movieObj) {
     ka.lib.updateDetailBrowserInfo(movieObj, true);
 
-    /* clearTimeout(ka.state.backdropDownloadTimer);
-    ka.state.backdropDownloadTimer = null; */
-
-    /* $('#boom-movie-detail').css('backgroundImage', 'none'); */
-    $('#boom-movie-detail-poster-fade-in').velocity('fadeOut', {duration: 0, complete: function () {
+    /* $('#boom-movie-detail-poster-fade-in').velocity('fadeOut', {duration: 0, complete: function () {
         $(this).attr('src', '/movie/backdrop/' + movieObj.uuid +  '.jpg');
-    }});
+    }}); */
 };
 
 
@@ -347,7 +352,7 @@ ka.lib.onBackdropLoaded = function () {
 
 
 ka.lib._focusInPoster = function (targetElement) {
-    targetElement.velocity({opacity: 1}, {
+    targetElement.velocity({translateZ: 0, opacity: 1}, {
         duration: ka.settings.durationNormal
       , progress: function (elements, percentComplete) {
             elements[0].style.webkitFilter = 'grayscale(' + (100 - Math.round(percentComplete * 100)) + '%)';
@@ -360,7 +365,7 @@ ka.lib._focusInPoster = function (targetElement) {
 
 
 ka.lib._focusOutPoster = function (targetElement) {
-    targetElement.velocity({opacity: 0.5}, {
+    targetElement.velocity({translateZ: 0, opacity: 0.5}, {
         duration: ka.settings.durationNormal
       , progress: function (elements, percentComplete) {
             elements[0].style.webkitFilter = 'grayscale(' + Math.round(percentComplete * 100) + '%)';

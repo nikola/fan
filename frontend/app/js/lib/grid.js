@@ -95,7 +95,7 @@ ka.lib.setPrimaryPosterColor = function () {
     var gridItem = $(this).closest('.boom-movie-grid-item'),
         uuid = gridItem.data('boom.uuid');
 
-    if ('primaryPosterColor' in ka.data.byUuid[uuid]) {
+    if ('primaryPosterColor' in ka.data.byUuid[uuid] && !!ka.data.byUuid[uuid].primaryPosterColor) {
         /*  Weird bug:
          *  Trigger full render of grid by painting every single poster on canvas.
          */

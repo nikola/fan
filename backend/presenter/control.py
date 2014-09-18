@@ -183,6 +183,7 @@ def start(callback, userAgent, serverPort, bridgeToken, bootToken, mustSecure, u
     #     style = win32con.WS_VISIBLE | win32con.WS_OVERLAPPEDWINDOW | win32con.WS_CLIPCHILDREN | win32con.WS_CLIPSIBLINGS | win32con.WS_MAXIMIZE
     # {END DEBUG}
 
+    global windowId
     windowId = win32gui.CreateWindowEx(
         dwExStyle,
         className,
@@ -249,6 +250,9 @@ def stop():
     global msie
     msie.QuitMessageLoop()
     msie.Shutdown()
+
+    global windowId
+    win32gui.ShowWindow(windowId, win32con.SW_HIDE)
 
     global shutdownAll
     shutdownAll()

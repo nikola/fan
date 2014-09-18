@@ -7,7 +7,7 @@
 ; var ka = ka || {}; if (!('lib' in ka)) ka.lib = {};
 
 
-ka.lib.updateDetailPage = function (movie, skipBackdropUpdate) {
+ka.lib.updateDetailPage = function (movie, skipBackdropUpdate, noCollection) {
     if (!movie) {
         return;
     }
@@ -27,7 +27,7 @@ ka.lib.updateDetailPage = function (movie, skipBackdropUpdate) {
     $('#boom-detail-release span').text(movie.releaseYear);
     $('#boom-detail-runtime span').text(movie.runtime);
     $('#boom-detail-rating span').text((movie.rating) ? (movie.rating / 10) : '?');
-    $('#boom-movie-detail-title').text(ka.lib.getLocalizedTitle(movie, false));
+    $('#boom-movie-detail-title').text(ka.lib.getLocalizedTitle(movie, false, noCollection));
     $('#boom-movie-detail-description').text(movie.storyline);
 
     $('#boom-movie-detail-play-button').css('display', (movie.streamless) ? 'none' : 'inline-block');

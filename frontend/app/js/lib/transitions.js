@@ -100,7 +100,7 @@ ka.transition.grid = {to: {
         var movieObj = ka.lib.getVariantFromGridFocus();
         ka.state.lastGridMovieUuid = movieObj.uuid;
 
-        ka.lib.updateDetailPage(movieObj); /* refresh backdrop, too */
+        ka.lib.updateDetailPage(movieObj, false); /* refresh backdrop, too */
         ka.lib.updateDetailButtonSelection();
 
         ka.lib.occludeMovieGrid();
@@ -166,7 +166,7 @@ ka.transition.compilation = {to: {
         ka.state.lastGridMovieUuid = movieObj.uuid;
         ka.state.actualScreenMode = null;
 
-        ka.lib.updateDetailPage(movieObj); /* refresh backdrop, too */
+        ka.lib.updateDetailPage(movieObj, false, true); /* refresh backdrop, too, and use the non-collection title */
         ka.lib.updateDetailButtonSelection();
 
         $('#boom-movie-detail').velocity('fadeIn', {

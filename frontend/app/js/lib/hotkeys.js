@@ -132,7 +132,7 @@ ka.lib.handleKeypressSelect = function () {
 
                 if (!ka.state.isPlayerUpdated) {
                     $('#boom-playback-wait').velocity('fadeIn', {display: 'flex', duration: ka.settings.durationNormal, complete: function () {
-                        ka.state.socketDispatcher.push('movie:play', ka.state.currentGridMovieUuid);
+                        ka.state.socketDispatcher.push('movie:play', $('#boom-movie-detail').data('boom.uuid'));
                     }});
                 } else {
                     ka.state.socketDispatcher.push('movie:play', ka.state.lastGridMovieUuid);

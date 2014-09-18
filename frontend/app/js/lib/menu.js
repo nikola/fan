@@ -65,7 +65,7 @@ ka.lib.executeMenuSelection = function () {
         if (ka.state.gridSortCriterion != lastCriterion || ka.state.gridSortOrder != lastOrder) {
             ka.lib.unoccludeMovieGrid();
 
-            ka.lib.updateMovieGridRefocused(true, function () {
+            ka.lib.updateMovieGridRefocused(false, function () {
                 ka.state.desaturationImageCache = {};
             });
 

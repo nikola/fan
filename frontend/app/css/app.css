@@ -16,13 +16,13 @@ body {
     font-family: 'Ka Boom', sans-serif;
     color: white; background-color: black;
 
-    width: 1920px; height: 1080px;
+    /* width: 1920px; */ /* height: 1080px; */
     margin: 0; padding: 0;
     overflow: hidden;
     }
 
 #boom-movie-config {
-    display: block;
+    display: none;
 
     width: 750px; height: 1080px;
 

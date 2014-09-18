@@ -38,7 +38,7 @@ ka.transition.menu = {to: {
                     });
                     ka.state.desaturationImageCache = {};
 
-                    $('#boom-movie-detail').css('display', 'block');
+                    $('#boom-movie-config').css('display', 'none');
                 }
             }
         );
@@ -52,7 +52,7 @@ ka.transition.grid = {to: {
     menu: function () {     /* screen state transition: OK */
         ka.state.currentPageMode = 'limbo';
 
-        $('#boom-movie-detail').css('display', 'none');
+        $('#boom-movie-config').css('display', 'block');
 
         ka.lib.occludeMovieGrid();
 
@@ -105,16 +105,20 @@ ka.transition.grid = {to: {
 
         ka.lib.occludeMovieGrid();
 
-        $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({translateZ: 0, left: '-=1920'}, {
-            duration: ka.settings.durationLong
-          /* , delay: ka.settings.durationVeryShort */
-          , complete: function () {
-                ka.state.currentPageMode = 'detail';
-                ka.state.actualScreenMode = null;
+        $('#boom-movie-detail').velocity('fadeIn', {
+            duration: 0, complete: function () {
+                $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({translateZ: 0, left: '-=1920'}, {
+                    duration: ka.settings.durationLong
+                  /* , delay: ka.settings.durationVeryShort */
+                  , complete: function () {
+                        ka.state.currentPageMode = 'detail';
+                        ka.state.actualScreenMode = null;
 
-                ka.lib.grid.snapshotMovieLookups();
+                        ka.lib.grid.snapshotMovieLookups();
 
-                ka.lib.grid.focus.hide();
+                        ka.lib.grid.focus.hide();
+                    }
+                });
             }
         });
     }
@@ -165,11 +169,16 @@ ka.transition.compilation = {to: {
         ka.lib.updateDetailPage(movieObj); /* refresh backdrop, too */
         ka.lib.updateDetailButtonSelection();
 
-        $('#boom-compilation-container, #boom-compilation-focus, #boom-movie-detail').velocity({translateZ: 0, left: '-=1920'}, {
-            duration: ka.settings.durationLong
-          /* , delay: ka.settings.durationVeryShort */
+        $('#boom-movie-detail').velocity('fadeIn', {
+            duration: 0
           , complete: function () {
-                ka.state.currentPageMode = 'detail';
+                $('#boom-compilation-container, #boom-compilation-focus, #boom-movie-detail').velocity({translateZ: 0, left: '-=1920'}, {
+                    duration: ka.settings.durationLong
+                  /* , delay: ka.settings.durationVeryShort */
+                  , complete: function () {
+                        ka.state.currentPageMode = 'detail';
+                    }
+                });
             }
         });
     }
@@ -186,15 +195,14 @@ ka.transition.detail = {to: {
 
         $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail')
             .velocity({translateZ: 0, left: '+=1920'}, {duration: ka.settings.durationLong, complete: function () {
-                /* No refocus necessary here, as updateMovieGridOnAdd has been called previously. */
-                /* ka.lib.updateMovieGridOnReturn(); */
+                $('#boom-movie-detail').velocity('fadeOut', 0);
+
                 ka.lib.unoccludeMovieGrid();
 
                 ka.lib.recalcMovieGrid();
                 ka.lib.updateMovieGridOnChange();
 
                 ka.state.currentPageMode = 'grid';
-                /* ka.state.mustUndoCompilationChanges = false; */
             }});
     }
 
@@ -203,8 +211,9 @@ ka.transition.detail = {to: {
 
         $('#boom-compilation-container, #boom-compilation-focus, #boom-movie-detail')
             .velocity({translateZ: 0, left: '+=1920'}, {duration: ka.settings.durationLong, complete: function () {
+                $('#boom-movie-detail').velocity('fadeOut', 0);
+
                 ka.state.currentPageMode = 'grid-compilation';
-                /* ka.state.mustUndoCompilationChanges = false; */
             }});
     }
 
@@ -213,7 +222,6 @@ ka.transition.detail = {to: {
 
         ka.state.currentDetailBrowserPosterColumn = ka.lib.populateDetailBrowserGrid();
 
-        /* ka.lib.updateDetailBrowserInfo(ka.data.byUuid[ka.state.currentGridMovieUuid], false); */
         ka.lib.updateDetailBrowserInfo(ka.data.byUuid[$('#boom-movie-detail').data('boom.uuid')], false);
 
         var leftPos = 3 + 160 * ka.state.currentDetailBrowserPosterColumn;
@@ -225,15 +233,16 @@ ka.transition.detail = {to: {
                 $('#boom-movie-detail-description').velocity('transition.expandOut', ka.settings.durationNormal);
             }
 
-            $('#boom-movie-detail-left').velocity({left: '-=360'}, ka.settings.durationNormal);
-            $('#boom-movie-detail-head, #boom-movie-detail-browser-focus').velocity({top: '-=245'}, {
+            $('#boom-movie-detail-right').velocity({translateZ: 0, marginLeft: '+=40'}, {duration: ka.settings.durationNormal, easing: 'linear'});
+            $('#boom-movie-detail-left').velocity({translateZ: 0, left: '-=360'}, ka.settings.durationNormal);
+            $('#boom-movie-detail-head, #boom-movie-detail-browser-focus').velocity({translateZ: 0, top: '-=245'}, {
                 duration: ka.settings.durationNormal
               , complete: function () {
                     ka.state.currentPageMode = 'detail-browser';
                 }
             });
         }});
-        $('#boom-movie-detail-right').velocity({marginLeft: '+=40'}, {duration: ka.settings.durationNormal, easing: 'linear'});
+
     }
 
 }};
@@ -257,15 +266,19 @@ ka.transition.browser = {to: {
 
         $('#boom-movie-detail-poster-fade-in').velocity('fadeOut', 0);
 
-        $('#boom-movie-detail-left').velocity({left: '+=360'}, ka.settings.durationNormal);
-        $('#boom-movie-detail-head, #boom-movie-detail-browser-focus').velocity({top: '+=245'}, {duration: ka.settings.durationNormal, complete: function () {
-            $('#boom-movie-detail-head').velocity('fadeOut', {duration: 0, complete: function () {
-                $('#boom-movie-detail-poster-browser').empty();
+        $('#boom-movie-detail-right').velocity({translateZ: 0, marginLeft: '-=40'}, {duration: ka.settings.durationNormal, easing: 'linear'});
+        $('#boom-movie-detail-left').velocity({translateZ: 0, left: '+=360'}, ka.settings.durationNormal);
+        $('#boom-movie-detail-head, #boom-movie-detail-browser-focus').velocity({translateZ: 0, top: '+=245'}, {
+            duration: ka.settings.durationNormal
+          , complete: function () {
+                $('#boom-movie-detail-head').velocity('fadeOut', {duration: 0, complete: function () {
+                    $('#boom-movie-detail-poster-browser').empty();
 
-                ka.state.currentPageMode = 'detail';
-            }});
-        }});
-        $('#boom-movie-detail-right').velocity({marginLeft: '-=40'}, {duration: ka.settings.durationNormal, easing: 'linear'});
+                    ka.state.currentPageMode = 'detail';
+                }});
+            }
+        });
+
     }
 
 }};

@@ -22,7 +22,7 @@ ka.lib.updateDetailPage = function (movie, skipBackdropUpdate, noCollection) {
         ka.state.currentDetailButton = 'details';
     }
 
-    $('#boom-movie-detail .boom-button').data('boom.select-color', movie.primaryPosterColor);
+    $('#boom-movie-detail .boom-button').data('boom.select-color', movie.primaryPosterColor || '000000');
 
     $('#boom-detail-release span').text(movie.releaseYear);
     $('#boom-detail-runtime span').text(movie.runtime);

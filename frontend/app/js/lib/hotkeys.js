@@ -117,10 +117,12 @@ ka.lib.handleKeypressSelect = function () {
     if (ka.state.currentPageMode == 'config') {
         ka.lib.executeMenuSelection();
     } else if (ka.state.currentPageMode == 'grid') {
-        if (ka.lib.isCompilationAtFocus()) {
-            ka.transition.grid.to.compilation();
-        } else {
-            ka.transition.grid.to.detail();
+        if (ka.lib.grid.focus.isPositionValid()) {
+            if (ka.lib.isCompilationAtFocus()) {
+                ka.transition.grid.to.compilation();
+            } else {
+                ka.transition.grid.to.detail();
+            }
         }
     } else if (ka.state.currentPageMode == 'grid-compilation') {
         ka.transition.compilation.to.detail();

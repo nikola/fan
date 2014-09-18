@@ -27,6 +27,10 @@ ka.lib.grid = {
              return $('#boom-poster-focus').velocity('fadeOut', duration);
         }
 
+      , isPositionValid: function () {
+            return ka.state.gridLookupMatrix.length > ka.lib.getGridFocusAbsoluteY() && ka.state.gridFocusX < ka.lib.getItemsPerLineAtFocus();
+        }
+
     }
 
   , processDeferredUpdates: function () {

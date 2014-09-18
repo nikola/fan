@@ -7,31 +7,34 @@
 
 body {
     -webkit-backface-visibility: hidden;
-    -webkit-perspective: 1000;
-    -webkit-transform-style: preserve-3d;
     }
 
 /* Column 1: menu */
 #boom-movie-config {
-    -webkit-transform: translate3d(0, 0, 0);
+    -webkit-transform: translateZ(0);
     }
 
 /* Column 2.a: movie grid */
 #boom-movie-grid-container, #boom-poster-focus {
-    -webkit-transform: translate3d(0, 0, 0);
+    -webkit-transform: translateZ(0);
     }
 
 /* Column 2.b: movie compilation */
 #boom-compilation-container, #boom-compilation-focus {
-    -webkit-transform: translate3d(0, 0, 0);
+    -webkit-transform: translateZ(0);
     }
 
 /* Column 3: detail screen */
 #boom-movie-detail {
-    -webkit-transform: translate3d(0, 0, 0);
+    -webkit-transform: translateZ(0);
     }
 
 /* Configuration screen */
 #boom-panel {
-    -webkit-transform: translate3d(0, 0, 0);
+    -webkit-transform: translateZ(0);
+    }
+
+/* Background backdrop downloader */
+#boom-movie-detail-poster-fade-in {
+    -webkit-transform: translateZ(0);
     }

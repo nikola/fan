@@ -76,10 +76,10 @@ ka.transition.grid = {to: {
         $('#boom-movie-config, #boom-movie-grid-container, #boom-poster-focus').velocity(
             {translateZ: 0, left: '+=780'}
           , {
-                duration: 360
+                duration: ka.settings.durationNormal
               , progress: function (elements, percentComplete) {
-                    elements[1].style.opacity = 1 - percentComplete / 2;
-                    elements[2].style.opacity = 1 - percentComplete;
+                    elements[1].style.opacity = 1 - percentComplete / 2;    /* #boom-movie-grid-container   */
+                    elements[2].style.opacity = 1 - percentComplete;        /* #boom-poster-focus           */
 
                     $.each(ka.state.desaturationImageCache, function (key, value) {
                         value.style.webkitFilter = 'grayscale(' + Math.round(100 * percentComplete) + '%)';

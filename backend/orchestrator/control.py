@@ -17,13 +17,13 @@ from orchestrator.urls import module as appModule
 from orchestrator.pubsub import PubSub
 from models import StreamManager
 from identifier import getStreamRecords, getFixedRecords, identifyMovieByTitleYear
-from utils.config import getCurrentUserConfig
+from utils.config import getCurrentUserConfig, getOverlayConfig, saveCurrentUserConfig
 from utils.net import deleteResponseCache
 
 from . import logger
 
 
-def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridgeToken, bootToken, mustSecure, userConfig):
+def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridgeToken, bootToken, mustSecure, userConfig, useExternalConfig):
     global pubSubReference
     pubSubReference = None
 
@@ -74,6 +74,7 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
     appModule.streamManager = streamManager
     appModule.bootToken = bootToken
     appModule.userConfig = userConfig
+    appModule.useExternalConfig = useExternalConfig
 
     if DEBUG:
         appModule.userAgent = userAgent
@@ -105,17 +106,20 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
 
             if command == 'orchestrator:start:scan':
                 if True:
-                    appModule.userConfig = getCurrentUserConfig()
+                    if useExternalConfig:
+                        appModule.userConfig = getOverlayConfig(useExternalConfig)
+                    else:
+                        appModule.userConfig = getCurrentUserConfig()
 
                     if appModule.userConfig.get('isDemoMode', False):
                         appModule.userConfig['hasDemoMovies'] = True
-                        appModule.userConfig = getCurrentUserConfig(appModule.userConfig)
+                        appModule.userConfig = saveCurrentUserConfig(appModule.userConfig) # , useExternalConfig)
 
                         streamGenerator = getFixedRecords()
                     else:
                         if appModule.userConfig.get('hasDemoMovies', False):
                             appModule.userConfig['hasDemoMovies'] = False
-                            appModule.userConfig = getCurrentUserConfig(appModule.userConfig)
+                            appModule.userConfig = saveCurrentUserConfig(appModule.userConfig) # , useExternalConfig)
 
                         streamGenerator = getStreamRecords(appModule.userConfig.get('sources', []))
 
@@ -125,7 +129,11 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
             #     streamWatcherStarted = True
             #     queue.task_done()
             elif command == 'orchestrator:reload:config':
-                appModule.userConfig = getCurrentUserConfig()
+                # appModule.userConfig = getCurrentUserConfig()
+                if useExternalConfig:
+                    appModule.userConfig = getOverlayConfig(useExternalConfig)
+                else:
+                    appModule.userConfig = getCurrentUserConfig()
 
                 if appModule.userConfig.get('isDemoMode', False):
                     if not appModule.userConfig.get('hasDemoMovies', False):

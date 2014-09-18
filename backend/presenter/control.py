@@ -128,7 +128,7 @@ def handleException(excType, excValue, traceObject):
     os._exit(1)
 
 
-def start(callback, userAgent, serverPort, bridgeToken, bootToken, mustSecure, userConfig):
+def start(callback, userAgent, serverPort, bridgeToken, bootToken, mustSecure, userConfig, *args):
     global shutdownAll
     shutdownAll = callback
 

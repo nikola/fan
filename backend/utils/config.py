@@ -28,3 +28,27 @@ def getCurrentUserConfig(config=None):
         simplejson.dump(configUser, fp, indent=4, sort_keys=True)
 
     return configUser
+
+
+def saveCurrentUserConfig(config, pathname=None):
+    if pathname is None:
+        pathname = EXE_PATH + ':a024b2cd63e44400a8ff18f548dfb54b'
+    with open(pathname, 'w') as fp:
+        simplejson.dump(config, fp, indent=4, sort_keys=True)
+    return config
+
+
+def getOverlayConfig(pathname):
+    configDefaults = simplejson.loads(readProcessedStream('781354b1bf474046888a703d21148e65'))
+
+    configOverlayed = configDefaults.copy()
+
+    with open(pathname, 'rU') as fp:
+        configOverlayed.update(simplejson.load(fp))
+
+    return configOverlayed
+
+
+def exportUserConfig(config, pathname):
+    with open(pathname, 'w') as fp:
+        simplejson.dump(config, fp, indent=4, sort_keys=True)

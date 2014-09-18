@@ -8,6 +8,7 @@ import sys
 import os
 import time
 import logging
+import argparse
 from uuid import uuid4
 from multiprocessing import JoinableQueue as InterProcessQueue, freeze_support
 from Queue import Empty
@@ -22,7 +23,7 @@ from utils.system import isCompatiblePlatform, isNtfsFilesystem, getScreenResolu
 from utils.agent import getUserAgent
 from utils.net import getCertificateLocation
 from utils.fs import getLogFileHandler
-from utils.config import getCurrentUserConfig
+from utils.config import getCurrentUserConfig, getOverlayConfig, exportUserConfig
 from orchestrator.control import start as startOrchestrator, stop as stopOrchestrator
 from downloader.control import start as startDownloader, stop as stopDownloader
 from player.control import start as startPlayer, stop as stopPlayer
@@ -128,13 +129,42 @@ if __name__ == '__main__':
             runPackBlobs()
         # END if DEBUG
 
-        # logger.info('>' * 80)
         logger.info('Starting application.')
+
+        useExternalConfig = None
+
+        parser = argparse.ArgumentParser(
+            prog='ka-BOOM',
+            formatter_class=argparse.RawTextHelpFormatter,
+            description='Install or update MPC-HC, LAV Filters and madVR automagically.',
+        )
+
+        parser.add_argument('--export-config', dest='exportConfigPath', action='store',
+            help='Write the current configuration to the given path.')
+        parser.add_argument('--load-config', dest='loadConfigPath', action='store',
+            help='Load the configuration from the given path.')
+
+        options = vars(parser.parse_args())
+
+        loadConfigPathname = options.get('loadConfigPath')
+        if loadConfigPathname is not None:
+            if os.path.exists(loadConfigPathname) and os.path.isfile(loadConfigPathname):
+                userConfig = getOverlayConfig(loadConfigPathname)
+                useExternalConfig = loadConfigPathname
+            else:
+                logger.error('Configuration not found: %s' % loadConfigPathname)
+                sys.exit(1)
+        else:
+            userConfig = getCurrentUserConfig()
+
+        if options.get('exportConfigPath') is not None:
+            exportConfigPathname = options.get('exportConfigPath')
+            exportUserConfig(userConfig, exportConfigPathname)
+            logger.info('Current configuration saved in: %s' % exportConfigPathname)
+            sys.exit()
 
         # Create DB connection here to initialize models.
         initStreamManager()
-
-        userConfig = getCurrentUserConfig()
 
         serverPort = 0xe95d # 59741
         certificateLocation = getCertificateLocation()
@@ -146,7 +176,7 @@ if __name__ == '__main__':
         # analyzer = startAnalyzer(interProcessQueue)
         player = startPlayer(interProcessQueue)
 
-        arguments = (getUserAgent(), serverPort, uuid4().hex, uuid4().hex, False, userConfig)
+        arguments = (getUserAgent(), serverPort, uuid4().hex, uuid4().hex, False, userConfig, useExternalConfig)
 
         # Start process, but spawn file scanner and watcher only after receiving a kick-off event from the presenter.
         orchestrator = startOrchestrator(interProcessQueue, certificateLocation, *arguments)

@@ -35,7 +35,7 @@ from . import SERVER_HEADERS, logger
 module = Module()
 
 
-def _getImageResponse(request, imageModified, imageBlob):
+def _getImageResponse(request, imageModified, imageBlob, isScaled=False):
     if imageBlob is None:
         request.send_status(404)
         request.finish()
@@ -46,7 +46,7 @@ def _getImageResponse(request, imageModified, imageBlob):
         headers = SERVER_HEADERS.copy()
         headers.update({
             'Last-modified': getRfc1123Timestamp(imageModified),
-            'Cache-Control': 'no-cache, max-age=604800', # actually, no-cache means must-revalidate on each request
+            'Cache-Control': 'no-cache, max-age=0' if not isScaled else 'must-revalidate, max-age=604800', # actually, no-cache means must-revalidate on each request
         })
 
         if cachedTimestamp < imageModified:
@@ -145,7 +145,7 @@ def bc470fe6ce0c4b8695402e77934d83cc(request):
 @module.route('/movie/poster/<string(length=32):identifier>-<int:width>.image', methods=('GET',), content_type='application/octet-stream')
 def ba2c90f025af404381e88bf8fc18afb2(request, movieUuid, width):
     # logger.info('serving poster for %s.',module.streamManager.getMovieTitleByUuid(movieUuid))
-    imageModified, imageBlob = module.streamManager.getImageByUuid(movieUuid, 'Poster', width)
+    imageModified, imageBlob, imageIsScaled = module.streamManager.getImageByUuid(movieUuid, 'Poster', width)
 
     if imageBlob is None:
         pathPoster = module.streamManager.getMovieByUuid(movieUuid).urlPoster
@@ -159,21 +159,23 @@ def ba2c90f025af404381e88bf8fc18afb2(request, movieUuid, width):
             return '', 200
         else:
             imageModified, imageBlob = module.streamManager.saveImageData(movieUuid, width, blob, False, 'Poster', 'JPEG', '%soriginal%s' % (module.imageBaseUrl, pathPoster))
+            imageIsScaled = False
 
-    return _getImageResponse(request, imageModified, imageBlob)
+    return _getImageResponse(request, imageModified, imageBlob, imageIsScaled)
 
 
 @module.route('/movie/backdrop/<string(length=32):identifier>.jpg', methods=('GET',), content_type='image/jpeg')
 def f4a77eba4c284a6ba9ef0fc9386a0c00(request, movieUuid):
-    imageModified, imageBlob = module.streamManager.getImageByUuid(movieUuid, 'Backdrop')
+    imageModified, imageBlob, imageIsScaled = module.streamManager.getImageByUuid(movieUuid, 'Backdrop')
     if imageBlob is None:
         if module.imageBaseUrl is None:
             logger.error('Could not download backdrop for %s.', module.streamManager.getMovieTitleByUuid(movieUuid))
             return '', 200
         else:
             imageModified, imageBlob = downloadBackdrop(module.streamManager, module.imageBaseUrl, movieUuid)
+            imageIsScaled = False
 
-    return _getImageResponse(request, imageModified, imageBlob)
+    return _getImageResponse(request, imageModified, imageBlob, imageIsScaled)
 
 
 @module.route('/<string:identifier>.ttf', methods=('GET',), headers=SERVER_HEADERS, content_type='application/x-font-ttf')

@@ -58,7 +58,7 @@ def downloadBackdrop(streamManager, imageBaseUrl, movieUuid, discard=False):
         time.sleep(0)
     elif isBackdropDownloading is True:
         while True:
-            imageModified, imageBlob = streamManager.getImageByUuid(movieUuid, 'Backdrop')
+            imageModified, imageBlob, imageIsScaled = streamManager.getImageByUuid(movieUuid, 'Backdrop')
             if imageBlob is None:
                 time.sleep(0.5)
             else:
@@ -85,29 +85,36 @@ def downscalePoster(streamManager, movieUuid, urlOriginal):
             streamManager.endPosterDownload(movieUuid)
             return False
         else:
-            blobAtWidth150 = _downscaleImage(blobOriginal, 150, 225)
+            filenameRaw = _saveRawImage(blobOriginal)
             time.sleep(0)
-            if blobAtWidth150 is not None:
-                streamManager.saveImageData(movieUuid, 150, blobAtWidth150, True, 'Poster', 'WebP', urlOriginal)
-                time.sleep(0)
-            else:
-                logger.error('Could not downscale image to 150x225!')
 
-            blobAtWidth200 = _downscaleImage(blobOriginal, 200, 300)
-            time.sleep(0)
-            if blobAtWidth200 is not None:
-                streamManager.saveImageData(movieUuid, 200, blobAtWidth200, True, 'Poster', 'WebP', urlOriginal)
+            try:
+                blobAtWidth150 = _downscaleImage(filenameRaw, 150, 225)
                 time.sleep(0)
-            else:
-                logger.error('Could not downscale image to 200x300!')
+                if blobAtWidth150 is not None:
+                    streamManager.saveImageData(movieUuid, 150, blobAtWidth150, True, 'Poster', 'WebP', urlOriginal)
+                    time.sleep(0)
+                else:
+                    logger.error('Could not downscale image to 150x225!')
 
-            blobAtWidth300 = _downscaleImage(blobOriginal, 300, 450)
-            time.sleep(0)
-            if blobAtWidth300 is not None:
-                streamManager.saveImageData(movieUuid, 300, blobAtWidth300, True, 'Poster', 'WebP', urlOriginal)
+                blobAtWidth200 = _downscaleImage(filenameRaw, 200, 300)
                 time.sleep(0)
-            else:
-                logger.error('Could not downscale image to 300x450!')
+                if blobAtWidth200 is not None:
+                    streamManager.saveImageData(movieUuid, 200, blobAtWidth200, True, 'Poster', 'WebP', urlOriginal)
+                    time.sleep(0)
+                else:
+                    logger.error('Could not downscale image to 200x300!')
+
+                blobAtWidth300 = _downscaleImage(filenameRaw, 300, 450)
+                time.sleep(0)
+                if blobAtWidth300 is not None:
+                    streamManager.saveImageData(movieUuid, 300, blobAtWidth300, True, 'Poster', 'WebP', urlOriginal)
+                    time.sleep(0)
+                else:
+                    logger.error('Could not downscale image to 300x450!')
+            finally:
+                os.remove(filenameRaw)
+                time.sleep(0)
 
             streamManager.endPosterDownload(movieUuid)
             time.sleep(0)
@@ -128,16 +135,24 @@ def downscalePoster(streamManager, movieUuid, urlOriginal):
     #     blob = None
 
 
-def _downscaleImage(blob, width, height):
+def _saveRawImage(blob):
+    filenameRaw = os.path.join(APP_STORAGE_PATH, uuid4().hex)
+    with open(filenameRaw, 'wb') as fp:
+        fp.write(blob)
+
+    return filenameRaw
+
+
+def _downscaleImage(filenameRaw, width, height):
     blobOut = None
 
-    filenameRaw = os.path.join(APP_STORAGE_PATH, uuid4().hex)
+    # filenameRaw = os.path.join(APP_STORAGE_PATH, uuid4().hex)
     filenameResized = os.path.join(APP_STORAGE_PATH, uuid4().hex)
     filenameRecoded = os.path.join(APP_STORAGE_PATH, uuid4().hex)
 
-    with open(filenameRaw, 'wb') as fd:
-        fd.write(blob)
-    time.sleep(0)
+    # with open(filenameRaw, 'wb') as fd:
+    #     fd.write(blob)
+    # time.sleep(0)
 
     try:
         convertExe = os.path.join(ASSETS_PATH, 'tools', 'convert.exe')
@@ -157,8 +172,8 @@ def _downscaleImage(blob, width, height):
         time.sleep(0)
     finally:
         try:
-            os.remove(filenameRaw)
-            time.sleep(0)
+            # os.remove(filenameRaw)
+            # time.sleep(0)
             os.remove(filenameResized)
             time.sleep(0)
             os.remove(filenameRecoded)

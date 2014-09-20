@@ -137,6 +137,11 @@ Copyright 1999-2014 ImageMagick Studio LLC.
 */}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1]
 
     , (function () {/*
+<span>eac3to</span>
+Copyright (C) 2007 - 2010 Mathias Rauen, www.madshi.net, All Rights Reserved.
+*/}).toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1]
+
+    , (function () {/*
 <span>WebP encoder tool</span>
 Copyright (c) 2010, Google Inc. All rights reserved.
 <br>

@@ -226,7 +226,7 @@ ka.lib.moveDetailBrowserLeft = function () {
             .attr('src', '/movie/poster/' + snapshot[firstImageIndex - 1].uuid + '-150.image')
             .data('boom.index', firstImageIndex - 1);
 
-        $('<img>', {
+        var dummyImage = $('<img>', {
             width: 0
           , height: 225
           , css: {
@@ -235,10 +235,12 @@ ka.lib.moveDetailBrowserLeft = function () {
               , opacity: 0.5
               , marginLeft: 0
             }
-        }).prependTo('#boom-movie-detail-poster-browser').velocity({translateZ: 0, width: 150, marginLeft: 10}, ka.settings.durationNormal);
+        }).prependTo('#boom-movie-detail-poster-browser');
 
-        ka.lib._animatePosterVisibility(
+        ka.lib._animatePosterMove(
             snapshot[firstImageIndex + 1]
+          , dummyImage
+          , {translateZ: 0, width: 150, marginLeft: 10}
           , $('#boom-movie-detail-poster-browser img').eq(6)
           , previouslyFocusedImage
           , upcomingFocusedImage
@@ -266,10 +268,12 @@ ka.lib.moveDetailBrowserRight = function () {
             upcomingFocusedImage = images.eq(4).get(0),
             lastImageIndex = images.eq(5).data('boom.index');
 
-        ka.lib.addBrowserGridImage(lastImageIndex + 1, true, 0).velocity({translateZ: 0, width: 150}, ka.settings.durationNormal);
+        ka.lib.addBrowserGridImage(lastImageIndex + 1, true, 150);
 
-        ka.lib._animatePosterVisibility(
+        ka.lib._animatePosterMove(
             snapshot[lastImageIndex - 1]
+          , dummyImage
+          , {translateZ: 0, width: 0, marginLeft: 0}
           , dummyImage
           , previouslyFocusedImage
           , upcomingFocusedImage
@@ -300,10 +304,10 @@ ka.lib._moveDetailBrowserFocus = function (accessor, offset) {
 };
 
 
-ka.lib._animatePosterVisibility = function (movieObj, targetElement, previouslyFocusedPoster, upcomingFocusedPoster) {
+ka.lib._animatePosterMove = function (movieObj, animateElement, animateProperties, removeElement, previouslyFocusedPoster, upcomingFocusedPoster) {
     ka.lib._triggerBrowserUpdate(movieObj);
 
-    targetElement.velocity({translateZ: 0, width: 0, marginLeft: 0}, {
+    animateElement.velocity(animateProperties, {
         duration: ka.settings.durationNormal
       , progress: function (elements, percentComplete) {
             if (percentComplete < 1) {
@@ -319,7 +323,7 @@ ka.lib._animatePosterVisibility = function (movieObj, targetElement, previouslyF
             upcomingFocusedPoster.style.webkitFilter = null;
             upcomingFocusedPoster.style.opacity = 1;
 
-            targetElement.remove();
+            removeElement.remove();
 
             $('#boom-movie-detail-poster-fade-in').velocity('fadeOut', {duration: 0, complete: function () {
                 $(this).attr('src', '/movie/backdrop/' + movieObj.uuid +  '.jpg');

@@ -135,14 +135,14 @@ if __name__ == '__main__':
 
         parser = argparse.ArgumentParser(
             prog='ka-BOOM',
-            formatter_class=argparse.RawTextHelpFormatter,
-            description='Install or update MPC-HC, LAV Filters and madVR automagically.',
+            # formatter_class=argparse.RawTextHelpFormatter,
+            description='A movie compilation and playback app for Windows. Fast. Lean. No weather widget.',
         )
 
         parser.add_argument('--export-config', dest='exportConfigPath', action='store',
             help='Write the current configuration to the given path.')
         parser.add_argument('--load-config', dest='loadConfigPath', action='store',
-            help='Load the configuration from the given path.')
+            help='Use the configuration from the given path.')
 
         options = vars(parser.parse_args())
 

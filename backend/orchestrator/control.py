@@ -106,23 +106,22 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
             command = queue.get_nowait()
 
             if command == 'orchestrator:start:scan':
-                if True:
-                    if useExternalConfig:
-                        appModule.userConfig = getOverlayConfig(useExternalConfig)
-                    else:
-                        appModule.userConfig = getCurrentUserConfig()
+                if useExternalConfig:
+                    appModule.userConfig = getOverlayConfig(useExternalConfig)
+                else:
+                    appModule.userConfig = getCurrentUserConfig()
 
-                    if appModule.userConfig.get('isDemoMode', False):
-                        appModule.userConfig['hasDemoMovies'] = True
+                if appModule.userConfig.get('isDemoMode', False):
+                    appModule.userConfig['hasDemoMovies'] = True
+                    appModule.userConfig = saveCurrentUserConfig(appModule.userConfig) # , useExternalConfig)
+
+                    streamGenerator = getFixedRecords()
+                else:
+                    if appModule.userConfig.get('hasDemoMovies', False):
+                        appModule.userConfig['hasDemoMovies'] = False
                         appModule.userConfig = saveCurrentUserConfig(appModule.userConfig) # , useExternalConfig)
 
-                        streamGenerator = getFixedRecords()
-                    else:
-                        if appModule.userConfig.get('hasDemoMovies', False):
-                            appModule.userConfig['hasDemoMovies'] = False
-                            appModule.userConfig = saveCurrentUserConfig(appModule.userConfig) # , useExternalConfig)
-
-                        streamGenerator = getStreamRecords(appModule.userConfig.get('sources', []))
+                    streamGenerator = getStreamRecords(appModule.userConfig.get('sources', []))
 
                 queue.task_done()
             # elif command == 'orchestrator:watch':

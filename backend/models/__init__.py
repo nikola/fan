@@ -298,17 +298,40 @@ class StreamManager(object):
                 session.commit()
 
 
-    def getImageByUuid(self, identifier, imageType='Poster', width=1920):
+    def isImageAvailable(self, identifier, imageType, width):
+        with self._session() as session:
+            try:
+                session.query(Image).filter(Image.movie.has(Movie.uuid == identifier), Image.imageType == imageType, Image.width == width).one()
+            except NoResultFound:
+                return False
+            else:
+                return True
+
+
+    def getImageMetadataByUuid(self, identifier, imageType, width):
         with self._session() as session:
             try:
                 image = session.query(Image).filter(Image.movie.has(Movie.uuid == identifier), Image.imageType == imageType, Image.width == width).one()
             except NoResultFound:
-                return None, None, None
+                return None, None
             else:
                 if image is not None:
-                    return image.modified, image.blob, image.isScaled
+                    return image.modified, image.isScaled
                 else:
-                    return None, None, None
+                    return None, None
+
+
+    def getImageBlobByUuid(self, identifier, imageType, width):
+        with self._session() as session:
+            try:
+                image = session.query(Image).filter(Image.movie.has(Movie.uuid == identifier), Image.imageType == imageType, Image.width == width).one()
+            except NoResultFound:
+                return None
+            else:
+                if image is not None:
+                    return image.blob
+                else:
+                    return None
 
 
     def saveImageData(self, identifier, width, blob, isScaled=False, imageType='Poster', imageFormat='JPEG', urlOriginal=None):
@@ -341,7 +364,7 @@ class StreamManager(object):
                 session.add(image)
                 session.commit()
 
-                return image.modified, image.blob
+                return image.modified
 
 
     def getAllMoviesAsJson(self):

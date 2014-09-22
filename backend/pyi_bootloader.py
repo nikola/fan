@@ -27,8 +27,8 @@ from utils.config import getCurrentUserConfig, getOverlayConfig, exportUserConfi
 from orchestrator.control import start as startOrchestrator, stop as stopOrchestrator
 from downloader.control import start as startDownloader, stop as stopDownloader
 from player.control import start as startPlayer, stop as stopPlayer
-# from analyzer.control import start as startAnalyzer, stop as stopAnalyzer
 from presenter.control import start as present
+# from analyzer.control import start as startAnalyzer, stop as stopAnalyzer
 
 
 if __name__ == '__main__':
@@ -135,7 +135,6 @@ if __name__ == '__main__':
 
         parser = argparse.ArgumentParser(
             prog='ka-BOOM',
-            # formatter_class=argparse.RawTextHelpFormatter,
             description='A movie compilation and playback app for Windows. Fast. Lean. No weather widget.',
         )
 

@@ -155,14 +155,18 @@ def _downscaleImage(filenameRaw, width, height):
     # time.sleep(0)
 
     try:
+        shell = ['cmd', '/c', 'start', '/MIN', '/LOW', '/B', '/WAIT']
+
         convertExe = os.path.join(ASSETS_PATH, 'tools', 'convert.exe')
         # call([convertExe, 'jpg:%s' % filenameRaw, '-colorspace', 'RGB', '-define', 'filter:window=Quadratic', '-distort', 'Resize', '%dx%d' % (width, height), '-colorspace', 'sRGB', 'png:%s' % filenameResized], shell=True)
         # call([convertExe, 'jpg:%s' % filenameRaw, '-colorspace', 'RGB', '-filter', 'Lanczos', '-define', 'filter:blur=.9891028367558475', '-distort', 'Resize', '%dx%d' % (width, height), '-colorspace', 'sRGB', 'png:%s' % filenameResized], shell=True)
-        call([convertExe, 'jpg:%s' % filenameRaw, '-colorspace', 'RGB', '-filter', 'RobidouxSharp', '-distort', 'Resize', '%dx%d' % (width, height), '-colorspace', 'sRGB', 'png:%s' % filenameResized], shell=True)
+        call(shell + [convertExe, 'jpg:%s' % filenameRaw, '-colorspace', 'RGB', '-filter', 'RobidouxSharp', '-distort', 'Resize', '%dx%d' % (width, height), '-colorspace', 'sRGB', 'png:%s' % filenameResized],
+             shell=False)
         time.sleep(0)
 
         encodeExe = os.path.join(ASSETS_PATH, 'tools', 'cwebp.exe')
-        call([encodeExe, '-preset', 'picture', '-hint', 'picture', '-sns', '0', '-f', '0', '-m', '0', '-lossless', '-af', '-noalpha', '-quiet', filenameResized, '-o', filenameRecoded], shell=True)
+        call(shell + [encodeExe, '-preset', 'picture', '-hint', 'picture', '-sns', '0', '-f', '0', '-m', '0', '-lossless', '-af', '-noalpha', '-quiet', filenameResized, '-o', filenameRecoded],
+             shell=False)
         time.sleep(0)
         try:
             with open(filenameRecoded, 'rb') as fp:

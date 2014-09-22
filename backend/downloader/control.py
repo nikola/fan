@@ -63,7 +63,7 @@ def _startDownloader(queue):
                 if movieUuid is not None:
                     time.sleep(0.015)
                     if imageBaseUrl is not None:
-                        downloadBackdrop(downloaderStreamManager, imageBaseUrl, movieUuid, True)
+                        downloadBackdrop(downloaderStreamManager, imageBaseUrl, movieUuid)
                 else:
                     time.sleep(0.015)
 

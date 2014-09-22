@@ -20,52 +20,65 @@ from settings import ENTROPY_SEED
 from . import logger
 
 
-def _downloadChunks(url):
+def downloadChunks(url, pollCallback=None):
+
+    def _yield():
+        if pollCallback is not None:
+            pollCallback()
+        else:
+            time.sleep(0)
+
     stream = StringIO()
     try:
         with closing(requests.get(url, headers={'User-Agent': ENTROPY_SEED}, stream=True)) as response:
             for chunk in response.iter_content(chunk_size=1024):
                 if chunk:
                     stream.write(chunk)
-                    time.sleep(0)
+                    _yield()
     except requests.ConnectionError:
         logger.error('Could not connect to image host URL: %s', url)
     else:
-        return stream.getvalue()
+        _yield()
+        blob = stream.getvalue()
+        _yield()
+        return blob
 
 
-def downloadBackdrop(streamManager, imageBaseUrl, movieUuid, discard=False):
+def downloadBackdrop(streamManager, imageBaseUrl, movieUuid, pollCallback=None):
+
+    def _yield(period=0):
+        if pollCallback is not None:
+            pollCallback()
+        time.sleep(period)
+
     logger.info('Downloading backdrop for "%s" ...' % streamManager.getMovieTitleByUuid(movieUuid))
 
-    imageModified, imageBlob = None, None
-
-    time.sleep(0)
+    _yield()
     isBackdropDownloading = streamManager.isBackdropDownloading(movieUuid)
-    time.sleep(0)
-    if isBackdropDownloading is False:
+    _yield()
+    if isBackdropDownloading is True:
+        while True:
+            isBackdropStored = streamManager.isImageAvailable(movieUuid, 'Backdrop', 1920)
+            if not isBackdropStored:
+                _yield(0.5)
+            else:
+                _yield()
+                break
+    elif isBackdropDownloading is False:
         streamManager.startBackdropDownload(movieUuid)
+        _yield()
 
         url = '%soriginal%s' % (imageBaseUrl, streamManager.getMovieByUuid(movieUuid).urlBackdrop)
-        time.sleep(0)
-        blob = _downloadChunks(url)
-        time.sleep(0)
+        _yield()
+        blob = downloadChunks(url, pollCallback)
+        _yield()
 
         if blob is not None:
-            imageModified, imageBlob = streamManager.saveImageData(movieUuid, 1920, blob, False, 'Backdrop', 'JPEG', url)
-            time.sleep(0)
+            streamManager.saveImageData(movieUuid, 1920, blob, False, 'Backdrop', 'JPEG', url)
+            _yield()
 
         streamManager.endBackdropDownload(movieUuid)
-        time.sleep(0)
-    elif isBackdropDownloading is True:
-        while True:
-            imageModified, imageBlob, imageIsScaled = streamManager.getImageByUuid(movieUuid, 'Backdrop')
-            if imageBlob is None:
-                time.sleep(0.5)
-            else:
-                break
-
-    if not discard:
-        return imageModified, imageBlob
+        _yield()
 
 
 def downscalePoster(streamManager, movieUuid, urlOriginal):
@@ -73,12 +86,21 @@ def downscalePoster(streamManager, movieUuid, urlOriginal):
 
     isPosterDownloading = streamManager.isPosterDownloading(movieUuid)
     time.sleep(0)
-    if isPosterDownloading is False:
+    time.sleep(0)
+    if isPosterDownloading is True:
+        while True:
+            imageModified, imageIsScaled = streamManager.getImageMetadataByUuid(movieUuid, 'Poster')
+            if imageModified is None:
+                time.sleep(0.5)
+            else:
+                time.sleep(0)
+                break
+    elif isPosterDownloading is False:
         streamManager.startPosterDownload(movieUuid)
 
         logger.info('Downloading image data from %s ...', urlOriginal)
         time.sleep(0)
-        blobOriginal = _downloadChunks(urlOriginal)
+        blobOriginal = downloadChunks(urlOriginal)
         time.sleep(0)
 
         if len(blobOriginal) < 5000:
@@ -89,29 +111,14 @@ def downscalePoster(streamManager, movieUuid, urlOriginal):
             time.sleep(0)
 
             try:
-                blobAtWidth150 = _downscaleImage(filenameRaw, 150, 225)
-                time.sleep(0)
-                if blobAtWidth150 is not None:
-                    streamManager.saveImageData(movieUuid, 150, blobAtWidth150, True, 'Poster', 'WebP', urlOriginal)
+                for width, height in [(150, 225), (200, 300), (300, 450)]:
+                    blobResized = _downscaleImage(filenameRaw, width, height)
                     time.sleep(0)
-                else:
-                    logger.error('Could not downscale image to 150x225!')
-
-                blobAtWidth200 = _downscaleImage(filenameRaw, 200, 300)
-                time.sleep(0)
-                if blobAtWidth200 is not None:
-                    streamManager.saveImageData(movieUuid, 200, blobAtWidth200, True, 'Poster', 'WebP', urlOriginal)
-                    time.sleep(0)
-                else:
-                    logger.error('Could not downscale image to 200x300!')
-
-                blobAtWidth300 = _downscaleImage(filenameRaw, 300, 450)
-                time.sleep(0)
-                if blobAtWidth300 is not None:
-                    streamManager.saveImageData(movieUuid, 300, blobAtWidth300, True, 'Poster', 'WebP', urlOriginal)
-                    time.sleep(0)
-                else:
-                    logger.error('Could not downscale image to 300x450!')
+                    if blobResized is not None:
+                        streamManager.saveImageData(movieUuid, width, blobResized, True, 'Poster', 'WebP', urlOriginal)
+                        time.sleep(0)
+                    else:
+                        logger.error('Could not downscale image to %dx%d!', width, height)
             finally:
                 os.remove(filenameRaw)
                 time.sleep(0)
@@ -119,20 +126,7 @@ def downscalePoster(streamManager, movieUuid, urlOriginal):
             streamManager.endPosterDownload(movieUuid)
             time.sleep(0)
 
-            return True
-    else:
-        return False
-
-    # TODO: complete this
-    # elif isPosterDownloading is True:
-    #     while True:
-    #         blob = streamManager.getImageBlobByUuid(movieUuid, 'Backdrop')
-    #         if blob is None:
-    #             time.sleep(0.5)
-    #         else:
-    #             break
-    # else:
-    #     blob = None
+    return True
 
 
 def _saveRawImage(blob):
@@ -165,7 +159,7 @@ def _downscaleImage(filenameRaw, width, height):
         time.sleep(0)
 
         encodeExe = os.path.join(ASSETS_PATH, 'tools', 'cwebp.exe')
-        call(shell + [encodeExe, '-preset', 'picture', '-hint', 'picture', '-sns', '0', '-f', '0', '-m', '0', '-lossless', '-af', '-noalpha', '-quiet', filenameResized, '-o', filenameRecoded],
+        call(shell + [encodeExe, '-preset', 'picture', '-hint', 'picture', '-sns', '0', '-f', '0', '-q', '0', '-m', '0', '-lossless', '-af', '-noalpha', '-quiet', filenameResized, '-o', filenameRecoded],
              shell=False)
         time.sleep(0)
         try:

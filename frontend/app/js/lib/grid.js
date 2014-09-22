@@ -569,13 +569,13 @@ ka.lib.moveFocusPageDown = function () {
 
         if (transitionX !== null && transitionY !== null) {
             $('#boom-poster-focus').velocity(
-                {left: transitionX[0].left, top: transitionY[0].top}
+                {translateZ: 0, left: transitionX[0].left, top: transitionY[0].top}
               , {easing: 'easeOutSine', duration: Math.max(transitionX[1].duration, transitionY[1].duration)}
             );
         } else if (transitionX !== null) {
-            $('#boom-poster-focus').velocity({left: transitionX[0].left}, {easing: 'easeOutSine', duration: transitionX[1].duration});
+            $('#boom-poster-focus').velocity({translateZ: 0, left: transitionX[0].left}, {easing: 'easeOutSine', duration: transitionX[1].duration});
         } else if (transitionY !== null) {
-            $('#boom-poster-focus').velocity({top: transitionY[0].top}, {easing: 'ease-out', duration: transitionY[1].duration});
+            $('#boom-poster-focus').velocity({translateZ: 0, top: transitionY[0].top}, {easing: 'ease-out', duration: transitionY[1].duration});
         }
 
         ka.lib.scrollGrid();
@@ -591,7 +591,7 @@ ka.lib.moveFocusUp = function () {
     if (gridFocusAbsoluteY > 0 && (notFirstRow || notFirstPage)) {
         ka.state.currentPageMode = 'limbo';
 
-        var props = {}, options = {
+        var props = {translateZ: 0}, options = {
             complete: ka.lib.grid.processDeferredUpdates
         };
 
@@ -628,7 +628,7 @@ ka.lib.moveFocusDown = function () {
         notLastPage = ka.state.gridPage + 1 < ka.state.gridTotalPages;
 
     if (gridFocusAbsoluteY + 1 < ka.state.gridLookupMatrix.length && (notLastRow || notLastPage)) {
-        var props = {}, options = {
+        var props = {translateZ: 0}, options = {
             complete: ka.lib.grid.processDeferredUpdates
         };
 
@@ -662,7 +662,7 @@ ka.lib.moveFocusDown = function () {
 ka.lib.moveMovieFocusHorizontally = function (offset) {
     ka.state.currentPageMode = 'limbo';
 
-    ka.lib.grid.focus.show().velocity({left: offset}, {duration: 260, complete: ka.lib.grid.processDeferredUpdates});
+    ka.lib.grid.focus.show().velocity({translateZ: 0, left: offset}, {duration: 260, complete: ka.lib.grid.processDeferredUpdates});
 };
 
 
@@ -1007,7 +1007,7 @@ ka.lib.moveFocusX = function (offsetY) {
     var itemsPerLineAtTarget = ka.state.gridLookupItemsPerLine[gridFocusTargetY];
 
     if (itemsPerLineAtTarget <= ka.state.gridFocusX) {
-        return [{left: ka.lib.repositionFocusX(gridFocusTargetY)}, {duration: ka.settings.durationLong, easing: 'easeOutSine'}];
+        return [{translateZ: 0, left: ka.lib.repositionFocusX(gridFocusTargetY)}, {duration: ka.settings.durationLong, easing: 'easeOutSine'}];
     } else {
         return null;
     }

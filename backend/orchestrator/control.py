@@ -44,7 +44,7 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
 
     def _processRequests():
         if engine is not None:
-            engine.poll(poll_timeout=0.015)
+            engine.poll(poll_timeout=0.020)
         time.sleep(0)
 
     # logging.basicConfig(level=logging.INFO,
@@ -217,7 +217,7 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                         _processRequests()
 
                         if movieRecord is None:
-                            logger.warning('Could not identify file: %s' % streamLocation) # TODO: handle this! perhaps try again when app is re-launched?
+                            logger.warning('Could not identify file: %s' % streamLocation)
                         else:
                             movieUuid = streamManager.addMovieStream(movieRecord, streamLocation) # TODO: re-wire stream to correct movie if necessary
 

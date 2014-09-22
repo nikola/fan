@@ -9,6 +9,7 @@ import re
 import datetime
 import logging
 from simplejson import JSONDecodeError
+from operator import itemgetter
 
 from settings import DEBUG
 from settings import LOG_CONFIG
@@ -55,8 +56,8 @@ def getImageConfiguration():
         return None, None
     else:
         if 'original' in sizes: sizes.remove('original')
-        closestWidth = min(sizes, key=lambda x: abs(int(x[1:]) - 300))
-        if int(closestWidth[1:]) < 300:
+        closestWidth = min(sizes, key=lambda x: abs(int(x[1:]) - 200))
+        if int(closestWidth[1:]) < 200:
             closestWidth = sizes[sizes.index(closestWidth) + 1]
 
         return configuration.get('images').get('secure_base_url'), closestWidth
@@ -277,74 +278,77 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
         if response['total_results'] == 0:
             logger.warning('Movie with title "%s" not found at themoviedb.org, giving up for now.', searchTitlePrimary)
         else:
-            movieId = response['results'][0]['id']
+            # resultList = sorted(response['results'], key=itemgetter('id'))
+            resultList = [result for result in response['results'] if result.get('backdrop_path') is not None] #  and result.get('vote_count') > 0]
+            if len(resultList):
+                movieId = resultList[0]['id']
 
-            url = 'https://api.themoviedb.org/3/movie/%d' % movieId
-            params = {
-                'api_key': THEMOVIEDB_API_KEY,
-                'language': language,
-                'append_to_response': 'trailers',
-            }
-            response = getThrottledJsonResponse(url, params)
+                url = 'https://api.themoviedb.org/3/movie/%d' % movieId
+                params = {
+                    'api_key': THEMOVIEDB_API_KEY,
+                    'language': language,
+                    'append_to_response': 'trailers',
+                }
+                response = getThrottledJsonResponse(url, params)
 
-            if response.get('poster_path', None) is not None:
-                logger.info('Movie identified at themoviedb.org as "%s" with ID: %d.' % (response['original_title'], movieId))
+                if response.get('poster_path', None) is not None:
+                    logger.info('Movie identified at themoviedb.org as "%s" with ID: %d.' % (response['original_title'], movieId))
 
-                overview = response.get('overview', None)
-                if overview is None:
-                    logger.info('Movie has no overview in locale "%s", falling back to English ...' % language)
-                    params['language'] = 'en'
-                    response = getThrottledJsonResponse(url, params)
+                    overview = response.get('overview', None)
+                    if overview is None:
+                        logger.info('Movie has no overview in locale "%s", falling back to English ...' % language)
+                        params['language'] = 'en'
+                        response = getThrottledJsonResponse(url, params)
 
-                # Fetch rating from IMDB instead of TheMovieDB.
-                rating = None
-                idImdb = response['imdb_id']
-                if idImdb is not None:
-                    url = 'http://www.imdb.com/title/%s/' % idImdb
-                    responseImdb = makeUnthrottledGetRequest(url)
-                    if responseImdb is not None:
-                        ratingSearch = re.search('<span itemprop="ratingValue">\s*([^<]+)', responseImdb.text)
-                        if ratingSearch is not None:
-                            rating = float(ratingSearch.group(1)) * 10
+                    # Fetch rating from IMDB instead of TheMovieDB.
+                    rating = None
+                    idImdb = response['imdb_id']
+                    if idImdb is not None:
+                        url = 'http://www.imdb.com/title/%s/' % idImdb
+                        responseImdb = makeUnthrottledGetRequest(url)
+                        if responseImdb is not None:
+                            ratingSearch = re.search('<span itemprop="ratingValue">\s*([^<]+)', responseImdb.text)
+                            if ratingSearch is not None:
+                                rating = float(ratingSearch.group(1)) * 10
 
-                if TRAILERS_HD.has_key(movieId):
-                    idYoutubeTrailer = TRAILERS_HD[movieId]
-                elif response['trailers'].has_key('youtube') and len(response['trailers']['youtube']):
-                    idYoutubeTrailer = response['trailers']['youtube'][0].get('source')
-                else:
-                    idYoutubeTrailer = None
+                    if TRAILERS_HD.has_key(movieId):
+                        idYoutubeTrailer = TRAILERS_HD[movieId]
+                    elif response['trailers'].has_key('youtube') and len(response['trailers']['youtube']):
+                        idYoutubeTrailer = response['trailers']['youtube'][0].get('source')
+                    else:
+                        idYoutubeTrailer = None
 
-                belongsToCollection = response['belongs_to_collection']
-                if belongsToCollection is not None:
-                    collectionId, collectionName = belongsToCollection['id'], belongsToCollection['name'].replace(' Collection', '')
-                else:
-                    collectionId, collectionName = None, None
+                    belongsToCollection = response['belongs_to_collection']
+                    if belongsToCollection is not None:
+                        collectionId, collectionName = belongsToCollection['id'], belongsToCollection['name'].replace(' Collection', '')
+                    else:
+                        collectionId, collectionName = None, None
 
-                record = dict(
-                    idTheMovieDb  = movieId,
-                    idImdb        = idImdb,
-                    idYoutubeTrailer = idYoutubeTrailer,
+                    record = dict(
+                        idTheMovieDb  = movieId,
+                        idImdb        = idImdb,
+                        idYoutubeTrailer = idYoutubeTrailer,
 
-                    titleOriginal   = response['original_title'],
-                    releaseYear     = datetime.datetime.strptime(response['release_date'], '%Y-%m-%d').year,
-                    runtime         = response['runtime'] or None,
+                        titleOriginal   = response['original_title'],
+                        releaseYear     = datetime.datetime.strptime(response['release_date'], '%Y-%m-%d').year,
+                        runtime         = response['runtime'] or None,
 
-                    urlBackdrop     = response['backdrop_path'],
-                    urlPoster       = response['poster_path'],
+                        urlBackdrop     = response['backdrop_path'],
+                        urlPoster       = response['poster_path'],
 
-                    homepage        = response['homepage'],
-                    budget          = response['budget'] or None,
-                    revenue         = response['revenue'] or None,
+                        homepage        = response['homepage'],
+                        budget          = response['budget'] or None,
+                        revenue         = response['revenue'] or None,
 
-                    rating          = rating,
+                        rating          = rating,
 
-                    locale          = language,
-                    title           = response['title'] or response['original_title'],
-                    storyline       = overview,
+                        locale          = language,
+                        title           = response['title'] or response['original_title'],
+                        storyline       = overview,
 
-                    compilationId   = collectionId,
-                    compilationName = collectionName,
-                )
+                        compilationId   = collectionId,
+                        compilationName = collectionName,
+                    )
     except (JSONDecodeError, AttributeError, TypeError, KeyError):
         logger.error('Error while querying themoviedb.org for "%s" or "%s".', searchTitlePrimary, searchTitleSecondary)
 

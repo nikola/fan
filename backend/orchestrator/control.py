@@ -45,6 +45,7 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
     def _processRequests():
         if engine is not None:
             engine.poll(poll_timeout=0.015)
+        time.sleep(0)
 
     # logging.basicConfig(level=logging.INFO,
     #                     format='%(asctime)s - %(message)s',

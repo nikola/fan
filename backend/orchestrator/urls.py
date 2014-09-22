@@ -6,20 +6,18 @@ __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 import os.path
 import gzip
-# import datetime
 import urllib
 from cStringIO import StringIO
 from hashlib import md5 as MD5
 
 import simplejson
-import requests
 from pants.web.application import Module # , error
 from pants.http.utils import HTTPHeaders
 
 from settings import DEBUG
-from settings import ASSETS_PATH, ENTROPY_SEED
+from settings import ASSETS_PATH
 from identifier import getImageConfiguration
-from downloader.images import downloadBackdrop
+from downloader.images import downloadBackdrop, downloadChunks
 from utils.rfc import getRfc1123Timestamp, parseRfc1123Timestamp
 from utils.fs import getDrives, readProcessedStream
 from utils.config import getCurrentUserConfig
@@ -33,26 +31,6 @@ from . import SERVER_HEADERS, logger
 # }
 
 module = Module()
-
-
-def _getImageResponse(request, imageModified, imageBlob, isScaled=False):
-    if imageBlob is None:
-        request.send_status(404)
-        request.finish()
-        request.connection.close()
-    else:
-        cachedTimestamp = parseRfc1123Timestamp(request.headers.get('If-Modified-Since', 'Sun, 13 Jul 2014 01:23:45 GMT'))
-
-        headers = SERVER_HEADERS.copy()
-        headers.update({
-            'Last-modified': getRfc1123Timestamp(imageModified),
-            'Cache-Control': 'no-cache, max-age=0' if not isScaled else 'must-revalidate, max-age=604800', # actually, no-cache means must-revalidate on each request
-        })
-
-        if cachedTimestamp < imageModified:
-            return imageBlob, 200, HTTPHeaders(data=headers)
-        else:
-            return '', 304, HTTPHeaders(data=headers)
 
 
 @module.route('/<path:pathname>', methods=('PATCH',), headers=SERVER_HEADERS, content_type='text/plain')
@@ -145,37 +123,71 @@ def bc470fe6ce0c4b8695402e77934d83cc(request):
 @module.route('/movie/poster/<string(length=32):identifier>-<int:width>.image', methods=('GET',), content_type='application/octet-stream')
 def ba2c90f025af404381e88bf8fc18afb2(request, movieUuid, width):
     # logger.info('serving poster for %s.',module.streamManager.getMovieTitleByUuid(movieUuid))
-    imageModified, imageBlob, imageIsScaled = module.streamManager.getImageByUuid(movieUuid, 'Poster', width)
+    imageModified, imageIsScaled = module.streamManager.getImageMetadataByUuid(movieUuid, 'Poster', width)
 
-    if imageBlob is None:
+    if imageModified is None and width != 200:
+        # Serve default poster size and upscale in frontend.
+        width = 200
+        imageModified = module.streamManager.getImageMetadataByUuid(movieUuid, 'Poster', 200)[0]
+        imageIsScaled = False
+
+    if imageModified is None:
+        # Download default poster size.
         pathPoster = module.streamManager.getMovieByUuid(movieUuid).urlPoster
 
-        try:
-            if module.imageBaseUrl is None: raise
-            urlPoster = '%s%s%s' % (module.imageBaseUrl, module.imageClosestSize, pathPoster)
-            blob = requests.get(urlPoster, headers={'User-Agent': ENTROPY_SEED}).content
-        except:
+        urlPoster = '%s%s%s' % (module.imageBaseUrl, module.imageClosestSize, pathPoster)
+        blob = downloadChunks(urlPoster)
+        if blob is None:
             logger.error('Could not download poster for %s.', module.streamManager.getMovieTitleByUuid(movieUuid))
-            return '', 200
         else:
-            imageModified, imageBlob = module.streamManager.saveImageData(movieUuid, width, blob, False, 'Poster', 'JPEG', '%soriginal%s' % (module.imageBaseUrl, pathPoster))
+            imageModified = module.streamManager.saveImageData(movieUuid, width, blob, False, 'Poster', 'JPEG', '%soriginal%s' % (module.imageBaseUrl, pathPoster))
             imageIsScaled = False
 
-    return _getImageResponse(request, imageModified, imageBlob, imageIsScaled)
+    if imageModified is None:
+        # Could not download default poster.
+        request.send_status(404)
+        request.finish()
+        request.connection.close()
+    else:
+        cachedTimestamp = parseRfc1123Timestamp(request.headers.get('If-Modified-Since', 'Sun, 13 Jul 2014 01:23:45 GMT'))
+
+        headers = SERVER_HEADERS.copy()
+        headers.update({
+            'Last-modified': getRfc1123Timestamp(imageModified),
+            'Cache-Control': 'no-cache, max-age=0' if not imageIsScaled else 'must-revalidate, max-age=604800', # actually, no-cache means must-revalidate on each request
+        })
+
+        if cachedTimestamp < imageModified:
+            return module.streamManager.getImageBlobByUuid(movieUuid, 'Poster', width), 200, HTTPHeaders(data=headers)
+        else:
+            return '', 304, HTTPHeaders(data=headers)
 
 
 @module.route('/movie/backdrop/<string(length=32):identifier>.jpg', methods=('GET',), content_type='image/jpeg')
 def f4a77eba4c284a6ba9ef0fc9386a0c00(request, movieUuid):
-    imageModified, imageBlob, imageIsScaled = module.streamManager.getImageByUuid(movieUuid, 'Backdrop')
-    if imageBlob is None:
-        if module.imageBaseUrl is None:
-            logger.error('Could not download backdrop for %s.', module.streamManager.getMovieTitleByUuid(movieUuid))
-            return '', 200
-        else:
-            imageModified, imageBlob = downloadBackdrop(module.streamManager, module.imageBaseUrl, movieUuid)
-            imageIsScaled = False
+    isBackdropAvailable = module.streamManager.isImageAvailable(movieUuid, 'Backdrop', 1920)
+    if not isBackdropAvailable:
+        downloadBackdrop(module.streamManager, module.imageBaseUrl, movieUuid) # , module.processRequests)
 
-    return _getImageResponse(request, imageModified, imageBlob, imageIsScaled)
+    if not module.streamManager.isImageAvailable(movieUuid, 'Backdrop', 1920):
+        request.send_status(404)
+        request.finish()
+        request.connection.close()
+    else:
+        backdropModified = module.streamManager.getImageMetadataByUuid(movieUuid, 'Backdrop', 1920)[0]
+
+        cachedTimestamp = parseRfc1123Timestamp(request.headers.get('If-Modified-Since', 'Sun, 13 Jul 2014 01:23:45 GMT'))
+
+        headers = SERVER_HEADERS.copy()
+        headers.update({
+            'Last-modified': getRfc1123Timestamp(backdropModified),
+            'Cache-Control': 'must-revalidate, max-age=604800',
+        })
+
+        if cachedTimestamp < backdropModified:
+            return module.streamManager.getImageBlobByUuid(movieUuid, 'Backdrop', 1920), 200, HTTPHeaders(data=headers)
+        else:
+            return '', 304, HTTPHeaders(data=headers)
 
 
 @module.route('/<string:identifier>.ttf', methods=('GET',), headers=SERVER_HEADERS, content_type='application/x-font-ttf')

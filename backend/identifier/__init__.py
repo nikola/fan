@@ -324,6 +324,8 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
                     else:
                         collectionId, collectionName = None, None
 
+                    genres = ', '.join(sorted([genre['name'] for genre in response.get('genres', []) if genre['name'] not in ('Adventure',)])) or ''
+
                     record = dict(
                         idTheMovieDb  = movieId,
                         idImdb        = idImdb,
@@ -341,6 +343,8 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
                         revenue         = response['revenue'] or None,
 
                         rating          = rating,
+
+                        genres          = genres,
 
                         locale          = language,
                         title           = response['title'] or response['original_title'],

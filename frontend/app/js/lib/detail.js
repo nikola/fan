@@ -193,7 +193,8 @@ ka.lib.updateDetailBrowserInfo = function (movieObj, fade) {
 
 ka.lib._updateDetailBrowserInfo = function (movieObj) {
     var title = (ka.state.gridSortDisplayLanguage == 'localized') ? movieObj.titleLocalized : movieObj.titleOriginal;
-    $('#boom-movie-detail-browser-title').html(title + '&nbsp;(' + movieObj.releaseYear + ')');
+    /* $('#boom-movie-detail-browser-title').html(title + '&nbsp;(' + movieObj.releaseYear + ')'); */
+    $('#boom-movie-detail-browser-title').text(title);
 
     if (movieObj.isCompiled) {
         $('#boom-movie-detail-browser-collection').text(movieObj.compilation + ' Collection');
@@ -202,8 +203,10 @@ ka.lib._updateDetailBrowserInfo = function (movieObj) {
     }
 
     var additionalInfo = $('#boom-movie-detail-browser-additional span');
-    additionalInfo.eq(0).text(movieObj.runtime);
+    additionalInfo.eq(0).text(movieObj.releaseYear);
     additionalInfo.eq(1).text((movieObj.rating) ? (movieObj.rating / 10) : '?');
+    additionalInfo.eq(2).text(movieObj.runtime);
+    additionalInfo.eq(3).text(movieObj.genres || '');
 };
 
 

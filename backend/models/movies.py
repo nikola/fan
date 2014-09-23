@@ -68,6 +68,8 @@ class Movie(Base):
     urlBackdrop = Column(String(convert_unicode=False))
     isBackdropDownloading = Column(Boolean, default=False)
 
+    genres = Column(String(convert_unicode=False))
+
     urlPoster = Column(String(convert_unicode=False))
     isPosterDownloading = Column(Boolean, default=False)
 

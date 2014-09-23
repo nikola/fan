@@ -43,9 +43,9 @@
     width: 1150px; height: 245px; /* width = 990x + 150 + 10 */
 
     position: absolute; margin-left: -160px;
-    clip: rect(0px, 970px, 245px, 160px);
+    clip: rect(0px, 960px, 245px, 170px);
 
-    background-color: rgba(0, 0, 0, 0.25);
+    /* background-color: rgba(0, 0, 0, 0.25); */
     }
 
 #boom-movie-detail-poster-browser img {
@@ -58,8 +58,8 @@
     /* float: right; */
     padding: 20px 0 0 20px;
 
-    /* background: linear-gradient(to right, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0) 10%); */
-    background-color: rgba(0, 0, 0, 0.25);
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.25) 50%, rgba(0, 0, 0, 0) 100%);
+    /* background-color: rgba(0, 0, 0, 0.25); */
     }
 
 #boom-movie-detail-browser-title {
@@ -95,6 +95,52 @@
 #boom-movie-detail-browser-additional li {
     display: inline-block;
     margin-right: 30px;
+    }
+
+#boom-movie-detail-browser-buttons {
+    list-style: none;
+    margin: 0;
+    padding: 10px 0;
+
+    position: absolute; bottom: -30px; right: 814px;
+    width: 146px; height: 245px;
+    }
+
+#boom-movie-detail-browser-buttons li {
+    display: block;
+    opacity: 0.75;
+
+    margin-bottom: 15px;
+
+    color: white; text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.75);
+
+    border: 1px solid transparent;
+    /*
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    background-color: rgb(21, 34, 50);
+    box-shadow: 0 2px 6px rgba(0, 0 , 0, 0.5),inset 1px 1px rgba(255, 255, 255, 0.2),inset 0 1px rgba(255, 255, 255, 0.2),inset 0 10px 20px rgba(255, 255, 255, 0.25),inset 0 0 4px rgba(255, 255, 255, 0.3);
+    */
+
+    padding: 4px 12px;
+    font-size: 22px;
+    height: 30px; line-height: 30px;
+    text-transform: uppercase;
+    width: 120px;
+    border-radius: 2px;
+    letter-spacing: 1px;
+    }
+
+#boom-movie-detail-browser-buttons li.boom-active {
+    opacity: 1;
+
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    background-color: rgb(21, 34, 50);
+    box-shadow: 0 2px 6px rgba(0, 0 , 0, 0.5),inset 1px 1px rgba(255, 255, 255, 0.2),inset 0 1px rgba(255, 255, 255, 0.2),inset 0 10px 20px rgba(255, 255, 255, 0.25),inset 0 0 4px rgba(255, 255, 255, 0.3);
+        }
+
+#boom-movie-detail-browser-buttons i {
+    display: inline-block;
+    width: 19px;
     }
 
 #boom-movie-detail-browser-focus {
@@ -198,14 +244,13 @@
     }
 
 #boom-movie-trailer {
+    display: none;
+
     pointer-events: none !important;
     cursor: none !important;
-    width: 1920px;
-    height: 1080px;
-    display: none;
-    position: absolute;
-    top: 0;
-    left: 0;
+
+    position: absolute; top: 0; left: 0;
+    width: 1920px; height: 1080px;
     }
 
 #boom-playback-wait {

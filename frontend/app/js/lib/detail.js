@@ -340,6 +340,7 @@ ka.lib._animatePosterMove = function (movieObj, animateElement, animatePropertie
 ka.lib._triggerBrowserUpdate = function (movieObj) {
     ka.lib.updateDetailBrowserInfo(movieObj, true);
 
+    $('#boom-movie-detail-browser-buttons li.boom-active').velocity({backgroundColor: '#' + movieObj.primaryPosterColor}, ka.settings.durationNormal);
     /* $('#boom-movie-detail-poster-fade-in').velocity('fadeOut', {duration: 0, complete: function () {
         $(this).attr('src', '/movie/backdrop/' + movieObj.uuid +  '.jpg');
     }}); */

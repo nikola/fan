@@ -224,7 +224,7 @@ ka.transition.detail = {to: {
 
         ka.lib.updateDetailBrowserInfo(ka.data.byUuid[$('#boom-movie-detail').data('boom.uuid')], false);
 
-        var leftPos = 3 + 160 * ka.state.currentDetailBrowserPosterColumn;
+        var leftPos = 1110 + 3 + 160 * ka.state.currentDetailBrowserPosterColumn;
         $('#boom-movie-detail-browser-focus').velocity({left: leftPos}, 0);
 
         $('#boom-movie-detail-head').velocity('fadeIn', {duration: 0, complete: function () {

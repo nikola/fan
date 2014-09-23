@@ -26,8 +26,10 @@
 #boom-movie-detail-head {
     display: none;
 
-    width: 2080px; height: 245px;
-    position: absolute; top: 1080px; left: -160px;
+    /* width: 2080px; height: 245px;
+    position: absolute; top: 1080px; left: -160px; */
+    width: 1920px; height: 245px;
+    position: absolute; left: 0; top: 1080px;
     /* background-color: rgba(0, 0, 0, 0.25); */
 
     /* -webkit-transform: translate3d(0, 0, 0);
@@ -40,8 +42,8 @@
     display: inline-block;
     width: 1150px; height: 245px; /* width = 990x + 150 + 10 */
 
-    position: absolute;
-    clip: rect(0px, 970px, 245px, 0px);
+    position: absolute; margin-left: -160px;
+    clip: rect(0px, 970px, 245px, 160px);
 
     background-color: rgba(0, 0, 0, 0.25);
     }
@@ -53,10 +55,11 @@
 #boom-movie-detail-browser-info {
     display: inline-block;
     width: 1090px; height: 225px;
-    float: right;
+    /* float: right; */
     padding: 20px 0 0 20px;
 
-    background: linear-gradient(to right, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0));
+    /* background: linear-gradient(to right, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0) 10%); */
+    background-color: rgba(0, 0, 0, 0.25);
     }
 
 #boom-movie-detail-browser-title {
@@ -85,7 +88,7 @@
     position: absolute;
     bottom: 30px;
 
-    font-size: 30px;
+    font-size: 25px;
     text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.75);
     }
 

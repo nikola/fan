@@ -24,6 +24,7 @@ ka.settings = {
   , compilationPosterOffsetTop: -18
   , compilationPosterOffsetLeft: 12
 
+  , durationUltraShort: 45
   , durationVeryShort: 90
   , durationShort: 180
   , durationNormal: 360
@@ -69,7 +70,6 @@ ka.state = {
   , occludedGridItems: null
 
   , currentDetailBrowserPosterColumn: null
-  /* , backdropDownloadTimer: null */
 
   , setOfKnownPosters: {}
   , setOfUnknownPosters: {}

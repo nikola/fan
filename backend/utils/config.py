@@ -46,6 +46,9 @@ def getOverlayConfig(pathname):
     with open(pathname, 'rU') as fp:
         configOverlayed.update(simplejson.load(fp))
 
+    with open(pathname, 'w') as fp:
+        simplejson.dump(configOverlayed, fp, indent=4, sort_keys=True)
+
     return configOverlayed
 
 

@@ -98,6 +98,8 @@
     }
 
 #boom-movie-detail-browser-buttons {
+    display: none; /* TODO: remove debugging prop */
+
     list-style: none;
     margin: 0;
     padding: 10px 0;

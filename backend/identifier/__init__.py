@@ -56,8 +56,8 @@ def getImageConfiguration():
         return None, None
     else:
         if 'original' in sizes: sizes.remove('original')
-        closestWidth = min(sizes, key=lambda x: abs(int(x[1:]) - 200))
-        if int(closestWidth[1:]) < 200:
+        closestWidth = min(sizes, key=lambda x: abs(int(x[1:]) - 300))
+        if int(closestWidth[1:]) < 300:
             closestWidth = sizes[sizes.index(closestWidth) + 1]
 
         return configuration.get('images').get('secure_base_url'), closestWidth

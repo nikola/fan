@@ -54,7 +54,7 @@ if __name__ == '__main__':
                 if command.find(':stop') != -1:
                     interProcessQueue.put(command)
                 counter += 1
-                if counter > 100:
+                if counter > 600: # 60 second timeout
                     orchestrator.terminate()
                     player.terminate()
                     downloader.terminate()

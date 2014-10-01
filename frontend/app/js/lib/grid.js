@@ -487,7 +487,7 @@ ka.lib.renderMovieObject = function (movieObj, movieId, posterId, posterWidth, p
         .find('img')
             .error(onError)
             .on('load', onLoaded)
-            .attr('src', '/movie/poster/' + movieObj.uuid + '-' + posterWidth + '.image')
+            .attr('src', '/movie/poster/' + movieObj.keyPoster + '-' + posterWidth + '.image')
         .end();
 };
 

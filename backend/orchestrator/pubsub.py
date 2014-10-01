@@ -31,9 +31,11 @@ class PubSub(WebSocket):
 
     def on_pong(self, data):
         self.registerSelf(self)
+        self.queue.put('downloader:process:backdrops')
 
     def on_read(self, data):
         command, payload = json.loads(data)
+
         if command == 'movie:play':
             self.queue.put('player:play:%s' % payload)
         elif command == 'loopback:command':

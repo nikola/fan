@@ -4,43 +4,50 @@
 __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
+# import os
 import time
 from utils.system import Process
 from Queue import Empty
 
-from downloader.images import downloadBackdrop, downscalePoster
-from models import StreamManager
+from downloader.images import downloadArtwork, getBacklogEntry, processBacklogEntry
+# from settings import APP_STORAGE_PATH
+# from models import StreamManager
 
 from . import logger
 
 
 def _startDownloader(queue):
-    downloaderStreamManager = StreamManager()
-    doDownloadAssets = False
-    imageBaseUrl = None
-    isIdle = False
+    # downloaderStreamManager = StreamManager()
+    processMissingBackdrops = False
+    processUnscaledPosters = False
+    # imageBaseUrl = None
+    isIdle = True
 
     while True:
         try:
             command = queue.get_nowait()
-            if command == 'downloader:start':
-                # TODO: only launch this when all poster images have been downloaded in frontend
-
-                doDownloadAssets = True
-                logger.debug('Downloader main loop started.')
-
-                queue.task_done()
-            elif command.startswith('configuration:image-base-url:'):
-                imageBaseUrl = command.replace('configuration:image-base-url:', '')
-                logger.info('Base URL for images received: %s.' % imageBaseUrl)
+            if command == 'downloader:process:backdrops':
+                processMissingBackdrops = True
+                isIdle = False
+                # logger.debug('Downloader main loop started.')
 
                 queue.task_done()
+            elif command == 'downloader:process:posters':
+                processUnscaledPosters = True
+                isIdle = False
+                # logger.debug('Downloader main loop started.')
 
-                queue.put('orchestrator:start:scan')
+                queue.task_done()
+            # elif command.startswith('configuration:image-base-url:'):
+            #     imageBaseUrl = command.replace('configuration:image-base-url:', '')
+            #     logger.info('Base URL for images received: %s.' % imageBaseUrl)
+
+            #     queue.task_done()
+            #     queue.put('orchestrator:start:scan')
             elif command == 'downloader:stop':
                 # logger.info('Downloader received STOP command.')
 
-                downloaderStreamManager.shutdown()
+                # downloaderStreamManager.shutdown()
 
                 queue.task_done()
                 break
@@ -54,34 +61,27 @@ def _startDownloader(queue):
                 queue.task_done()
                 queue.put(command)
 
-                time.sleep(0.015)
+                # time.sleep(0)
         except Empty:
-            if doDownloadAssets and not isIdle:
-                time.sleep(0.015)
-
-                movieUuid = downloaderStreamManager.getMissingBackdropMovieUuid()
-                if movieUuid is not None:
-                    time.sleep(0.015)
-                    if imageBaseUrl is not None:
-                        downloadBackdrop(downloaderStreamManager, imageBaseUrl, movieUuid)
-                else:
-                    time.sleep(0.015)
-
-                    movieUuid, urlOriginal = downloaderStreamManager.getUnscaledPosterImage()
-                    if movieUuid is not None:
-                        time.sleep(0.015)
-
-                        success = downscalePoster(downloaderStreamManager, movieUuid, urlOriginal)
-                        time.sleep(0.015)
-
-                        if success:
+            if isIdle:
+                time.sleep(5)
+            elif not processMissingBackdrops:
+                time.sleep(1)
+            else:
+                missingBackdrop = getBacklogEntry('backdrop')
+                if missingBackdrop is not None:
+                    processBacklogEntry('backdrop', missingBackdrop) # TODO: handle network errors
+                elif processUnscaledPosters:
+                    unscaledPoster = getBacklogEntry('poster')
+                    if unscaledPoster is not None:
+                        if processBacklogEntry('poster', unscaledPoster):  # TODO: handle network errors
                             try:
                                 command = queue.get_nowait()
                             except Empty:
-                                queue.put('orchestrator:poster-refresh:%s' % movieUuid)
+                                queue.put('orchestrator:poster-refresh:%s' % unscaledPoster)
                             else:
                                 if command == 'downloader:stop':
-                                    downloaderStreamManager.shutdown()
+                                    # downloaderStreamManager.shutdown()
 
                                     queue.task_done()
                                     break
@@ -89,15 +89,9 @@ def _startDownloader(queue):
                                     queue.put(command)
                                     queue.task_done()
                     else:
-                        logger.debug('Going into idle mode ...')
+                        logger.info('Going into idle mode ...')
                         isIdle = True
                         queue.put('orchestrator:wake-up:downloader')
-                        time.sleep(0.015)
-            else:
-                if isIdle:
-                    time.sleep(2)
-                else:
-                    time.sleep(0.015)
 
 
 def start(*args):

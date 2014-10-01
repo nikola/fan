@@ -64,10 +64,10 @@ class StreamManager(object):
 
         Base.metadata.create_all(self.engine, checkfirst=True)
 
-        if cleanUp:
-            with self._session() as session:
-                session.query(Movie).filter(Movie.isPosterDownloading == True).update({'isPosterDownloading': False})
-                session.query(Movie).filter(Movie.isBackdropDownloading == True).update({'isBackdropDownloading': False})
+        # if cleanUp:
+        #     with self._session() as session:
+        #         session.query(Movie).filter(Movie.isPosterDownloading == True).update({'isPosterDownloading': False})
+        #         session.query(Movie).filter(Movie.isBackdropDownloading == True).update({'isBackdropDownloading': False})
 
 
     def shutdown(self):
@@ -394,10 +394,18 @@ class StreamManager(object):
                         'genres': movie.genres,
                         'budget': movie.budget,
                         'trailer': movie.idYoutubeTrailer,
+
+                        'keyPoster': movie.keyPoster,
                         'primaryPosterColor': primaryPosterColor,
+                        'keyBackdrop': movie.keyBackdrop,
+                        'isBackdropCached': movie.isBackdropCached,
+
+                        # 'idBackdrop': movie.urlBackdrop.replace('/', '').replace('.jpg', ''),
+                        # 'idPoster': movie.urlPoster.replace('/', '').replace('.jpg', ''),
                         'streamless': movie.streamless,
+
                         'compilation': compilationNameById.get(movie.compilationId),
-                        'isCompiled': compilationMovieCountById.get(movie.compilationId, 0) > 1,
+                        'isCompiled': compilationMovieCountById.get(movie.compilationId, 0),
                     })
             return json.dumps(movieList, separators=(',',':'))
 
@@ -406,7 +414,7 @@ class StreamManager(object):
         with self._session() as session:
             try:
                 movie = list(session.query(Movie, Localization).filter(Movie.uuid == identifier, Movie.id == Localization.movieId, Localization.locale == 'en').distinct() \
-                    .values(Movie.uuid, Movie.titleOriginal, Localization.title, Movie.releaseYear, Movie.runtime, Localization.storyline, Movie.rating, Movie.genres, Movie.budget, Movie.idYoutubeTrailer, Movie.streamless))[0]
+                    .values(Movie.uuid, Movie.titleOriginal, Localization.title, Movie.releaseYear, Movie.runtime, Localization.storyline, Movie.rating, Movie.genres, Movie.budget, Movie.idYoutubeTrailer, Movie.streamless,  Movie.keyPoster, Movie.keyBackdrop))[0]
             except NoResultFound:
                 return None
             else:
@@ -422,6 +430,9 @@ class StreamManager(object):
                     'budget': movie[8],
                     'trailer': movie[9],
                     'streamless': movie[10],
+                    'keyPoster': movie[11],
+                    'keyBackdrop': movie[12],
+                    'isBackdropCached': 0,
                 }
                 try:
                     poster = session.query(Image).join(Movie).filter(Image.imageType == 'Poster', Image.movie.has(Movie.uuid == identifier)).first()

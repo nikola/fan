@@ -4,7 +4,9 @@
 __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
+import os
 import time
+from contextlib import closing
 from utils.system import Process
 from Queue import Empty
 
@@ -13,8 +15,10 @@ from pants.http import HTTPServer
 from pants.web import Application
 
 from settings import DEBUG
+from settings import APP_STORAGE_PATH
 from orchestrator.urls import module as appModule
 from orchestrator.pubsub import PubSub
+from downloader.images import downloadArtwork
 from models import StreamManager
 from identifier import getStreamRecords, getFixedRecords, identifyMovieByTitleYear
 from utils.config import getCurrentUserConfig, getOverlayConfig, saveCurrentUserConfig
@@ -218,9 +222,31 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                         if movieRecord is None:
                             logger.warning('Could not identify file: %s' % streamLocation)
                         else:
-                            movieUuid = streamManager.addMovieStream(movieRecord, streamLocation) # TODO: re-wire stream to correct movie if necessary
+                            for imageType in ('Poster', 'Backdrop'):
+                                movieRecord['key' + imageType] = movieRecord['url' + imageType].replace('/', '').replace('.jpg', '')
+                                pathname = os.path.join(APP_STORAGE_PATH, 'artwork', imageType.lower() + 's', movieRecord['key' + imageType])
+                                try:
+                                    os.makedirs(pathname)
+                                except OSError:
+                                    pass
+                                with open(os.path.join(pathname, 'source.url'), 'wb+') as fp:
+                                    fp.write('[InternetShortcut]\r\nURL=%soriginal%s\r\n' % (appModule.imageBaseUrl, movieRecord['url' + imageType]))
+                                _processRequests()
+                                closing(open(os.path.join(APP_STORAGE_PATH, 'backlog', imageType.lower() + 's', movieRecord['key' + imageType]), 'w+'))
+                                _processRequests()
+                                del movieRecord['url' + imageType]
 
+                            movieUuid = streamManager.addMovieStream(movieRecord, streamLocation) # TODO: re-wire stream to correct movie if necessary
                             _processRequests()
+
+                            # backdropUrlTail = movieRecord.get('urlBackdrop')
+                            # backdropUrlFull = '%soriginal%s' % (appModule.imageBaseUrl, backdropUrlTail)
+                            # backdropId = backdropUrlTail.replace('/', '').replace('.jpg', '')
+                            # downloadArtwork(backdropUrlFull, 'backdrop', backdropId, _processRequests, movieRecord.get('title') or movieRecord.get('original_title'))
+
+                            # posterId = movieRecord.get('urlPoster').replace('/', '').replace('.jpg', '')
+                            # closing(open(os.path.join(APP_STORAGE_PATH, 'backlog', posterId), 'w+'))
+
 
                             if pubSubReference.connected:
                                 pubSubReference.write(unicode('["receive:movie:item", %s]' % streamManager.getMovieAsJson(movieUuid)))
@@ -234,7 +260,8 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                 syncFinished = None
 
                 # queue.put('orchestrator:watch')
-                queue.put('downloader:start')
+                # queue.put('downloader:start')
+                queue.put('downloader:process:posters')
 
             _processRequests()
             # elif syncFinished is False:

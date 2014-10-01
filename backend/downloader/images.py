@@ -1,13 +1,15 @@
 # coding: utf-8
 """
 """
+from __future__ import division
+
 __author__ = 'Nikola Klaric (nikola@generic.company)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 import os
 import time
 from subprocess import call
-from uuid import uuid4
+# from uuid import uuid4
 from contextlib import closing
 from cStringIO import StringIO
 
@@ -20,163 +22,89 @@ from settings import ENTROPY_SEED
 from . import logger
 
 
-def downloadChunks(url, pollCallback=None):
-
-    def _yield():
-        if pollCallback is not None:
-            pollCallback()
-        else:
-            time.sleep(0)
-
-    stream = StringIO()
-    try:
-        with closing(requests.get(url, headers={'User-Agent': ENTROPY_SEED}, stream=True)) as response:
-            for chunk in response.iter_content(chunk_size=1024):
-                if chunk:
-                    stream.write(chunk)
-                    _yield()
-    except requests.ConnectionError:
-        logger.error('Could not connect to image host URL: %s', url)
-    else:
-        _yield()
-        blob = stream.getvalue()
-        _yield()
-        return blob
+CONVERT_EXE = os.path.join(ASSETS_PATH, 'tools', 'convert.exe')
+CWEBP_EXE = os.path.join(ASSETS_PATH, 'tools', 'cwebp.exe')
 
 
-def downloadBackdrop(streamManager, imageBaseUrl, movieUuid, pollCallback=None):
+def downloadArtwork(imageUrl, imageType, imageId):
 
     def _yield(period=0):
-        if pollCallback is not None:
-            pollCallback()
         time.sleep(period)
 
-    logger.info('Downloading backdrop for "%s" ...' % streamManager.getMovieTitleByUuid(movieUuid))
+    imageName = imageType[:imageType.find('@')] if imageType.find('@') != -1 else imageType
 
-    _yield()
-    isBackdropDownloading = streamManager.isBackdropDownloading(movieUuid)
-    _yield()
-    if isBackdropDownloading is True:
-        while True:
-            isBackdropStored = streamManager.isImageAvailable(movieUuid, 'Backdrop', 1920)
-            if not isBackdropStored:
-                _yield(0.5)
-            else:
+    imageDirectory = os.path.join(APP_STORAGE_PATH, 'artwork', imageName + 's', imageId)
+    incompleteImagePath = os.path.join(imageDirectory, imageType + '.incomplete')
+    completeImagePath = os.path.join(imageDirectory, imageType + '.jpg')
+
+    if not os.path.exists(completeImagePath):
+        try:
+            os.makedirs(imageDirectory)
+        except OSError:
+            pass
+        _yield()
+
+        localStream = open(incompleteImagePath, 'wb')
+        _yield()
+
+        chunks = 0
+        try:
+            logger.info('Starting download of %s from %s', imageName, imageUrl)
+            with closing(requests.get(imageUrl, headers={'User-Agent': ENTROPY_SEED}, stream=True)) as response:
+                timeStart = time.clock()
+                for chunk in response.iter_content(chunk_size=4096):
+                    if chunk:
+                        chunks += 1
+                        localStream.write(chunk)
+                        _yield()
+                duration = time.clock() - timeStart
                 _yield()
-                break
-    elif isBackdropDownloading is False:
-        streamManager.startBackdropDownload(movieUuid)
-        _yield()
-
-        url = '%soriginal%s' % (imageBaseUrl, streamManager.getMovieByUuid(movieUuid).urlBackdrop)
-        _yield()
-        blob = downloadChunks(url, pollCallback)
-        _yield()
-
-        if blob is not None:
-            streamManager.saveImageData(movieUuid, 1920, blob, False, 'Backdrop', 'JPEG', url)
+        except requests.ConnectionError:
+            logger.error('Could not connect to image host server at URL: %s', imageUrl)
             _yield()
-
-        streamManager.endBackdropDownload(movieUuid)
-        _yield()
-
-
-def downscalePoster(streamManager, movieUuid, urlOriginal):
-    logger.info('Starting production of downscaled poster image for "%s" ...' % streamManager.getMovieTitleByUuid(movieUuid))
-
-    isPosterDownloading = streamManager.isPosterDownloading(movieUuid)
-    time.sleep(0)
-    time.sleep(0)
-    if isPosterDownloading is True:
-        while True:
-            imageModified, imageIsScaled = streamManager.getImageMetadataByUuid(movieUuid, 'Poster')
-            if imageModified is None:
-                time.sleep(0.5)
-            else:
-                time.sleep(0)
-                break
-    elif isPosterDownloading is False:
-        streamManager.startPosterDownload(movieUuid)
-
-        logger.info('Downloading image data from %s ...', urlOriginal)
-        time.sleep(0)
-        blobOriginal = downloadChunks(urlOriginal)
-        time.sleep(0)
-
-        if len(blobOriginal) < 5000:
-            streamManager.endPosterDownload(movieUuid)
             return False
         else:
-            filenameRaw = _saveRawImage(blobOriginal)
-            time.sleep(0)
+            logger.info('... finished download of %s, avg. transfer rate: %.0f KiB/s.', imageName, (chunks * 4) / duration)
+        finally:
+            localStream.flush()
+            _yield()
+            localStream.close()
+            _yield()
 
-            try:
-                for width, height in [(150, 225), (200, 300), (300, 450)]:
-                    blobResized = _downscaleImage(filenameRaw, width, height)
-                    time.sleep(0)
-                    if blobResized is not None:
-                        streamManager.saveImageData(movieUuid, width, blobResized, True, 'Poster', 'WebP', urlOriginal)
-                        time.sleep(0)
-                    else:
-                        logger.error('Could not downscale image to %dx%d!', width, height)
-            finally:
-                os.remove(filenameRaw)
-                time.sleep(0)
-
-            streamManager.endPosterDownload(movieUuid)
-            time.sleep(0)
+        # TODO: check file size of image to be > 5000
+        os.rename(incompleteImagePath, completeImagePath)
 
     return True
 
 
-def _saveRawImage(blob):
-    filenameRaw = os.path.join(APP_STORAGE_PATH, uuid4().hex)
-    with open(filenameRaw, 'wb') as fp:
-        fp.write(blob)
-
-    return filenameRaw
+def getBacklogEntry(artworkType):
+    backlogItems = os.listdir(os.path.join(APP_STORAGE_PATH, 'backlog', artworkType + 's'))
+    time.sleep(0)
+    return backlogItems[0] if len(backlogItems) else None
 
 
-def _downscaleImage(filenameRaw, width, height):
-    blobOut = None
+def processBacklogEntry(artworkType, key):
+    link = open(os.path.join(APP_STORAGE_PATH, 'artwork', artworkType + 's', key, 'source.url'), 'rU').read()
+    time.sleep(0)
+    sourceUrl = link[link.find('=') + 1:].strip()
 
-    # filenameRaw = os.path.join(APP_STORAGE_PATH, uuid4().hex)
-    filenameResized = os.path.join(APP_STORAGE_PATH, uuid4().hex)
-    filenameRecoded = os.path.join(APP_STORAGE_PATH, uuid4().hex)
+    result = downloadArtwork(sourceUrl, artworkType, key)
+    if artworkType == 'poster':
+        if result:
+            pathname = os.path.join(APP_STORAGE_PATH, 'artwork', 'posters', key)
+            filename = os.path.join(pathname, 'poster')
 
-    # with open(filenameRaw, 'wb') as fd:
-    #     fd.write(blob)
-    # time.sleep(0)
+            for width, height in [(150, 225), (200, 300), (300, 450)]:
+                call([CONVERT_EXE, 'jpg:%s.jpg' % filename, '-colorspace', 'RGB', '-filter', 'RobidouxSharp', '-distort', 'Resize', '%dx%d' % (width, height), '-colorspace', 'sRGB', 'png:%s@%d.png' % (filename, width)],
+                     shell=True)
+                time.sleep(0)
 
-    try:
-        # shell = ['cmd', '/c', 'start', '/MIN', '/LOW', '/B', '/WAIT']
+                call([CWEBP_EXE, '-preset', 'picture', '-hint', 'picture', '-sns', '0', '-f', '0', '-q', '0', '-m', '0', '-lossless', '-af', '-noalpha', '-quiet', filename + ('@%d.png' % width), '-o', filename + ('@%d.webp' % width)],
+                     shell=True)
+                time.sleep(0)
+        else:
+            pass # TODO: handle failure
 
-        convertExe = os.path.join(ASSETS_PATH, 'tools', 'convert.exe')
-        # call([convertExe, 'jpg:%s' % filenameRaw, '-colorspace', 'RGB', '-define', 'filter:window=Quadratic', '-distort', 'Resize', '%dx%d' % (width, height), '-colorspace', 'sRGB', 'png:%s' % filenameResized], shell=True)
-        # call([convertExe, 'jpg:%s' % filenameRaw, '-colorspace', 'RGB', '-filter', 'Lanczos', '-define', 'filter:blur=.9891028367558475', '-distort', 'Resize', '%dx%d' % (width, height), '-colorspace', 'sRGB', 'png:%s' % filenameResized], shell=True)
-        call([convertExe, 'jpg:%s' % filenameRaw, '-colorspace', 'RGB', '-filter', 'RobidouxSharp', '-distort', 'Resize', '%dx%d' % (width, height), '-colorspace', 'sRGB', 'png:%s' % filenameResized],
-             shell=True)
-        time.sleep(0)
-
-        encodeExe = os.path.join(ASSETS_PATH, 'tools', 'cwebp.exe')
-        call([encodeExe, '-preset', 'picture', '-hint', 'picture', '-sns', '0', '-f', '0', '-q', '0', '-m', '0', '-lossless', '-af', '-noalpha', '-quiet', filenameResized, '-o', filenameRecoded],
-             shell=True)
-        time.sleep(0)
-        try:
-            with open(filenameRecoded, 'rb') as fp:
-                blobOut = fp.read()
-        except IOError:
-            logger.error('Could not convert image.')
-        time.sleep(0)
-    finally:
-        try:
-            # os.remove(filenameRaw)
-            # time.sleep(0)
-            os.remove(filenameResized)
-            time.sleep(0)
-            os.remove(filenameRecoded)
-            time.sleep(0)
-        except WindowsError:
-            pass
-
-    return blobOut
+    if result:
+        os.remove(os.path.join(APP_STORAGE_PATH, 'backlog', artworkType + 's', key))
+    return result

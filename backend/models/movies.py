@@ -65,13 +65,20 @@ class Movie(Base):
 
     rating = Column(SmallInteger)
 
-    urlBackdrop = Column(String(convert_unicode=False))
-    isBackdropDownloading = Column(Boolean, default=False)
-
     genres = Column(String(convert_unicode=False))
 
-    urlPoster = Column(String(convert_unicode=False))
-    isPosterDownloading = Column(Boolean, default=False)
+    # sourceBackdrop = Column(String(convert_unicode=False))
+    keyBackdrop = Column(String(convert_unicode=False))
+    isBackdropCached = Column(Boolean, default=False)
+    # isBackdropDownloading = Column(Boolean, default=False)
+
+    # sourcePoster = Column(String(convert_unicode=False))
+    keyPoster = Column(String(convert_unicode=False))
+
+
+    # urlPoster = Column(String(convert_unicode=False))
+
+    # isPosterDownloading = Column(Boolean, default=False)
 
     # Many-to-many Movies <-> Genres.
     # genres = relationship('Genre', secondary=movie_genres, backref='movies')

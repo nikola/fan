@@ -7,6 +7,8 @@ __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 import os.path
 import gzip
 import urllib
+import datetime
+import time
 from cStringIO import StringIO
 from hashlib import md5 as MD5
 
@@ -15,9 +17,9 @@ from pants.web.application import Module # , error
 from pants.http.utils import HTTPHeaders
 
 from settings import DEBUG
-from settings import ASSETS_PATH
+from settings import ASSETS_PATH, APP_STORAGE_PATH
 from identifier import getImageConfiguration
-from downloader.images import downloadBackdrop, downloadChunks
+from downloader.images import downloadArtwork # , downloadChunks
 from utils.rfc import getRfc1123Timestamp, parseRfc1123Timestamp
 from utils.fs import getDrives, readProcessedStream
 from utils.config import getCurrentUserConfig
@@ -25,10 +27,6 @@ from identifier.fixture import TOP_250
 
 from . import SERVER_HEADERS, logger
 
-# IMG_MIME_TYPES = {
-#     'JPEG': 'image/jpeg',
-#     'WebP': 'application/octet-stream',
-# }
 
 module = Module()
 
@@ -39,7 +37,9 @@ def d84349a839a6400aa7494cd609f61cb0(request, pathname):
         module.imageBaseUrl, module.imageClosestSize = getImageConfiguration()
 
         if module.imageBaseUrl is not None:
-            module.interProcessQueue.put('configuration:image-base-url:%s' % module.imageBaseUrl)
+            module.interProcessQueue.put('orchestrator:start:scan') # configuration:image-base-url:%s' % module.imageBaseUrl)
+
+        # module.interProcessQueue.put('downloader:start')
 
         return '', 200
     else:
@@ -120,72 +120,91 @@ def bc470fe6ce0c4b8695402e77934d83cc(request):
     return stream.getvalue(), 200, HTTPHeaders(data=headers)
 
 
-@module.route('/movie/poster/<string(length=32):identifier>-<int:width>.image', methods=('GET',), content_type='application/octet-stream')
-def ba2c90f025af404381e88bf8fc18afb2(request, movieUuid, width):
-    # logger.info('serving poster for %s.',module.streamManager.getMovieTitleByUuid(movieUuid))
-    imageModified, imageIsScaled = module.streamManager.getImageMetadataByUuid(movieUuid, 'Poster', width)
+@module.route('/movie/poster/<string:key>-<int:width>.image', methods=('GET',), content_type='application/octet-stream')
+def ba2c90f025af404381e88bf8fc18afb2(request, key, width):
+    pathname = os.path.join(APP_STORAGE_PATH, 'artwork', 'posters', key)
+    filename = os.path.join(pathname, 'poster')
 
-    if imageModified is None and width != 200:
-        # Serve default poster size and upscale in frontend.
-        width = 200
-        imageModified = module.streamManager.getImageMetadataByUuid(movieUuid, 'Poster', 200)[0]
-        imageIsScaled = False
+    imageIsScaled = os.path.exists(filename + '@%d.webp' % width)
+    time.sleep(0)
 
-    if imageModified is None:
-        # Download default poster size.
-        pathPoster = module.streamManager.getMovieByUuid(movieUuid).urlPoster
+    if imageIsScaled:
+        filename += '@%d.webp' % width
+    else:
+        # if os.path.exists(filename + '@200.incomplete'):
+        #     while os.path.exists(filename + '@200.incomplete'):
+        #         time.sleep(0.25)
+        #     filename += '@200.jpg'
+        if not os.path.exists(filename + '@draft.jpg'):
+            time.sleep(0)
+            link = open(os.path.join(pathname, 'source.url'), 'rU').read()
+            time.sleep(0)
+            sourceUrl = link[link.find('=') + 1:].replace('original', module.imageClosestSize).strip()
+            downloadArtwork(sourceUrl, 'poster@draft', key)
+            time.sleep(0)
 
-        urlPoster = '%s%s%s' % (module.imageBaseUrl, module.imageClosestSize, pathPoster)
-        blob = downloadChunks(urlPoster)
-        if blob is None:
-            logger.error('Could not download poster for %s.', module.streamManager.getMovieTitleByUuid(movieUuid))
-        else:
-            imageModified = module.streamManager.saveImageData(movieUuid, width, blob, False, 'Poster', 'JPEG', '%soriginal%s' % (module.imageBaseUrl, pathPoster))
-            imageIsScaled = False
+        filename += '@draft.jpg'
 
-    if imageModified is None:
-        # Could not download default poster.
+    if not os.path.exists(filename):
         request.send_status(404)
         request.finish()
         request.connection.close()
     else:
+        time.sleep(0)
+        fileTimestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
+        time.sleep(0)
         cachedTimestamp = parseRfc1123Timestamp(request.headers.get('If-Modified-Since', 'Sun, 13 Jul 2014 01:23:45 GMT'))
 
         headers = SERVER_HEADERS.copy()
         headers.update({
-            'Last-modified': getRfc1123Timestamp(imageModified),
+            'Last-modified': getRfc1123Timestamp(fileTimestamp),
             'Cache-Control': 'no-cache, max-age=0' if not imageIsScaled else 'must-revalidate, max-age=604800', # actually, no-cache means must-revalidate on each request
         })
 
-        if cachedTimestamp < imageModified:
-            return module.streamManager.getImageBlobByUuid(movieUuid, 'Poster', width), 200, HTTPHeaders(data=headers)
+        if cachedTimestamp < fileTimestamp:
+            return open(filename, 'rb').read(), 200, HTTPHeaders(data=headers)
         else:
             return '', 304, HTTPHeaders(data=headers)
 
 
-@module.route('/movie/backdrop/<string(length=32):identifier>.jpg', methods=('GET',), content_type='image/jpeg')
-def f4a77eba4c284a6ba9ef0fc9386a0c00(request, movieUuid):
-    isBackdropAvailable = module.streamManager.isImageAvailable(movieUuid, 'Backdrop', 1920)
-    if not isBackdropAvailable:
-        downloadBackdrop(module.streamManager, module.imageBaseUrl, movieUuid) # , module.processRequests)
+@module.route('/movie/backdrop/<string:key>.jpg', methods=('GET',), content_type='image/jpeg')
+def f4a77eba4c284a6ba9ef0fc9386a0c00(request, key):
+    pathname = os.path.join(APP_STORAGE_PATH, 'artwork', 'backdrops', key)
+    filename = os.path.join(pathname, 'backdrop.jpg')
 
-    if not module.streamManager.isImageAvailable(movieUuid, 'Backdrop', 1920):
+    if not os.path.exists(filename):
+        time.sleep(0)
+        if os.path.exists(filename.replace('.jpg', '.incomplete')):
+            time.sleep(0)
+            while os.path.exists(filename.replace('.jpg', '.incomplete')):
+                time.sleep(0.25)
+        else:
+            time.sleep(0)
+            os.remove(os.path.join(APP_STORAGE_PATH, 'backlog', 'backdrops', key))
+            time.sleep(0)
+            link = open(os.path.join(pathname, 'source.url'), 'rU').read()
+            time.sleep(0)
+            sourceUrl = link[link.find('=') + 1:].strip()
+            downloadArtwork(sourceUrl, 'backdrop', key)
+            time.sleep(0)
+
+    if not os.path.exists(filename):
         request.send_status(404)
         request.finish()
         request.connection.close()
     else:
-        backdropModified = module.streamManager.getImageMetadataByUuid(movieUuid, 'Backdrop', 1920)[0]
-
+        fileTimestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
+        time.sleep(0)
         cachedTimestamp = parseRfc1123Timestamp(request.headers.get('If-Modified-Since', 'Sun, 13 Jul 2014 01:23:45 GMT'))
 
         headers = SERVER_HEADERS.copy()
         headers.update({
-            'Last-modified': getRfc1123Timestamp(backdropModified),
+            'Last-modified': getRfc1123Timestamp(fileTimestamp),
             'Cache-Control': 'must-revalidate, max-age=604800',
         })
 
-        if cachedTimestamp < backdropModified:
-            return module.streamManager.getImageBlobByUuid(movieUuid, 'Backdrop', 1920), 200, HTTPHeaders(data=headers)
+        if cachedTimestamp < fileTimestamp:
+            return open(filename, 'rb').read(), 200, HTTPHeaders(data=headers)
         else:
             return '', 304, HTTPHeaders(data=headers)
 
@@ -220,8 +239,7 @@ def b394e6e321764be18236408508720edc(request):
 
 @module.route('/drives/mounted', methods=('GET',), headers=SERVER_HEADERS, content_type='application/json')
 def fb947156d1e14d49a0d1235dddc85605(request):
-    drives = getDrives()
-    return drives, 200
+    return getDrives(), 200
 
 
 @module.route('/update/<string:identifier>/poster-color/<string:color>', methods=('GET',), headers=SERVER_HEADERS, content_type='text/plain')
@@ -233,7 +251,7 @@ def b41d0ee34a484413b1af54b061034ee9(request, identifier, color):
 @module.route('/update/configuration', methods=('POST',), headers=SERVER_HEADERS, content_type='text/plain')
 def c33bf6cc87844d439f3b251b52764604(request):
     config = simplejson.loads(urllib.unquote(request.body))
-    getCurrentUserConfig(config)
+    getCurrentUserConfig(config) # TODO: update here external config
     module.interProcessQueue.put('orchestrator:reload:config')
 
     return '', 200

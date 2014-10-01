@@ -24,7 +24,18 @@ from utils.system import getCurrentInstanceIdentifier
 
 def createAppStorageStructure():
     prefix = getCurrentInstanceIdentifier()
-    for pathname in ['amalgam', prefix + '.cache', prefix + '.log']: # , 'thirdparty']:
+    for pathname in [
+        'amalgam',
+        'thirdparty',
+        prefix + '.cache',
+        prefix + '.log',
+        prefix + '.config',
+        prefix + '.lock',
+        os.path.join('artwork', 'backdrops'),
+        os.path.join('artwork', 'posters'),
+        os.path.join('backlog', 'backdrops'),
+        os.path.join('backlog', 'posters'),
+    ]:
         try:
             os.makedirs(os.path.join(APP_STORAGE_PATH, pathname))
         except OSError:

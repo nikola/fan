@@ -81,7 +81,7 @@ ka.lib.handleKeypressLeft = function () {
         ka.lib.moveFocusLeft();
     } else if (ka.state.currentPageMode == 'grid-compilation') {
         ka.lib.moveCompilationFocusLeft();
-    } else if (ka.state.currentPageMode == 'detail-browser') {
+    } else if (ka.state.currentPageMode == 'detail') {
         ka.lib.moveDetailBrowserLeft();
     }
 };
@@ -94,7 +94,7 @@ ka.lib.handleKeypressRight = function () {
         ka.lib.moveCompilationFocusRight();
     } else if (ka.state.currentPageMode == 'config') {
         ka.transition.menu.to.grid();
-    } else if (ka.state.currentPageMode == 'detail-browser') {
+    } else if (ka.state.currentPageMode == 'detail') {
         ka.lib.moveDetailBrowserRight();
     }
 };
@@ -159,13 +159,9 @@ ka.lib.handleKeypressBack = function () {
         ka.transition.menu.to.grid();
     } else if (ka.state.currentPageMode == 'detail') {
         ka.lib.transitionBackFromDetailScreen();
-        /* if (ka.state.currentCompilationPosterCount > 0) {
-            ka.transition.detail.to.compilation();
-        } else {
-            ka.transition.detail.to.grid();
-        } */
     } else if (ka.state.currentPageMode == 'detail-browser') {
-        ka.transition.browser.to.detail();
+        /* ka.transition.browser.to.detail(); */
+        ka.lib.transitionBackFromDetailScreen();
     } else if (ka.state.currentPageMode == 'grid-compilation') {
         ka.transition.compilation.to.grid();
     } else if (ka.state.currentPageMode == 'grid') {

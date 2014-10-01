@@ -24,12 +24,12 @@
     }
 
 #boom-movie-detail-head {
-    display: none;
+    /* display: none; */
 
     /* width: 2080px; height: 245px;
     position: absolute; top: 1080px; left: -160px; */
     width: 1920px; height: 247px;
-    position: absolute; left: 0; top: 1080px;
+    position: absolute; left: 0; /* top: 1080px; */ top: 833px;
     background-color: rgba(0, 0, 0, 0.25);
 
     /* -webkit-transform: translate3d(0, 0, 0);
@@ -147,7 +147,7 @@
 
 #boom-movie-detail-browser-focus {
     display: block;
-    position: absolute; top: 1084px; left: 2px;
+    position: absolute; /* top: 1084px; left: 2px; */ top: 837px;
     width: 156px; height: 231px;
     border: 4px solid white;
     }

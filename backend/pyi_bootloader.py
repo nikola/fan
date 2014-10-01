@@ -91,7 +91,7 @@ if __name__ == '__main__':
     logging.basicConfig(**LOG_CONFIG)
     logger = logging.getLogger('core')
     logger.propagate = DEBUG
-    logger.addHandler(getLogFileHandler('core'))
+    logger.addHandler(getLogFileHandler('core')) # Implicitly create app storage folder structure.
 
     try:
         if not isCompatiblePlatform():
@@ -137,6 +137,8 @@ if __name__ == '__main__':
             prog='ka-BOOM',
             description='A movie compilation and playback app for Windows. Fast. Lean. No weather widget.',
         )
+
+        # TODO: add arguments --profile and --purge-artifacts (for removing intermediate poster images)
 
         parser.add_argument('--export-config', dest='exportConfigPath', action='store',
             help='Write the current configuration to the given path.')

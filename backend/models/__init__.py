@@ -378,10 +378,10 @@ class StreamManager(object):
             movieList = []
             for movie, localization in session.query(Movie, Localization).filter(Movie.id == Localization.movieId, Localization.locale == 'en').group_by(Movie.id).distinct():
                 if movie.streamless or any([True for stream in movie.streams if os.path.exists(stream.location)]):
-                    try:
-                        primaryPosterColor = list(session.query(Image).filter(Image.movieId == movie.id).values(Image.primaryColor))[0][0]
-                    except (NoResultFound, IndexError):
-                        primaryPosterColor = None
+                    # try:
+                    #     primaryPosterColor = list(session.query(Image).filter(Image.movieId == movie.id).values(Image.primaryColor))[0][0]
+                    # except (NoResultFound, IndexError):
+                    #     primaryPosterColor = None
 
                     movieList.append({
                         'uuid': movie.uuid,
@@ -396,7 +396,7 @@ class StreamManager(object):
                         'trailer': movie.idYoutubeTrailer,
 
                         'keyPoster': movie.keyPoster,
-                        'primaryPosterColor': primaryPosterColor,
+                        'primaryPosterColor': movie.primaryColorPoster,
                         'keyBackdrop': movie.keyBackdrop,
                         'isBackdropCached': movie.isBackdropCached,
 
@@ -414,7 +414,7 @@ class StreamManager(object):
         with self._session() as session:
             try:
                 movie = list(session.query(Movie, Localization).filter(Movie.uuid == identifier, Movie.id == Localization.movieId, Localization.locale == 'en').distinct() \
-                    .values(Movie.uuid, Movie.titleOriginal, Localization.title, Movie.releaseYear, Movie.runtime, Localization.storyline, Movie.rating, Movie.genres, Movie.budget, Movie.idYoutubeTrailer, Movie.streamless,  Movie.keyPoster, Movie.keyBackdrop))[0]
+                    .values(Movie.uuid, Movie.titleOriginal, Localization.title, Movie.releaseYear, Movie.runtime, Localization.storyline, Movie.rating, Movie.genres, Movie.budget, Movie.idYoutubeTrailer, Movie.streamless,  Movie.keyPoster, Movie.keyBackdrop, Movie.primaryColorPoster))[0]
             except NoResultFound:
                 return None
             else:
@@ -433,14 +433,15 @@ class StreamManager(object):
                     'keyPoster': movie[11],
                     'keyBackdrop': movie[12],
                     'isBackdropCached': 0,
+                    'primaryPosterColor': movie[13],
                 }
-                try:
-                    poster = session.query(Image).join(Movie).filter(Image.imageType == 'Poster', Image.movie.has(Movie.uuid == identifier)).first()
-                except NoResultFound:
-                    pass
-                else:
-                    if poster is not None and poster.primaryColor:
-                        record['primaryPosterColor'] = poster.primaryColor
+                # try:
+                #     poster = session.query(Image).join(Movie).filter(Image.imageType == 'Poster', Image.movie.has(Movie.uuid == identifier)).first()
+                # except NoResultFound:
+                #     pass
+                # else:
+                #     if poster is not None and poster.primaryColor:
+                #         record['primaryPosterColor'] = poster.primaryColor
 
                 return json.dumps(record, separators=(',',':'))
 
@@ -457,7 +458,7 @@ class StreamManager(object):
 
     def updatePosterColorByMovieUuid(self, identifier, color):
         with self._session() as session:
-            session.query(Image).join(Movie).filter(Image.imageType == 'Poster', Image.movie.has(Movie.uuid == identifier)).update({'primaryColor': color}, synchronize_session=False)
+            session.query(Movie).filter(Movie.uuid == identifier).update({'primaryColorPoster': color}, synchronize_session=False)
 
 
     # def getUnidentifiedTracksMovie(self):

@@ -74,6 +74,7 @@ class Movie(Base):
 
     # sourcePoster = Column(String(convert_unicode=False))
     keyPoster = Column(String(convert_unicode=False))
+    primaryColorPoster = Column(String(length=6, convert_unicode=False))
 
 
     # urlPoster = Column(String(convert_unicode=False))

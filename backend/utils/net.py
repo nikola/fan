@@ -11,6 +11,7 @@ from uuid import uuid4
 from collections import OrderedDict
 
 import requests
+from simplejson import JSONDecodeError
 
 from settings import DEBUG
 from settings import LOG_CONFIG, EXE_PATH, ENTROPY_SEED
@@ -56,7 +57,10 @@ def getThrottledJsonResponse(url, params):
             logger.error('Could not GET %s' % url)
             return None
         else:
-            TMDB_RESPONSE_CACHE[key] = response.json()
+            try:
+                TMDB_RESPONSE_CACHE[key] = response.json()
+            except JSONDecodeError:
+                logger.error('Invalid JSON response from TMDb!')
 
     return TMDB_RESPONSE_CACHE.get(key)
 

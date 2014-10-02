@@ -100,29 +100,39 @@ ka.transition.grid = {to: {
         var movieObj = ka.lib.getVariantFromGridFocus();
         ka.state.lastGridMovieUuid = movieObj.uuid;
 
-        ka.lib.updateDetailPage(movieObj, false); /* refresh backdrop, too */
+        /* ka.lib.updateDetailPage(movieObj, false); */ /* refresh backdrop, too */
+        $('#boom-movie-detail').data('boom.uuid', movieObj.uuid);
+        ka.lib.updateDetailBrowserInfo(movieObj, false);
+
+        ka.lib.browser.backdrop.init();
+        if (movieObj.isBackdropCached) {
+            ka.lib.browser.backdrop.setImmediate(movieObj);
+        } else {
+            ka.lib.browser.backdrop.clear();
+        }
+
         /* ka.lib.updateDetailButtonSelection(); */
 
         ka.lib.occludeMovieGrid();
 
-        $('#boom-movie-detail').css('display', 'block');
+        ka.lib.browser.show();
 
         $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({translateZ: 0, left: '-=1920'}, {
             duration: ka.settings.durationLong
           , complete: function () {
                 ka.lib.grid.focus.hide();
-
-                ka.state.actualScreenMode = null; /* TODO: needed anymore? */
-
                 ka.lib.grid.snapshotMovieLookups();
 
                 ka.state.currentDetailBrowserPosterColumn = ka.lib.populateDetailBrowserGrid();
 
-                ka.lib.updateDetailBrowserInfo(ka.data.byUuid[$('#boom-movie-detail').data('boom.uuid')], false);
+                ka.lib.browser.focus.reposition();
+                ka.lib.browser.posters.show(function () {
+                    if (!movieObj.isBackdropCached) {
+                        ka.lib.browser.backdrop.loadOptimistic(movieObj);
+                    }
 
-                $('#boom-movie-detail-browser-focus').velocity({left: 1110 + 2 + 160 * ka.state.currentDetailBrowserPosterColumn}, 0);
-
-                ka.state.currentPageMode = 'detail';
+                    ka.state.currentPageMode = 'detail';
+                });
             }
         });
     }
@@ -168,10 +178,12 @@ ka.transition.compilation = {to: {
         var movieObj = ka.lib.getVariantFromGridFocus()[ka.state.currentCompilationFocusIndex];
 
         ka.state.lastGridMovieUuid = movieObj.uuid;
-        ka.state.actualScreenMode = null;
+        /* ka.state.actualScreenMode = null; */
 
         ka.lib.updateDetailPage(movieObj, false, true); /* refresh backdrop, too, and use the non-collection title */
         ka.lib.updateDetailButtonSelection();
+
+        ka.state.actualScreenMode = null;
 
         $('#boom-movie-detail').velocity('fadeIn', {
             duration: 0
@@ -200,14 +212,19 @@ ka.transition.detail = {to: {
         $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail')
             .velocity({translateZ: 0, left: '+=1920'}, {duration: ka.settings.durationLong, complete: function () {
                 /* $('#boom-movie-detail').velocity('fadeOut', 0); */
-                $('#boom-movie-detail').css('display', 'none');
+
+
+                $('#boom-movie-detail-poster-browser, #boom-movie-detail-browser-focus').velocity({bottom: '-=247'}, {duration: 0, complete: function () {
+                    $('#boom-movie-detail, #boom-movie-detail-poster-browser, #boom-movie-detail-browser-focus').css('display', 'none');
+                    $('#boom-movie-detail-poster-browser').empty();
+                }});
 
                 ka.lib.unoccludeMovieGrid();
 
                 ka.lib.recalcMovieGrid();
                 ka.lib.updateMovieGridOnChange();
 
-                $('#boom-movie-detail-poster-browser').empty();
+
 
                 ka.state.currentPageMode = 'grid';
             }});
@@ -267,8 +284,8 @@ ka.transition.browser = {to: {
         if (movieObj.uuid != $('#boom-movie-detail').data('boom.uuid')) {
             $('#boom-movie-detail').data('boom.uuid', movieObj.uuid);
 
-            ka.lib.updateDetailPage(movieObj, true); /* don't refresh backdrop */
-            ka.lib.updateDetailButtonSelection(true); /* don't animate backdrop shade */
+            ka.lib.updateDetailPage(movieObj, true); // don't refresh backdrop
+            ka.lib.updateDetailButtonSelection(true); // don't animate backdrop shade
         }
 
         $('#boom-movie-detail-poster-fade-in').velocity('fadeOut', 0);

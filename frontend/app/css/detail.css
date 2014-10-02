@@ -24,12 +24,12 @@
     }
 
 #boom-movie-detail-head {
-    /* display: none; */
+    display: block;
 
     /* width: 2080px; height: 245px;
     position: absolute; top: 1080px; left: -160px; */
     width: 1920px; height: 247px;
-    position: absolute; left: 0; /* top: 1080px; */ top: 833px;
+    position: absolute; left: 0; /* top: 1080px; */ bottom: 0px; /* top: 833px; */
     background-color: rgba(0, 0, 0, 0.25);
 
     /* -webkit-transform: translate3d(0, 0, 0);

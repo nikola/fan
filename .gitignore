@@ -242,3 +242,4 @@ dummy.exe
 compiler/clean/
 compiler/pyminifier/
 trident.not.compressed/
+shaders/

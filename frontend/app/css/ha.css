@@ -35,6 +35,6 @@ body {
     }
 
 /* Background backdrop downloader */
-#boom-movie-detail-poster-fade-in {
-    -webkit-transform: translateZ(0);
+.boom-movie-detail-poster-loader {
+    /* -webkit-transform: translateZ(0); */ /* enabling this causes stuttering when browsing posters on detail screen */
     }

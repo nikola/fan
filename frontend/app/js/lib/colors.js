@@ -23,12 +23,12 @@ ka.lib.getPixelsFromImage = function (element) {
     var image = element.get(0),
         context = ka.state.canvasContext;
 
-    context.canvas.width = image.width;
-    context.canvas.height = image.height;
-    context.drawImage(image, 0, 0, image.width, image.height);
+    context.canvas.width = image.naturalWidth;
+    context.canvas.height = image.naturalHeight;
+    context.drawImage(image, 0, 0, image.naturalWidth, image.naturalHeight);
 
-    var pixels = context.getImageData(0, 0, image.width, image.height).data,
-        pixelCount = image.width * image.height, pixelArray = [],
+    var pixels = context.getImageData(0, 0, image.naturalWidth, image.naturalHeight).data,
+        pixelCount = image.naturalWidth * image.naturalHeight, pixelArray = [],
         block = 0, index = 0, r, g, b;
     while (block < pixelCount) {
         r = pixels[index++];

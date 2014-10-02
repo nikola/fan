@@ -62,10 +62,12 @@ ka.lib.browser = {
                 ka.lib.browser.backdrop.loadOptimistic(movieObj);
             } else {
                 if (!$('#boom-movie-detail-poster-background').data('boom.isDefocused')) {
-                    $('#boom-movie-detail-poster-foreground').css('opacity', 0);
-                    $('#boom-movie-detail-poster-background').css('opacity', 1).data('boom.isDefocused', true);
-                    ka.lib.browser.backdrop.clear();
-                    ka.lib._focusOutImage($('#boom-movie-detail-poster-background'));
+                    ka.state.uncachedBackdropDelayTimer = setTimeout(function () {
+                        $('#boom-movie-detail-poster-foreground').css('opacity', 0);
+                        $('#boom-movie-detail-poster-background').css('opacity', 1).data('boom.isDefocused', true);
+                        ka.lib.browser.backdrop.clear();
+                        ka.lib._focusOutImage($('#boom-movie-detail-poster-background'));
+                    }, ka.settings.durationShort);
                 }
 
                 ka.lib.browser.backdrop.loadOptimistic(movieObj);
@@ -73,6 +75,7 @@ ka.lib.browser = {
         }
 
       , onLoaded: function () {
+            clearTimeout(ka.state.uncachedBackdropDelayTimer);
             $('#boom-movie-detail-poster-background').velocity('stop');
 
             $('#boom-movie-detail-poster-foreground').velocity({translateZ: 0, opacity: 1}, {duration: 360, complete: function () {
@@ -433,6 +436,8 @@ ka.lib._animatePosterMove = function (animateElement, animateProperties, removeE
 
 ka.lib._triggerBrowserUpdate = function (movieObj) {
     ka.lib.updateDetailBrowserInfo(movieObj, true);
+
+    $('#boom-movie-detail').data('boom.uuid', movieObj.uuid);
 
     $('#boom-movie-detail-browser-buttons li.boom-active').velocity({backgroundColor: '#' + (movieObj.primaryPosterColor || '000000')}, ka.settings.durationNormal);
 };

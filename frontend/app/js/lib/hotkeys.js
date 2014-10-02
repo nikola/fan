@@ -106,7 +106,7 @@ ka.lib.handleKeypressToggle = function () {
     } else if (ka.state.currentPageMode == 'grid-compilation') {
         ka.lib.toggleCompilationFocus();
     } else if (ka.state.currentPageMode == 'detail') {
-        /* ka.transition.detail.to.browser(); */
+        ka.lib.browser.toggle();
     } /* else if (ka.state.currentPageMode == 'detail-browser') {
         ka.transition.browser.to.detail();
     } */

@@ -13,6 +13,18 @@ ka.lib.browser = {
         $('#boom-movie-detail').css('display', 'block');
     }
 
+  , toggle: function () {
+        var isHidden = $('#boom-movie-detail-head').data('boom.isHidden'),
+            direction = (isHidden) ? '+' : '-';
+
+        $('#boom-movie-detail-head').data('boom.isHidden', !isHidden);
+
+        ka.state.currentPageMode = 'limbo';
+        $('#boom-movie-detail-head, #boom-movie-detail-browser-focus').velocity({translateZ: 0, bottom: direction + '=247'}, {duration: 360, complete: function () {
+            ka.state.currentPageMode = 'detail';
+        }});
+    }
+
   , focus: {
 
         reposition: function () {

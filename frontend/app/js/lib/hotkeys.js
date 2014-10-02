@@ -121,11 +121,12 @@ ka.lib.handleKeypressSelect = function () {
             if (ka.lib.isCompilationAtFocus()) {
                 ka.transition.grid.to.compilation();
             } else {
-                ka.transition.grid.to.detail();
+                ka.transition.grid.to.detail(ka.lib.getVariantFromGridFocus(), false);
             }
         }
     } else if (ka.state.currentPageMode == 'grid-compilation') {
-        ka.transition.compilation.to.detail();
+        /* ka.transition.compilation.to.detail(); */
+        ka.transition.grid.to.detail(ka.lib.getVariantFromGridFocus()[ka.state.currentCompilationFocusIndex], true);
     } else if (ka.state.currentPageMode == 'detail') {
         if (ka.state.currentDetailButton == 'play') {
             $('#boom-movie-grid-container').css('display', 'none');

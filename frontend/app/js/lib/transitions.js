@@ -94,14 +94,12 @@ ka.transition.grid = {to: {
         );
     }
 
-  , detail: function () {   /* screen state transition: OK */
+  , detail: function (movieObj, isCompilationSelected) {   /* screen state transition: OK */
         ka.state.currentPageMode = 'limbo';
 
-        var movieObj = ka.lib.getVariantFromGridFocus();
+        /* var movieObj = ka.lib.getVariantFromGridFocus(); */
         ka.state.lastGridMovieUuid = movieObj.uuid;
 
-        /* ka.lib.updateDetailPage(movieObj, false); */ /* refresh backdrop, too */
-        $('#boom-movie-detail').data('boom.uuid', movieObj.uuid);
         ka.lib.updateDetailBrowserInfo(movieObj, false);
 
         ka.lib.browser.backdrop.init();
@@ -113,16 +111,23 @@ ka.transition.grid = {to: {
 
         /* ka.lib.updateDetailButtonSelection(); */
 
-        ka.lib.occludeMovieGrid();
+        if (!isCompilationSelected) {
+            ka.lib.occludeMovieGrid();
+        }
 
         ka.lib.browser.show();
 
-        $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail').velocity({translateZ: 0, left: '-=1920'}, {
+        var targetElements = (isCompilationSelected) ? $('#boom-compilation-container, #boom-compilation-focus, #boom-movie-detail') : $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail');
+        targetElements.velocity({translateZ: 0, left: '-=1920'}, {
             duration: ka.settings.durationLong
           , complete: function () {
-                ka.lib.grid.focus.hide();
-                ka.lib.grid.snapshotMovieLookups();
+                if (isCompilationSelected) {
 
+                } else {
+                    ka.lib.grid.focus.hide();
+                }
+
+                ka.lib.grid.snapshotMovieLookups();
                 ka.state.currentDetailBrowserPosterColumn = ka.lib.populateDetailBrowserGrid();
 
                 ka.lib.browser.focus.reposition();
@@ -204,13 +209,17 @@ ka.transition.compilation = {to: {
 
 ka.transition.detail = {to: {
 
-    grid: function () {     /* screen state transition: OK */
+    grid: function (isCompilationSelected) {     /* screen state transition: OK */
         ka.state.currentPageMode = 'limbo';
 
-        ka.lib.grid.focus.show();
+        if (!isCompilationSelected) {
+            ka.lib.grid.focus.show();
+        }
 
-        $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail')
-            .velocity({translateZ: 0, left: '+=1920'}, {duration: ka.settings.durationLong, complete: function () {
+        var targetElements = (isCompilationSelected) ? $('#boom-compilation-container, #boom-compilation-focus, #boom-movie-detail') : $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail');
+        targetElements.velocity({translateZ: 0, left: '+=1920'}, {
+            duration: ka.settings.durationLong
+          , complete: function () {
                 var restoreElements = '#boom-movie-detail-poster-browser';
                 if ($('#boom-movie-detail-head').data('boom.isHidden')) {
                     $('#boom-movie-detail-head').data('boom.isHidden', false).velocity({bottom: '+=247'}, 0);
@@ -223,12 +232,16 @@ ka.transition.detail = {to: {
                     $('#boom-movie-detail-poster-browser').empty();
                 }});
 
-                ka.lib.unoccludeMovieGrid();
+                if (isCompilationSelected) {
+                    ka.state.currentPageMode = 'grid-compilation';
+                } else {
+                    ka.lib.unoccludeMovieGrid();
 
-                ka.lib.recalcMovieGrid();
-                ka.lib.updateMovieGridOnChange();
+                    ka.lib.recalcMovieGrid();
+                    ka.lib.updateMovieGridOnChange();
 
-                ka.state.currentPageMode = 'grid';
+                    ka.state.currentPageMode = 'grid';
+                }
             }});
     }
 

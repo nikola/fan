@@ -307,6 +307,8 @@ ka.lib.updateDetailBrowserInfo = function (movieObj, fade) {
 
 
 ka.lib._updateDetailBrowserInfo = function (movieObj) {
+    $('#boom-movie-detail').data('boom.uuid', movieObj.uuid);
+
     var title = (ka.state.gridSortDisplayLanguage == 'localized') ? movieObj.titleLocalized : movieObj.titleOriginal;
     /* $('#boom-movie-detail-browser-title').html(title + '&nbsp;(' + movieObj.releaseYear + ')'); */
     $('#boom-movie-detail-browser-title').text(title);
@@ -437,7 +439,7 @@ ka.lib._animatePosterMove = function (animateElement, animateProperties, removeE
 ka.lib._triggerBrowserUpdate = function (movieObj) {
     ka.lib.updateDetailBrowserInfo(movieObj, true);
 
-    $('#boom-movie-detail').data('boom.uuid', movieObj.uuid);
+
 
     $('#boom-movie-detail-browser-buttons li.boom-active').velocity({backgroundColor: '#' + (movieObj.primaryPosterColor || '000000')}, ka.settings.durationNormal);
 };
@@ -484,10 +486,10 @@ ka.lib.transitionBackFromDetailScreen = function () {
 
         ka.lib.occludeMovieGrid();
 
-        ka.transition.detail.to.grid();
+        ka.transition.detail.to.grid(false);
     } else if (hasOpenCompilation) {
-        ka.transition.detail.to.compilation();
+        ka.transition.detail.to.grid(true);
     } else {
-        ka.transition.detail.to.grid();
+        ka.transition.detail.to.grid(false);
     }
 };

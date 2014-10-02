@@ -405,7 +405,7 @@ class StreamManager(object):
                         'streamless': movie.streamless,
 
                         'compilation': compilationNameById.get(movie.compilationId),
-                        'isCompiled': compilationMovieCountById.get(movie.compilationId, 0),
+                        'isCompiled': compilationMovieCountById.get(movie.compilationId, 0) > 1,
                     })
             return json.dumps(movieList, separators=(',',':'))
 

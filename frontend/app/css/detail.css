@@ -30,7 +30,7 @@
     position: absolute; top: 1080px; left: -160px; */
     width: 1920px; height: 247px;
     position: absolute; left: 0; /* top: 1080px; */ bottom: 0px; /* top: 833px; */
-    background-color: rgba(0, 0, 0, 0.25);
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.25) 50%, rgba(0, 0, 0, 0.25) 100%);
 
     /* -webkit-transform: translate3d(0, 0, 0);
     -webkit-backface-visibility: hidden;
@@ -55,9 +55,9 @@
 
 #boom-movie-detail-browser-info {
     display: inline-block;
-    width: 1089px; height: 232px;
+    width: 1079px; height: 224px;
     /* float: right; */
-    padding: 15px 0 0 20px;
+    padding: 23px 0 0 30px;
 
     /* background: linear-gradient(to right, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.25) 50%, rgba(0, 0, 0, 0) 100%); */
     /* background-color: rgba(0, 0, 0, 0.25); */
@@ -86,8 +86,8 @@
     margin: 0;
     padding: 0;
 
-    position: absolute;
-    bottom: 20px;
+    /* position: absolute; */
+    /* bottom: 25px; */
 
     font-size: 25px;
     text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.75);
@@ -95,7 +95,25 @@
 
 #boom-movie-detail-browser-additional li {
     display: inline-block;
-    margin-right: 30px;
+    /* margin-right: 30px; */
+    position: absolute;
+    bottom: 24px;
+    }
+
+#boom-detail-release {
+
+    }
+
+#boom-detail-rating {
+    left: 125px;
+    }
+
+#boom-detail-runtime {
+    left: 240px;
+    }
+
+#boom-detail-genres {
+    left: 360px;
     }
 
 #boom-movie-detail-browser-buttons {

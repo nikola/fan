@@ -314,9 +314,13 @@ ka.lib._updateDetailBrowserInfo = function (movieObj) {
         $('#boom-movie-detail-browser-collection').text('');
     }
 
-    var additionalInfo = $('#boom-movie-detail-browser-additional span');
+    var additionalInfo = $('#boom-movie-detail-browser-additional span'),
+        rating = ((movieObj.rating) ? (movieObj.rating / 10) : '?') + '/10';
+    if (rating.length == 4) {
+        rating = rating.replace('/', '.0/');
+    }
     additionalInfo.eq(0).text(movieObj.releaseYear);
-    additionalInfo.eq(1).text((movieObj.rating) ? (movieObj.rating / 10) : '?');
+    additionalInfo.eq(1).text(rating);
     additionalInfo.eq(2).text(movieObj.runtime);
     additionalInfo.eq(3).text(movieObj.genres || '');
 };

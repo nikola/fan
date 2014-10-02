@@ -248,6 +248,12 @@ def b41d0ee34a484413b1af54b061034ee9(request, identifier, color):
     return '', 200
 
 
+@module.route('/movie/<string:identifier>/set-backdrop-cached', methods=('GET',), headers=SERVER_HEADERS, content_type='text/plain')
+def ebc342eb0ab345369f216d6ad82561d8(request, identifier):
+    module.streamManager.setBackdropCachedByMovieUuid(identifier)
+    return '', 200
+
+
 @module.route('/update/configuration', methods=('POST',), headers=SERVER_HEADERS, content_type='text/plain')
 def c33bf6cc87844d439f3b251b52764604(request):
     config = simplejson.loads(urllib.unquote(request.body))

@@ -102,9 +102,9 @@ ka.lib.setPrimaryPosterColor = function () {
         var image = $(this).get(0),
             context = ka.state.canvasContext;
 
-        context.canvas.width = image.width;
-        context.canvas.height = image.height;
-        context.drawImage(image, 0, 0, image.width, image.height);
+        context.canvas.width = image.naturalWidth;
+        context.canvas.height = image.naturalHeight;
+        context.drawImage(image, 0, 0, image.naturalWidth, image.naturalHeight);
 
         gridItem.find('.boom-movie-grid-info-overlay-title').css('backgroundColor', '#' + ka.data.byUuid[uuid].primaryPosterColor);
     } else {
@@ -476,7 +476,8 @@ ka.lib.renderMovieObject = function (movieObj, movieId, posterId, posterWidth, p
         '<div id="' + movieId + '" class="boom-' + infix + '-grid-item boom-grid-item">'
           + '<div class="boom-movie-grid-info-overlay' + extraClass + '">'
               + '<div class="boom-movie-grid-info-overlay-image">'
-                  + '<img class="boom-movie-grid-image" id="' + posterId + '" width="' + posterWidth + '" height="' + posterHeight + '">'
+                  /* + '<img class="boom-movie-grid-image" id="' + posterId + '" width="' + posterWidth + '" height="' + posterHeight + '">' */
+                  + '<img class="boom-movie-grid-image" id="' + posterId + '">'
               + '</div>'
               + '<div class="boom-movie-grid-info-overlay-text">'
                   + '<div class="boom-movie-grid-info-overlay-title">' + title + '</div>'

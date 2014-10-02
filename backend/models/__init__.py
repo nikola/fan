@@ -458,8 +458,12 @@ class StreamManager(object):
 
     def updatePosterColorByMovieUuid(self, identifier, color):
         with self._session() as session:
-            session.query(Movie).filter(Movie.uuid == identifier).update({'primaryColorPoster': color}, synchronize_session=False)
+            session.query(Movie).filter(Movie.uuid == identifier).update({'primaryColorPoster': color}) # , synchronize_session=False)
 
+
+    def setBackdropCachedByMovieUuid(self, identifier):
+        with self._session() as session:
+            session.query(Movie).filter(Movie.uuid == identifier).update({'isBackdropCached': True}) # , synchronize_session=False)
 
     # def getUnidentifiedTracksMovie(self):
     #     with self._session() as session:

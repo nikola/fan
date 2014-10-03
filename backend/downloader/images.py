@@ -93,14 +93,15 @@ def processBacklogEntry(artworkType, key):
         if result:
             pathname = os.path.join(APP_STORAGE_PATH, 'artwork', 'posters', key)
             filename = os.path.join(pathname, 'poster')
+            kwargs = {'creationflags': 0x00000040} # IDLE_PRIORITY_CLASS
 
             for width, height in [(150, 225), (200, 300), (300, 450)]:
                 call([CONVERT_EXE, 'jpg:%s.jpg' % filename, '-colorspace', 'RGB', '-filter', 'RobidouxSharp', '-distort', 'Resize', '%dx%d' % (width, height), '-colorspace', 'sRGB', 'png:%s@%d.png' % (filename, width)],
-                     shell=True)
+                     shell=True, **kwargs)
                 time.sleep(0)
 
                 call([CWEBP_EXE, '-preset', 'picture', '-hint', 'picture', '-sns', '0', '-f', '0', '-q', '0', '-m', '0', '-lossless', '-af', '-noalpha', '-quiet', filename + ('@%d.png' % width), '-o', filename + ('@%d.webp' % width)],
-                     shell=True)
+                     shell=True, **kwargs)
                 time.sleep(0)
         else:
             pass # TODO: handle failure

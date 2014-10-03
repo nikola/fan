@@ -219,7 +219,7 @@ ka.lib._addBrowserGridImage = function (keyPoster, index, unselected) {
     }
 
     if (keyPoster in ka.state.detachedBrowserPosterByKey) {
-        return ka.state.detachedBrowserPosterByKey[keyPoster].appendTo('#boom-movie-detail-poster-browser');
+        return ka.state.detachedBrowserPosterByKey[keyPoster].appendTo('#boom-movie-detail-poster-browser').data('boom.index', index);
     } else {
         return $('<img>', {
             src: '/movie/poster/' + keyPoster + '-150.image'
@@ -356,7 +356,7 @@ ka.lib.moveDetailBrowserLeft = function () {
 
         var keyPoster = snapshot[firstPosterIndex - 1].keyPoster;
         if (keyPoster in ka.state.detachedBrowserPosterByKey) {
-            posters.eq(0).replaceWith(ka.state.detachedBrowserPosterByKey[keyPoster]);
+            posters.eq(0).replaceWith(ka.state.detachedBrowserPosterByKey[keyPoster].data('boom.index', firstPosterIndex - 1));
         } else {
             posters.eq(0).attr('src', '/movie/poster/' + keyPoster + '-150.image').data('boom.index', firstPosterIndex - 1);
         }

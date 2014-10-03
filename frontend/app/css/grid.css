@@ -246,8 +246,7 @@
 */
 
 .boom-movie-grid-info-overlay-title {
-    color: white;
-    background-color: black;
+    color: white; background-color: black;
 
     text-align: center;
     font-size: 16px;
@@ -255,10 +254,6 @@
     padding: 10px 4px;
     width: 200px;
     margin: 130px 10px 0 30px;
-
-    /* -webkit-transform: translate3d(0, -100%, 0); */
-    -webkit-transform: translate(0, -100%);
-    -webkit-transition: all 0.35s ease-in-out;
     }
 
 .boom-compilation-grid-item .boom-movie-grid-info-overlay-title {
@@ -275,17 +270,6 @@
     top: 0; right: 0; bottom: 0; left: 0;
     text-align: center;
     background: rgba(0, 0, 0, 0.5);
-
-    -webkit-transition: all 0.35s ease-in-out;
-    /* -webkit-transform: translate3d(0, 0, 0);
-    -webkit-backface-visibility: hidden; */
-    -webkit-transform: translate(0, 0);
-
-    }
-
-.active .boom-movie-grid-info-overlay-text {
-    visibility: visible;
-    opacity: 0.9;
     }
 
 .boom-movie-grid-info-overlay-text-additional {
@@ -299,10 +283,6 @@
     text-align: center;
 
     position: relative;
-
-    /* -webkit-transform: translate3d(0, -100%, 0); */
-    -webkit-transform: translate(0, -100%);
-    -webkit-transition: all 0.35s 0.1s linear;
     }
 
 .boom-compilation-grid-item .boom-movie-grid-info-overlay-text-additional {
@@ -311,7 +291,24 @@
     margin-top: 32px;
     }
 
-.active .boom-movie-grid-info-overlay-title, .active .boom-movie-grid-info-overlay-text-additional {
-    /* -webkit-transform: translate3d(0, 0, 0); */
+.boom-movie-grid-info-overlay-text {
     -webkit-transform: translate(0, 0);
     }
+
+.boom-movie-grid-info-overlay-title, .boom-movie-grid-info-overlay-text-additional {
+    -webkit-transform: translate(0, -100%);
+    }
+
+.boom-movie-grid-info-overlay-text, .boom-movie-grid-info-overlay-text div {
+    -webkit-transition: all 0.36s ease-in-out;
+    }
+
+.active .boom-movie-grid-info-overlay-text {
+    visibility: visible;
+    opacity: 0.9;
+    }
+
+.active .boom-movie-grid-info-overlay-title, .active .boom-movie-grid-info-overlay-text-additional {
+    -webkit-transform: translate(0, 0);
+    }
+

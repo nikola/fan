@@ -19,7 +19,7 @@ import win32file
 from settings import DEBUG
 from settings import LOG_CONFIG
 from models import initialize as initStreamManager
-from utils.system import isCompatiblePlatform, isNtfsFilesystem, getScreenResolution, isDesktopCompositionEnabled
+from utils.system import isCompatiblePlatform, isNtfsFilesystem, getScreenResolution, isDesktopCompositionEnabled, setPriority
 from utils.agent import getUserAgent
 from utils.net import getCertificateLocation
 from utils.fs import getLogFileHandler
@@ -170,19 +170,18 @@ if __name__ == '__main__':
         serverPort = 0xe95d # 59741
         certificateLocation = getCertificateLocation()
 
-        # Omni-directional message queue between boot process, collector process and server process.
-        interProcessQueue = InterProcessQueue()
-
-        downloader = startDownloader(interProcessQueue)
-        # analyzer = startAnalyzer(interProcessQueue)
-        player = startPlayer(interProcessQueue)
-
         arguments = (getUserAgent(), serverPort, uuid4().hex, uuid4().hex, False, userConfig, useExternalConfig)
 
-        # Start process, but spawn file scanner and watcher only after receiving a kick-off event from the presenter.
+        interProcessQueue = InterProcessQueue()
+
+        setPriority('idle')
+        downloader = startDownloader(interProcessQueue)
+        player = startPlayer(interProcessQueue)
+
+        setPriority('normal')
         orchestrator = startOrchestrator(interProcessQueue, certificateLocation, *arguments)
 
-        # Start the blocking presenter process.
+        setPriority('higher')
         present(_shutdown, *arguments)
 
         # TODO: implement SIGINT handler

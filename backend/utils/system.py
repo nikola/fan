@@ -14,12 +14,19 @@ from hashlib import md5 as MD5
 from array import array
 
 import win32api
+import win32con
+import win32process
 
 from settings import BASE_DIR, EXE_PATH, ASSETS_PATH
 
 
-TRIDENT_ID = None
+PRIORITIES = {
+    'idle': win32process.IDLE_PRIORITY_CLASS,
+    'normal': win32process.NORMAL_PRIORITY_CLASS,
+    'higher': win32process.ABOVE_NORMAL_PRIORITY_CLASS,
+}
 
+TRIDENT_ID = None
 
 VERSION_TO_TOKEN = {
     '6.3':  'Windows 8.1',
@@ -52,6 +59,12 @@ class _Popen(multiprocessing.forking.Popen):
 
 class Process(multiprocessing.Process):
     _Popen = _Popen
+
+
+def setPriority(priority='normal'):
+    pid = win32api.GetCurrentProcessId()
+    handle = win32api.OpenProcess(win32con.PROCESS_ALL_ACCESS, True, pid)
+    win32process.SetPriorityClass(handle, PRIORITIES.get(priority)) # , win32process.NORMAL_PRIORITY_CLASS))
 
 
 def getSystemVersion():

@@ -71,6 +71,7 @@ ka.state = {
 
   , currentDetailBrowserPosterColumn: null
   , uncachedBackdropDelayTimer: null
+  , detachedBrowserPosterByKey: {}
 
   , setOfKnownPosters: {}
   , setOfUnknownPosters: {}

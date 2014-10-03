@@ -218,13 +218,17 @@ ka.lib._addBrowserGridImage = function (keyPoster, index, unselected) {
         css.webkitFilter = 'saturate(0%) opacity(0.5)';
     }
 
-    return $('<img>', {
-        src: '/movie/poster/' + keyPoster + '-150.image'
-      , width: 150
-      , height: 225
-      , data: {'boom.index': index}
-      , css: css
-    }).appendTo('#boom-movie-detail-poster-browser');
+    if (keyPoster in ka.state.detachedBrowserPosterByKey) {
+        return ka.state.detachedBrowserPosterByKey[keyPoster].appendTo('#boom-movie-detail-poster-browser');
+    } else {
+        return $('<img>', {
+            src: '/movie/poster/' + keyPoster + '-150.image'
+          , width: 150
+          , height: 225
+          , data: {'boom.index': index}
+          , css: css
+        }).appendTo('#boom-movie-detail-poster-browser');
+    }
 };
 
 ka.lib._addBrowserGridDummy = function () {
@@ -350,7 +354,12 @@ ka.lib.moveDetailBrowserLeft = function () {
     } else if (firstPosterIndex > 0) {
         ka.state.currentPageMode = 'limbo';
 
-        posters.eq(0).attr('src', '/movie/poster/' + snapshot[firstPosterIndex - 1].keyPoster + '-150.image').data('boom.index', firstPosterIndex - 1);
+        var keyPoster = snapshot[firstPosterIndex - 1].keyPoster;
+        if (keyPoster in ka.state.detachedBrowserPosterByKey) {
+            posters.eq(0).replaceWith(ka.state.detachedBrowserPosterByKey[keyPoster]);
+        } else {
+            posters.eq(0).attr('src', '/movie/poster/' + keyPoster + '-150.image').data('boom.index', firstPosterIndex - 1);
+        }
 
         ka.lib.browser.backdrop.loadPessimistic(snapshot[currentPosterIndex - 1]);
         setTimeout(function () {
@@ -429,7 +438,15 @@ ka.lib._animatePosterMove = function (animateElement, animateProperties, removeE
             previouslyFocusedPoster.style.webkitFilter = 'saturate(0%) opacity(0.5)';
             upcomingFocusedPoster.style.webkitFilter = null;
 
-            removeElement.remove();
+            var src = removeElement.attr('src');
+            if (src) {
+                ka.state.detachedBrowserPosterByKey[src.match(/\movie\/poster\/(.*?)-\d{2,3}\.image/)[1]] = removeElement.detach().css({
+                    width: 150
+                  , marginLeft: 10
+                });
+            } else {
+                removeElement.remove();
+            }
 
             ka.state.currentPageMode = 'detail';
     }});

@@ -107,9 +107,7 @@ ka.lib.handleKeypressToggle = function () {
         ka.lib.toggleCompilationFocus();
     } else if (ka.state.currentPageMode == 'detail') {
         ka.lib.browser.toggle();
-    } /* else if (ka.state.currentPageMode == 'detail-browser') {
-        ka.transition.browser.to.detail();
-    } */
+    }
 };
 
 
@@ -125,7 +123,6 @@ ka.lib.handleKeypressSelect = function () {
             }
         }
     } else if (ka.state.currentPageMode == 'grid-compilation') {
-        /* ka.transition.compilation.to.detail(); */
         ka.transition.grid.to.detail(ka.lib.getVariantFromGridFocus()[ka.state.currentCompilationFocusIndex], true);
     } else if (ka.state.currentPageMode == 'detail') {
         if (ka.state.currentDetailButton == 'play') {
@@ -149,9 +146,7 @@ ka.lib.handleKeypressSelect = function () {
                 ka.lib.startTrailerPlayer(ka.data.byUuid[ka.state.lastGridMovieUuid].trailer);
             }});
         }
-    } /* else if (ka.state.currentPageMode == 'detail-browser') {
-        ka.transition.browser.to.detail();
-    } */
+    }
 };
 
 
@@ -159,10 +154,7 @@ ka.lib.handleKeypressBack = function () {
     if (ka.state.currentPageMode == 'config') {
         ka.transition.menu.to.grid();
     } else if (ka.state.currentPageMode == 'detail') {
-        ka.lib.transitionBackFromDetailScreen();
-    /* } else if (ka.state.currentPageMode == 'detail-browser') { */
-        /* ka.transition.browser.to.detail(); */
-        /* ka.lib.transitionBackFromDetailScreen(); */
+        ka.transition.detail.to.grid();
     } else if (ka.state.currentPageMode == 'grid-compilation') {
         ka.transition.compilation.to.grid();
     } else if (ka.state.currentPageMode == 'grid') {

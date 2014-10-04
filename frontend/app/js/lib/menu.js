@@ -63,15 +63,23 @@ ka.lib.executeMenuSelection = function () {
         }
 
         if (ka.state.gridSortCriterion != lastCriterion || ka.state.gridSortOrder != lastOrder) {
-            ka.lib.unoccludeMovieGrid();
-
-            ka.lib.updateMovieGridRefocused(false, function () {
-                ka.state.desaturationImageCache = {};
-            });
-
-            $('#boom-poster-focus').velocity({translateZ: 0, left: '+=780'}, 0);
-
-            ka.lib.occludeMovieGrid();
+            ka.lib.updateDesaturatedGrid();
         }
     }
+};
+
+
+ka.lib.updateDesaturatedGrid = function () {
+    var uuid = ka.lib.getFirstMovieObjectFromCoord(ka.state.gridFocusX, ka.lib.getGridFocusAbsoluteY()).uuid;
+
+    ka.lib.recalcMovieGrid();
+    ka.lib.recalcPositionByUuid(uuid);
+
+    ka.state.desaturationImageCache = {};
+    ka.lib.updateMovieGridOnChange();
+
+    ka.lib.repositionMovieGrid();
+    ka.lib.repositionMovieFocus();
+
+    $('#boom-poster-focus').velocity({translateZ: 0, left: '+=780'}, 0);
 };

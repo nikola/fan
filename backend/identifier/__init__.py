@@ -196,7 +196,7 @@ def getEditVersionFromFilename(filename, year):
     return editVersion
 
 
-def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary, yearSecondary):
+def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary, yearSecondary, pollingCallback):
     if yearPrimary is not None and yearSecondary is None:
         searchTitlePrimary, searchTitleSecondary = titlePrimary, titleSecondary
         searchYearPrimary, searchYearSecondary = yearPrimary, yearSecondary
@@ -220,6 +220,7 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
 
     try:
         logger.info('Trying to identify "%s" at themoviedb.org ...' % searchTitlePrimary)
+        pollingCallback()
 
         url = 'https://api.themoviedb.org/3/search/movie'
         params = {
@@ -232,51 +233,34 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
         if searchYearPrimary is not None:
             params['year'] = searchYearPrimary
 
-        response = getThrottledJsonResponse(url, params)
+        response = getThrottledJsonResponse(url, params, pollingCallback)
 
         if response['total_results'] == 0 and params.has_key('year'):
             logger.warning('Movie with title "%s" not found at themoviedb.org, omitting year ...', searchTitlePrimary)
+            pollingCallback()
             del params['year']
-            response = getThrottledJsonResponse(url, params)
+            response = getThrottledJsonResponse(url, params, pollingCallback)
+            pollingCallback()
 
         if response['total_results'] == 0 and searchTitleSecondary is not None:
             logger.warning('Movie with title "%s" not found at themoviedb.org, retrying with title "%s" ...', searchTitlePrimary, searchTitleSecondary)
+            pollingCallback()
             params['query'] = searchTitleSecondary.encode('utf-8')
             if searchYearSecondary is not None:
                 params['year'] = searchYearSecondary
-            response = getThrottledJsonResponse(url, params)
-
-        # if response['total_results'] == 0:
-        #     logger.warning('Movie with title "%s" still not found at themoviedb.org, retrying with title "%s" and search type "ngram" ...', searchTitleSecondary, searchTitlePrimary)
-        #     params['query'] = searchTitlePrimary.encode('utf-8')
-        #     params['search_type'] = 'ngram'
-        #     if searchYearPrimary is not None:
-        #         params['year'] = searchYearPrimary
-        #     response = getThrottledJsonResponse(url, params)
-
-        # if response['total_results'] == 0 and searchTitleSecondary is not None:
-        #     logger.warning('Movie with title "%s" still not found at themoviedb.org, retrying with title "%s" and search type "ngram" ...', searchTitlePrimary, searchTitleSecondary)
-        #     params['query'] = searchTitleSecondary.encode('utf-8')
-        #     if searchYearSecondary is not None:
-        #         params['year'] = searchYearSecondary
-        #     response = getThrottledJsonResponse(url, params)
-
-        # if response['total_results'] == 0:
-        #     logger.warning('Movie with title "%s" still not found at themoviedb.org, retrying with title "%s", omitting year ...', searchTitleSecondary, searchTitlePrimary)
-        #     params['query'] = searchTitlePrimary.encode('utf-8')
-        #     if params.has_key('year'):
-        #         del params['year']
-        #     # del params['search_type']
-        #     response = getThrottledJsonResponse(url, params)
+            response = getThrottledJsonResponse(url, params, pollingCallback)
+            pollingCallback()
 
         if response['total_results'] == 0 and searchTitleSecondary is not None:
             logger.warning('Movie with title "%s" still not found at themoviedb.org, retrying with title "%s", omitting year ...', searchTitlePrimary, searchTitleSecondary)
+            pollingCallback()
             params['query'] = searchTitleSecondary.encode('utf-8')
             del params['year']
-            response = getThrottledJsonResponse(url, params)
+            response = getThrottledJsonResponse(url, params, pollingCallback)
 
         if response['total_results'] == 0:
             logger.warning('Movie with title "%s" not found at themoviedb.org, giving up for now.', searchTitlePrimary)
+            pollingCallback()
         else:
             # resultList = sorted(response['results'], key=itemgetter('id'))
             resultList = [result for result in response['results'] if result.get('backdrop_path') is not None] #  and result.get('vote_count') > 0]
@@ -289,16 +273,18 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
                     'language': language,
                     'append_to_response': 'trailers',
                 }
-                response = getThrottledJsonResponse(url, params)
+                response = getThrottledJsonResponse(url, params, pollingCallback)
 
                 if response.get('poster_path', None) is not None:
                     logger.info('Movie identified at themoviedb.org as "%s" with ID: %d.' % (response['original_title'], movieId))
+                    pollingCallback()
 
                     overview = response.get('overview', None)
                     if overview is None:
                         logger.info('Movie has no overview in locale "%s", falling back to English ...' % language)
+                        pollingCallback()
                         params['language'] = 'en'
-                        response = getThrottledJsonResponse(url, params)
+                        response = getThrottledJsonResponse(url, params, pollingCallback)
 
                     # Fetch rating from IMDB instead of TheMovieDB.
                     rating = None
@@ -306,6 +292,7 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
                     if idImdb is not None:
                         url = 'http://www.imdb.com/title/%s/' % idImdb
                         responseImdb = makeUnthrottledGetRequest(url)
+                        pollingCallback()
                         if responseImdb is not None:
                             ratingSearch = re.search('<span itemprop="ratingValue">\s*([^<]+)', responseImdb.text)
                             if ratingSearch is not None:
@@ -355,5 +342,6 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
                     )
     except (JSONDecodeError, AttributeError, TypeError, KeyError):
         logger.error('Error while querying themoviedb.org for "%s" or "%s".', searchTitlePrimary, searchTitleSecondary)
+        pollingCallback()
 
     return record

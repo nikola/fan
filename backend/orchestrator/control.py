@@ -18,7 +18,6 @@ from settings import DEBUG
 from settings import APP_STORAGE_PATH
 from orchestrator.urls import module as appModule
 from orchestrator.pubsub import PubSub
-from downloader.images import downloadArtwork
 from models import StreamManager
 from identifier import getStreamRecords, getFixedRecords, identifyMovieByTitleYear
 from utils.config import getCurrentUserConfig, getOverlayConfig, saveCurrentUserConfig
@@ -48,7 +47,7 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
 
     def _processRequests():
         if engine is not None:
-            engine.poll(poll_timeout=0.020)
+            engine.poll(poll_timeout=0.005)
         time.sleep(0)
 
     # logging.basicConfig(level=logging.INFO,
@@ -72,10 +71,8 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
     syncFinished = False
     # streamWatcherStarted = False
     isDownloaderIdle = False
-    # isImportingDemoMovies = False
 
     appModule.interProcessQueue = queue
-    # appModule.presented = False
     appModule.streamManager = streamManager
     appModule.bootToken = bootToken
     appModule.userConfig = userConfig
@@ -184,13 +181,15 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                 if pubSubReference is not None and pubSubReference.connected:
                     movieUuid = command.replace('orchestrator:poster-refresh:', '')
                     pubSubReference.write(unicode('["movie:poster:refresh", "%s"]' %movieUuid))
+                    _processRequests()
 
                 queue.task_done()
             else:
                 queue.task_done()
                 queue.put(command)
 
-                time.sleep(0.015)
+                # time.sleep(0.015)
+                _processRequests()
         except Empty:
             _processRequests()
 
@@ -204,7 +203,7 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                     _processRequests()
 
                     if not streamManager.isStreamKnown(streamLocation):
-                        # if not isImportingDemoMovies:
+                        _processRequests()
                         if not appModule.userConfig.get('isDemoMode', False):
                             logger.info('Found new supported file: %s' % streamLocation)
                         else:
@@ -216,8 +215,8 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                             userConfig.get('language', 'en'),
                             basedataFromDir.get('title'), basedataFromDir.get('year'),
                             basedataFromStream.get('title'), basedataFromStream.get('year'),
+                            _processRequests,
                         )
-                        _processRequests()
 
                         if movieRecord is None:
                             logger.warning('Could not identify file: %s' % streamLocation)
@@ -229,6 +228,7 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                                     os.makedirs(pathname)
                                 except OSError:
                                     pass
+                                _processRequests()
                                 with open(os.path.join(pathname, 'source.url'), 'wb+') as fp:
                                     fp.write('[InternetShortcut]\r\nURL=%soriginal%s\r\n' % (appModule.imageBaseUrl, movieRecord['url' + imageType]))
                                 _processRequests()
@@ -239,18 +239,10 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                             movieUuid = streamManager.addMovieStream(movieRecord, streamLocation) # TODO: re-wire stream to correct movie if necessary
                             _processRequests()
 
-                            # backdropUrlTail = movieRecord.get('urlBackdrop')
-                            # backdropUrlFull = '%soriginal%s' % (appModule.imageBaseUrl, backdropUrlTail)
-                            # backdropId = backdropUrlTail.replace('/', '').replace('.jpg', '')
-                            # downloadArtwork(backdropUrlFull, 'backdrop', backdropId, _processRequests, movieRecord.get('title') or movieRecord.get('original_title'))
-
-                            # posterId = movieRecord.get('urlPoster').replace('/', '').replace('.jpg', '')
-                            # closing(open(os.path.join(APP_STORAGE_PATH, 'backlog', posterId), 'w+'))
-
-
                             if pubSubReference.connected:
                                 pubSubReference.write(unicode('["receive:movie:item", %s]' % streamManager.getMovieAsJson(movieUuid)))
                                 _processRequests()
+
                             if isDownloaderIdle:
                                 queue.put('downloader:resume')
 
@@ -259,15 +251,9 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
 
                 syncFinished = None
 
-                # queue.put('orchestrator:watch')
-                # queue.put('downloader:start')
                 queue.put('downloader:process:posters')
 
             _processRequests()
-            # elif syncFinished is False:
-            #     time.sleep(0.015)
-            # else:
-            #     if engine is not None: engine.poll(poll_timeout=0.015)
 
 
 def start(*args):

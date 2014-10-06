@@ -31,7 +31,14 @@ LAST_TMDB_ACCESS = time.clock()
 TMDB_RESPONSE_CACHE = {}
 
 
-def getThrottledJsonResponse(url, params):
+def getThrottledJsonResponse(url, params, pollingCallback=None):
+
+    def _yield():
+        if pollingCallback is not None:
+            pollingCallback()
+        else:
+            time.sleep(0)
+
     global TMDB_RESPONSE_CACHE, LAST_TMDB_ACCESS
 
     tuples = []
@@ -42,6 +49,7 @@ def getThrottledJsonResponse(url, params):
     key = '%s;%s' % (url, ';'.join(tuples))
 
     if not TMDB_RESPONSE_CACHE.has_key(key):
+        _yield()
         now = time.clock()
         diff = now - LAST_TMDB_ACCESS
 
@@ -57,6 +65,7 @@ def getThrottledJsonResponse(url, params):
             logger.error('Could not GET %s' % url)
             return None
         else:
+            _yield()
             try:
                 TMDB_RESPONSE_CACHE[key] = response.json()
             except JSONDecodeError:

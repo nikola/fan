@@ -253,7 +253,7 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
 
                 syncFinished = None
 
-                queue.put('downloader:process:posters')
+                queue.put('downloader:missing:artwork')
 
             _processRequests()
 

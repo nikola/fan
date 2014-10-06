@@ -9,7 +9,7 @@ import time
 from utils.system import Process
 from Queue import Empty
 
-from downloader.images import downloadArtwork, getBacklogEntry, processBacklogEntry
+from downloader.images import getBacklogEntry, processBacklogEntry
 # from settings import APP_STORAGE_PATH
 # from models import StreamManager
 
@@ -18,22 +18,23 @@ from . import logger
 
 def _startDownloader(queue):
     # downloaderStreamManager = StreamManager()
-    processMissingBackdrops = False
-    processUnscaledPosters = False
-    # imageBaseUrl = None
     isIdle = True
+    processMissingArtwork = False
+    # processUnscaledPosters = False
+    # imageBaseUrl = None
+
 
     while True:
         try:
             command = queue.get_nowait()
-            if command == 'downloader:process:backdrops':
-                processMissingBackdrops = True
-                isIdle = False
-                # logger.debug('Downloader main loop started.')
-
-                queue.task_done()
-            elif command == 'downloader:process:posters':
-                processUnscaledPosters = True
+            # if command == 'downloader:process:backdrops':
+            #     processMissingBackdrops = True
+            #     isIdle = False
+            #     # logger.debug('Downloader main loop started.')
+            #
+            #     queue.task_done()
+            if command == 'downloader:missing:artwork':
+                processMissingArtwork = True
                 isIdle = False
                 # logger.debug('Downloader main loop started.')
 
@@ -65,13 +66,14 @@ def _startDownloader(queue):
         except Empty:
             if isIdle:
                 time.sleep(5)
-            elif not processMissingBackdrops:
+            elif not processMissingArtwork:
                 time.sleep(1)
             else:
                 missingBackdrop = getBacklogEntry('backdrop')
                 if missingBackdrop is not None:
                     processBacklogEntry('backdrop', missingBackdrop) # TODO: handle network errors
-                elif processUnscaledPosters:
+                # elif processUnscaledPosters:
+                else:
                     unscaledPoster = getBacklogEntry('poster')
                     if unscaledPoster is not None:
                         if processBacklogEntry('poster', unscaledPoster):  # TODO: handle network errors

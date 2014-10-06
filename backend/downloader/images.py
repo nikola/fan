@@ -26,10 +26,13 @@ CONVERT_EXE = os.path.join(ASSETS_PATH, 'tools', 'convert.exe')
 CWEBP_EXE = os.path.join(ASSETS_PATH, 'tools', 'cwebp.exe')
 
 
-def downloadArtwork(imageUrl, imageType, imageId):
+def downloadArtwork(imageUrl, imageType, imageId, pollingCallback=None):
 
     def _yield(period=0):
-        time.sleep(period)
+        if pollingCallback is not None:
+            pollingCallback()
+        else:
+            time.sleep(period)
 
     imageName = imageType[:imageType.find('@')] if imageType.find('@') != -1 else imageType
 
@@ -83,9 +86,16 @@ def getBacklogEntry(artworkType):
     return backlogItems[0] if len(backlogItems) else None
 
 
-def processBacklogEntry(artworkType, key):
+def processBacklogEntry(artworkType, key, pollingCallback=None):
+
+    def _yield(period=0):
+        if pollingCallback is not None:
+            pollingCallback()
+        else:
+            time.sleep(period)
+
     link = open(os.path.join(APP_STORAGE_PATH, 'artwork', artworkType + 's', key, 'source.url'), 'rU').read()
-    time.sleep(0)
+    _yield()
     sourceUrl = link[link.find('=') + 1:].strip()
 
     result = downloadArtwork(sourceUrl, artworkType, key)
@@ -98,14 +108,15 @@ def processBacklogEntry(artworkType, key):
             for width, height in [(150, 225), (200, 300), (300, 450)]:
                 call([CONVERT_EXE, 'jpg:%s.jpg' % filename, '-colorspace', 'RGB', '-filter', 'RobidouxSharp', '-distort', 'Resize', '%dx%d' % (width, height), '-colorspace', 'sRGB', 'png:%s@%d.png' % (filename, width)],
                      shell=True, **kwargs)
-                time.sleep(0)
+                _yield()
 
                 call([CWEBP_EXE, '-preset', 'picture', '-hint', 'picture', '-sns', '0', '-f', '0', '-q', '0', '-m', '0', '-lossless', '-af', '-noalpha', '-quiet', filename + ('@%d.png' % width), '-o', filename + ('@%d.webp' % width)],
                      shell=True, **kwargs)
-                time.sleep(0)
+                _yield()
         else:
             pass # TODO: handle failure
 
     if result:
         os.remove(os.path.join(APP_STORAGE_PATH, 'backlog', artworkType + 's', key))
+        _yield()
     return result

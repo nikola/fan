@@ -139,7 +139,8 @@ ka.lib.setPrimaryPosterColor = function () {
         setTimeout(ka.lib.processPixelArray, 0);
     }
 
-    /* TODO: find workaround for animation hiccups: gridItem.find('.boom-movie-grid-info-overlay').removeClass('active'); */
+    /* TODO: find workaround for animation hiccups:  */
+    gridItem.find('.boom-movie-grid-info-overlay').removeClass('active');
     ka.state.setOfKnownPosters[uuid] = true;
     if (uuid in ka.state.setOfUnknownPosters) {
         delete ka.state.setOfUnknownPosters[uuid];
@@ -466,7 +467,7 @@ ka.lib.renderMovieGridCell = function (movie, operation, context) {
 
 ka.lib.renderMovieObject = function (movieObj, movieId, posterId, posterWidth, posterHeight, infix, onLoaded, onError) {
     if (movieObj.uuid in ka.state.setOfUnknownPosters || !(movieObj.uuid in ka.state.setOfKnownPosters)) {
-        var /* extraClass =  ' active', */
+        var extraClass =  ' active',
             title = ka.lib.getLocalizedTitle(movieObj, true),
             additional = movieObj.releaseYear + '<br>' + movieObj.runtime;
     } else {

@@ -14,11 +14,12 @@ from pants import Engine as HttpServerEngine
 from pants.http import HTTPServer
 from pants.web import Application
 
+from models import StreamManager
 from settings import DEBUG
 from settings import APP_STORAGE_PATH
 from orchestrator.urls import module as appModule
 from orchestrator.pubsub import PubSub
-from models import StreamManager
+from downloader.images import processBacklogEntry
 from identifier import getStreamRecords, getFixedRecords, identifyMovieByTitleYear
 from utils.config import getCurrentUserConfig, getOverlayConfig, saveCurrentUserConfig
 from utils.net import deleteResponseCache
@@ -235,6 +236,7 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                                 closing(open(os.path.join(APP_STORAGE_PATH, 'backlog', imageType.lower() + 's', movieRecord['key' + imageType]), 'w+'))
                                 _processRequests()
                                 del movieRecord['url' + imageType]
+                            processBacklogEntry('backdrop', movieRecord.get('keyBackdrop'), _processRequests)
 
                             movieUuid = streamManager.addMovieStream(movieRecord, streamLocation) # TODO: re-wire stream to correct movie if necessary
                             _processRequests()

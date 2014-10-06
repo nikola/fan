@@ -244,6 +244,8 @@ ka.transition.detail = {to: {
             ka.lib.recalcPositionByUuid(currentDetailMovieUuid);
             ka.lib.repositionMovieGrid();
             ka.lib.repositionMovieFocus(true); /* offscreen */
+
+            ka.lib.grid.occlude();
         }
 
         if (!hasOpenCompilation) {
@@ -254,6 +256,8 @@ ka.transition.detail = {to: {
         targetElements.velocity({translateZ: 0, left: '+=1920'}, {
             duration: ka.settings.durationLong
           , complete: function () {
+                ka.lib.grid.unocclude();
+
                 var restoreElements = '#boom-movie-detail-poster-browser';
                 if ($('#boom-movie-detail-head').data('boom.isHidden')) {
                     $('#boom-movie-detail-head').data('boom.isHidden', false).velocity({bottom: '+=247'}, 0);

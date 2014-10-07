@@ -108,11 +108,32 @@ ka.lib.browser = {
             });
         }
 
-      , hide: function () {
+      , expandUp: function () {
+            var poster = $('#boom-movie-detail-poster-browser :nth-child(' + (ka.state.currentDetailBrowserPosterColumn + 2) + ')'),
+                position = poster.offset();
+            poster.clone()
+                .css({position: 'absolute', bottom: 1080 - position.top - 225, right: 1920 - position.left - 150})
+                .on('load', function () {
+                    $(this).off().velocity({translateZ: 0, width: 300, height: 450, right: 10}, ka.settings.durationShort);
+                    $('#boom-movie-detail-head').velocity({translateZ: 0, bottom: 0}, ka.settings.durationShort);
+                    $('#boom-movie-detail-browser-title').velocity({translateZ: 0, width: 1580, height: 60}, ka.settings.durationShort);
+                    $('#boom-movie-detail-browser-collection').velocity({translateZ: 0, opacity: 0}, {display: 'none', duration: ka.settings.durationShort});
+                    $('#boom-movie-detail-browser-additional li').velocity({translateZ: 0, bottom: '+=105'}, ka.settings.durationShort);
+                    $('#boom-detail-browser-description').velocity({translateZ: 0, top: '-=120'}, ka.settings.durationShort);
+                    $('#boom-movie-detail-poster-browser, #boom-movie-detail-browser-focus').velocity({translateZ: 0, bottom: '+=247px', opacity: 0}, {display: 'none', duration: ka.settings.durationShort});
+
+                    /* linear-gradient(to right, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.25) 50%, rgba(0, 0, 0, 0.25) 100%),linear-gradient(to top, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.25) 75%, rgba(0, 0, 0, 0) 100%); */
+                })
+                .attr('src', poster.attr('src').replace('-150.image', '-300.image'))
+                .appendTo('#boom-movie-detail');
+        }
+
+      , contractDown: function () {
 
         }
 
     }
+
 };
 
 
@@ -332,6 +353,8 @@ ka.lib._updateDetailBrowserInfo = function (movieObj) {
     additionalInfo.eq(1).text(rating);
     additionalInfo.eq(2).text(movieObj.runtime);
     additionalInfo.eq(3).text(movieObj.genres || '');
+
+    $('#boom-detail-browser-description').text(movieObj.storyline);
 };
 
 
@@ -455,7 +478,7 @@ ka.lib._animatePosterMove = function (animateElement, animateProperties, removeE
 ka.lib._triggerBrowserUpdate = function (movieObj) {
     ka.lib.updateDetailBrowserInfo(movieObj, true);
 
-    $('#boom-movie-detail-browser-buttons li.boom-active').velocity({backgroundColor: '#' + (movieObj.primaryPosterColor || '000000')}, ka.settings.durationNormal);
+    /* $('#boom-movie-detail-browser-buttons li.boom-active').velocity({backgroundColor: '#' + (movieObj.primaryPosterColor || '000000')}, ka.settings.durationNormal); */
 };
 
 

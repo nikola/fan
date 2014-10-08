@@ -27,7 +27,7 @@ ka.lib.browser = {
 
   , setupExpansion: function () {
         if (!ka.lib.browser.isExpanded() && !ka.lib.browser.isHidden()) {
-            var selectedPoster = $('#boom-movie-detail-poster-browser :nth-child(' + (ka.state.currentDetailBrowserPosterColumn + 2) + ')'),
+            var selectedPoster = $('#boom-detail-browser :nth-child(' + (ka.state.currentDetailBrowserPosterColumn + 2) + ')'),
                 snapshot = ka.lib.grid.getMovieListSnapshot(),
                 movieObj = snapshot[selectedPoster.data('boom.index')];
             ka.lib.browser.poster.setSource(movieObj.keyPoster);
@@ -39,22 +39,13 @@ ka.lib.browser = {
   , expandUp: function () {
         ka.state.currentPageMode = 'limbo';
 
-        $('#boom-movie-detail-browser-title').velocity({translateZ: 0, width: 1580, height: 60}, ka.settings.durationNormal);
+        $('#boom-detail-title').velocity({translateZ: 0, width: 1580, height: '-=100'}, ka.settings.durationNormal);
+        $('#boom-detail-collection').velocity({translateZ: 0, bottom: '+=100', opacity: 0}, {duration: ka.settings.durationNormal, display: 'none'});
 
-        var collectionElement = $('#boom-movie-detail-browser-collection'),
-            collectionWidth = parseInt(collectionElement.css('width'));
-        if (collectionWidth > 0) {
-            collectionElement.velocity({translateZ: 0, bottom: 352, left: 360}, {duration: ka.settings.durationNormal});
-            $('#boom-detail-release, #boom-detail-rating, #boom-detail-runtime').velocity({translateZ: 0, bottom: '+=105'}, ka.settings.durationNormal);
-            $('#boom-detail-genres').velocity({translateZ: 0, bottom: '+=105', left: '+=' + (40 + collectionWidth)}, ka.settings.durationNormal);
-        } else {
-            $('#boom-movie-detail-browser-collection').css('display', 'none');
-            $('#boom-movie-detail-browser-additional').velocity({translateZ: 0, bottom: '+=105'}, ka.settings.durationNormal);
-        }
+        $('#boom-detail-storyline').velocity({translateZ: 0, top: '-=120'}, ka.settings.durationNormal);
 
-        $('#boom-detail-browser-description').velocity({translateZ: 0, top: '-=120'}, ka.settings.durationNormal);
-
-        $('#boom-movie-detail-poster-browser, #boom-detail-focus').velocity({translateZ: 0, bottom: '+=247px', opacity: 0}, {display: 'none', duration: ka.settings.durationNormal});
+        $('#boom-detail-browser').velocity({translateZ: 0, bottom: '+=247px', opacity: 0}, {display: 'none', duration: ka.settings.durationNormal});
+        $('#boom-detail-focus').velocity({translateZ: 0, bottom: '+=470px', opacity: 0}, {display: 'none', duration: ka.settings.durationNormal});
 
         $('#boom-detail-panel').velocity({translateZ: 0, bottom: 0}, {duration: ka.settings.durationNormal, complete: function () {
             ka.lib.browser.setExpanded();
@@ -68,22 +59,13 @@ ka.lib.browser = {
 
             ka.lib.browser.poster.slideDown();
 
-            $('#boom-movie-detail-browser-title').velocity({translateZ: 0, width: 1060, height: 100}, ka.settings.durationNormal);
+            $('#boom-detail-title').velocity({translateZ: 0, width: 1049, height: '+=100'}, ka.settings.durationNormal);
+            $('#boom-detail-collection').css('display', 'inline-block').velocity({translateZ: 0, bottom: '-=100', opacity: 1}, ka.settings.durationNormal);
 
-            var collectionElement = $('#boom-movie-detail-browser-collection'),
-            collectionWidth = parseInt(collectionElement.css('width'));
-            if (collectionWidth > 0) {
-                collectionElement.velocity({translateZ: 0, bottom: 292, left: 30}, {duration: ka.settings.durationNormal});
-                $('#boom-detail-release, #boom-detail-rating, #boom-detail-runtime').velocity({translateZ: 0, bottom: '-=105'}, ka.settings.durationNormal);
-                $('#boom-detail-genres').velocity({translateZ: 0, bottom: '-=105', left: '-=' + (40 + collectionWidth)}, ka.settings.durationNormal);
-            } else {
-                $('#boom-movie-detail-browser-collection').css('display', 'block');
-                $('#boom-movie-detail-browser-additional').velocity({translateZ: 0, bottom: 247}, ka.settings.durationNormal);
-            }
+            $('#boom-detail-storyline').velocity({translateZ: 0, top: '+=120'}, ka.settings.durationNormal);
 
-            $('#boom-detail-browser-description').velocity({translateZ: 0, top: '+=120'}, ka.settings.durationNormal);
-
-            $('#boom-movie-detail-poster-browser, #boom-detail-focus').css('display', 'inline-block').velocity({translateZ: 0, bottom: '-=247px', opacity: 1}, ka.settings.durationNormal);
+            $('#boom-detail-browser').css('display', 'inline-block').velocity({translateZ: 0, bottom: '-=247px', opacity: 1}, ka.settings.durationNormal);
+            $('#boom-detail-focus').css('display', 'inline-block').velocity({translateZ: 0, bottom: '-=470px', opacity: 1}, ka.settings.durationNormal);
 
             $('#boom-detail-panel').velocity({translateZ: 0, bottom: -223}, {duration: ka.settings.durationNormal, complete: function () {
                 ka.lib.browser.setContracted();
@@ -214,10 +196,10 @@ ka.lib.browser = {
   , posters: {
 
         show: function (callback) {
-            $('#boom-movie-detail-poster-browser').css('display', 'inline-block');
+            $('#boom-detail-browser').css('display', 'inline-block');
             $('#boom-detail-focus').css('display', 'block');
 
-            $('#boom-movie-detail-poster-browser, #boom-detail-focus').velocity({bottom: '+=247'}, {
+            $('#boom-detail-browser, #boom-detail-focus').velocity({bottom: '+=247'}, {
                 duration: ka.settings.durationNormal
               , complete: callback
             });
@@ -335,7 +317,7 @@ ka.lib._addBrowserGridImage = function (keyPoster, index, unselected) {
     }
 
     if (keyPoster in ka.state.detachedBrowserPosterByKey) {
-        return ka.state.detachedBrowserPosterByKey[keyPoster].appendTo('#boom-movie-detail-poster-browser').data('boom.index', index);
+        return ka.state.detachedBrowserPosterByKey[keyPoster].appendTo('#boom-detail-browser').data('boom.index', index);
     } else {
         return $('<img>', {
             src: '/movie/poster/' + keyPoster + '-150.image'
@@ -343,7 +325,7 @@ ka.lib._addBrowserGridImage = function (keyPoster, index, unselected) {
           , height: 225
           , data: {'boom.index': index}
           , css: css
-        }).appendTo('#boom-movie-detail-poster-browser');
+        }).appendTo('#boom-detail-browser');
     }
 };
 
@@ -356,12 +338,12 @@ ka.lib._addBrowserGridDummy = function () {
             webkitFilter: 'saturate(0%) opacity(0.5)'
           , webkitTransform: 'translate3d(0, 0, 0)', marginLeft: 0
         }
-    }).prependTo('#boom-movie-detail-poster-browser');
+    }).prependTo('#boom-detail-browser');
 };
 
 
 ka.lib.populateDetailBrowserGrid = function () {
-    $('#boom-movie-detail-poster-browser').empty();
+    $('#boom-detail-browser').empty();
     $('<img>', {
           width: 150
         , height: 225
@@ -370,7 +352,7 @@ ka.lib.populateDetailBrowserGrid = function () {
             webkitFilter: 'saturate(0%) opacity(0.5)'
           , webkitTransform: 'translate3d(0, 0, 0)'
         }
-    }).appendTo('#boom-movie-detail-poster-browser');
+    }).appendTo('#boom-detail-browser');
 
     var current = ka.lib.grid.getMovieIndexSnapshot()[$('#boom-movie-detail').data('boom.uuid')],
         index, end, focused,
@@ -433,30 +415,35 @@ ka.lib._updateDetailBrowserInfo = function (movieObj) {
         rating = ((movieObj.rating) ? (movieObj.rating / 10) : '?') + '/10',
         collectionName = (movieObj.isCompiled) ? (movieObj.compilation + ' Collection') : '';
 
-    $('#boom-movie-detail-browser-title').text(title);
+    $('#boom-detail-title').text(title);
+    $('#boom-detail-collection').html(collectionName || '&nbsp;');
 
     if (rating.length == 4) {
         rating = rating.replace('/', '.0/');
     }
-    $('#boom-detail-release span').text(movieObj.releaseYear);
-    $('#boom-detail-rating span').text(rating);
-    $('#boom-detail-runtime span').text(movieObj.runtime);
+    $('#boom-detail-release').text(movieObj.releaseYear);
+    $('#boom-detail-rating').text(rating);
+    $('#boom-detail-runtime').text(movieObj.runtime + ' min');
+    $('#boom-detail-genres').text(movieObj.genres || '');
 
+    /*
     if (ka.lib.browser.isExpanded() && !collectionName) {
-        $('#boom-movie-detail-browser-collection').text(movieObj.genres || '');
+        $('#boom-detail-collection').text(movieObj.genres || '');
         $('#boom-detail-genres').text('');
     } else {
-        $('#boom-movie-detail-browser-collection').text(collectionName);
+        $('#boom-detail-collection').text(collectionName);
         $('#boom-detail-genres').text(movieObj.genres || '');
     }
+    */
 
-    $('#boom-detail-browser-description').text(movieObj.storyline);
+
+    $('#boom-detail-storyline').text(movieObj.storyline);
 };
 
 
 ka.lib.moveDetailBrowserLeft = function () {
     var column = ka.state.currentDetailBrowserPosterColumn,
-        posters = $('#boom-movie-detail-poster-browser img'),
+        posters = $('#boom-detail-browser img'),
         currentPosterIndex = posters.eq(column + 1).data('boom.index'),
         firstPosterIndex = posters.eq(1).data('boom.index'),
         snapshot = ka.lib.grid.getMovieListSnapshot();
@@ -486,7 +473,7 @@ ka.lib.moveDetailBrowserLeft = function () {
             ka.lib._animatePosterMove(
                  ka.lib._addBrowserGridDummy()
               , {translateZ: 0, width: 150, marginLeft: 10}
-              , $('#boom-movie-detail-poster-browser img').eq(6)
+              , $('#boom-detail-browser img').eq(6)
               , posters.eq(3).get(0)
               , posters.eq(2).get(0)
             );
@@ -497,7 +484,7 @@ ka.lib.moveDetailBrowserLeft = function () {
 
 ka.lib.moveDetailBrowserRight = function () {
     var column = ka.state.currentDetailBrowserPosterColumn,
-        posters = $('#boom-movie-detail-poster-browser img'),
+        posters = $('#boom-detail-browser img'),
         currentPosterIndex = posters.eq(column + 1).data('boom.index'),
         lastPosterIndex = posters.last().data('boom.index'),
         snapshot = ka.lib.grid.getMovieListSnapshot();

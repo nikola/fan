@@ -269,7 +269,7 @@ ka.transition.detail = {to: {
           , complete: function () {
                 ka.lib.grid.unocclude();
 
-                var restoreElements = '#boom-movie-detail-poster-browser';
+                var restoreElements = '#boom-detail-browser';
                 if ($('#boom-detail-panel').data('boom.isHidden')) {
                     $('#boom-detail-panel').data('boom.isHidden', false).velocity({bottom: '+=247'}, 0);
                 } else {
@@ -277,8 +277,8 @@ ka.transition.detail = {to: {
                 }
 
                 $(restoreElements).velocity({bottom: '-=247'}, {duration: 0, complete: function () {
-                    $('#boom-movie-detail, #boom-movie-detail-poster-browser, #boom-detail-focus').css('display', 'none');
-                    $('#boom-movie-detail-poster-browser').empty();
+                    $('#boom-movie-detail, #boom-detail-browser, #boom-detail-focus').css('display', 'none');
+                    $('#boom-detail-browser').empty();
                 }});
 
                 if (ka.lib.browser.isExpanded()) {
@@ -341,7 +341,7 @@ ka.transition.browser = {to: {
         ka.state.currentPageMode = 'limbo';
 
         var snapshot = ka.lib.grid.getMovieListSnapshot(),
-            movieObj = snapshot[$('#boom-movie-detail-poster-browser :nth-child('
+            movieObj = snapshot[$('#boom-detail-browser :nth-child('
                         + (ka.state.currentDetailBrowserPosterColumn + 2) + ')').data('boom.index')];
 
         if (movieObj.uuid != $('#boom-movie-detail').data('boom.uuid')) {
@@ -359,7 +359,7 @@ ka.transition.browser = {to: {
             duration: ka.settings.durationNormal
           , complete: function () {
                 $('#boom-detail-panel').velocity('fadeOut', {duration: 0, display: 'none', complete: function () {
-                    $('#boom-movie-detail-poster-browser').empty();
+                    $('#boom-detail-browser').empty();
 
                     ka.state.currentPageMode = 'detail';
                 }});

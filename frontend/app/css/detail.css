@@ -39,7 +39,7 @@
     -webkit-transform-style: preserve-3d; */
     }
 
-#boom-movie-detail-poster-browser {
+#boom-detail-browser {
     /* display: inline-block; */
     display: none;
     width: 1150px; height: 247px; /* width = 990x + 150 + 10 */
@@ -50,60 +50,60 @@
     /* background-color: rgba(0, 0, 0, 0.25); */
     }
 
-#boom-movie-detail-poster-browser img {
+#boom-detail-browser img {
     margin: 12px 0 0 10px;
     }
 
-#boom-movie-detail-browser-info {
+#boom-detail-fields {
     display: inline-block;
-    width: 1079px; height: 224px;
-    /* float: right; */
-    padding: 23px 0 0 30px;
-
-    /* background: linear-gradient(to right, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.25) 50%, rgba(0, 0, 0, 0) 100%); */
-    /* background-color: rgba(0, 0, 0, 0.25); */
+    width: 1079px; /* height: 224px; */
+    padding: 25px 0 0 30px;
     }
 
-#boom-movie-detail-browser-title {
-    display: block;
-    line-height: 50px;
-    font-size: 40px; font-weight: bold;
+#boom-detail-primary {
+    display: inline-block;
+    width: 1049px;
 
-    width: 1060px; height: 100px;
+    vertical-align: top;
+    }
+
+#boom-detail-title {
+    display: inline-block;
+    width: 1049px; height: 155px; /* -> 100px */
+
+    font-size: 40px; font-weight: bold; line-height: 50px;
+
     overflow-y: hidden;
 
     text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.75);
+
+    vertical-align: top;
     }
 
-#boom-movie-detail-browser-collection {
-    display: block;
-    font-size: 25px;
-    text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.75);
-    padding-top: 10px;
+#boom-detail-collection {
+    display: inline-block;
+    width: 1049px;
 
     position: absolute;
-    bottom: 292px;
-    }
+    left: 30px; bottom: 283px;
 
-#boom-movie-detail-browser-additional {
-    list-style: none; margin: 0; padding: 0;
-
-    /* position: absolute; */
-    /* bottom: 25px; */
-    position: absolute; bottom: 247px;
-
-
-    font-size: 25px;
+    font-size: 25px; line-height: 60px;
     text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.75);
     }
 
-#boom-movie-detail-browser-additional li {
+#boom-detail-metadata {
+    display: inline-block;
+    width: 1049px; height: 50px;
+    list-style: none; margin: 0; padding: 0;
+
+    font-size: 25px; line-height: 50px;
+    text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.75);
+    }
+
+#boom-detail-metadata li {
     display: inline-block;
 
     margin-right: 40px;
-    /* margin-right: 30px; */
-    /* position: absolute;
-    bottom: 247px; */
     }
 
 #boom-detail-release {
@@ -111,19 +111,19 @@
     }
 
 #boom-detail-rating {
-    left: 125px;
+
     }
 
 #boom-detail-runtime {
-    left: 240px;
+
     }
 
 #boom-detail-genres {
-    left: 360px;
+
     }
 
-#boom-detail-browser-description {
-    position: absolute; left: 0; top: 235px;
+#boom-detail-storyline {
+    position: absolute; left: 0; top: 240px;
     width: 1550px; height: 325px;
     font-size: 30px; font-weight: bold;
     text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.75);

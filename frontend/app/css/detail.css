@@ -173,7 +173,7 @@
 #boom-detail-focus {
     /* display: block; */
     display: none;
-    position: absolute; /* top: 1084px; left: 2px; */ /* top: 837px; */ /* bottom: 4px; */ bottom: -244px;
+    position: absolute; /* top: 1084px; left: 2px; */ /* top: 837px; */ /* bottom: 4px; */ bottom: -21px;
 
     width: 156px; height: 231px;
     border: 4px solid white;

@@ -270,10 +270,16 @@ ka.transition.detail = {to: {
                 ka.lib.grid.unocclude();
 
                 var restoreElements = '#boom-detail-browser';
-                if ($('#boom-detail-panel').data('boom.isHidden')) {
-                    $('#boom-detail-panel').data('boom.isHidden', false).velocity({bottom: '+=247'}, 0);
+                if (ka.lib.browser.isHidden()) {
+                    if (ka.lib.browser.isExpanded()) {
+                        $('#boom-detail-panel').data('boom.isHidden', false).velocity({bottom: '+=470'}, 0);
+                    } else {
+                        $('#boom-detail-panel').data('boom.isHidden', false).velocity({bottom: '+=247'}, 0);
+                    }
                 } else {
-                    restoreElements += ', #boom-detail-focus';
+                    if (!ka.lib.browser.isExpanded()) {
+                        restoreElements += ', #boom-detail-focus';
+                    }
                 }
 
                 $(restoreElements).velocity({bottom: '-=247'}, {duration: 0, complete: function () {

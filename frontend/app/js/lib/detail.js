@@ -44,8 +44,7 @@ ka.lib.browser = {
 
         $('#boom-detail-storyline').velocity({translateZ: 0, top: '-=120'}, ka.settings.durationNormal);
 
-        $('#boom-detail-browser').velocity({translateZ: 0, bottom: '+=247px', opacity: 0}, {display: 'none', duration: ka.settings.durationNormal});
-        $('#boom-detail-focus').velocity({translateZ: 0, bottom: '+=470px', opacity: 0}, {display: 'none', duration: ka.settings.durationNormal});
+        $('#boom-detail-browser, #boom-detail-focus').velocity({translateZ: 0, bottom: '+=247px', opacity: 0}, {display: 'none', duration: ka.settings.durationNormal});
 
         $('#boom-detail-panel').velocity({translateZ: 0, bottom: 0}, {duration: ka.settings.durationNormal, complete: function () {
             ka.lib.browser.setExpanded();
@@ -65,7 +64,7 @@ ka.lib.browser = {
             $('#boom-detail-storyline').velocity({translateZ: 0, top: '+=120'}, ka.settings.durationNormal);
 
             $('#boom-detail-browser').css('display', 'inline-block').velocity({translateZ: 0, bottom: '-=247px', opacity: 1}, ka.settings.durationNormal);
-            $('#boom-detail-focus').css('display', 'inline-block').velocity({translateZ: 0, bottom: '-=470px', opacity: 1}, ka.settings.durationNormal);
+            $('#boom-detail-focus').css('display', 'inline-block').velocity({translateZ: 0, bottom: [226, 473], opacity: 1}, ka.settings.durationNormal);
 
             $('#boom-detail-panel').velocity({translateZ: 0, bottom: -223}, {duration: ka.settings.durationNormal, complete: function () {
                 ka.lib.browser.setContracted();
@@ -86,7 +85,11 @@ ka.lib.browser = {
         $('#boom-detail-panel').data('boom.isHidden', !isHidden);
 
         ka.state.currentPageMode = 'limbo';
-        $('#boom-detail-panel, #boom-detail-focus').velocity({translateZ: 0, bottom: direction + '=' + distance}, {duration: 360, complete: function () {
+        var toggleElements = '#boom-detail-panel';
+        if (!ka.lib.browser.isExpanded()) {
+            /* toggleElements += ', #boom-detail-focus'; */
+        }
+        $(toggleElements).velocity({translateZ: 0, bottom: direction + '=' + distance}, {duration: ka.settings.durationNormal, complete: function () {
             ka.state.currentPageMode = 'detail';
         }});
     }
@@ -196,17 +199,22 @@ ka.lib.browser = {
   , posters: {
 
         show: function (callback) {
-            $('#boom-detail-browser').css('display', 'inline-block');
-            $('#boom-detail-focus').css('display', 'block');
-
-            $('#boom-detail-browser, #boom-detail-focus').velocity({bottom: '+=247'}, {
-                duration: ka.settings.durationNormal
-              , complete: callback
-            });
+            $('#boom-detail-focus').velocity({bottom: -21}, {duration: 0, complete: function () {
+                $('#boom-detail-focus').css('display', 'block').velocity({bottom: 226}, ka.settings.durationNormal);
+                $('#boom-detail-browser').css('display', 'inline-block').velocity({bottom: '+=247'}, {
+                    duration: ka.settings.durationNormal
+                  , complete: callback
+                });
+            }});
         }
 
       , fadeUp: function () {
+            $('#boom-detail-browser').velocity({bottom: '+=' + 247, opacity: 0}, 0);
+            $('#boom-detail-focus').velocity({bottom: 473, opacity: 0}, 0);
 
+            ka.state.currentDetailBrowserPosterColumn = ka.lib.populateDetailBrowserGrid();
+
+            ka.lib.browser.focus.reposition();
         }
 
     }

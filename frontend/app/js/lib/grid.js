@@ -12,7 +12,7 @@ ka.lib.grid = {
     focus: {
 
         show: function () {
-            return $('#boom-poster-focus').velocity('fadeIn', 0);
+            return $('#boom-grid-focus').velocity('fadeIn', 0);
         }
 
       , hide: function () {
@@ -20,11 +20,11 @@ ka.lib.grid = {
         }
 
       , fadeIn: function (duration) {
-            return $('#boom-poster-focus').velocity('fadeIn', duration);
+            return $('#boom-grid-focus').velocity('fadeIn', duration);
         }
 
       , fadeOut: function (duration) {
-             return $('#boom-poster-focus').velocity('fadeOut', duration);
+             return $('#boom-grid-focus').velocity('fadeOut', duration);
         }
 
       , isPositionValid: function () {
@@ -420,9 +420,9 @@ ka.lib.updateMovieGridOnAdd = function (isImmediateUpdate) {
 
             ka.lib.occludeMovieGrid();
 
-            var currentLeftPos = parseInt($('#boom-poster-focus').css('left'));
+            var currentLeftPos = parseInt($('#boom-grid-focus').css('left'));
             if (currentLeftPos > 0 && currentLeftPos < 1920) {
-                $('#boom-poster-focus').velocity({left: currentLeftPos - 1920}, {duration: 0, display: 'none'});
+                $('#boom-grid-focus').velocity({left: currentLeftPos - 1920}, {duration: 0, display: 'none'});
             }
         } else */ if (ka.state.currentPageMode == 'config') {
             ka.lib.updateDesaturatedGrid();
@@ -544,7 +544,7 @@ ka.lib.moveFocusPageUp = function () {
         var transition = ka.lib.moveFocusX(-ka.settings.gridMaxRows);
         if (transition !== null) {
             ka.state.currentPageMode = 'limbo'; /* leaving limbo after scrollGrid() call below */
-            $('#boom-poster-focus').velocity(transition[0], transition[1]);
+            $('#boom-grid-focus').velocity(transition[0], transition[1]);
         }
 
         ka.state.gridPage -= 1;
@@ -571,14 +571,14 @@ ka.lib.moveFocusPageDown = function () {
         ka.state.currentPageMode = 'limbo';
 
         if (transitionX !== null && transitionY !== null) {
-            $('#boom-poster-focus').velocity(
+            $('#boom-grid-focus').velocity(
                 {translateZ: 0, left: transitionX[0].left, top: transitionY[0].top}
               , {easing: 'easeOutSine', duration: Math.max(transitionX[1].duration, transitionY[1].duration)}
             );
         } else if (transitionX !== null) {
-            $('#boom-poster-focus').velocity({translateZ: 0, left: transitionX[0].left}, {easing: 'easeOutSine', duration: transitionX[1].duration});
+            $('#boom-grid-focus').velocity({translateZ: 0, left: transitionX[0].left}, {easing: 'easeOutSine', duration: transitionX[1].duration});
         } else if (transitionY !== null) {
-            $('#boom-poster-focus').velocity({translateZ: 0, top: transitionY[0].top}, {easing: 'ease-out', duration: transitionY[1].duration});
+            $('#boom-grid-focus').velocity({translateZ: 0, top: transitionY[0].top}, {easing: 'ease-out', duration: transitionY[1].duration});
         }
 
         ka.lib.scrollGrid();
@@ -620,7 +620,7 @@ ka.lib.moveFocusUp = function () {
             ka.lib.scrollGrid(true); /* skip limbo and deferred handling here */
         }
 
-        $('#boom-poster-focus').velocity(props, options);
+        $('#boom-grid-focus').velocity(props, options);
     }
 };
 
@@ -657,7 +657,7 @@ ka.lib.moveFocusDown = function () {
             ka.lib.scrollGrid(true); /* skip limbo and deferred handling here */
         }
 
-        $('#boom-poster-focus').velocity(props, options);
+        $('#boom-grid-focus').velocity(props, options);
     }
 };
 
@@ -908,7 +908,7 @@ ka.lib.dissolveCompilation = function () {
     ka.state.actualScreenMode = null;
     ka.state.currentCompilationPosterCount = 0;
 
-    $('#boom-movie-grid-container, #boom-poster-focus').velocity({left: '-=1920'}, 0);
+    $('#boom-movie-grid-container, #boom-grid-focus').velocity({left: '-=1920'}, 0);
     $('#boom-compilation-container, #boom-compilation-focus').velocity('fadeOut', {duration: 0, complete: function () {
         $('#boom-compilation-container, #boom-compilation-focus').velocity({left: '+=1920'}, 0);
     }});
@@ -1000,7 +1000,7 @@ ka.lib.repositionMovieFocus = function (offscreen) {
         display = 'none';
     }
 
-    $('#boom-poster-focus').velocity({top: top, left: left}, {duration: 0, display: display});
+    $('#boom-grid-focus').velocity({top: top, left: left}, {duration: 0, display: display});
 };
 
 

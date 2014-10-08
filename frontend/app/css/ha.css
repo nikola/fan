@@ -15,7 +15,7 @@ body {
     }
 
 /* Column 2.a: movie grid */
-#boom-movie-grid-container, #boom-poster-focus {
+#boom-movie-grid-container, #boom-grid-focus {
     -webkit-transform: translateZ(0);
     }
 

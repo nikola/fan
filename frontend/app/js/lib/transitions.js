@@ -16,7 +16,7 @@ ka.transition.menu = {to: {
         /* ka.lib.occludeMovieGrid(); */
         ka.lib.grid.occlude();
 
-        $('#boom-movie-config, #boom-movie-grid-container, #boom-poster-focus').velocity(
+        $('#boom-movie-config, #boom-movie-grid-container, #boom-grid-focus').velocity(
             {translateZ: 0, left: '-=780'}
           , {
                 duration: ka.settings.durationNormal
@@ -76,13 +76,13 @@ ka.transition.grid = {to: {
             }
         }
 
-        $('#boom-movie-config, #boom-movie-grid-container, #boom-poster-focus').velocity(
+        $('#boom-movie-config, #boom-movie-grid-container, #boom-grid-focus').velocity(
             {translateZ: 0, left: '+=780'}
           , {
                 duration: ka.settings.durationNormal
               , progress: function (elements, percentComplete) {
                     elements[1].style.opacity = 1 - percentComplete / 2;    /* #boom-movie-grid-container   */
-                    elements[2].style.opacity = 1 - percentComplete;        /* #boom-poster-focus           */
+                    elements[2].style.opacity = 1 - percentComplete;        /* #boom-grid-focus           */
 
                     $.each(ka.state.desaturationImageCache, function (key, value) {
                         value.style.webkitFilter = 'grayscale(' + Math.round(100 * percentComplete) + '%)';
@@ -122,7 +122,7 @@ ka.transition.grid = {to: {
 
         ka.lib.browser.show();
 
-        var targetElements = (isCompilationSelected) ? $('#boom-compilation-container, #boom-compilation-focus, #boom-movie-detail') : $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail');
+        var targetElements = (isCompilationSelected) ? $('#boom-compilation-container, #boom-compilation-focus, #boom-movie-detail') : $('#boom-movie-grid-container, #boom-grid-focus, #boom-movie-detail');
         targetElements.velocity({translateZ: 0, left: '-=1920'}, {
             duration: ka.settings.durationLong
           , complete: function () {
@@ -263,21 +263,21 @@ ka.transition.detail = {to: {
             ka.lib.grid.focus.show();
         }
 
-        var targetElements = (hasOpenCompilation) ? $('#boom-compilation-container, #boom-compilation-focus, #boom-movie-detail') : $('#boom-movie-grid-container, #boom-poster-focus, #boom-movie-detail');
+        var targetElements = (hasOpenCompilation) ? $('#boom-compilation-container, #boom-compilation-focus, #boom-movie-detail') : $('#boom-movie-grid-container, #boom-grid-focus, #boom-movie-detail');
         targetElements.velocity({translateZ: 0, left: '+=1920'}, {
             duration: ka.settings.durationLong
           , complete: function () {
                 ka.lib.grid.unocclude();
 
                 var restoreElements = '#boom-movie-detail-poster-browser';
-                if ($('#boom-movie-detail-head').data('boom.isHidden')) {
-                    $('#boom-movie-detail-head').data('boom.isHidden', false).velocity({bottom: '+=247'}, 0);
+                if ($('#boom-detail-panel').data('boom.isHidden')) {
+                    $('#boom-detail-panel').data('boom.isHidden', false).velocity({bottom: '+=247'}, 0);
                 } else {
-                    restoreElements += ', #boom-movie-detail-browser-focus';
+                    restoreElements += ', #boom-detail-focus';
                 }
 
                 $(restoreElements).velocity({bottom: '-=247'}, {duration: 0, complete: function () {
-                    $('#boom-movie-detail, #boom-movie-detail-poster-browser, #boom-movie-detail-browser-focus').css('display', 'none');
+                    $('#boom-movie-detail, #boom-movie-detail-poster-browser, #boom-detail-focus').css('display', 'none');
                     $('#boom-movie-detail-poster-browser').empty();
                 }});
 
@@ -312,9 +312,9 @@ ka.transition.detail = {to: {
         ka.lib.updateDetailBrowserInfo(ka.data.byUuid[$('#boom-movie-detail').data('boom.uuid')], false);
 
         var leftPos = 1110 + 2 + 160 * ka.state.currentDetailBrowserPosterColumn;
-        $('#boom-movie-detail-browser-focus').velocity({left: leftPos}, 0);
+        $('#boom-detail-focus').velocity({left: leftPos}, 0);
 
-        $('#boom-movie-detail-head').velocity('fadeIn', {duration: 0, display: 'block', complete: function () {
+        $('#boom-detail-panel').velocity('fadeIn', {duration: 0, display: 'block', complete: function () {
             if (ka.state.currentDetailButton == 'details') {
                 $('#boom-movie-detail-shade').velocity({opacity: 0}, ka.settings.durationNormal);
                 $('#boom-movie-detail-description').velocity('transition.expandOut', ka.settings.durationNormal);
@@ -322,7 +322,7 @@ ka.transition.detail = {to: {
 
             $('#boom-movie-detail-right').velocity({translateZ: 0, marginLeft: '+=40'}, {duration: ka.settings.durationNormal, easing: 'linear'});
             $('#boom-movie-detail-left').velocity({translateZ: 0, left: '-=360'}, ka.settings.durationNormal);
-            $('#boom-movie-detail-head, #boom-movie-detail-browser-focus').velocity({translateZ: 0, bottom: '+=247'}, {
+            $('#boom-detail-panel, #boom-detail-focus').velocity({translateZ: 0, bottom: '+=247'}, {
                 duration: ka.settings.durationNormal
               , complete: function () {
                     ka.state.currentPageMode = 'detail-browser';
@@ -355,10 +355,10 @@ ka.transition.browser = {to: {
 
         $('#boom-movie-detail-right').velocity({translateZ: 0, marginLeft: '-=40'}, {duration: ka.settings.durationNormal, easing: 'linear'});
         $('#boom-movie-detail-left').velocity({translateZ: 0, left: '+=360'}, ka.settings.durationNormal);
-        $('#boom-movie-detail-head, #boom-movie-detail-browser-focus').velocity({translateZ: 0, bottom: '-=247'}, {
+        $('#boom-detail-panel, #boom-detail-focus').velocity({translateZ: 0, bottom: '-=247'}, {
             duration: ka.settings.durationNormal
           , complete: function () {
-                $('#boom-movie-detail-head').velocity('fadeOut', {duration: 0, display: 'none', complete: function () {
+                $('#boom-detail-panel').velocity('fadeOut', {duration: 0, display: 'none', complete: function () {
                     $('#boom-movie-detail-poster-browser').empty();
 
                     ka.state.currentPageMode = 'detail';

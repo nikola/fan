@@ -81,5 +81,5 @@ ka.lib.updateDesaturatedGrid = function () {
     ka.lib.repositionMovieGrid();
     ka.lib.repositionMovieFocus();
 
-    $('#boom-poster-focus').velocity({translateZ: 0, left: '+=780'}, 0);
+    $('#boom-grid-focus').velocity({translateZ: 0, left: '+=780'}, 0);
 };

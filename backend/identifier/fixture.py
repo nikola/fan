@@ -52,6 +52,7 @@ BACKDROPS = {
       9693: 'c5jNuPA19oGiEmbh8iFeAi6aHMI',  # Children of Men
      14161: 'gUnrvOtSAQL0xGcC49L7RUcpN4E',  # 2012
      19908: 'z2iZyuW6XWcF0jl8fe5uavNYujQ',  # Zombieland
+     19995: 'qvGIprpD5y6Enul3xwNZd7KcrG2',  # Avatar
      54138: 'ns0IojuqJe24AHTxe8RVcWJUCDM',  # Star Trek Into Darkness
      64635: 'oh7GVViQ0DnanF1lMeegBhdXxBB',  # Total Recall
      76025: 'sZKDHpErUrhWPG5GPbxNlR5JKpb',  # Shame

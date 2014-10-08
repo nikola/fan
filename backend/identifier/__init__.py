@@ -9,13 +9,13 @@ import re
 import datetime
 import logging
 from simplejson import JSONDecodeError
-from operator import itemgetter
+# from operator import itemgetter
 
 from settings import DEBUG
 from settings import LOG_CONFIG
 from utils.net import getThrottledJsonResponse, makeUnthrottledGetRequest
 from utils.fs import getLogFileHandler
-from identifier.fixture import TRAILERS_HD, TOP_250
+from identifier.fixture import TRAILERS_HD, TOP_250, BACKDROPS
 
 
 THEMOVIEDB_API_KEY = 'ef89c0a371440a7226e1be2ddfe84318'
@@ -271,7 +271,7 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
                 params = {
                     'api_key': THEMOVIEDB_API_KEY,
                     'language': language,
-                    'append_to_response': 'trailers',
+                    'append_to_response': 'trailers,credits',
                 }
                 response = getThrottledJsonResponse(url, params, pollingCallback)
 
@@ -305,6 +305,11 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
                     else:
                         idYoutubeTrailer = None
 
+                    if BACKDROPS.has_key(movieId):
+                        urlBackdrop = '/%s.jpg' % BACKDROPS[movieId]
+                    else:
+                        urlBackdrop = response['backdrop_path']
+
                     belongsToCollection = response['belongs_to_collection']
                     if belongsToCollection is not None:
                         collectionId, collectionName = belongsToCollection['id'], belongsToCollection['name'].replace(' Collection', '')
@@ -322,7 +327,7 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
                         releaseYear     = datetime.datetime.strptime(response['release_date'], '%Y-%m-%d').year,
                         runtime         = response['runtime'] or None,
 
-                        urlBackdrop     = response['backdrop_path'],
+                        urlBackdrop     = urlBackdrop,
                         urlPoster       = response['poster_path'],
 
                         homepage        = response['homepage'],

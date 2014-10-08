@@ -27,6 +27,38 @@ TRAILERS_HD = {
     168672: 'h5Cb4SFt7gE',  # American Hustle
 }
 
+BACKDROPS = {
+        14: 'mAwd34SAC8KqBKRm2MwHPLhLDU5',  # American Beauty
+        18: 'aH9qlz8sq42N3ilmjMVWop6PcvU',  # The Fifth Element
+        68: 'pVlZBKp8v3Jzd0ahPmrBGlbeQ2s',  # Brazil
+        95: 'A841c35c2mfnZPdwURoiKmHFAvJ',  # Armageddon
+       106: 'gTFGr8q5YzYYiRyDYaEMNB6QRuL',  # Predator
+       137: 'tdS2JKwUAbQ0FbhBpbDmHv92Mgi',  # Groundhog Day
+       275: 'xyfyR6l9ziFup0fQTdUGl1Tr3Wv',  # Fargo
+       496: 'cVh01PMK6ydxBrTpehHPJBNIXiq',  # Borat
+       603: 'gM3KKiN80qbJgKHjPnmAfwxSicG',  # The Matrix
+       790: 'jPXJxQE64xP8TArB8BTLfGdR41l',  # The Fog
+       807: 'dy7jGcngbzgENCwYIHhLGWZ9S2H',  # Se7en
+       926: 'dl2y0cMnmiv66C5fxovpmBZopdh',  # Galaxy Quest
+       927: '90HRQmkXDcSvSlENXP7jhFxMclM',  # Gremlins
+       928: '4GbP532VkFcOng4vBaF5VMjXR26',  # Gremlins 2
+      1250: '9cs9RuOS3A5YEh6r4opVrIGbiJy',  # Ghost Rider
+      1368: 'b7JuifSoicUrPDQzteu4UWqWBZK',  # First Blood
+      1598: 'dWCPuihntOsE1rz49UELd1wypFj',  # Cape Fear
+      7874: 'r6h66od7MJfrjhzHvRK6EAFeXOb',  # Black Snake Moan
+      8202: '4JKZXR6p31IiTRObtQIhuZtqRzI',  # Aeon Flux
+      8489: 'tAGJ66pWG9jQ602WbSByrPwsYps',  # Ali
+      9509: 'acuvD7rAaQWaLzyUzGs8pPYx7iN',  # Man on Fire
+      9693: 'c5jNuPA19oGiEmbh8iFeAi6aHMI',  # Children of Men
+     14161: 'gUnrvOtSAQL0xGcC49L7RUcpN4E',  # 2012
+     19908: 'z2iZyuW6XWcF0jl8fe5uavNYujQ',  # Zombieland
+     54138: 'ns0IojuqJe24AHTxe8RVcWJUCDM',  # Star Trek Into Darkness
+     64635: 'oh7GVViQ0DnanF1lMeegBhdXxBB',  # Total Recall
+     76025: 'sZKDHpErUrhWPG5GPbxNlR5JKpb',  # Shame
+    109445: 'irHmdlkdJphmk4HPfyAQfklKMbY',  # Frozen
+    127585: '3KbXDu5FcDtyQyFzm2HZj8BFifi',  # X-Men: Days of Future Past
+    157834: 'bbcuTz7rcypTEcsVsclpjjnCFEg',  # The Zero Theorem
+}
 
 TOP_250 = [
     # 1

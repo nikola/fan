@@ -15,7 +15,7 @@ from settings import DEBUG
 from settings import LOG_CONFIG
 from utils.net import getThrottledJsonResponse, makeUnthrottledGetRequest
 from utils.fs import getLogFileHandler
-from identifier.fixture import TRAILERS_HD, TOP_250, BACKDROPS
+from identifier.fixture import TOP_250, POSTERS, BACKDROPS, TRAILERS_HD
 
 
 THEMOVIEDB_API_KEY = 'ef89c0a371440a7226e1be2ddfe84318'
@@ -298,17 +298,22 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
                             if ratingSearch is not None:
                                 rating = float(ratingSearch.group(1)) * 10
 
+                    if POSTERS.has_key(movieId):
+                        urlPoster = '/%s.jpg' % POSTERS[movieId]
+                    else:
+                        urlPoster = response['poster_path']
+
+                    if BACKDROPS.has_key(movieId):
+                        urlBackdrop = '/%s.jpg' % BACKDROPS[movieId]
+                    else:
+                        urlBackdrop = response['backdrop_path']
+
                     if TRAILERS_HD.has_key(movieId):
                         idYoutubeTrailer = TRAILERS_HD[movieId]
                     elif response['trailers'].has_key('youtube') and len(response['trailers']['youtube']):
                         idYoutubeTrailer = response['trailers']['youtube'][0].get('source')
                     else:
                         idYoutubeTrailer = None
-
-                    if BACKDROPS.has_key(movieId):
-                        urlBackdrop = '/%s.jpg' % BACKDROPS[movieId]
-                    else:
-                        urlBackdrop = response['backdrop_path']
 
                     belongsToCollection = response['belongs_to_collection']
                     if belongsToCollection is not None:
@@ -327,8 +332,8 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
                         releaseYear     = datetime.datetime.strptime(response['release_date'], '%Y-%m-%d').year,
                         runtime         = response['runtime'] or None,
 
+                        urlPoster       = urlPoster,
                         urlBackdrop     = urlBackdrop,
-                        urlPoster       = response['poster_path'],
 
                         homepage        = response['homepage'],
                         budget          = response['budget'] or None,

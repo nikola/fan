@@ -58,7 +58,21 @@ BACKDROPS = {
      76025: 'sZKDHpErUrhWPG5GPbxNlR5JKpb',  # Shame
     109445: 'irHmdlkdJphmk4HPfyAQfklKMbY',  # Frozen
     127585: '3KbXDu5FcDtyQyFzm2HZj8BFifi',  # X-Men: Days of Future Past
+    137113: '9maldNxAaXzBVgid64uWH8rwFuu',  # Edge of Tomorrow
     157834: 'bbcuTz7rcypTEcsVsclpjjnCFEg',  # The Zero Theorem
+}
+
+POSTERS = {
+       755: 'fw7r6zXLoiinOSMYampo6ZloJFz',  # From Dusk Till Dawn
+       790: '3Iohw4WUosqfdX7vCKRko1hx0HN',  # The Fog
+       807: 'uGJCZR4400oE0EkwKXenSSkqPgQ',  # Se7en
+      1429: 'hf3KpQ13Z8HS0ZodzooMiR8PBqD',  # 25th Hour
+      2124: 'qUFXidNEXMh0Rnrp8xsgdFWAIg6',  # Color of Night
+     14161: 'yBJBl3rXTlqb7PglpihF4A7PzyL',  # 2012
+     23629: 'jnCDFAssFafnkmljtyEaUKaoA4Q',  # Sucker Punch
+     64635: 'b9cvXMdcrUWvbCfys4Toz3mu0NF',  # Total Recall
+    137113: 'fDf25sy8M6ZKdnb8OQkNbak4x02',  # Edge of Tomorrow
+    164457: '3ILyypFd1zDdQLasS3NuEliKRIs',  # Out of the Furnace
 }
 
 TOP_250 = [

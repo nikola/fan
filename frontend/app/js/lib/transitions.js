@@ -133,16 +133,27 @@ ka.transition.grid = {to: {
                 }
 
                 ka.lib.grid.snapshotMovieLookups();
-                ka.state.currentDetailBrowserPosterColumn = ka.lib.populateDetailBrowserGrid();
 
-                ka.lib.browser.focus.reposition();
-                ka.lib.browser.posters.show(function () {
+                if (ka.lib.browser.isExpanded()) {
+                    ka.lib.browser.poster.setSource(movieObj.keyPoster);
                     if (!movieObj.isBackdropCached) {
-                        ka.lib.browser.backdrop.loadOptimistic(movieObj);
-                    }
+                            ka.lib.browser.backdrop.loadOptimistic(movieObj);
+                        }
+                    ka.lib.browser.posters.fadeUp();
 
                     ka.state.currentPageMode = 'detail';
-                });
+                } else {
+                    ka.state.currentDetailBrowserPosterColumn = ka.lib.populateDetailBrowserGrid();
+
+                    ka.lib.browser.focus.reposition();
+                    ka.lib.browser.posters.show(function () {
+                        if (!movieObj.isBackdropCached) {
+                            ka.lib.browser.backdrop.loadOptimistic(movieObj);
+                        }
+
+                        ka.state.currentPageMode = 'detail';
+                    });
+                }
             }
         });
     }
@@ -269,6 +280,10 @@ ka.transition.detail = {to: {
                     $('#boom-movie-detail, #boom-movie-detail-poster-browser, #boom-movie-detail-browser-focus').css('display', 'none');
                     $('#boom-movie-detail-poster-browser').empty();
                 }});
+
+                if (ka.lib.browser.isExpanded()) {
+                    ka.lib.browser.poster.hide();
+                }
 
                 if (hasOpenCompilation) {
                     ka.state.currentPageMode = 'grid-compilation';

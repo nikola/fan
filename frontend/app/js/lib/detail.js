@@ -9,18 +9,102 @@
 
 ka.lib.browser = {
 
-    show: function () {
+    isHidden: function () {
+        return $('#boom-movie-detail-head').data('boom.isHidden');
+    }
+
+  , isExpanded: function () {
+        return $('#boom-movie-detail-head').data('boom.isExpanded');
+    }
+
+  , setExpanded: function () {
+        $('#boom-movie-detail-head').data('boom.isExpanded', true);
+    }
+
+  , setContracted: function () {
+        $('#boom-movie-detail-head').data('boom.isExpanded', false);
+    }
+
+  , setupExpansion: function () {
+        if (!ka.lib.browser.isExpanded() && !ka.lib.browser.isHidden()) {
+            var selectedPoster = $('#boom-movie-detail-poster-browser :nth-child(' + (ka.state.currentDetailBrowserPosterColumn + 2) + ')'),
+                snapshot = ka.lib.grid.getMovieListSnapshot(),
+                movieObj = snapshot[selectedPoster.data('boom.index')];
+            ka.lib.browser.poster.setSource(movieObj.keyPoster);
+            ka.lib.browser.expandUp();
+            /* $('#boom-detail-large-poster').css('right', 1920 - selectedPoster.offset().left - 150).attr('src', selectedPoster.attr('src').replace('-150.image', '-300.image')); */
+        }
+    }
+
+  , expandUp: function () {
+        ka.state.currentPageMode = 'limbo';
+
+        $('#boom-movie-detail-browser-title').velocity({translateZ: 0, width: 1580, height: 60}, ka.settings.durationNormal);
+
+        var collectionElement = $('#boom-movie-detail-browser-collection'),
+            collectionWidth = parseInt(collectionElement.css('width'));
+        if (collectionWidth > 0) {
+            collectionElement.velocity({translateZ: 0, bottom: 352, left: 360}, {duration: ka.settings.durationNormal});
+            $('#boom-detail-release, #boom-detail-rating, #boom-detail-runtime').velocity({translateZ: 0, bottom: '+=105'}, ka.settings.durationNormal);
+            $('#boom-detail-genres').velocity({translateZ: 0, bottom: '+=105', left: '+=' + (40 + collectionWidth)}, ka.settings.durationNormal);
+        } else {
+            $('#boom-movie-detail-browser-collection').css('display', 'none');
+            $('#boom-movie-detail-browser-additional li').velocity({translateZ: 0, bottom: '+=105'}, ka.settings.durationNormal);
+        }
+
+        $('#boom-detail-browser-description').velocity({translateZ: 0, top: '-=120'}, ka.settings.durationNormal);
+
+        $('#boom-movie-detail-poster-browser, #boom-movie-detail-browser-focus').velocity({translateZ: 0, bottom: '+=247px', opacity: 0}, {display: 'none', duration: ka.settings.durationNormal});
+
+        $('#boom-movie-detail-head').velocity({translateZ: 0, bottom: 0}, {duration: ka.settings.durationNormal, complete: function () {
+            ka.lib.browser.setExpanded();
+            ka.state.currentPageMode = 'detail';
+        }});
+    }
+
+  , contractDown: function () {
+        if (ka.lib.browser.isExpanded()) {
+            ka.state.currentPageMode = 'limbo';
+
+            ka.lib.browser.poster.slideDown();
+
+            $('#boom-movie-detail-browser-title').velocity({translateZ: 0, width: 1060, height: 100}, ka.settings.durationNormal);
+
+            var collectionElement = $('#boom-movie-detail-browser-collection'),
+            collectionWidth = parseInt(collectionElement.css('width'));
+            if (collectionWidth > 0) {
+                collectionElement.velocity({translateZ: 0, bottom: 292, left: 30}, {duration: ka.settings.durationNormal});
+                $('#boom-detail-release, #boom-detail-rating, #boom-detail-runtime').velocity({translateZ: 0, bottom: '-=105'}, ka.settings.durationNormal);
+                $('#boom-detail-genres').velocity({translateZ: 0, bottom: '-=105', left: '-=' + (40 + collectionWidth)}, ka.settings.durationNormal);
+            } else {
+                $('#boom-movie-detail-browser-collection').css('display', 'block');
+                $('#boom-movie-detail-browser-additional li').velocity({translateZ: 0, bottom: '-=105'}, ka.settings.durationNormal);
+            }
+
+            $('#boom-detail-browser-description').velocity({translateZ: 0, top: '+=120'}, ka.settings.durationNormal);
+
+            $('#boom-movie-detail-poster-browser, #boom-movie-detail-browser-focus').css('display', 'inline-block').velocity({translateZ: 0, bottom: '-=247px', opacity: 1}, ka.settings.durationNormal);
+
+            $('#boom-movie-detail-head').velocity({translateZ: 0, bottom: -223}, {duration: ka.settings.durationNormal, complete: function () {
+                ka.lib.browser.setContracted();
+                ka.state.currentPageMode = 'detail';
+            }});
+        }
+    }
+
+  , show: function () {
         $('#boom-movie-detail').css('display', 'block');
     }
 
   , toggle: function () {
         var isHidden = $('#boom-movie-detail-head').data('boom.isHidden'),
-            direction = (isHidden) ? '+' : '-';
+            direction = isHidden ? '+' : '-',
+            distance = ka.lib.browser.isExpanded() ? 470 : 247;
 
         $('#boom-movie-detail-head').data('boom.isHidden', !isHidden);
 
         ka.state.currentPageMode = 'limbo';
-        $('#boom-movie-detail-head, #boom-movie-detail-browser-focus').velocity({translateZ: 0, bottom: direction + '=247'}, {duration: 360, complete: function () {
+        $('#boom-movie-detail-head, #boom-movie-detail-browser-focus').velocity({translateZ: 0, bottom: direction + '=' + distance}, {duration: 360, complete: function () {
             ka.state.currentPageMode = 'detail';
         }});
     }
@@ -29,6 +113,37 @@ ka.lib.browser = {
 
         reposition: function () {
             $('#boom-movie-detail-browser-focus').velocity({left: 1110 + 2 + 160 * ka.state.currentDetailBrowserPosterColumn}, 0);
+        }
+
+    }
+
+  , poster: {
+
+        setSource: function (key) {
+            $('#boom-detail-large-poster').attr('src', '/movie/poster/' + key + '-300.image');
+        }
+
+      , onLoaded: function () {
+            /* if (ka.lib.browser.isExpanded()) {
+                ka.lib.browser.poster.slideUp();
+            } else {
+                ka.lib.browser.expandUp();
+            } */
+            ka.lib.browser.poster.slideUp();
+        }
+
+      , hide: function () {
+            $('#boom-detail-large-poster').attr('src', '').velocity({bottom: '-=490'}, {duration: 0, display: 'none'});
+        }
+
+      , slideUp: function () {
+            $('#boom-detail-large-poster').css('display', 'block').velocity({bottom: '+=490'}, ka.settings.durationNormal);
+        }
+
+      , slideDown: function () {
+            $('#boom-detail-large-poster').velocity({bottom: '-=490'}, {duration: ka.settings.durationNormal, display: 'none', complete: function () {
+                $(this).attr('src', '');
+            }});
         }
 
     }
@@ -108,27 +223,7 @@ ka.lib.browser = {
             });
         }
 
-      , expandUp: function () {
-            var poster = $('#boom-movie-detail-poster-browser :nth-child(' + (ka.state.currentDetailBrowserPosterColumn + 2) + ')'),
-                position = poster.offset();
-            poster.clone()
-                .css({position: 'absolute', bottom: 1080 - position.top - 225, right: 1920 - position.left - 150})
-                .on('load', function () {
-                    $(this).off().velocity({translateZ: 0, width: 300, height: 450, right: 10}, ka.settings.durationShort);
-                    $('#boom-movie-detail-head').velocity({translateZ: 0, bottom: 0}, ka.settings.durationShort);
-                    $('#boom-movie-detail-browser-title').velocity({translateZ: 0, width: 1580, height: 60}, ka.settings.durationShort);
-                    $('#boom-movie-detail-browser-collection').velocity({translateZ: 0, opacity: 0}, {display: 'none', duration: ka.settings.durationShort});
-                    $('#boom-movie-detail-browser-additional li').velocity({translateZ: 0, bottom: '+=105'}, ka.settings.durationShort);
-                    $('#boom-detail-browser-description').velocity({translateZ: 0, top: '-=120'}, ka.settings.durationShort);
-                    $('#boom-movie-detail-poster-browser, #boom-movie-detail-browser-focus').velocity({translateZ: 0, bottom: '+=247px', opacity: 0}, {display: 'none', duration: ka.settings.durationShort});
-
-                    /* linear-gradient(to right, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.25) 50%, rgba(0, 0, 0, 0.25) 100%),linear-gradient(to top, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.25) 75%, rgba(0, 0, 0, 0) 100%); */
-                })
-                .attr('src', poster.attr('src').replace('-150.image', '-300.image'))
-                .appendTo('#boom-movie-detail');
-        }
-
-      , contractDown: function () {
+      , fadeUp: function () {
 
         }
 

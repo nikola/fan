@@ -44,12 +44,7 @@ ka.lib.handleKeypressUp = function () {
             ka.lib.updateMenuButtonSelection();
         }
     } else if (ka.state.currentPageMode == 'detail') {
-        /* if ($('#boom-detail-button-group .boom-button:visible.boom-active').index('#boom-detail-button-group .boom-button:visible') > 0) {
-            ka.state.currentDetailButton = $('#boom-detail-button-group .boom-button.boom-active').prevAll(':visible').eq(0).text().toLowerCase();
-
-            ka.lib.updateDetailButtonSelection();
-        } */
-        ka.lib.browser.posters.expandUp();
+        ka.lib.browser.setupExpansion();
     } else if (ka.state.currentPageMode == 'grid') {
         ka.lib.moveFocusUp();
     } else if (ka.state.currentPageMode == 'grid-compilation') {
@@ -65,11 +60,7 @@ ka.lib.handleKeypressDown = function () {
             ka.lib.updateMenuButtonSelection();
         }
     } else if (ka.state.currentPageMode == 'detail') {
-        /* if ($('#boom-detail-button-group .boom-button:visible.boom-active').index('#boom-detail-button-group .boom-button:visible') + 1 < $('#boom-detail-button-group .boom-button:visible').size()) {
-            ka.state.currentDetailButton = $('#boom-detail-button-group .boom-button.boom-active').nextAll(':visible').eq(0).text().toLowerCase();
-            ka.lib.updateDetailButtonSelection();
-        } */
-        ka.lib.browser.posters.contractDown();
+        ka.lib.browser.contractDown();
     } else if (ka.state.currentPageMode == 'grid') {
         ka.lib.moveFocusDown();
     } else if (ka.state.currentPageMode == 'grid-compilation') {

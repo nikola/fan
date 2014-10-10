@@ -32,7 +32,7 @@ ka.lib.browser = {
                 movieObj = snapshot[selectedPoster.data('boom.index')];
             ka.lib.browser.poster.setSource(movieObj.keyPoster);
             ka.lib.browser.expandUp();
-            /* $('#boom-detail-large-poster').css('right', 1920 - selectedPoster.offset().left - 150).attr('src', selectedPoster.attr('src').replace('-150.image', '-300.image')); */
+            /* $('#boom-detail-poster-left').css('right', 1920 - selectedPoster.offset().left - 150).attr('src', selectedPoster.attr('src').replace('-150.image', '-300.image')); */
         }
     }
 
@@ -105,7 +105,7 @@ ka.lib.browser = {
   , poster: {
 
         setSource: function (key) {
-            $('#boom-detail-large-poster').attr('src', '/movie/poster/' + key + '-300.image');
+            $('#boom-detail-poster-left img').attr('src', '/movie/poster/' + key + '-300.image');
         }
 
       , onLoaded: function () {
@@ -118,16 +118,16 @@ ka.lib.browser = {
         }
 
       , hide: function () {
-            $('#boom-detail-large-poster').attr('src', '').velocity({bottom: '-=490'}, {duration: 0, display: 'none'});
+            $('#boom-detail-poster-left').find('img').attr('src', '').end().velocity({bottom: '-=490'}, {duration: 0, display: 'none'});
         }
 
       , slideUp: function () {
-            $('#boom-detail-large-poster').css('display', 'block').velocity({bottom: '+=490'}, ka.settings.durationNormal);
+            $('#boom-detail-poster-left').css('display', 'block').velocity({bottom: '+=490'}, ka.settings.durationNormal);
         }
 
       , slideDown: function () {
-            $('#boom-detail-large-poster').velocity({bottom: '-=490'}, {duration: ka.settings.durationNormal, display: 'none', complete: function () {
-                $(this).attr('src', '');
+            $('#boom-detail-poster-left').velocity({bottom: '-=490'}, {duration: ka.settings.durationNormal, display: 'none', complete: function () {
+                $(this).find('img').attr('src', '');
             }});
         }
 
@@ -320,7 +320,6 @@ ka.lib.closeTrailerPlayer = function () {
 ka.lib._addBrowserGridImage = function (keyPoster, index, unselected) {
     var css = {webkitTransform: 'translate3d(0, 0, 0)'};
     if (unselected) {
-        /* css.webkitFilter = 'grayscale(100%) opacity(0.5)'; */
         css.webkitFilter = 'saturate(0%) opacity(0.5)';
     }
 
@@ -342,7 +341,6 @@ ka.lib._addBrowserGridDummy = function () {
         width: 0
       , height: 225
       , css: {
-            /* webkitFilter: 'grayscale(100%) opacity(0.5)' */
             webkitFilter: 'saturate(0%) opacity(0.5)'
           , webkitTransform: 'translate3d(0, 0, 0)', marginLeft: 0
         }
@@ -356,7 +354,6 @@ ka.lib.populateDetailBrowserGrid = function () {
           width: 150
         , height: 225
         , css: {
-            /* webkitFilter: 'grayscale(100%) opacity(0.5)' */
             webkitFilter: 'saturate(0%) opacity(0.5)'
           , webkitTransform: 'translate3d(0, 0, 0)'
         }
@@ -454,15 +451,21 @@ ka.lib.moveDetailBrowserLeft = function () {
         posters = $('#boom-detail-browser img'),
         currentPosterIndex = posters.eq(column + 1).data('boom.index'),
         firstPosterIndex = posters.eq(1).data('boom.index'),
-        snapshot = ka.lib.grid.getMovieListSnapshot();
+        snapshot = ka.lib.grid.getMovieListSnapshot(),
+        isPosterGridOffscreen = ka.lib.browser.isExpanded();
 
     if (column > 2 || (firstPosterIndex == 0 && column > 0)) {
         ka.state.currentPageMode = 'limbo';
 
         ka.lib.browser.backdrop.loadPessimistic(snapshot[currentPosterIndex - 1]);
+
         setTimeout(function () {
+            if (isPosterGridOffscreen) {
+                ka.lib._rotateLargePoster(snapshot[currentPosterIndex - 1], 'left');
+            }
+
             ka.lib._triggerBrowserUpdate(snapshot[currentPosterIndex - 1]);
-            ka.lib._moveDetailBrowserFocus(posters.eq(column + 1), posters.eq(column), '-=160');
+            ka.lib._moveDetailBrowserFocus(posters.eq(column + 1), posters.eq(column), '-=160', isPosterGridOffscreen);
             ka.state.currentDetailBrowserPosterColumn -= 1;
         }, ka.settings.durationUltraShort);
     } else if (firstPosterIndex > 0) {
@@ -476,7 +479,12 @@ ka.lib.moveDetailBrowserLeft = function () {
         }
 
         ka.lib.browser.backdrop.loadPessimistic(snapshot[currentPosterIndex - 1]);
+
         setTimeout(function () {
+            if (isPosterGridOffscreen) {
+                ka.lib._rotateLargePoster(snapshot[firstPosterIndex + 1], 'left');
+            }
+
             ka.lib._triggerBrowserUpdate(snapshot[firstPosterIndex + 1]);
             ka.lib._animatePosterMove(
                  ka.lib._addBrowserGridDummy()
@@ -484,6 +492,7 @@ ka.lib.moveDetailBrowserLeft = function () {
               , $('#boom-detail-browser img').eq(6)
               , posters.eq(3).get(0)
               , posters.eq(2).get(0)
+              , isPosterGridOffscreen
             );
         }, ka.settings.durationUltraShort);
     }
@@ -495,7 +504,8 @@ ka.lib.moveDetailBrowserRight = function () {
         posters = $('#boom-detail-browser img'),
         currentPosterIndex = posters.eq(column + 1).data('boom.index'),
         lastPosterIndex = posters.last().data('boom.index'),
-        snapshot = ka.lib.grid.getMovieListSnapshot();
+        snapshot = ka.lib.grid.getMovieListSnapshot(),
+        isPosterGridOffscreen = ka.lib.browser.isExpanded();
 
     if ((column < 2 && snapshot.length > 2) || (lastPosterIndex == snapshot.length - 1 && lastPosterIndex - currentPosterIndex > 0)) {
         ka.state.currentPageMode = 'limbo';
@@ -503,8 +513,12 @@ ka.lib.moveDetailBrowserRight = function () {
         ka.lib.browser.backdrop.loadPessimistic(snapshot[currentPosterIndex + 1]);
 
         setTimeout(function () {
+            if (isPosterGridOffscreen) {
+                ka.lib._rotateLargePoster(snapshot[currentPosterIndex + 1], 'right');
+            }
+
             ka.lib._triggerBrowserUpdate(snapshot[currentPosterIndex + 1]);
-            ka.lib._moveDetailBrowserFocus(posters.eq(column + 1), posters.eq(column + 2), '+=160');
+            ka.lib._moveDetailBrowserFocus(posters.eq(column + 1), posters.eq(column + 2), '+=160', isPosterGridOffscreen);
             ka.state.currentDetailBrowserPosterColumn += 1;
         }, ka.settings.durationUltraShort);
     } else if (posters.length == 6 && lastPosterIndex + 1 < snapshot.length) {
@@ -515,6 +529,10 @@ ka.lib.moveDetailBrowserRight = function () {
         ka.lib.browser.backdrop.loadPessimistic(snapshot[lastPosterIndex - 1]);
 
         setTimeout(function () {
+            if (isPosterGridOffscreen) {
+                ka.lib._rotateLargePoster(snapshot[lastPosterIndex - 1], 'right');
+            }
+
             ka.lib._triggerBrowserUpdate(snapshot[lastPosterIndex - 1]);
             ka.lib._animatePosterMove(
                 posters.eq(0)
@@ -522,25 +540,29 @@ ka.lib.moveDetailBrowserRight = function () {
               , posters.eq(0)
               , posters.eq(3).get(0)
               , posters.eq(4).get(0)
+              , isPosterGridOffscreen
             );
         }, ka.settings.durationUltraShort);
     }
 };
 
 
-ka.lib._moveDetailBrowserFocus = function (currentElement, targetElement, focusOffset) {
+ka.lib._moveDetailBrowserFocus = function (currentElement, targetElement, focusOffset, isPosterGridOffscreen) {
     ka.lib._focusOutImage(currentElement);
     ka.lib._focusInImage(targetElement);
 
-    $('#boom-detail-focus').velocity({translateZ: 0, left: focusOffset}, {duration: ka.settings.durationNormal, complete: function () {
+    var duration = isPosterGridOffscreen ? 0 : ka.settings.durationNormal;
+    $('#boom-detail-focus').velocity({translateZ: 0, left: focusOffset}, {duration: duration, complete: function () {
         ka.state.currentPageMode = 'detail';
     }});
 };
 
 
-ka.lib._animatePosterMove = function (animateElement, animateProperties, removeElement, previouslyFocusedPoster, upcomingFocusedPoster) {
+ka.lib._animatePosterMove = function (animateElement, animateProperties, removeElement, previouslyFocusedPoster, upcomingFocusedPoster, isPosterGridOffscreen) {
+    var duration = isPosterGridOffscreen ? 0 : ka.settings.durationNormal;
+
     animateElement.velocity(animateProperties, {
-        duration: ka.settings.durationNormal
+        duration: duration
       , progress: function (elements, percentComplete) {
             if (percentComplete < 1) {
                 previouslyFocusedPoster.style.webkitFilter = 'saturate(' + (100 - Math.round(percentComplete * 100)) + '%) opacity(' + Math.round(100 - 50 * percentComplete) / 100 + ')';
@@ -591,6 +613,53 @@ ka.lib._focusOutImage = function (targetElement) {
         duration: ka.settings.durationNormal
       , progress: function (elements, percentComplete) {
             elements[0].style.webkitFilter = 'saturate(' + (100 - Math.round(percentComplete * 100)) + '%) opacity(' + Math.round(100 - 50 * percentComplete) / 100 + ')';
+        }
+    });
+};
+
+
+ka.lib._rotateLargePoster = function (movieObj, direction) {
+    if (direction == 'right') {
+        var targetIndex = 0,
+            startAngleNew = 85,
+            targetAngleOld = -85,
+            targetFunctionNew = function (percentage) { return Math.max(0, startAngleNew - percentage * 85) };
+    } else {
+        var targetIndex = 1,
+            startAngleNew = -85,
+            targetAngleOld = 85,
+            targetFunctionNew = function (percentage) { return startAngleNew + percentage * 85; };
+    }
+    var oldPosterStyle = $('#boom-detail-poster-left img').eq(0).get(0).style,
+        newPosterStyle = $('<img>', {
+            src: '/movie/poster/' + movieObj.keyPoster + '-300.image'
+          , css: {
+                backgroundColor: 'red'
+              , webkitTransform: 'rotateY(' + startAngleNew + 'deg) translateZ(150px) scale(0.9225)'
+            }
+        })[(direction == 'right') ? 'appendTo' : 'prependTo']('#boom-detail-poster-left').get(0).style;
+
+    $('#boom-detail-poster-left img').eq(targetIndex).velocity({dummy: 0}, {
+        delay: ka.settings.durationUltraShort
+      , duration: ka.settings.durationNormal
+      , progress: function (elements, percentage) {
+            oldPosterStyle.webkitTransform = 'rotateY(' + (percentage * targetAngleOld) + 'deg) translateZ(150px) scale(0.9225)';
+            newPosterStyle.webkitTransform = 'rotateY(' + targetFunctionNew(percentage) + 'deg) translateZ(150px) scale(0.9225)';
+
+            if (direction == 'right') {
+                oldPosterStyle.webkitFilter = 'brightness(' + (1 + percentage * 0.25) + ') contrast(' + (1 - percentage * 0.25) + ')';
+                newPosterStyle.webkitFilter = 'brightness(' + (0.25 + percentage * 0.75) + ')';
+            } else {
+                oldPosterStyle.webkitFilter = 'brightness(' + (1 - percentage * 0.75) + ')';
+                newPosterStyle.webkitFilter = 'brightness(' + (1.25 - percentage * 0.25) + ') contrast(' + (0.75 + percentage * 0.25) + ')';
+            }
+        }
+      , complete: function () {
+            $(this).remove();
+            newPosterStyle.webkitTransform = 'none';
+            newPosterStyle.webkitFilter = null;
+
+            $('#boom-detail-poster-left img').on('load', ka.lib.browser.poster.onLoaded);
         }
     });
 };

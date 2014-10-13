@@ -204,7 +204,7 @@ $(document).ready(function () {
     console.log(window.devicePixelRatio == 1); */
 
     $('#boom-movie-detail-poster-foreground').on('load', ka.lib.browser.backdrop.onLoaded);
-    $('#boom-detail-poster-left img').on('load', ka.lib.browser.poster.onLoaded);
+    $('#boom-detail-poster-left').data('boom.isHidden', true).find(' img').on('load', ka.lib.browser.poster.onLoaded);
 
     $.get(
         'https://www.youtube.com/iframe_api'

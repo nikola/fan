@@ -77,7 +77,8 @@ def getThrottledJsonResponse(url, params, pollingCallback=None):
 def makeUnthrottledGetRequest(url):
     try:
         response = requests.get(url, headers={'User-Agent': ENTROPY_SEED}, timeout=5)
-    except requests.Timeout:
+    except (requests.Timeout, requests.ConnectionError):
+        logger.error('Could not GET %s', url)
         return None
     else:
         return response

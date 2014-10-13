@@ -271,19 +271,11 @@
 
     -webkit-perspective: 1920px;
     -webkit-transform-style: preserve-3d;
-    /* -webkit-perspective-origin-x: 50%;
-    -webkit-perspective-origin-y: 50%; */
-
-    /* -webkit-box-shadow: 0 2px 30px 4px rgba(0, 0, 0, 0.5); */
     }
 
 #boom-detail-poster-left img {
-    /* -webkit-transform: rotateY(0deg) translateZ(150px) scale(0.9225); */
     position: absolute;
     -webkit-backface-visibility: hidden;
-
-    }
-
-#boom-detail-poster-right {
-
+    min-width: 300px;
+    min-height: 450px;
     }

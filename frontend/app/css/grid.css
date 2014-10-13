@@ -25,7 +25,7 @@
 
     width: 216px; height: 316px;
 
-    position: fixed; top: 16px; left: 116px;
+    position: absolute; top: 16px; left: 116px;
 
     border: 6px solid white;
     }
@@ -33,7 +33,7 @@
 #boom-compilation-focus {
     display: none;
 
-    position: fixed; top: 0; left: 0;
+    position: absolute; top: 0; left: 0;
 
     width: 320px; height: 470px;
 

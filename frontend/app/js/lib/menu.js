@@ -8,14 +8,14 @@
 
 
 ka.lib.updateMenuButtonSelection = function () {
-    $('#boom-config-button-group .boom-active').removeClass('boom-active').css('backgroundColor', 'transparent');
-    var selected = $('#boom-config-button-group .boom-button').eq(ka.state.currentConfigButton);
+    $('#boom-menu .boom-active').removeClass('boom-active').css('backgroundColor', 'transparent');
+    var selected = $('#boom-menu .boom-button').eq(ka.state.currentConfigButton);
     selected.addClass('boom-active').css('backgroundColor', selected.data('selectColor'));
 };
 
 
 ka.lib.executeMenuSelection = function () {
-    var id = $('#boom-config-button-group .boom-button').eq(ka.state.currentConfigButton).attr('id');
+    var id = $('#boom-menu .boom-button').eq(ka.state.currentConfigButton).attr('id');
 
     if (id == 'boom-config-button-exit') {
         ka.state.hotkeyListener.reset();

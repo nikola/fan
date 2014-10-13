@@ -559,7 +559,9 @@ ka.lib._moveDetailBrowserFocus = function (currentElement, targetElement, focusO
 
     var duration = isPosterGridOffscreen ? 0 : ka.settings.durationNormal;
     $('#boom-detail-focus').velocity({translateZ: 0, left: focusOffset}, {duration: duration, complete: function () {
-        ka.state.currentPageMode = 'detail';
+        if (!isPosterGridOffscreen) {
+            ka.state.currentPageMode = 'detail';
+        }
     }});
 };
 
@@ -590,7 +592,9 @@ ka.lib._animatePosterMove = function (animateElement, animateProperties, removeE
                 removeElement.remove();
             }
 
-            ka.state.currentPageMode = 'detail';
+            if (!isPosterGridOffscreen) {
+               ka.state.currentPageMode = 'detail';
+            }
     }});
 };
 
@@ -637,12 +641,12 @@ ka.lib._rotateLargePoster = function (movieObj, direction) {
         var targetIndex = 0,
             startAngleNew = 90,
             targetAngleOld = -90,
-            targetFunctionNew = function (percentage) { return Math.max(0, 85 - percentage * 90) };
+            targetFunctionNew = function (percentage) { return Math.max(0, 85 - percentage * startAngleNew); };
     } else {
         var targetIndex = 1,
             startAngleNew = -85,
-            targetAngleOld = 85,
-            targetFunctionNew = function (percentage) { return percentage * 85 - 85; };
+            targetAngleOld = 90,
+            targetFunctionNew = function (percentage) { return Math.min(0, percentage * 90 - 85); };
     }
     var oldPosterStyle = $('#boom-detail-poster-left img').eq(0).get(0).style,
         newPosterStyle = $('<img>', {
@@ -674,6 +678,8 @@ ka.lib._rotateLargePoster = function (movieObj, direction) {
             newPosterStyle.webkitFilter = null;
 
             $('#boom-detail-poster-left img').on('load', ka.lib.browser.poster.onLoaded);
+
+            ka.state.currentPageMode = 'detail';
         }
     });
 };

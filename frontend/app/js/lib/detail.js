@@ -467,7 +467,7 @@ ka.lib.moveDetailBrowserLeft = function () {
 
         setTimeout(function () {
             if (isPosterGridOffscreen) {
-                ka.lib._rotateLargePoster(snapshot[currentPosterIndex - 1], 'left');
+                ka.lib._rotateLargePoster(snapshot[currentPosterIndex - 1], 0);
             }
 
             ka.lib._triggerBrowserUpdate(snapshot[currentPosterIndex - 1]);
@@ -488,7 +488,7 @@ ka.lib.moveDetailBrowserLeft = function () {
 
         setTimeout(function () {
             if (isPosterGridOffscreen) {
-                ka.lib._rotateLargePoster(snapshot[firstPosterIndex + 1], 'left');
+                ka.lib._rotateLargePoster(snapshot[firstPosterIndex + 1], 0);
             }
 
             ka.lib._triggerBrowserUpdate(snapshot[firstPosterIndex + 1]);
@@ -520,7 +520,7 @@ ka.lib.moveDetailBrowserRight = function () {
 
         setTimeout(function () {
             if (isPosterGridOffscreen) {
-                ka.lib._rotateLargePoster(snapshot[currentPosterIndex + 1], 'right');
+                ka.lib._rotateLargePoster(snapshot[currentPosterIndex + 1], 1);
             }
 
             ka.lib._triggerBrowserUpdate(snapshot[currentPosterIndex + 1]);
@@ -536,7 +536,7 @@ ka.lib.moveDetailBrowserRight = function () {
 
         setTimeout(function () {
             if (isPosterGridOffscreen) {
-                ka.lib._rotateLargePoster(snapshot[lastPosterIndex - 1], 'right');
+                ka.lib._rotateLargePoster(snapshot[lastPosterIndex - 1], 1);
             }
 
             ka.lib._triggerBrowserUpdate(snapshot[lastPosterIndex - 1]);
@@ -637,7 +637,7 @@ ka.lib._rotateLargePoster = function (movieObj, direction) {
      *  http://paulrhayes.com/experiments/cube-3d/
      */
 
-    if (direction == 'right') {
+    if (direction) {
         var targetIndex = 0,
             startAngleNew = 90,
             targetAngleOld = -90,
@@ -655,7 +655,7 @@ ka.lib._rotateLargePoster = function (movieObj, direction) {
                 backgroundColor: 'red'
               , webkitTransform: 'rotateY(' + startAngleNew + 'deg) translateZ(150px) scale(0.9225)'
             }
-        })[(direction == 'right') ? 'appendTo' : 'prependTo']('#boom-detail-poster-left').get(0).style;
+        })[['prependTo', 'appendTo'][direction]]('#boom-detail-poster-left').get(0).style;
 
     $('#boom-detail-poster-left img').eq(targetIndex).velocity({dummy: 0}, {
         delay: ka.settings.durationUltraShort
@@ -664,7 +664,7 @@ ka.lib._rotateLargePoster = function (movieObj, direction) {
             oldPosterStyle.webkitTransform = 'rotateY(' + (percentage * targetAngleOld) + 'deg) translateZ(150px) scale(0.9225)';
             newPosterStyle.webkitTransform = 'rotateY(' + targetFunctionNew(percentage) + 'deg) translateZ(150px) scale(0.9225)';
 
-            if (direction == 'right') {
+            if (direction) {
                 oldPosterStyle.webkitFilter = 'brightness(' + (1 + percentage * 0.25) + ') contrast(' + (1 - percentage * 0.25) + ')';
                 newPosterStyle.webkitFilter = 'brightness(' + (0.25 + percentage * 0.75) + ')';
             } else {

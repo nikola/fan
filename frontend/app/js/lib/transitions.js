@@ -16,7 +16,7 @@ ka.transition.menu = {to: {
         /* ka.lib.occludeMovieGrid(); */
         ka.lib.grid.occlude();
 
-        $('#boom-movie-config, #boom-movie-grid-container, #boom-grid-focus').velocity(
+        $('#boom-menu, #boom-movie-grid-container, #boom-grid-focus').velocity(
             {translateZ: 0, left: '-=780'}
           , {
                 duration: ka.settings.durationNormal
@@ -37,7 +37,7 @@ ka.transition.menu = {to: {
                     });
                     ka.state.desaturationImageCache = {};
 
-                    $('#boom-movie-config').css('display', 'none');
+                    $('#boom-menu').css('display', 'none');
 
                     ka.state.currentPageMode = 'grid';
                 }
@@ -53,7 +53,7 @@ ka.transition.grid = {to: {
     menu: function () {     /* screen state transition: OK */
         ka.state.currentPageMode = 'limbo';
 
-        $('#boom-movie-config').css('display', 'block');
+        $('#boom-menu').css('display', 'block');
 
         /* ka.lib.occludeMovieGrid(); */
         ka.lib.grid.occlude();
@@ -75,7 +75,7 @@ ka.transition.grid = {to: {
             }
         }
 
-        $('#boom-movie-config, #boom-movie-grid-container, #boom-grid-focus').velocity(
+        $('#boom-menu, #boom-movie-grid-container, #boom-grid-focus').velocity(
             {translateZ: 0, left: '+=780'}
           , {
                 duration: ka.settings.durationNormal

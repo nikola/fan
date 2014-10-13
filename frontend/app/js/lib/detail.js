@@ -104,7 +104,11 @@ ka.lib.browser = {
 
   , poster: {
 
-        setSource: function (key) {
+        isHidden: function () {
+            return $('#boom-detail-poster-left').data('boom.isHidden');
+        }
+
+      , setSource: function (key) {
             $('#boom-detail-poster-left img').attr('src', '/movie/poster/' + key + '-300.image');
         }
 
@@ -118,15 +122,17 @@ ka.lib.browser = {
         }
 
       , hide: function () {
-            $('#boom-detail-poster-left').find('img').attr('src', '').end().velocity({bottom: '-=490'}, {duration: 0, display: 'none'});
+            $('#boom-detail-poster-left').find('img').attr('src', '').end().data('boom.isHidden', true).velocity({bottom: '-=490'}, {duration: 0, display: 'none'});
         }
 
       , slideUp: function () {
-            $('#boom-detail-poster-left').css('display', 'block').velocity({bottom: '+=490'}, ka.settings.durationNormal);
+            if (ka.lib.browser.poster.isHidden()) {
+                $('#boom-detail-poster-left').css('display', 'block').data('boom.isHidden', false).velocity({bottom: '+=490'}, ka.settings.durationNormal);
+            }
         }
 
       , slideDown: function () {
-            $('#boom-detail-poster-left').velocity({bottom: '-=490'}, {duration: ka.settings.durationNormal, display: 'none', complete: function () {
+            $('#boom-detail-poster-left').data('boom.isHidden', true).velocity({bottom: '-=490'}, {duration: ka.settings.durationNormal, display: 'none', complete: function () {
                 $(this).find('img').attr('src', '');
             }});
         }
@@ -318,20 +324,20 @@ ka.lib.closeTrailerPlayer = function () {
 
 
 ka.lib._addBrowserGridImage = function (keyPoster, index, unselected) {
-    var css = {webkitTransform: 'translate3d(0, 0, 0)'};
+    var styles = {webkitTransform: 'translate3d(0, 0, 0)'};
     if (unselected) {
-        css.webkitFilter = 'saturate(0%) opacity(0.5)';
+        styles.webkitFilter = 'saturate(0%) opacity(0.5)';
     }
 
     if (keyPoster in ka.state.detachedBrowserPosterByKey) {
-        return ka.state.detachedBrowserPosterByKey[keyPoster].appendTo('#boom-detail-browser').data('boom.index', index);
+        return ka.state.detachedBrowserPosterByKey[keyPoster].data('boom.index', index).css(styles).appendTo('#boom-detail-browser');
     } else {
         return $('<img>', {
             src: '/movie/poster/' + keyPoster + '-150.image'
           , width: 150
           , height: 225
           , data: {'boom.index': index}
-          , css: css
+          , css: styles
         }).appendTo('#boom-detail-browser');
     }
 };
@@ -578,6 +584,7 @@ ka.lib._animatePosterMove = function (animateElement, animateProperties, removeE
                 ka.state.detachedBrowserPosterByKey[src.match(/\movie\/poster\/(.*?)-\d{2,3}\.image/)[1]] = removeElement.detach().css({
                     width: 150
                   , marginLeft: 10
+                  , webkitFilter: null
                 });
             } else {
                 removeElement.remove();
@@ -619,16 +626,23 @@ ka.lib._focusOutImage = function (targetElement) {
 
 
 ka.lib._rotateLargePoster = function (movieObj, direction) {
+    /*
+     *  http://desandro.github.io/3dtransforms/docs/introduction.html
+     *  http://css-tricks.com/creating-a-3d-cube-image-gallery/
+     *  http://cssdeck.com/labs/simple-css3-3d-cube
+     *  http://paulrhayes.com/experiments/cube-3d/
+     */
+
     if (direction == 'right') {
         var targetIndex = 0,
-            startAngleNew = 85,
-            targetAngleOld = -85,
-            targetFunctionNew = function (percentage) { return Math.max(0, startAngleNew - percentage * 85) };
+            startAngleNew = 90,
+            targetAngleOld = -90,
+            targetFunctionNew = function (percentage) { return Math.max(0, 85 - percentage * 90) };
     } else {
         var targetIndex = 1,
             startAngleNew = -85,
             targetAngleOld = 85,
-            targetFunctionNew = function (percentage) { return startAngleNew + percentage * 85; };
+            targetFunctionNew = function (percentage) { return percentage * 85 - 85; };
     }
     var oldPosterStyle = $('#boom-detail-poster-left img').eq(0).get(0).style,
         newPosterStyle = $('<img>', {

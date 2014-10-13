@@ -1,7 +1,7 @@
 /**
  *  YouTube Player API functions.
  *
- *  @author Nikola Klaric (nikola@generic.company)
+ *  @author Nikola Klaric (nikola@klaric.org)
  *  @copyright Copyright (c) 2013-2014 Nikola Klaric
  */
 ; var ka = ka || {}; if (!('state' in ka)) ka.state = {};

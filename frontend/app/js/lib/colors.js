@@ -1,7 +1,7 @@
 /**
  *  Color-related utility functions.
  *
- *  @author Nikola Klaric (nikola@generic.company)
+ *  @author Nikola Klaric (nikola@klaric.org)
  *  @copyright Copyright (c) 2013-2014 Nikola Klaric
  */
 ; var ka = ka || {}; if (!('lib' in ka)) ka.lib = {};

@@ -1,7 +1,7 @@
 /**
  *  Utility functions for localization.
  *
- *  @author Nikola Klaric (nikola@generic.company)
+ *  @author Nikola Klaric (nikola@klaric.org)
  *  @copyright Copyright (c) 2013-2014 Nikola Klaric
  */
 

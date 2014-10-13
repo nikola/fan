@@ -146,7 +146,7 @@ ka.lib.browser = {
         }
 
       , clear: function () {
-            $('#boom-movie-detail').css('backgroundImage', 'none');
+            $('#boom-movie-detail').css('backgroundImage', '');
         }
 
       , setImmediate: function (movieObj) {
@@ -190,7 +190,7 @@ ka.lib.browser = {
                 $('#boom-movie-detail-poster-background')
                     .attr('src', $('#boom-movie-detail-poster-foreground').attr('src'))
                     .data('boom.isDefocused', false)
-                    .get(0).style.webkitFilter = null;
+                    .get(0).style.webkitFilter = 'none';
 
                 if (!$(this).data('boom.isCached')) {
                     var uuid = $(this).data('boom.uuid');
@@ -326,7 +326,7 @@ ka.lib.closeTrailerPlayer = function () {
 ka.lib._addBrowserGridImage = function (keyPoster, index, unselected) {
     var styles = {
         webkitTransform: 'translate3d(0, 0, 0)'
-      , webkitFilter: (unselected) ? 'saturate(0%) opacity(0.5)' : 'none'
+      , webkitFilter: (unselected) ? 'saturate(0%) opacity(0.5)' : ''
     };
 
     if (keyPoster in ka.state.detachedBrowserPosterByKey) {
@@ -579,14 +579,14 @@ ka.lib._animatePosterMove = function (animateElement, animateProperties, removeE
         }
       , complete: function () {
             previouslyFocusedPoster.style.webkitFilter = 'saturate(0%) opacity(0.5)';
-            upcomingFocusedPoster.style.webkitFilter = null;
+            upcomingFocusedPoster.style.webkitFilter = 'none';
 
             var src = removeElement.attr('src');
             if (src) {
                 ka.state.detachedBrowserPosterByKey[src.match(/\movie\/poster\/(.*?)-\d{2,3}\.image/)[1]] = removeElement.detach().css({
                     width: 150
                   , marginLeft: 10
-                  , webkitFilter: null
+                  , webkitFilter: ''
                 });
             } else {
                 removeElement.remove();
@@ -613,7 +613,7 @@ ka.lib._focusInImage = function (targetElement) {
             elements[0].style.webkitFilter = 'saturate(' + Math.round(percentComplete * 100) + '%) opacity(' + Math.round(50 + 50 * percentComplete) / 100 + ')';
         }
       , complete: function (elements) {
-            elements[0].style.webkitFilter = null;
+            elements[0].style.webkitFilter = 'none';
         }
     });
 };
@@ -673,7 +673,7 @@ ka.lib._rotateLargePoster = function (movieObj, direction) {
       , complete: function () {
             $(this).remove();
             newPosterStyle.webkitTransform = 'none';
-            newPosterStyle.webkitFilter = null;
+            newPosterStyle.webkitFilter = 'none';
 
             $('#boom-detail-poster-left img').on('load', ka.lib.browser.poster.onLoaded);
 

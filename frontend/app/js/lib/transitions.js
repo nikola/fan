@@ -29,11 +29,10 @@ ka.transition.menu = {to: {
                     });
                 }
               , complete: function () {
-                    /* ka.lib.unoccludeMovieGrid(); */
                     ka.lib.grid.unocclude();
 
                     $.each(ka.state.desaturationImageCache, function (key, value) {
-                        value.style.webkitFilter = null;
+                        value.style.webkitFilter = 'none';
                         value.style.webkitTransform = 'none';
                     });
                     ka.state.desaturationImageCache = {};

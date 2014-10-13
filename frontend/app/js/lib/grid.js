@@ -385,7 +385,7 @@ ka.lib.updateMovieGridOnChange = function () {
                             delete ka.state.desaturationImageCache[movie.uuid];
                         }
                         element.style.webkitTransform = 'none';
-                        element.style.webkitFilter = null;
+                        element.style.webkitFilter = 'none';
                     }
                 }
             }
@@ -884,7 +884,7 @@ ka.lib.closeCompilation = function (callback) {
                         elements[0].style.webkitFilter = 'blur(' + Math.round(4 - 4 * percentComplete) + 'px)'; /* TODO: optimize! */
                     }
                   , complete: function (elements) {
-                        elements[0].style.webkitFilter = null;
+                        elements[0].style.webkitFilter = 'none';
                     }
                 });
         }
@@ -913,7 +913,7 @@ ka.lib.dissolveCompilation = function () {
         $('#boom-compilation-container, #boom-compilation-focus').velocity({left: '+=1920'}, 0);
     }});
 
-    $('.boom-movie-grid-image').css('-webkit-filter', 'none').velocity({scaleX: 1, scaleY: 1, scaleZ: 1, opacity: 1}, 0);
+    $('.boom-movie-grid-image').css('webkitFilter', '').velocity({scaleX: 1, scaleY: 1, scaleZ: 1, opacity: 1}, 0);
     $('.boom-movie-grid-key').velocity({opacity: 1}, 0);
     $('#boom-compilation-grid').empty();
 };

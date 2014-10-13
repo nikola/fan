@@ -67,3 +67,12 @@ exe = EXE(
     version='ka-BOOM.version',
     icon='ka-BOOM.ico',
 )
+
+# import subprocess
+# subprocess.call([
+#    "SIGNTOOL.EXE",
+#    "/F", "path-to-key.pfx",
+#    "/P", "your-password",
+#    "/T", "time-stamping url",
+#    exe.name
+# ])

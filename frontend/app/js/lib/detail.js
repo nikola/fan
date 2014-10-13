@@ -638,13 +638,11 @@ ka.lib._rotateLargePoster = function (movieObj, direction) {
      */
 
     if (direction) {
-        var targetIndex = 0,
-            startAngleNew = 90,
+        var startAngleNew = 90,
             targetAngleOld = -90,
-            targetFunctionNew = function (percentage) { return Math.max(0, 85 - percentage * startAngleNew); };
+            targetFunctionNew = function (percentage) { return Math.max(0, 85 - percentage * 90); };
     } else {
-        var targetIndex = 1,
-            startAngleNew = -85,
+        var startAngleNew = -85,
             targetAngleOld = 90,
             targetFunctionNew = function (percentage) { return Math.min(0, percentage * 90 - 85); };
     }
@@ -652,12 +650,12 @@ ka.lib._rotateLargePoster = function (movieObj, direction) {
         newPosterStyle = $('<img>', {
             src: '/movie/poster/' + movieObj.keyPoster + '-300.image'
           , css: {
-                backgroundColor: 'red'
+                backgroundColor: '#' + movieObj.primaryPosterColor
               , webkitTransform: 'rotateY(' + startAngleNew + 'deg) translateZ(150px) scale(0.9225)'
             }
         })[['prependTo', 'appendTo'][direction]]('#boom-detail-poster-left').get(0).style;
 
-    $('#boom-detail-poster-left img').eq(targetIndex).velocity({dummy: 0}, {
+    $('#boom-detail-poster-left img').eq(!direction | 0).velocity({dummy: 0}, {
         delay: ka.settings.durationUltraShort
       , duration: ka.settings.durationNormal
       , progress: function (elements, percentage) {

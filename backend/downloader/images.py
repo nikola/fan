@@ -110,6 +110,8 @@ def processBacklogEntry(artworkType, key, pollingCallback=None):
                      shell=True, **kwargs)
                 _yield()
 
+                # https://developers.google.com/speed/webp/gallery1
+                # https://developers.google.com/speed/webp/docs/cwebp
                 call([CWEBP_EXE, '-preset', 'picture', '-hint', 'picture', '-sns', '0', '-f', '0', '-q', '0', '-m', '0', '-lossless', '-af', '-noalpha', '-quiet', filename + ('@%d.png' % width), '-o', filename + ('@%d.webp' % width)],
                      shell=True, **kwargs)
                 _yield()

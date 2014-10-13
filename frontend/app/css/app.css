@@ -55,5 +55,7 @@ iframe[seamless] {
     }
 
 img[src='']  {
-    visibility: hidden;
+    /* visibility: hidden; */
+
+    content: "";
     }

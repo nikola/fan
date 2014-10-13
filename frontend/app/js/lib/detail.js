@@ -324,10 +324,10 @@ ka.lib.closeTrailerPlayer = function () {
 
 
 ka.lib._addBrowserGridImage = function (keyPoster, index, unselected) {
-    var styles = {webkitTransform: 'translate3d(0, 0, 0)'};
-    if (unselected) {
-        styles.webkitFilter = 'saturate(0%) opacity(0.5)';
-    }
+    var styles = {
+        webkitTransform: 'translate3d(0, 0, 0)'
+      , webkitFilter: (unselected) ? 'saturate(0%) opacity(0.5)' : 'none'
+    };
 
     if (keyPoster in ka.state.detachedBrowserPosterByKey) {
         return ka.state.detachedBrowserPosterByKey[keyPoster].data('boom.index', index).css(styles).appendTo('#boom-detail-browser');

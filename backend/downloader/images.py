@@ -103,18 +103,22 @@ def processBacklogEntry(artworkType, key, pollingCallback=None):
         if result:
             pathname = os.path.join(APP_STORAGE_PATH, 'artwork', 'posters', key)
             filename = os.path.join(pathname, 'poster')
+
             kwargs = {'creationflags': 0x00000040} # IDLE_PRIORITY_CLASS
 
             for width, height in [(150, 225), (200, 300), (300, 450)]:
-                call([CONVERT_EXE, 'jpg:%s.jpg' % filename, '-colorspace', 'RGB', '-filter', 'RobidouxSharp', '-distort', 'Resize', '%dx%d' % (width, height), '-colorspace', 'sRGB', 'png:%s@%d.png' % (filename, width)],
-                     shell=True, **kwargs)
-                _yield()
+                if not os.path.exists(os.path.join(pathname, '%s@%d.webp' % (filename, width))):
+                    _yield()
 
-                # https://developers.google.com/speed/webp/gallery1
-                # https://developers.google.com/speed/webp/docs/cwebp
-                call([CWEBP_EXE, '-preset', 'picture', '-hint', 'picture', '-sns', '0', '-f', '0', '-q', '0', '-m', '0', '-lossless', '-af', '-noalpha', '-quiet', filename + ('@%d.png' % width), '-o', filename + ('@%d.webp' % width)],
-                     shell=True, **kwargs)
-                _yield()
+                    call([CONVERT_EXE, 'jpg:%s.jpg' % filename, '-colorspace', 'RGB', '-filter', 'RobidouxSharp', '-distort', 'Resize', '%dx%d' % (width, height), '-colorspace', 'sRGB', 'png:%s@%d.png' % (filename, width)],
+                         shell=True, **kwargs)
+                    _yield()
+
+                    # https://developers.google.com/speed/webp/gallery1
+                    # https://developers.google.com/speed/webp/docs/cwebp
+                    call([CWEBP_EXE, '-preset', 'picture', '-hint', 'picture', '-sns', '0', '-f', '0', '-q', '0', '-m', '0', '-lossless', '-af', '-noalpha', '-quiet', filename + ('@%d.png' % width), '-o', filename + ('@%d.webp' % width)],
+                         shell=True, **kwargs)
+                    _yield()
         else:
             pass # TODO: handle failure
 

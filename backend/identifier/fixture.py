@@ -53,7 +53,9 @@ BACKDROPS = {
      14161: 'gUnrvOtSAQL0xGcC49L7RUcpN4E',  # 2012
      19908: 'z2iZyuW6XWcF0jl8fe5uavNYujQ',  # Zombieland
      19995: 'qvGIprpD5y6Enul3xwNZd7KcrG2',  # Avatar
+     49051: '2R4wrnqu9eG5J7IjCHL9G5luJV0',  # The Hobbit: An Unexpected Journey
      54138: 'ns0IojuqJe24AHTxe8RVcWJUCDM',  # Star Trek Into Darkness
+     57158: 'o3G1XxdOSzvEsGGQwDgwoRLCalR',  # The Hobbit: The Desolation of Smaug
      64635: 'oh7GVViQ0DnanF1lMeegBhdXxBB',  # Total Recall
      76025: 'sZKDHpErUrhWPG5GPbxNlR5JKpb',  # Shame
     109445: 'irHmdlkdJphmk4HPfyAQfklKMbY',  # Frozen
@@ -63,6 +65,7 @@ BACKDROPS = {
 }
 
 POSTERS = {
+       169: 'q2AOWNaAcsJcs0kGrNjjuceFx9W',  # Predator 2
        755: 'fw7r6zXLoiinOSMYampo6ZloJFz',  # From Dusk Till Dawn
        790: '3Iohw4WUosqfdX7vCKRko1hx0HN',  # The Fog
        807: 'uGJCZR4400oE0EkwKXenSSkqPgQ',  # Se7en
@@ -73,6 +76,8 @@ POSTERS = {
      14161: 'yBJBl3rXTlqb7PglpihF4A7PzyL',  # 2012
      19995: '6WYXT5jFs1aEKdpdTclS1bEY8IO',  # Avatar
      23629: 'jnCDFAssFafnkmljtyEaUKaoA4Q',  # Sucker Punch
+     49051: '2ofYFSn6P7XmlVP7p4TLAncp7gz',  # The Hobbit: An Unexpected Journey
+     57158: '9r45CMd2WuQ2bW2PHk6NbMIiEvA',  # The Hobbit: The Desolation of Smaug
      64635: 'b9cvXMdcrUWvbCfys4Toz3mu0NF',  # Total Recall
     137113: 'fDf25sy8M6ZKdnb8OQkNbak4x02',  # Edge of Tomorrow
     164457: '3ILyypFd1zDdQLasS3NuEliKRIs',  # Out of the Furnace

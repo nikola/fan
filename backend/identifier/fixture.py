@@ -45,12 +45,17 @@ BACKDROPS = {
       1250: '9cs9RuOS3A5YEh6r4opVrIGbiJy',  # Ghost Rider
       1368: 'b7JuifSoicUrPDQzteu4UWqWBZK',  # First Blood
       1598: 'dWCPuihntOsE1rz49UELd1wypFj',  # Cape Fear
+      3432: 'pC1zXyhYTRPyk9GVm3xvU1qfEbZ',  # Mr. Brooks
       7874: 'r6h66od7MJfrjhzHvRK6EAFeXOb',  # Black Snake Moan
       8202: '4JKZXR6p31IiTRObtQIhuZtqRzI',  # Aeon Flux
       8489: 'tAGJ66pWG9jQ602WbSByrPwsYps',  # Ali
+      8810: 'pLeoSDcunfMOfEkX0P2YYuqfoOT',  # Mad Max 2
+      9373: 'KHG2Hbetp7thiMKp0dKIRR3f6C',   # The Texas Chainsaw Massacre
       9509: 'acuvD7rAaQWaLzyUzGs8pPYx7iN',  # Man on Fire
       9693: 'c5jNuPA19oGiEmbh8iFeAi6aHMI',  # Children of Men
+     13811: 'uMTvlvn9vlQeLZjaQxipVaybnLG',  # Knowing
      14161: 'gUnrvOtSAQL0xGcC49L7RUcpN4E',  # 2012
+     16866: 'e7cpUuhjkzuzss1CJHqEKpTNQqW',  # Planet 51
      19908: 'z2iZyuW6XWcF0jl8fe5uavNYujQ',  # Zombieland
      19995: 'qvGIprpD5y6Enul3xwNZd7KcrG2',  # Avatar
      49051: '2R4wrnqu9eG5J7IjCHL9G5luJV0',  # The Hobbit: An Unexpected Journey
@@ -61,17 +66,20 @@ BACKDROPS = {
     109445: 'irHmdlkdJphmk4HPfyAQfklKMbY',  # Frozen
     127585: '3KbXDu5FcDtyQyFzm2HZj8BFifi',  # X-Men: Days of Future Past
     137113: '9maldNxAaXzBVgid64uWH8rwFuu',  # Edge of Tomorrow
+    138697: '1QTYZlAUZMiG6y1Z4HI6MXifcqm',  # Don Jon
     157834: 'bbcuTz7rcypTEcsVsclpjjnCFEg',  # The Zero Theorem
 }
 
 POSTERS = {
        169: 'q2AOWNaAcsJcs0kGrNjjuceFx9W',  # Predator 2
+       745: 'myKLjM2y4MlqS8vFmV9gcwSyDYb',  # The Sixth Sense
        755: 'fw7r6zXLoiinOSMYampo6ZloJFz',  # From Dusk Till Dawn
        790: '3Iohw4WUosqfdX7vCKRko1hx0HN',  # The Fog
        807: 'uGJCZR4400oE0EkwKXenSSkqPgQ',  # Se7en
       1429: 'hf3KpQ13Z8HS0ZodzooMiR8PBqD',  # 25th Hour
       1573: 'pCcZBYSRwuCGl2lKwlq2vMqiFsL',  # Die Hard 2
       2124: 'qUFXidNEXMh0Rnrp8xsgdFWAIg6',  # Color of Night
+      8810: '7wM8iMlfGPj88IOgLuydOjq0rrT',  # Mad Max 2
      13475: 'lkQgAaI9s2j2Lhlkie8I9RcWYEX',  # Star Trek
      14161: 'yBJBl3rXTlqb7PglpihF4A7PzyL',  # 2012
      19995: '6WYXT5jFs1aEKdpdTclS1bEY8IO',  # Avatar

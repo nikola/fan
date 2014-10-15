@@ -624,23 +624,33 @@ ka.lib._focusOutImage = function (targetElement) {
 
 
 ka.lib._rotateLargePoster = function (movieObj, direction) {
+    var startAngleNew, targetAngleOld, targetFunctionNew, image;
+
     if (direction) {
-        var startAngleNew = 90,
-            targetAngleOld = -90,
-            targetFunctionNew = function (percentage) { return Math.max(0, 85 - percentage * 90); };
+        startAngleNew = 90;
+        targetAngleOld = -90;
+        targetFunctionNew = function (percentage) { return Math.max(0, 85 - percentage * 90); };
     } else {
-        var startAngleNew = -85,
-            targetAngleOld = 90,
-            targetFunctionNew = function (percentage) { return Math.min(0, percentage * 90 - 85); };
+        startAngleNew = -85;
+        targetAngleOld = 90;
+        targetFunctionNew = function (percentage) { return Math.min(0, percentage * 90 - 85); };
     }
-    var oldPosterStyle = $('#boom-detail-large-poster img').eq(0).get(0).style,
-        newPosterStyle = $('<img>', {
+
+    if (movieObj.keyPoster in ka.cache.largeBrowserPosterByKey) {
+        image = ka.cache.largeBrowserPosterByKey[movieObj.keyPoster]
+                        .css('webkitTransform', 'rotateY(' + startAngleNew + 'deg) translateZ(150px) scale(0.9225)');
+    } else {
+        image = $('<img>', {
             src: '/movie/poster/' + movieObj.keyPoster + '-300.image'
           , css: {
                 backgroundColor: '#' + movieObj.primaryPosterColor
               , webkitTransform: 'rotateY(' + startAngleNew + 'deg) translateZ(150px) scale(0.9225)'
             }
-        })[['prependTo', 'appendTo'][direction]]('#boom-detail-large-poster').get(0).style;
+        });
+    }
+
+    var oldPosterStyle = $('#boom-detail-large-poster img').eq(0).get(0).style,
+        newPosterStyle = image[['prependTo', 'appendTo'][direction]]('#boom-detail-large-poster').get(0).style;
 
     $('#boom-detail-large-poster img').eq(!direction | 0).velocity({dummy: 0}, {
         delay: ka.settings.durationUltraShort
@@ -658,7 +668,7 @@ ka.lib._rotateLargePoster = function (movieObj, direction) {
             }
         }
       , complete: function () {
-            $(this).remove();
+            ka.cache.largeBrowserPosterByKey[$(this).attr('src').match(/\movie\/poster\/(.*?)-\d{2,3}\.image/)[1]] = $(this).css('webkitFilter', 'none').detach();
 
             newPosterStyle.webkitTransform = 'none';
             newPosterStyle.webkitFilter = 'none';

@@ -113,22 +113,13 @@ ka.lib.browser = {
         }
 
       , onLoaded: function () {
-            /* if (ka.lib.browser.isExpanded()) {
-                ka.lib.browser.poster.slideUp();
-            } else {
-                ka.lib.browser.expandUp();
-            } */
-            ka.lib.browser.poster.slideUp();
+            if (ka.lib.browser.poster.isHidden()) {
+                $('#boom-detail-large-poster').css('display', 'block').data('boom.isHidden', false).velocity({bottom: '+=490'}, ka.settings.durationNormal);
+            }
         }
 
       , hide: function () {
             $('#boom-detail-large-poster').find('img').attr('src', '').end().data('boom.isHidden', true).velocity({bottom: '-=490'}, {duration: 0, display: 'none'});
-        }
-
-      , slideUp: function () {
-            if (ka.lib.browser.poster.isHidden()) {
-                $('#boom-detail-large-poster').css('display', 'block').data('boom.isHidden', false).velocity({bottom: '+=490'}, ka.settings.durationNormal);
-            }
         }
 
       , slideDown: function () {

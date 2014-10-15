@@ -259,7 +259,7 @@
     opacity: 0;
     }
 
-#boom-detail-poster-left {
+#boom-detail-large-poster {
     display: none;
 
     position: absolute; bottom: -480px; right: 10px;
@@ -269,7 +269,7 @@
     -webkit-transform-style: preserve-3d;
     }
 
-#boom-detail-poster-left img {
+#boom-detail-large-poster img {
     position: absolute;
     -webkit-backface-visibility: hidden;
     min-width: 300px;

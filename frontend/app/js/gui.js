@@ -18,6 +18,11 @@ ka.data = {
   , indexById: {}
 };
 
+ka.cache = {
+    smallBrowserPosterByKey: {}
+  , largeBrowserPosterByKey: {}
+};
+
 ka.settings = {
     gridMaxRows: 3
   , gridMaxColumns: 7
@@ -71,7 +76,6 @@ ka.state = {
 
   , currentDetailBrowserPosterColumn: null
   , uncachedBackdropDelayTimer: null
-  , detachedBrowserPosterByKey: {}
 
   , setOfKnownPosters: {}
   , setOfUnknownPosters: {}

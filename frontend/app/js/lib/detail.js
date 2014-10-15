@@ -322,8 +322,8 @@ ka.lib._addBrowserGridImage = function (keyPoster, index, unselected) {
       , marginLeft: 10
     };
 
-    if (keyPoster in ka.state.detachedBrowserPosterByKey) {
-        return ka.state.detachedBrowserPosterByKey[keyPoster].data('boom.index', index).css(styles).appendTo('#boom-detail-browser');
+    if (keyPoster in ka.cache.smallBrowserPosterByKey) {
+        return ka.cache.smallBrowserPosterByKey[keyPoster].data('boom.index', index).css(styles).appendTo('#boom-detail-browser');
     } else {
         return $('<img>', {
             src: '/movie/poster/' + keyPoster + '-150.image'
@@ -472,9 +472,9 @@ ka.lib.moveDetailBrowserLeft = function () {
         ka.state.view = 'limbo';
 
         var keyPoster = snapshot[firstPosterIndex - 1].keyPoster;
-        if (keyPoster in ka.state.detachedBrowserPosterByKey) {
+        if (keyPoster in ka.cache.smallBrowserPosterByKey) {
             posters.eq(0).replaceWith(
-                ka.state.detachedBrowserPosterByKey[keyPoster]
+                ka.cache.smallBrowserPosterByKey[keyPoster]
                     .css({width: 150, marginLeft: 10, webkitFilter: 'saturate(0%) opacity(0.5)'})
                     .data('boom.index', firstPosterIndex - 1)
             );
@@ -683,5 +683,5 @@ ka.lib._detachBrowserPoster = function (index, element) {
     } else if (index !== null) {
         element = $(element);
     }
-    ka.state.detachedBrowserPosterByKey[element.attr('src').match(/\movie\/poster\/(.*?)-\d{2,3}\.image/)[1]] = element.detach();
+    ka.cache.smallBrowserPosterByKey[element.attr('src').match(/\movie\/poster\/(.*?)-\d{2,3}\.image/)[1]] = element.detach();
 };

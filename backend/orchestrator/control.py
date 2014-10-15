@@ -20,11 +20,57 @@ from settings import APP_STORAGE_PATH
 from orchestrator.urls import module as appModule
 from orchestrator.pubsub import PubSub
 from downloader.images import processBacklogEntry
-from identifier import getStreamRecords, getFixedRecords, identifyMovieByTitleYear
+from identifier import getStreamRecords, getFixedRecords, identifyMovieByTitleYear, getEditVersionFromFilename
 from utils.config import getCurrentUserConfig, getOverlayConfig, saveCurrentUserConfig
 from utils.net import deleteResponseCache
 
 from . import logger
+
+def _getMovieRecordFromLocation(streamLocation, basedataFromStream, basedataFromDir, processCallback):
+    processCallback()
+    if not appModule.userConfig.get('isDemoMode', False):
+        logger.info('Found new supported file: %s' % streamLocation)
+    else:
+        logger.info('Importing TOP 250 movie: "%s (%d)"' % (basedataFromStream['title'], basedataFromStream['year']))
+
+    processCallback()
+
+    movieRecord = identifyMovieByTitleYear(
+        appModule.userConfig.get('language', 'en'),
+        basedataFromDir.get('title'), basedataFromDir.get('year'),
+        basedataFromStream.get('title'), basedataFromStream.get('year'),
+        processCallback,
+    )
+
+    if movieRecord is not None:
+        # logger.warning('Could not identify file: %s' % streamLocation)
+    # else:
+        for imageType in ('Poster', 'Backdrop'):
+            movieRecord['key' + imageType] = movieRecord['url' + imageType].replace('/', '').replace('.jpg', '')
+            pathname = os.path.join(APP_STORAGE_PATH, 'artwork', imageType.lower() + 's', movieRecord['key' + imageType])
+            try:
+                os.makedirs(pathname)
+            except OSError:
+                pass
+            processCallback()
+            with open(os.path.join(pathname, 'source.url'), 'wb+') as fp:
+                fp.write('[InternetShortcut]\r\nURL=%soriginal%s\r\n' % (appModule.imageBaseUrl, movieRecord['url' + imageType]))
+            processCallback()
+            closing(open(os.path.join(APP_STORAGE_PATH, 'backlog', imageType.lower() + 's', movieRecord['key' + imageType]), 'w+'))
+            processCallback()
+            del movieRecord['url' + imageType]
+        processBacklogEntry('backdrop', movieRecord.get('keyBackdrop'), processCallback)
+
+    return movieRecord
+        # movieUuid = streamManager.addMovieStream(movieRecord, streamLocation) # TODO: re-wire stream to correct movie if necessary
+        # _processRequests()
+
+        # if pubSubReference.connected:
+        #     pubSubReference.write(unicode('["receive:movie:item", %s]' % streamManager.getMovieAsJson(movieUuid)))
+        #     _processRequests()
+
+        # if isDownloaderIdle:
+        #    queue.put('downloader:resume')
 
 
 def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridgeToken, bootToken, mustSecure, userConfig, useExternalConfig):
@@ -189,7 +235,6 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                 queue.task_done()
                 queue.put(command)
 
-                # time.sleep(0.015)
                 _processRequests()
         except Empty:
             _processRequests()
@@ -204,41 +249,13 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                     _processRequests()
 
                     if not streamManager.isStreamKnown(streamLocation):
-                        _processRequests()
-                        if not appModule.userConfig.get('isDemoMode', False):
-                            logger.info('Found new supported file: %s' % streamLocation)
-                        else:
-                            logger.info('Importing TOP 250 movie: "%s (%d)"' % (basedataFromStream['title'], basedataFromStream['year']))
-
-                        _processRequests()
-
-                        movieRecord = identifyMovieByTitleYear(
-                            userConfig.get('language', 'en'),
-                            basedataFromDir.get('title'), basedataFromDir.get('year'),
-                            basedataFromStream.get('title'), basedataFromStream.get('year'),
-                            _processRequests,
-                        )
+                        movieRecord = _getMovieRecordFromLocation(streamLocation, basedataFromStream, basedataFromDir, _processRequests)
 
                         if movieRecord is None:
                             logger.warning('Could not identify file: %s' % streamLocation)
                         else:
-                            for imageType in ('Poster', 'Backdrop'):
-                                movieRecord['key' + imageType] = movieRecord['url' + imageType].replace('/', '').replace('.jpg', '')
-                                pathname = os.path.join(APP_STORAGE_PATH, 'artwork', imageType.lower() + 's', movieRecord['key' + imageType])
-                                try:
-                                    os.makedirs(pathname)
-                                except OSError:
-                                    pass
-                                _processRequests()
-                                with open(os.path.join(pathname, 'source.url'), 'wb+') as fp:
-                                    fp.write('[InternetShortcut]\r\nURL=%soriginal%s\r\n' % (appModule.imageBaseUrl, movieRecord['url' + imageType]))
-                                _processRequests()
-                                closing(open(os.path.join(APP_STORAGE_PATH, 'backlog', imageType.lower() + 's', movieRecord['key' + imageType]), 'w+'))
-                                _processRequests()
-                                del movieRecord['url' + imageType]
-                            processBacklogEntry('backdrop', movieRecord.get('keyBackdrop'), _processRequests)
-
-                            movieUuid = streamManager.addMovieStream(movieRecord, streamLocation) # TODO: re-wire stream to correct movie if necessary
+                            editVersion = getEditVersionFromFilename(streamLocation, basedataFromStream.get('year'))
+                            movieUuid = streamManager.addMovieStream(movieRecord, streamLocation, editVersion) # TODO: re-wire stream to correct movie if necessary
                             _processRequests()
 
                             if pubSubReference.connected:
@@ -247,6 +264,7 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
 
                             if isDownloaderIdle:
                                 queue.put('downloader:resume')
+                                _processRequests()
 
             elif syncFinished is True:
                 deleteResponseCache()

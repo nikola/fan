@@ -8,7 +8,7 @@
 
 
 ka.lib.showLicenseTexts = function () {
-    ka.state.currentPageMode = 'credits';
+    ka.state.view = 'credits';
 
     $('#boom-menu, #boom-movie-grid-container').velocity('fadeOut', {duration: ka.settings.durationNormal, complete: function () {
         ka.state.licenses = ka.lib.getLicenseTexts().reverse();
@@ -37,7 +37,7 @@ ka.lib.showNextLicense = function () {
 
 ka.lib.stopLicenseTextDisplay = function () {
     $('#boom-menu, #boom-movie-grid-container').velocity('fadeIn', {duration: ka.settings.durationNormal, complete: function () {
-        ka.state.currentPageMode = 'config';
+        ka.state.view = 'config';
     }});
 };
 

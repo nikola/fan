@@ -8,7 +8,7 @@
 
 
 ka.lib.handleKeypressFirstItem = function () {
-    if (ka.state.currentPageMode == 'grid') {
+    if (ka.state.view == 'grid') {
         ka.lib.moveFocusFirstItem();
 
     }
@@ -16,14 +16,14 @@ ka.lib.handleKeypressFirstItem = function () {
 
 
 ka.lib.handleKeypressLastItem = function () {
-    if (ka.state.currentPageMode == 'grid') {
+    if (ka.state.view == 'grid') {
         ka.lib.moveFocusLastItem();
     }
 };
 
 
 ka.lib.handleKeypressPreviousPage = function () {
-    if (ka.state.currentPageMode == 'grid') {
+    if (ka.state.view == 'grid') {
         ka.lib.moveFocusPageUp();
 
     }
@@ -31,83 +31,83 @@ ka.lib.handleKeypressPreviousPage = function () {
 
 
 ka.lib.handleKeypressNextPage = function () {
-    if (ka.state.currentPageMode == 'grid') {
+    if (ka.state.view == 'grid') {
         ka.lib.moveFocusPageDown();
     }
 };
 
 
 ka.lib.handleKeypressUp = function () {
-    if (ka.state.currentPageMode == 'config') {
+    if (ka.state.view == 'config') {
         if (ka.state.currentConfigButton > 0) {
             ka.state.currentConfigButton -= 1;
             ka.lib.updateMenuButtonSelection();
         }
-    } else if (ka.state.currentPageMode == 'detail') {
+    } else if (ka.state.view == 'detail') {
         ka.lib.browser.setupExpansion();
-    } else if (ka.state.currentPageMode == 'grid') {
+    } else if (ka.state.view == 'grid') {
         ka.lib.moveFocusUp();
-    } else if (ka.state.currentPageMode == 'grid-compilation') {
+    } else if (ka.state.view == 'grid-compilation') {
         ka.lib.moveCompilationFocusUp();
     }
 };
 
 
 ka.lib.handleKeypressDown = function () {
-    if (ka.state.currentPageMode == 'config') {
+    if (ka.state.view == 'config') {
         if (ka.state.currentConfigButton + 1 < ka.state.maxConfigButton) {
             ka.state.currentConfigButton += 1;
             ka.lib.updateMenuButtonSelection();
         }
-    } else if (ka.state.currentPageMode == 'detail') {
+    } else if (ka.state.view == 'detail') {
         ka.lib.browser.contractDown();
-    } else if (ka.state.currentPageMode == 'grid') {
+    } else if (ka.state.view == 'grid') {
         ka.lib.moveFocusDown();
-    } else if (ka.state.currentPageMode == 'grid-compilation') {
+    } else if (ka.state.view == 'grid-compilation') {
         ka.lib.moveCompilationFocusDown();
     }
 };
 
 
 ka.lib.handleKeypressLeft = function () {
-    if (ka.state.currentPageMode == 'grid') {
+    if (ka.state.view == 'grid') {
         ka.lib.moveFocusLeft();
-    } else if (ka.state.currentPageMode == 'grid-compilation') {
+    } else if (ka.state.view == 'grid-compilation') {
         ka.lib.moveCompilationFocusLeft();
-    } else if (ka.state.currentPageMode == 'detail') {
+    } else if (ka.state.view == 'detail') {
         ka.lib.moveDetailBrowserLeft();
     }
 };
 
 
 ka.lib.handleKeypressRight = function () {
-    if (ka.state.currentPageMode == 'grid') {
+    if (ka.state.view == 'grid') {
         ka.lib.moveFocusRight();
-    } else if (ka.state.currentPageMode == 'grid-compilation') {
+    } else if (ka.state.view == 'grid-compilation') {
         ka.lib.moveCompilationFocusRight();
-    } else if (ka.state.currentPageMode == 'config') {
+    } else if (ka.state.view == 'config') {
         ka.transition.menu.to.grid();
-    } else if (ka.state.currentPageMode == 'detail') {
+    } else if (ka.state.view == 'detail') {
         ka.lib.moveDetailBrowserRight();
     }
 };
 
 
 ka.lib.handleKeypressToggle = function () {
-    if (ka.state.currentPageMode == 'grid') {
+    if (ka.state.view == 'grid') {
         ka.lib.toggleGridFocus();
-    } else if (ka.state.currentPageMode == 'grid-compilation') {
+    } else if (ka.state.view == 'grid-compilation') {
         ka.lib.toggleCompilationFocus();
-    } else if (ka.state.currentPageMode == 'detail') {
+    } else if (ka.state.view == 'detail') {
         ka.lib.browser.toggle();
     }
 };
 
 
 ka.lib.handleKeypressSelect = function () {
-    if (ka.state.currentPageMode == 'config') {
+    if (ka.state.view == 'config') {
         ka.lib.executeMenuSelection();
-    } else if (ka.state.currentPageMode == 'grid') {
+    } else if (ka.state.view == 'grid') {
         if (ka.lib.grid.focus.isPositionValid()) {
             if (ka.lib.isCompilationAtFocus()) {
                 ka.transition.grid.to.compilation();
@@ -115,13 +115,13 @@ ka.lib.handleKeypressSelect = function () {
                 ka.transition.grid.to.detail(ka.lib.getVariantFromGridFocus(), false);
             }
         }
-    } else if (ka.state.currentPageMode == 'grid-compilation') {
+    } else if (ka.state.view == 'grid-compilation') {
         ka.transition.grid.to.detail(ka.lib.getVariantFromGridFocus()[ka.state.currentCompilationFocusIndex], true);
-    } else if (ka.state.currentPageMode == 'detail') {
+    } else if (ka.state.view == 'detail') {
         if (ka.state.currentDetailButton == 'play') {
             $('#boom-movie-grid-container').css('display', 'none');
             $('#boom-movie-detail').velocity('fadeOut', {duration: ka.settings.durationNormal, complete: function () {
-                ka.state.currentPageMode = 'play:movie';
+                ka.state.view = 'play:movie';
 
                 if (!ka.state.isPlayerUpdated) {
                     $('#boom-playback-wait').velocity('fadeIn', {display: 'flex', duration: ka.settings.durationNormal, complete: function () {
@@ -134,7 +134,7 @@ ka.lib.handleKeypressSelect = function () {
         } else if (ka.state.currentDetailButton == 'trailer') {
             $('#boom-movie-grid-container').css('display', 'none');
             $('#boom-movie-detail').velocity('fadeOut', {duration: ka.settings.durationNormal, complete: function () {
-                ka.state.currentPageMode = 'play:trailer';
+                ka.state.view = 'play:trailer';
 
                 ka.lib.startTrailerPlayer(ka.data.byId[ka.state.lastGridMovieId].trailer);
             }});
@@ -144,17 +144,17 @@ ka.lib.handleKeypressSelect = function () {
 
 
 ka.lib.handleKeypressBack = function () {
-    if (ka.state.currentPageMode == 'config') {
+    if (ka.state.view == 'config') {
         ka.transition.menu.to.grid();
-    } else if (ka.state.currentPageMode == 'detail') {
+    } else if (ka.state.view == 'detail') {
         ka.transition.detail.to.grid();
-    } else if (ka.state.currentPageMode == 'grid-compilation') {
+    } else if (ka.state.view == 'grid-compilation') {
         ka.transition.compilation.to.grid();
-    } else if (ka.state.currentPageMode == 'grid') {
+    } else if (ka.state.view == 'grid') {
         ka.transition.grid.to.menu();
-    } else if (ka.state.currentPageMode == 'play:trailer') {
+    } else if (ka.state.view == 'play:trailer') {
         ka.lib.closeTrailerPlayer();
-    } else if (ka.state.currentPageMode == 'credits') {
+    } else if (ka.state.view == 'credits') {
         ka.state.licenseTextIndex = -1;
         $('#boom-credit-text').stop();
     }
@@ -162,7 +162,7 @@ ka.lib.handleKeypressBack = function () {
 
 
 ka.lib.handleKeypressAny = function (evt) {
-    if (ka.state.currentPageMode != 'grid') {
+    if (ka.state.view != 'grid') {
         return;
     } else {
         var character = String.fromCharCode(evt.keyCode);

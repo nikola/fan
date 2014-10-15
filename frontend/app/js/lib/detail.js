@@ -37,7 +37,7 @@ ka.lib.browser = {
     }
 
   , expandUp: function () {
-        ka.state.currentPageMode = 'limbo';
+        ka.state.view = 'limbo';
 
         $('#boom-detail-title').velocity({translateZ: 0, width: 1580, height: '-=100'}, ka.settings.durationNormal);
         $('#boom-detail-collection').velocity({translateZ: 0, bottom: '+=100', opacity: 0}, {duration: ka.settings.durationNormal, display: 'none'});
@@ -48,13 +48,13 @@ ka.lib.browser = {
 
         $('#boom-detail-panel').velocity({translateZ: 0, bottom: 0}, {duration: ka.settings.durationNormal, complete: function () {
             ka.lib.browser.setExpanded();
-            ka.state.currentPageMode = 'detail';
+            ka.state.view = 'detail';
         }});
     }
 
   , contractDown: function () {
         if (ka.lib.browser.isExpanded()) {
-            ka.state.currentPageMode = 'limbo';
+            ka.state.view = 'limbo';
 
             ka.lib.browser.poster.slideDown();
 
@@ -68,7 +68,7 @@ ka.lib.browser = {
 
             $('#boom-detail-panel').velocity({translateZ: 0, bottom: -223}, {duration: ka.settings.durationNormal, complete: function () {
                 ka.lib.browser.setContracted();
-                ka.state.currentPageMode = 'detail';
+                ka.state.view = 'detail';
             }});
         }
     }
@@ -84,13 +84,13 @@ ka.lib.browser = {
 
         $('#boom-detail-panel').data('boom.isHidden', !isHidden);
 
-        ka.state.currentPageMode = 'limbo';
+        ka.state.view = 'limbo';
         var toggleElements = '#boom-detail-panel';
         if (!ka.lib.browser.isExpanded()) {
             /* toggleElements += ', #boom-detail-focus'; */
         }
         $(toggleElements).velocity({translateZ: 0, bottom: direction + '=' + distance}, {duration: ka.settings.durationNormal, complete: function () {
-            ka.state.currentPageMode = 'detail';
+            ka.state.view = 'detail';
         }});
     }
 
@@ -311,7 +311,7 @@ ka.lib.closeTrailerPlayer = function () {
     ka.state.movieTrailerPlayer.stopVideo();
     ka.state.movieTrailerPlayer.clearVideo();
 
-    ka.state.currentPageMode = 'detail';
+    ka.state.view = 'detail';
 
     $('#boom-movie-trailer').css('display', 'none');
 
@@ -464,7 +464,7 @@ ka.lib.moveDetailBrowserLeft = function () {
         isPosterGridOffscreen = ka.lib.browser.isExpanded();
 
     if (column > 2 || (firstPosterIndex == 0 && column > 0)) {
-        ka.state.currentPageMode = 'limbo';
+        ka.state.view = 'limbo';
 
         ka.lib.browser.backdrop.loadPessimistic(snapshot[currentPosterIndex - 1]);
 
@@ -478,7 +478,7 @@ ka.lib.moveDetailBrowserLeft = function () {
             ka.state.currentDetailBrowserPosterColumn -= 1;
         }, ka.settings.durationUltraShort);
     } else if (firstPosterIndex > 0) {
-        ka.state.currentPageMode = 'limbo';
+        ka.state.view = 'limbo';
 
         var keyPoster = snapshot[firstPosterIndex - 1].keyPoster;
         if (keyPoster in ka.state.detachedBrowserPosterByKey) {
@@ -521,7 +521,7 @@ ka.lib.moveDetailBrowserRight = function () {
         isPosterGridOffscreen = ka.lib.browser.isExpanded();
 
     if ((column < 2 && snapshot.length > 2) || (lastPosterIndex == snapshot.length - 1 && lastPosterIndex - currentPosterIndex > 0)) {
-        ka.state.currentPageMode = 'limbo';
+        ka.state.view = 'limbo';
 
         ka.lib.browser.backdrop.loadPessimistic(snapshot[currentPosterIndex + 1]);
 
@@ -535,7 +535,7 @@ ka.lib.moveDetailBrowserRight = function () {
             ka.state.currentDetailBrowserPosterColumn += 1;
         }, ka.settings.durationUltraShort);
     } else if (posters.length == 6 && lastPosterIndex + 1 < snapshot.length) {
-        ka.state.currentPageMode = 'limbo';
+        ka.state.view = 'limbo';
 
         ka.lib._addBrowserGridImage(snapshot[lastPosterIndex + 1].keyPoster, lastPosterIndex + 1, true);
 
@@ -567,7 +567,7 @@ ka.lib._moveDetailBrowserFocus = function (currentElement, targetElement, focusO
     var duration = isPosterGridOffscreen ? 0 : ka.settings.durationNormal;
     $('#boom-detail-focus').velocity({translateZ: 0, left: focusOffset}, {duration: duration, complete: function () {
         if (!isPosterGridOffscreen) {
-            ka.state.currentPageMode = 'detail';
+            ka.state.view = 'detail';
         }
     }});
 };
@@ -596,7 +596,7 @@ ka.lib._animatePosterMove = function (animateElement, animateProperties, removeE
             }
 
             if (!isPosterGridOffscreen) {
-               ka.state.currentPageMode = 'detail';
+               ka.state.view = 'detail';
             }
     }});
 };
@@ -680,7 +680,7 @@ ka.lib._rotateLargePoster = function (movieObj, direction) {
 
             $('#boom-detail-poster-left img').on('load', ka.lib.browser.poster.onLoaded);
 
-            ka.state.currentPageMode = 'detail';
+            ka.state.view = 'detail';
         }
     });
 };

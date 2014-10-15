@@ -30,7 +30,7 @@ ka.lib.executeMenuSelection = function () {
             window.top.location.href = '/configure.asp#return';
         }});
     } else if (id == 'boom-config-button-show-credits') {
-        if (ka.state.currentPageMode != 'credits') {
+        if (ka.state.view != 'credits') {
             ka.lib.showLicenseTexts();
         }
     } else {

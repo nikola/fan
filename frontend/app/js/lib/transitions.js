@@ -11,7 +11,7 @@
 ka.transition.menu = {to: {
 
     grid: function () {     /* screen state transition: OK */
-        ka.state.currentPageMode = 'limbo';
+        ka.state.view = 'limbo';
 
         /* ka.lib.occludeMovieGrid(); */
         ka.lib.grid.occlude();
@@ -39,7 +39,7 @@ ka.transition.menu = {to: {
 
                     $('#boom-menu').css('display', 'none');
 
-                    ka.state.currentPageMode = 'grid';
+                    ka.state.view = 'grid';
                 }
             }
         );
@@ -51,7 +51,7 @@ ka.transition.menu = {to: {
 ka.transition.grid = {to: {
 
     menu: function () {     /* screen state transition: OK */
-        ka.state.currentPageMode = 'limbo';
+        ka.state.view = 'limbo';
 
         $('#boom-menu').css('display', 'block');
 
@@ -91,14 +91,14 @@ ka.transition.grid = {to: {
                     /* ka.lib.unoccludeMovieGrid(); */
                     ka.lib.grid.unocclude();
 
-                    ka.state.currentPageMode = 'config';
+                    ka.state.view = 'config';
                 }
             }
         );
     }
 
   , detail: function (movieObj, isCompilationSelected) {   /* screen state transition: OK */
-        ka.state.currentPageMode = 'limbo';
+        ka.state.view = 'limbo';
 
         /* var movieObj = ka.lib.getVariantFromGridFocus(); */
         ka.state.lastGridMovieId = movieObj.id;
@@ -140,7 +140,7 @@ ka.transition.grid = {to: {
                         }
                     ka.lib.browser.posters.fadeUp();
 
-                    ka.state.currentPageMode = 'detail';
+                    ka.state.view = 'detail';
                 } else {
                     ka.state.currentDetailBrowserPosterColumn = ka.lib.populateDetailBrowserGrid();
 
@@ -150,7 +150,7 @@ ka.transition.grid = {to: {
                             ka.lib.browser.backdrop.loadOptimistic(movieObj);
                         }
 
-                        ka.state.currentPageMode = 'detail';
+                        ka.state.view = 'detail';
                     });
                 }
             }
@@ -158,7 +158,7 @@ ka.transition.grid = {to: {
     }
 
   , compilation: function () {  /* screen state transition: OK */
-        ka.state.currentPageMode = 'limbo';
+        ka.state.view = 'limbo';
 
         /* ka.state.mustUndoCompilationChanges = true; */
 
@@ -169,7 +169,7 @@ ka.transition.grid = {to: {
 
         $('.boom-movie-grid-info-overlay').removeClass('active');
         ka.lib.openCompilation(function () {
-            ka.state.currentPageMode = 'grid-compilation';
+            ka.state.view = 'grid-compilation';
         });
     }
 }};
@@ -178,7 +178,7 @@ ka.transition.grid = {to: {
 ka.transition.compilation = {to: {
 
     grid: function () {     /* screen state transition: OK */
-        ka.state.currentPageMode = 'limbo';
+        ka.state.view = 'limbo';
 
         ka.lib.closeCompilation(function () {
              var id = ka.lib.getFirstMovieObjectFromCoord(ka.state.gridFocusX, ka.lib.getGridFocusAbsoluteY()).id;
@@ -192,13 +192,13 @@ ka.transition.compilation = {to: {
             ka.lib.repositionMovieGrid();
             ka.lib.repositionMovieFocus();
 
-            ka.state.currentPageMode = 'grid';
+            ka.state.view = 'grid';
         });
     }
 
   , detail: function () {   /* screen state transition: OK */
         ka.state.actualScreenMode = 'grid-compilation';
-        ka.state.currentPageMode = 'limbo';
+        ka.state.view = 'limbo';
 
         ka.lib.grid.snapshotMovieLookups();
 
@@ -219,7 +219,7 @@ ka.transition.compilation = {to: {
                     duration: ka.settings.durationLong
                   /* , delay: ka.settings.durationVeryShort */
                   , complete: function () {
-                        ka.state.currentPageMode = 'detail';
+                        ka.state.view = 'detail';
                     }
                 });
             }
@@ -232,7 +232,7 @@ ka.transition.compilation = {to: {
 ka.transition.detail = {to: {
 
     grid: function () {     /* screen state transition: OK */
-        ka.state.currentPageMode = 'limbo';
+        ka.state.view = 'limbo';
 
         var currentDetailMovieId = $('#boom-movie-detail').data('boom.id'),
             hasOpenCompilation = ka.state.currentCompilationPosterCount > 0;
@@ -291,26 +291,26 @@ ka.transition.detail = {to: {
                 }
 
                 if (hasOpenCompilation) {
-                    ka.state.currentPageMode = 'grid-compilation';
+                    ka.state.view = 'grid-compilation';
                 } else {
-                    ka.state.currentPageMode = 'grid';
+                    ka.state.view = 'grid';
                 }
             }});
     }
 
   , compilation: function () {  /* screen state transition: OK */
-        ka.state.currentPageMode = 'limbo';
+        ka.state.view = 'limbo';
 
         $('#boom-compilation-container, #boom-compilation-focus, #boom-movie-detail')
             .velocity({translateZ: 0, left: '+=1920'}, {duration: ka.settings.durationLong, complete: function () {
                 $('#boom-movie-detail').velocity('fadeOut', 0);
 
-                ka.state.currentPageMode = 'grid-compilation';
+                ka.state.view = 'grid-compilation';
             }});
     }
 
   , browser: function () {
-        ka.state.currentPageMode = 'limbo';
+        ka.state.view = 'limbo';
 
         ka.state.currentDetailBrowserPosterColumn = ka.lib.populateDetailBrowserGrid();
 
@@ -330,7 +330,7 @@ ka.transition.detail = {to: {
             $('#boom-detail-panel, #boom-detail-focus').velocity({translateZ: 0, bottom: '+=247'}, {
                 duration: ka.settings.durationNormal
               , complete: function () {
-                    ka.state.currentPageMode = 'detail-browser';
+                    ka.state.view = 'detail-browser';
                 }
             });
         }});
@@ -343,7 +343,7 @@ ka.transition.detail = {to: {
 ka.transition.browser = {to: {
 
     detail: function () {
-        ka.state.currentPageMode = 'limbo';
+        ka.state.view = 'limbo';
 
         var snapshot = ka.lib.grid.getMovieListSnapshot(),
             movieObj = snapshot[$('#boom-detail-browser :nth-child('
@@ -367,7 +367,7 @@ ka.transition.browser = {to: {
                     /* $('#boom-detail-browser').empty(); */
                     $('#boom-detail-browser img').each(ka.lib._detachBrowserPoster);
 
-                    ka.state.currentPageMode = 'detail';
+                    ka.state.view = 'detail';
                 }});
             }
         });

@@ -32,7 +32,7 @@ ka.settings = {
 };
 
 ka.state = {
-    currentPageMode: 'grid'
+    view: 'grid'
   , actualScreenMode: null
 
   , currentConfigButton: 1
@@ -100,7 +100,7 @@ function c4b77b2bcc804808a9ab107b8e2ac434() {
     ka.state.socketDispatcher.bind('resume:detail:screen', function () {
         $('#boom-movie-grid-container').css('display', 'block');
         $('#boom-movie-detail').velocity('fadeIn', {duration: ka.settings.durationNormal, complete: function () {
-            ka.state.currentPageMode = 'detail';
+            ka.state.view = 'detail';
         }});
     });
 

@@ -199,7 +199,7 @@ window.onpopstate = function () {
 
 $(document).ready(function () {
     ka.state.maxConfigButton = $('#boom-menu .boom-button').length;
-    ka.state.canvasContext = $('#boom-image-color-canvas').get(0).getContext('2d');
+    ka.state.canvasContext = $('#boom-image-sampler-canvas').get(0).getContext('2d');
     /* console.log(ka.state.canvasContext.webkitBackingStorePixelRatio == 1);
     console.log(window.devicePixelRatio == 1); */
 

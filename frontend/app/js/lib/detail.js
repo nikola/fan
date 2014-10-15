@@ -327,6 +327,8 @@ ka.lib._addBrowserGridImage = function (keyPoster, index, unselected) {
     var styles = {
         webkitTransform: 'translate3d(0, 0, 0)'
       , webkitFilter: (unselected) ? 'saturate(0%) opacity(0.5)' : ''
+      , width: 150
+      , marginLeft: 10
     };
 
     if (keyPoster in ka.state.detachedBrowserPosterByKey) {
@@ -348,7 +350,8 @@ ka.lib._addBrowserGridDummy = function () {
       , height: 225
       , css: {
             webkitFilter: 'saturate(0%) opacity(0.5)'
-          , webkitTransform: 'translate3d(0, 0, 0)', marginLeft: 0
+          , webkitTransform: 'translate3d(0, 0, 0)'
+          , marginLeft: 0
         }
     }).prependTo('#boom-detail-browser');
 };
@@ -479,7 +482,11 @@ ka.lib.moveDetailBrowserLeft = function () {
 
         var keyPoster = snapshot[firstPosterIndex - 1].keyPoster;
         if (keyPoster in ka.state.detachedBrowserPosterByKey) {
-            posters.eq(0).replaceWith(ka.state.detachedBrowserPosterByKey[keyPoster].data('boom.index', firstPosterIndex - 1));
+            posters.eq(0).replaceWith(
+                ka.state.detachedBrowserPosterByKey[keyPoster]
+                    .css({width: 150, marginLeft: 10, webkitFilter: 'saturate(0%) opacity(0.5)'})
+                    .data('boom.index', firstPosterIndex - 1)
+            );
         } else {
             posters.eq(0).attr('src', '/movie/poster/' + keyPoster + '-150.image').data('boom.index', firstPosterIndex - 1);
         }
@@ -583,11 +590,7 @@ ka.lib._animatePosterMove = function (animateElement, animateProperties, removeE
 
             var src = removeElement.attr('src');
             if (src) {
-                ka.state.detachedBrowserPosterByKey[src.match(/\movie\/poster\/(.*?)-\d{2,3}\.image/)[1]] = removeElement.detach().css({
-                    width: 150
-                  , marginLeft: 10
-                  , webkitFilter: 'saturate(0%) opacity(0.5)'
-                });
+                ka.lib._detachBrowserPoster(0, removeElement);
             } else {
                 removeElement.remove();
             }
@@ -680,4 +683,9 @@ ka.lib._rotateLargePoster = function (movieObj, direction) {
             ka.state.currentPageMode = 'detail';
         }
     });
+};
+
+
+ka.lib._detachBrowserPoster = function (index, element) {
+    ka.state.detachedBrowserPosterByKey[element.attr('src').match(/\movie\/poster\/(.*?)-\d{2,3}\.image/)[1]] = element.detach();
 };

@@ -283,7 +283,7 @@ ka.transition.detail = {to: {
 
                 $(restoreElements).velocity({bottom: '-=247'}, {duration: 0, complete: function () {
                     $('#boom-movie-detail, #boom-detail-browser, #boom-detail-focus').css('display', 'none');
-                    $('#boom-detail-browser').empty();
+                    $('#boom-detail-browser img').each(ka.lib._detachBrowserPoster);
                 }});
 
                 if (ka.lib.browser.isExpanded()) {
@@ -364,7 +364,8 @@ ka.transition.browser = {to: {
             duration: ka.settings.durationNormal
           , complete: function () {
                 $('#boom-detail-panel').velocity('fadeOut', {duration: 0, display: 'none', complete: function () {
-                    $('#boom-detail-browser').empty();
+                    /* $('#boom-detail-browser').empty(); */
+                    $('#boom-detail-browser img').each(ka.lib._detachBrowserPoster);
 
                     ka.state.currentPageMode = 'detail';
                 }});

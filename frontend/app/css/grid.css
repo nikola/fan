@@ -198,10 +198,7 @@
 
 .boom-movie-grid-info-overlay {
     position: relative;
-    /* overflow: hidden; */
     width: 260px; height: 300px;
-
-    -webkit-transition: all 0.35s ease-in-out;
     }
 
 .boom-compilation-grid-item .boom-movie-grid-info-overlay {
@@ -211,39 +208,6 @@
 .boom-movie-grid-info-overlay, .boom-movie-grid-info-overlay * {
     -webkit-box-sizing: border-box;
     }
-
-.boom-movie-grid-info-overlay-image {
-    -webkit-transition: all 0.35s ease-in-out;
-    -webkit-transform: scale(1);
-
-    /* position: relative; */
-    }
-
-/*
-.boom-movie-grid-info-overlay-image:before, .boom-movie-grid-info-overlay-image:after {
-    display: block;
-    position: absolute;
-    bottom: 0;
-    right: 30px;
-    content: "";
-    }
-
-.boom-movie-grid-info-overlay-image:before {
-    border-top: solid 20px transparent;
-    border-right: solid 20px black;
-    border-bottom: solid 20px black;
-    border-left: solid 20px transparent;
-    }
-
-.boom-movie-grid-info-overlay-image:after {
-    border-top: solid 20px #a0a0a0;
-    border-right: solid 20px transparent;
-    border-bottom: solid 20px transparent;
-    border-left: solid 20px #a0a0a0;
-
-    -webkit-box-shadow: -3px 1px 3px rgba(50, 50, 50, 0.75);
-    }
-*/
 
 .boom-movie-grid-info-overlay-title {
     color: white; background-color: black;
@@ -285,22 +249,19 @@
     position: relative;
     }
 
+
 .boom-compilation-grid-item .boom-movie-grid-info-overlay-text-additional {
     font-size: 20px;
     line-height: 32px;
     margin-top: 32px;
     }
 
-.boom-movie-grid-info-overlay-text {
-    -webkit-transform: translate(0, 0);
-    }
-
 .boom-movie-grid-info-overlay-title, .boom-movie-grid-info-overlay-text-additional {
     -webkit-transform: translate(0, -100%);
     }
 
-.boom-movie-grid-info-overlay-text, .boom-movie-grid-info-overlay-text div {
-    -webkit-transition: all 0.36s ease-in-out;
+.boom-movie-grid-info-overlay, .boom-movie-grid-info-overlay-text, .boom-movie-grid-info-overlay-image, .boom-movie-grid-info-overlay-text div {
+    /* -webkit-transition: all 0.36s ease-in-out; */
     }
 
 .active .boom-movie-grid-info-overlay-text {

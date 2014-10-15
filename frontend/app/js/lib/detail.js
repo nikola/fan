@@ -581,7 +581,7 @@ ka.lib._animatePosterMove = function (animateElement, animateProperties, removeE
 
             var src = removeElement.attr('src');
             if (src) {
-                ka.lib._detachBrowserPoster(null, removeElement);
+                ka.lib._detachSmallBrowserPoster(null, removeElement);
             } else {
                 removeElement.remove();
             }
@@ -624,13 +624,6 @@ ka.lib._focusOutImage = function (targetElement) {
 
 
 ka.lib._rotateLargePoster = function (movieObj, direction) {
-    /*
-     *  http://desandro.github.io/3dtransforms/docs/introduction.html
-     *  http://css-tricks.com/creating-a-3d-cube-image-gallery/
-     *  http://cssdeck.com/labs/simple-css3-3d-cube
-     *  http://paulrhayes.com/experiments/cube-3d/
-     */
-
     if (direction) {
         var startAngleNew = 90,
             targetAngleOld = -90,
@@ -666,6 +659,7 @@ ka.lib._rotateLargePoster = function (movieObj, direction) {
         }
       , complete: function () {
             $(this).remove();
+
             newPosterStyle.webkitTransform = 'none';
             newPosterStyle.webkitFilter = 'none';
 
@@ -677,7 +671,7 @@ ka.lib._rotateLargePoster = function (movieObj, direction) {
 };
 
 
-ka.lib._detachBrowserPoster = function (index, element) {
+ka.lib._detachSmallBrowserPoster = function (index, element) {
     if (index === 0) {
         return;
     } else if (index !== null) {

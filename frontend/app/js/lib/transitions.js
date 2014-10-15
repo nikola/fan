@@ -271,7 +271,7 @@ ka.transition.detail = {to: {
 
                 $(restoreElements).velocity({bottom: '-=247'}, {duration: 0, complete: function () {
                     $('#boom-movie-detail, #boom-detail-browser, #boom-detail-focus').css('display', 'none');
-                    $('#boom-detail-browser img').each(ka.lib._detachBrowserPoster);
+                    $('#boom-detail-browser img').each(ka.lib._detachSmallBrowserPoster);
                 }});
 
                 if (ka.lib.browser.isExpanded()) {

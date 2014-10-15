@@ -91,7 +91,7 @@ def _startDownloader(queue):
                                     queue.put(command)
                                     queue.task_done()
                     else:
-                        logger.info('Going into idle mode ...')
+                        logger.debug('Going into idle mode ...')
                         isIdle = True
                         queue.put('orchestrator:wake-up:downloader')
 

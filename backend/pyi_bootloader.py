@@ -178,13 +178,10 @@ if __name__ == '__main__':
         downloader = startDownloader(interProcessQueue)
         player = startPlayer(interProcessQueue)
 
-        setPriority('normal')
+        setPriority('lower')
         orchestrator = startOrchestrator(interProcessQueue, certificateLocation, *arguments)
 
-        setPriority('higher')
+        setPriority('normal')
         present(_shutdown, *arguments)
-
-        # TODO: implement SIGINT handler
-        # http://stackoverflow.com/a/1112350
     except Exception, e:
         logger.exception(e)

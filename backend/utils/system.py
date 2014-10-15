@@ -22,6 +22,7 @@ from settings import BASE_DIR, EXE_PATH, ASSETS_PATH
 
 PRIORITIES = {
     'idle': win32process.IDLE_PRIORITY_CLASS,
+    'lower': win32process.BELOW_NORMAL_PRIORITY_CLASS,
     'normal': win32process.NORMAL_PRIORITY_CLASS,
     'higher': win32process.ABOVE_NORMAL_PRIORITY_CLASS,
 }

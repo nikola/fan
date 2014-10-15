@@ -7,33 +7,7 @@ __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 from sqlalchemy import ForeignKey, Column, SmallInteger, Integer, BigInteger, String, Unicode, Boolean
 from sqlalchemy.orm import relationship, backref
 
-from models import Base, GUID, createUuid
-
-
-
-GENRES_EN = (
-    "Action",
-    "Adventure",
-    "Animation",
-    "Comedy",
-    "Crime",
-    "Documentary",
-    "Drama",
-    "Family",
-    "Fantasy",
-    "Foreign",
-    "History",
-    "Horror",
-    "Music",
-    "Mystery",
-    "Romance",
-    "Science Fiction",
-    "TV movie",
-    "Thriller",
-    "War",
-    "Western",
-)
-
+from models import Base # , GUID, createUuid
 
 # Association table.
 # movie_genres = Table('movie_genres', Base.metadata,
@@ -41,14 +15,13 @@ GENRES_EN = (
 #     Column('genre_id', Integer, ForeignKey('genres.id')),
 # )
 
-
 class Movie(Base):
     __tablename__ = 'movies'
 
     id = Column(Integer, primary_key=True)
     compilationId = Column(Integer, ForeignKey('compilations.id'))
 
-    uuid = Column(GUID, default=createUuid)
+    # uuid = Column(GUID, default=createUuid)
     streamless = Column(Boolean, default=True)
 
     idTheMovieDb = Column(Integer)

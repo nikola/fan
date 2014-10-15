@@ -44,7 +44,7 @@ ka.lib.sortExpandedKeys = function (a, b) {
 
 
 ka.lib.addMovie = function (movieDict) {
-    if (movieDict.uuid in ka.data.byUuid) {
+    if (movieDict.id in ka.data.byId) {
         if (ka.state.isProcessingInitialItems) {
             ka.state.processingInitialItemsCount -= 1;
         }
@@ -84,7 +84,7 @@ ka.lib.addMovie = function (movieDict) {
         ka.data[sortCriterionKey][key] = sortedList;
     }
 
-    ka.data.byUuid[movieDict.uuid] = movieDict;
+    ka.data.byId[movieDict.id] = movieDict;
 };
 
 

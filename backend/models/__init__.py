@@ -16,7 +16,7 @@ from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 
 from settings import EXE_PATH #, LOG_CONFIG
 # from utils.fs import getLogFileHandler
-from models.common import Base, GUID, createNamedTuple, createUuid
+from models.common import Base, createNamedTuple # , GUID, createUuid
 from models.streams import Stream
 from models.movies import Movie
 from models.images import Image
@@ -87,7 +87,7 @@ class StreamManager(object):
     def deleteMovie(self, identifier):
         with self._session() as session:
             try:
-                movie = session.query(Movie).filter(Movie.uuid == identifier).one()
+                movie = session.query(Movie).filter(Movie.id == identifier).one()
             except NoResultFound:
                 return None
             else:
@@ -95,10 +95,10 @@ class StreamManager(object):
                 session.commit()
 
 
-    def getMovieByUuid(self, identifier):
+    def getMovieById(self, identifier):
         with self._session() as session:
             try:
-                movie = session.query(Movie).filter(Movie.uuid == identifier).one()
+                movie = session.query(Movie).filter(Movie.id == identifier).one()
             except NoResultFound:
                 return None
             else:
@@ -115,10 +115,10 @@ class StreamManager(object):
                 return '%s (%d)' % (movie.titleOriginal, movie.releaseYear)
 
 
-    def getMovieTitleByUuid(self, identifier):
+    def getMovieTitleById(self, identifier):
         with self._session() as session:
             try:
-                movie = session.query(Movie).filter(Movie.uuid == identifier).one()
+                movie = session.query(Movie).filter(Movie.id == identifier).one()
             except NoResultFound:
                 return None
             else:
@@ -178,7 +178,7 @@ class StreamManager(object):
             session.commit()
 
             if movieObject is not None:
-                return movieObject.uuid
+                return movieObject.id
 
 
     def isStreamKnown(self, streamLocation):
@@ -219,12 +219,12 @@ class StreamManager(object):
                 return None, None
             else:
                 if image is not None:
-                    return image.movie.uuid, image.urlOriginal
+                    return image.movie.id, image.urlOriginal
                 else:
                     return None, None
 
 
-    def getMissingBackdropMovieUuid(self):
+    def getMissingBackdropMovieId(self):
         with self._session() as session:
             try:
                 movie = session.query(Movie).join(Image).filter(Movie.images.any(Image.imageType == 'Poster')).group_by(Movie.id).having(func.count(Movie.images) == 1).first()
@@ -232,140 +232,140 @@ class StreamManager(object):
                 return None
             else:
                 if movie is not None:
-                    return movie.uuid
+                    return movie.id
 
 
-    def startPosterDownload(self, identifier):
-         with self._session() as session:
-            try:
-                movie = session.query(Movie).filter(Movie.uuid == identifier).one()
-            except NoResultFound:
-                pass
-            else:
-                movie.isPosterDownloading = True
-                session.commit()
+    # def startPosterDownload(self, identifier):
+    #      with self._session() as session:
+    #         try:
+    #             movie = session.query(Movie).filter(Movie.uuid == identifier).one()
+    #         except NoResultFound:
+    #             pass
+    #         else:
+    #             movie.isPosterDownloading = True
+    #             session.commit()
 
 
-    def isPosterDownloading(self, identifier):
-         with self._session() as session:
-            try:
-                movie = session.query(Movie).filter(Movie.uuid == identifier).one()
-            except NoResultFound:
-                return None
-            else:
-                return movie.isPosterDownloading
+    # def isPosterDownloading(self, identifier):
+    #      with self._session() as session:
+    #         try:
+    #             movie = session.query(Movie).filter(Movie.uuid == identifier).one()
+    #         except NoResultFound:
+    #             return None
+    #         else:
+    #             return movie.isPosterDownloading
 
 
-    def endPosterDownload(self, identifier):
-         with self._session() as session:
-            try:
-                movie = session.query(Movie).filter(Movie.uuid == identifier).one()
-            except NoResultFound:
-                pass
-            else:
-                movie.isPosterDownloading = False
-                session.commit()
+    # def endPosterDownload(self, identifier):
+    #      with self._session() as session:
+    #         try:
+    #             movie = session.query(Movie).filter(Movie.uuid == identifier).one()
+    #         except NoResultFound:
+    #             pass
+    #         else:
+    #             movie.isPosterDownloading = False
+    #             session.commit()
 
 
-    def startBackdropDownload(self, identifier):
-         with self._session() as session:
-            try:
-                movie = session.query(Movie).filter(Movie.uuid == identifier).one()
-            except NoResultFound:
-                pass
-            else:
-                movie.isBackdropDownloading = True
-                session.commit()
+    # def startBackdropDownload(self, identifier):
+    #      with self._session() as session:
+    #         try:
+    #             movie = session.query(Movie).filter(Movie.uuid == identifier).one()
+    #         except NoResultFound:
+    #             pass
+    #         else:
+    #             movie.isBackdropDownloading = True
+    #             session.commit()
 
 
-    def isBackdropDownloading(self, identifier):
-         with self._session() as session:
-            try:
-                movie = session.query(Movie).filter(Movie.uuid == identifier).one()
-            except NoResultFound:
-                return None
-            else:
-                return movie.isBackdropDownloading
+    # def isBackdropDownloading(self, identifier):
+    #      with self._session() as session:
+    #         try:
+    #             movie = session.query(Movie).filter(Movie.uuid == identifier).one()
+    #         except NoResultFound:
+    #             return None
+    #         else:
+    #             return movie.isBackdropDownloading
 
 
-    def endBackdropDownload(self, identifier):
-         with self._session() as session:
-            try:
-                movie = session.query(Movie).filter(Movie.uuid == identifier).one()
-            except NoResultFound:
-                pass
-            else:
-                movie.isBackdropDownloading = False
-                session.commit()
+    # def endBackdropDownload(self, identifier):
+    #      with self._session() as session:
+    #         try:
+    #             movie = session.query(Movie).filter(Movie.uuid == identifier).one()
+    #         except NoResultFound:
+    #             pass
+    #         else:
+    #             movie.isBackdropDownloading = False
+    #             session.commit()
 
 
-    def isImageAvailable(self, identifier, imageType, width):
-        with self._session() as session:
-            try:
-                session.query(Image).filter(Image.movie.has(Movie.uuid == identifier), Image.imageType == imageType, Image.width == width).one()
-            except NoResultFound:
-                return False
-            else:
-                return True
+    # def isImageAvailable(self, identifier, imageType, width):
+    #     with self._session() as session:
+    #         try:
+    #             session.query(Image).filter(Image.movie.has(Movie.uuid == identifier), Image.imageType == imageType, Image.width == width).one()
+    #         except NoResultFound:
+    #             return False
+    #         else:
+    #             return True
 
 
-    def getImageMetadataByUuid(self, identifier, imageType, width):
-        with self._session() as session:
-            try:
-                image = session.query(Image).filter(Image.movie.has(Movie.uuid == identifier), Image.imageType == imageType, Image.width == width).one()
-            except NoResultFound:
-                return None, None
-            else:
-                if image is not None:
-                    return image.modified, image.isScaled
-                else:
-                    return None, None
+    # def getImageMetadataByUuid(self, identifier, imageType, width):
+    #     with self._session() as session:
+    #         try:
+    #             image = session.query(Image).filter(Image.movie.has(Movie.uuid == identifier), Image.imageType == imageType, Image.width == width).one()
+    #         except NoResultFound:
+    #             return None, None
+    #         else:
+    #             if image is not None:
+    #                 return image.modified, image.isScaled
+    #             else:
+    #                 return None, None
 
 
-    def getImageBlobByUuid(self, identifier, imageType, width):
-        with self._session() as session:
-            try:
-                image = session.query(Image).filter(Image.movie.has(Movie.uuid == identifier), Image.imageType == imageType, Image.width == width).one()
-            except NoResultFound:
-                return None
-            else:
-                if image is not None:
-                    return image.blob
-                else:
-                    return None
+    # def getImageBlobByUuid(self, identifier, imageType, width):
+    #     with self._session() as session:
+    #         try:
+    #             image = session.query(Image).filter(Image.movie.has(Movie.uuid == identifier), Image.imageType == imageType, Image.width == width).one()
+    #         except NoResultFound:
+    #             return None
+    #         else:
+    #             if image is not None:
+    #                 return image.blob
+    #             else:
+    #                 return None
 
 
-    def saveImageData(self, identifier, width, blob, isScaled=False, imageType='Poster', imageFormat='JPEG', urlOriginal=None):
-        with self._session() as session:
-            try:
-                movie = session.query(Movie).filter(Movie.uuid == identifier).one()
-            except NoResultFound:
-                return None
-            else:
-                try:
-                    image = session.query(Image).join(Movie).filter(Movie.uuid == identifier, Movie.id == Image.movieId, Image.imageType == imageType, Image.width == width).one()
-                except MultipleResultsFound:
-                    # logger.error('Multiple poster images of the same size and type found for movie "%s".', self.getMovieTitleByUuid(identifier))
-                    image = session.query(Image).join(Movie).filter(Movie.uuid == identifier, Movie.id == Image.movieId, Image.imageType == imageType, Image.width == width).first()
-                except NoResultFound:
-                    image = Image(
-                        imageType = imageType,
-                        imageFormat = imageFormat,
-                        movie = movie,
-                        width = width,
-                        isScaled = isScaled,
-                        blob = blob,
-                        urlOriginal = urlOriginal,
-                    )
-                else:
-                    image.blob = blob
-                    image.isScaled = isScaled
-                    image.imageFormat = imageFormat
-
-                session.add(image)
-                session.commit()
-
-                return image.modified
+    # def saveImageData(self, identifier, width, blob, isScaled=False, imageType='Poster', imageFormat='JPEG', urlOriginal=None):
+    #     with self._session() as session:
+    #         try:
+    #             movie = session.query(Movie).filter(Movie.uuid == identifier).one()
+    #         except NoResultFound:
+    #             return None
+    #         else:
+    #             try:
+    #                 image = session.query(Image).join(Movie).filter(Movie.uuid == identifier, Movie.id == Image.movieId, Image.imageType == imageType, Image.width == width).one()
+    #             except MultipleResultsFound:
+    #                 # logger.error('Multiple poster images of the same size and type found for movie "%s".', self.getMovieTitleByUuid(identifier))
+    #                 image = session.query(Image).join(Movie).filter(Movie.uuid == identifier, Movie.id == Image.movieId, Image.imageType == imageType, Image.width == width).first()
+    #             except NoResultFound:
+    #                 image = Image(
+    #                     imageType = imageType,
+    #                     imageFormat = imageFormat,
+    #                     movie = movie,
+    #                     width = width,
+    #                     isScaled = isScaled,
+    #                     blob = blob,
+    #                     urlOriginal = urlOriginal,
+    #                 )
+    #             else:
+    #                 image.blob = blob
+    #                 image.isScaled = isScaled
+    #                 image.imageFormat = imageFormat
+    #
+    #             session.add(image)
+    #             session.commit()
+    #
+    #             return image.modified
 
 
     def getAllMoviesAsJson(self):
@@ -385,7 +385,7 @@ class StreamManager(object):
                     #     primaryPosterColor = None
 
                     movieList.append({
-                        'uuid': movie.uuid,
+                        'id': movie.id,
                         'titleOriginal': movie.titleOriginal,
                         'titleLocalized': localization.title,
                         'releaseYear': movie.releaseYear,
@@ -414,13 +414,13 @@ class StreamManager(object):
     def getMovieAsJson(self, identifier):
         with self._session() as session:
             try:
-                movie = list(session.query(Movie, Localization).filter(Movie.uuid == identifier, Movie.id == Localization.movieId, Localization.locale == 'en').distinct() \
-                    .values(Movie.uuid, Movie.titleOriginal, Localization.title, Movie.releaseYear, Movie.runtime, Localization.storyline, Movie.rating, Movie.genres, Movie.budget, Movie.idYoutubeTrailer, Movie.streamless,  Movie.keyPoster, Movie.keyBackdrop, Movie.primaryColorPoster))[0]
+                movie = list(session.query(Movie, Localization).filter(Movie.id == identifier, Movie.id == Localization.movieId, Localization.locale == 'en').distinct() \
+                    .values(Movie.id, Movie.titleOriginal, Localization.title, Movie.releaseYear, Movie.runtime, Localization.storyline, Movie.rating, Movie.genres, Movie.budget, Movie.idYoutubeTrailer, Movie.streamless,  Movie.keyPoster, Movie.keyBackdrop, Movie.primaryColorPoster))[0]
             except NoResultFound:
                 return None
             else:
                 record = {
-                    'uuid': movie[0],
+                    'id': movie[0],
                     'titleOriginal': movie[1],
                     'titleLocalized': movie[2],
                     'releaseYear': movie[3],
@@ -450,21 +450,21 @@ class StreamManager(object):
     def getStreamLocationByMovie(self, identifier):
         with self._session() as session:
             try:
-                movie = session.query(Movie).filter(Movie.uuid == identifier).one()
+                movie = session.query(Movie).filter(Movie.id == identifier).one()
             except NoResultFound:
                 return None
             else:
                 return movie.streams[0].location
 
 
-    def updatePosterColorByMovieUuid(self, identifier, color):
+    def updatePosterColorByMovieId(self, identifier, color):
         with self._session() as session:
-            session.query(Movie).filter(Movie.uuid == identifier).update({'primaryColorPoster': color}) # , synchronize_session=False)
+            session.query(Movie).filter(Movie.id == identifier).update({'primaryColorPoster': color}) # , synchronize_session=False)
 
 
-    def setBackdropCachedByMovieUuid(self, identifier):
+    def setBackdropCachedByMovieId(self, identifier):
         with self._session() as session:
-            session.query(Movie).filter(Movie.uuid == identifier).update({'isBackdropCached': True}) # , synchronize_session=False)
+            session.query(Movie).filter(Movie.id == identifier).update({'isBackdropCached': True}) # , synchronize_session=False)
 
     # def getUnidentifiedTracksMovie(self):
     #     with self._session() as session:

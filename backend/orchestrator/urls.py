@@ -38,6 +38,7 @@ def d84349a839a6400aa7494cd609f61cb0(request, pathname):
 
         if module.imageBaseUrl is not None:
             module.interProcessQueue.put('orchestrator:start:scan') # configuration:image-base-url:%s' % module.imageBaseUrl)
+            # TODO: remame to orchestrator:start:sweep
 
         # module.interProcessQueue.put('downloader:start')
 
@@ -242,15 +243,15 @@ def fb947156d1e14d49a0d1235dddc85605(request):
     return getDrives(), 200
 
 
-@module.route('/update/<string:identifier>/poster-color/<string:color>', methods=('GET',), headers=SERVER_HEADERS, content_type='text/plain')
+@module.route('/update/<int:identifier>/poster-color/<string:color>', methods=('GET',), headers=SERVER_HEADERS, content_type='text/plain')
 def b41d0ee34a484413b1af54b061034ee9(request, identifier, color):
-    module.streamManager.updatePosterColorByMovieUuid(identifier, color)
+    module.streamManager.updatePosterColorByMovieId(identifier, color)
     return '', 200
 
 
-@module.route('/movie/<string:identifier>/set-backdrop-cached', methods=('GET',), headers=SERVER_HEADERS, content_type='text/plain')
+@module.route('/movie/<int:identifier>/set-backdrop-cached', methods=('GET',), headers=SERVER_HEADERS, content_type='text/plain')
 def ebc342eb0ab345369f216d6ad82561d8(request, identifier):
-    module.streamManager.setBackdropCachedByMovieUuid(identifier)
+    module.streamManager.setBackdropCachedByMovieId(identifier)
     return '', 200
 
 

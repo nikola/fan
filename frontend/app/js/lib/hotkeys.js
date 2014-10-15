@@ -125,10 +125,10 @@ ka.lib.handleKeypressSelect = function () {
 
                 if (!ka.state.isPlayerUpdated) {
                     $('#boom-playback-wait').velocity('fadeIn', {display: 'flex', duration: ka.settings.durationNormal, complete: function () {
-                        ka.state.socketDispatcher.push('movie:play', $('#boom-movie-detail').data('boom.uuid'));
+                        ka.state.socketDispatcher.push('movie:play', $('#boom-movie-detail').data('boom.id'));
                     }});
                 } else {
-                    ka.state.socketDispatcher.push('movie:play', ka.state.lastGridMovieUuid);
+                    ka.state.socketDispatcher.push('movie:play', ka.state.lastGridMovieId);
                 }
             }});
         } else if (ka.state.currentDetailButton == 'trailer') {
@@ -136,7 +136,7 @@ ka.lib.handleKeypressSelect = function () {
             $('#boom-movie-detail').velocity('fadeOut', {duration: ka.settings.durationNormal, complete: function () {
                 ka.state.currentPageMode = 'play:trailer';
 
-                ka.lib.startTrailerPlayer(ka.data.byUuid[ka.state.lastGridMovieUuid].trailer);
+                ka.lib.startTrailerPlayer(ka.data.byId[ka.state.lastGridMovieId].trailer);
             }});
         }
     }

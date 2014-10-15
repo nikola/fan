@@ -8,14 +8,14 @@
 ; var ka = ka || {}; if (!('lib' in ka)) ka.lib = {};
 
 ka.data = {
-    byUuid: {}
+    byId: {}
   , byYear: {}
   , byTitleOriginal: {}
   , byTitleLocalized: {}
   , byRating: {}
   , byBudget: {}
   , asList: []
-  , indexByUuid: {}
+  , indexById: {}
 };
 
 ka.settings = {
@@ -37,7 +37,7 @@ ka.state = {
 
   , currentConfigButton: 1
 
-  , lastGridMovieUuid: null
+  , lastGridMovieId: null
   , lastGridMovieListSnapshot: null
   , lastGridMovieIndexSnapshot: null
 
@@ -59,9 +59,9 @@ ka.state = {
   , gridLookupItemsPerLine: []
   , gridLookupLinesByKey: {}
   , gridLookupKeyByLine: []
-  , gridLookupCoordByUuid: {}
+  , gridLookupCoordById: {}
   , shouldFocusFadeIn: true
-  , imagePosterPrimaryColorByUuid: {}
+  , imagePosterPrimaryColorById: {}
   , imagePosterPixelArrayBacklog: []
   , desaturationImageCache: {}
   , isProcessingInitialItems: false
@@ -86,7 +86,7 @@ function c4b77b2bcc804808a9ab107b8e2ac434() {
     ka.state.socketDispatcher = new ka.lib.WebSocketDispatcher(url);
 
     ka.state.socketDispatcher.bind('receive:movie:item', function (movie) {
-        ka.state.setOfUnknownPosters[movie.uuid] = true;
+        ka.state.setOfUnknownPosters[movie.id] = true;
 
         ka.lib.addMovie(movie);
 
@@ -161,7 +161,7 @@ function a4b4e7515096403cb29247517b276397() {
 
                 while (index--) {
                     movie = list[index];
-                    ka.state.setOfKnownPosters[movie.uuid] = true;
+                    ka.state.setOfKnownPosters[movie.id] = true;
                     ka.lib.addMovie(movie);
                 }
                 ka.lib.recalcMovieGrid();

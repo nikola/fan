@@ -67,7 +67,7 @@ ka.transition.grid = {to: {
                 for (var column = 0; column < 4; column++) {
                     item = ka.lib.getFirstMovieObjectFromCoord(column, row);
                     if (item !== null) {
-                        ka.state.desaturationImageCache[item.uuid] = $('#boom-poster-' + item.uuid)
+                        ka.state.desaturationImageCache[item.id] = $('#boom-poster-' + item.id)
                             .css('-webkit-transform', 'translate3d(0, 0, 0)')
                             .get(0);
                     }
@@ -101,7 +101,7 @@ ka.transition.grid = {to: {
         ka.state.currentPageMode = 'limbo';
 
         /* var movieObj = ka.lib.getVariantFromGridFocus(); */
-        ka.state.lastGridMovieUuid = movieObj.uuid;
+        ka.state.lastGridMovieId = movieObj.id;
 
         ka.lib.updateDetailBrowserInfo(movieObj, false);
 
@@ -181,10 +181,10 @@ ka.transition.compilation = {to: {
         ka.state.currentPageMode = 'limbo';
 
         ka.lib.closeCompilation(function () {
-             var uuid = ka.lib.getFirstMovieObjectFromCoord(ka.state.gridFocusX, ka.lib.getGridFocusAbsoluteY()).uuid;
+             var id = ka.lib.getFirstMovieObjectFromCoord(ka.state.gridFocusX, ka.lib.getGridFocusAbsoluteY()).id;
 
             ka.lib.recalcMovieGrid();
-            ka.lib.recalcPositionByUuid(uuid);
+            ka.lib.recalcPositionById(id);
 
             ka.lib.grid.unocclude();
             ka.lib.updateMovieGridOnChange();
@@ -204,7 +204,7 @@ ka.transition.compilation = {to: {
 
         var movieObj = ka.lib.getVariantFromGridFocus()[ka.state.currentCompilationFocusIndex];
 
-        ka.state.lastGridMovieUuid = movieObj.uuid;
+        ka.state.lastGridMovieId = movieObj.id;
         /* ka.state.actualScreenMode = null; */
 
         ka.lib.updateDetailPage(movieObj, false, true); /* refresh backdrop, too, and use the non-collection title */
@@ -234,11 +234,11 @@ ka.transition.detail = {to: {
     grid: function () {     /* screen state transition: OK */
         ka.state.currentPageMode = 'limbo';
 
-        var currentDetailMovieUuid = $('#boom-movie-detail').data('boom.uuid'),
+        var currentDetailMovieId = $('#boom-movie-detail').data('boom.id'),
             hasOpenCompilation = ka.state.currentCompilationPosterCount > 0;
 
-        if (currentDetailMovieUuid != ka.state.lastGridMovieUuid) {
-            ka.state.lastGridMovieUuid = currentDetailMovieUuid;
+        if (currentDetailMovieId != ka.state.lastGridMovieId) {
+            ka.state.lastGridMovieId = currentDetailMovieId;
 
             if (hasOpenCompilation) {
                 hasOpenCompilation = false;
@@ -251,7 +251,7 @@ ka.transition.detail = {to: {
             ka.lib.recalcMovieGrid();
             ka.lib.updateMovieGridOnChange();
 
-            ka.lib.recalcPositionByUuid(currentDetailMovieUuid);
+            ka.lib.recalcPositionById(currentDetailMovieId);
             ka.lib.repositionMovieGrid();
             ka.lib.repositionMovieFocus(true); /* offscreen */
 
@@ -314,7 +314,7 @@ ka.transition.detail = {to: {
 
         ka.state.currentDetailBrowserPosterColumn = ka.lib.populateDetailBrowserGrid();
 
-        ka.lib.updateDetailBrowserInfo(ka.data.byUuid[$('#boom-movie-detail').data('boom.uuid')], false);
+        ka.lib.updateDetailBrowserInfo(ka.data.byId[$('#boom-movie-detail').data('boom.id')], false);
 
         var leftPos = 1110 + 2 + 160 * ka.state.currentDetailBrowserPosterColumn;
         $('#boom-detail-focus').velocity({left: leftPos}, 0);
@@ -349,8 +349,8 @@ ka.transition.browser = {to: {
             movieObj = snapshot[$('#boom-detail-browser :nth-child('
                         + (ka.state.currentDetailBrowserPosterColumn + 2) + ')').data('boom.index')];
 
-        if (movieObj.uuid != $('#boom-movie-detail').data('boom.uuid')) {
-            $('#boom-movie-detail').data('boom.uuid', movieObj.uuid);
+        if (movieObj.id != $('#boom-movie-detail').data('boom.id')) {
+            $('#boom-movie-detail').data('boom.id', movieObj.id);
 
             ka.lib.updateDetailPage(movieObj, true); // don't refresh backdrop
             ka.lib.updateDetailButtonSelection(true); // don't animate backdrop shade

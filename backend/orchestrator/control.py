@@ -191,8 +191,8 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                 break
             elif command.startswith('orchestrator:poster-refresh:'):
                 if pubSubReference is not None and pubSubReference.connected:
-                    movieUuid = command.replace('orchestrator:poster-refresh:', '')
-                    pubSubReference.write(unicode('["movie:poster:refresh", "%s"]' %movieUuid))
+                    movieId = command.replace('orchestrator:poster-refresh:', '')
+                    pubSubReference.write(unicode('["movie:poster:refresh", "%s"]' % movieId))
                     _processRequests()
 
                 queue.task_done()
@@ -220,11 +220,11 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                             logger.warning('Could not identify file: %s' % streamLocation)
                         else:
                             editVersion = getEditVersionFromFilename(streamLocation, basedataFromStream.get('year'))
-                            movieUuid = streamManager.addMovieStream(movieRecord, streamLocation, editVersion) # TODO: re-wire stream to correct movie if necessary
+                            movieId = streamManager.addMovieStream(movieRecord, streamLocation, editVersion) # TODO: re-wire stream to correct movie if necessary
                             _processRequests()
 
                             if pubSubReference.connected:
-                                pubSubReference.write(unicode('["receive:movie:item", %s]' % streamManager.getMovieAsJson(movieUuid)))
+                                pubSubReference.write(unicode('["receive:movie:item", %s]' % streamManager.getMovieAsJson(movieId)))
                                 _processRequests()
 
                             if isDownloaderIdle:

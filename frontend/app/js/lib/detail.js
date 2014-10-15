@@ -158,7 +158,7 @@ ka.lib.browser = {
                 .css('opacity', 0)
                 .data({
                     'boom.isCached': movieObj.isBackdropCached
-                  , 'boom.uuid': movieObj.uuid
+                  , 'boom.id': movieObj.id
                 })
                 .attr('src', '/movie/backdrop/' + movieObj.keyBackdrop +  '.jpg');
         }
@@ -193,9 +193,9 @@ ka.lib.browser = {
                     .get(0).style.webkitFilter = 'none';
 
                 if (!$(this).data('boom.isCached')) {
-                    var uuid = $(this).data('boom.uuid');
-                    ka.data.byUuid[uuid].isBackdropCached = true;
-                    $.get('/movie/' + uuid + '/set-backdrop-cached');
+                    var id = $(this).data('boom.id');
+                    ka.data.byId[id].isBackdropCached = true;
+                    $.get('/movie/' + id + '/set-backdrop-cached');
                 }
             }});
         }
@@ -233,7 +233,7 @@ ka.lib.updateDetailPage = function (movie, skipBackdropUpdate, noCollection) {
         return;
     }
 
-    $('#boom-movie-detail').data('boom.uuid', movie.uuid);
+    $('#boom-movie-detail').data('boom.id', movie.id);
 
     /*
     if (!movie.streamless) {
@@ -365,7 +365,7 @@ ka.lib.populateDetailBrowserGrid = function () {
         }
     }).appendTo('#boom-detail-browser');
 
-    var current = ka.lib.grid.getMovieIndexSnapshot()[$('#boom-movie-detail').data('boom.uuid')],
+    var current = ka.lib.grid.getMovieIndexSnapshot()[$('#boom-movie-detail').data('boom.id')],
         index, end, focused,
         movieList = ka.lib.grid.getMovieListSnapshot();
 
@@ -420,7 +420,7 @@ ka.lib.updateDetailBrowserInfo = function (movieObj, fade) {
 
 
 ka.lib._updateDetailBrowserInfo = function (movieObj) {
-    $('#boom-movie-detail').data('boom.uuid', movieObj.uuid);
+    $('#boom-movie-detail').data('boom.id', movieObj.id);
 
     var title = (ka.state.gridSortDisplayLanguage == 'localized') ? movieObj.titleLocalized : movieObj.titleOriginal,
         rating = ((movieObj.rating) ? (movieObj.rating / 10) : '?') + '/10',

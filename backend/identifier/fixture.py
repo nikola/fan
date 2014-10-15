@@ -67,12 +67,16 @@ POSTERS = {
        790: '3Iohw4WUosqfdX7vCKRko1hx0HN',  # The Fog
        807: 'uGJCZR4400oE0EkwKXenSSkqPgQ',  # Se7en
       1429: 'hf3KpQ13Z8HS0ZodzooMiR8PBqD',  # 25th Hour
+      1573: 'pCcZBYSRwuCGl2lKwlq2vMqiFsL',  # Die Hard 2
       2124: 'qUFXidNEXMh0Rnrp8xsgdFWAIg6',  # Color of Night
+     13475: 'lkQgAaI9s2j2Lhlkie8I9RcWYEX',  # Star Trek
      14161: 'yBJBl3rXTlqb7PglpihF4A7PzyL',  # 2012
+     19995: '6WYXT5jFs1aEKdpdTclS1bEY8IO',  # Avatar
      23629: 'jnCDFAssFafnkmljtyEaUKaoA4Q',  # Sucker Punch
      64635: 'b9cvXMdcrUWvbCfys4Toz3mu0NF',  # Total Recall
     137113: 'fDf25sy8M6ZKdnb8OQkNbak4x02',  # Edge of Tomorrow
     164457: '3ILyypFd1zDdQLasS3NuEliKRIs',  # Out of the Furnace
+    168672: '84Ea5Tk5ULPQIQioHqQMTXuVhCC',  # American Hustle
 }
 
 TOP_250 = [

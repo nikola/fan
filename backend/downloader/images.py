@@ -119,6 +119,10 @@ def processBacklogEntry(artworkType, key, pollingCallback=None):
             pass # TODO: handle failure
 
     if result:
-        os.remove(os.path.join(APP_STORAGE_PATH, 'backlog', artworkType + 's', key))
+        try:
+            os.remove(os.path.join(APP_STORAGE_PATH, 'backlog', artworkType + 's', key))
+        except WindowsError:
+            # logger.error('Could not find backlog')
+            pass
         _yield()
     return result

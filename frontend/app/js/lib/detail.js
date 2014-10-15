@@ -586,7 +586,7 @@ ka.lib._animatePosterMove = function (animateElement, animateProperties, removeE
                 ka.state.detachedBrowserPosterByKey[src.match(/\movie\/poster\/(.*?)-\d{2,3}\.image/)[1]] = removeElement.detach().css({
                     width: 150
                   , marginLeft: 10
-                  , webkitFilter: ''
+                  , webkitFilter: 'saturate(0%) opacity(0.5)'
                 });
             } else {
                 removeElement.remove();

@@ -26,6 +26,7 @@ from utils.net import deleteResponseCache
 
 from . import logger
 
+
 def _getMovieRecordFromLocation(streamLocation, basedataFromStream, basedataFromDir, processCallback):
     processCallback()
     if not appModule.userConfig.get('isDemoMode', False):
@@ -43,8 +44,6 @@ def _getMovieRecordFromLocation(streamLocation, basedataFromStream, basedataFrom
     )
 
     if movieRecord is not None:
-        # logger.warning('Could not identify file: %s' % streamLocation)
-    # else:
         for imageType in ('Poster', 'Backdrop'):
             movieRecord['key' + imageType] = movieRecord['url' + imageType].replace('/', '').replace('.jpg', '')
             pathname = os.path.join(APP_STORAGE_PATH, 'artwork', imageType.lower() + 's', movieRecord['key' + imageType])
@@ -62,15 +61,6 @@ def _getMovieRecordFromLocation(streamLocation, basedataFromStream, basedataFrom
         processBacklogEntry('backdrop', movieRecord.get('keyBackdrop'), processCallback)
 
     return movieRecord
-        # movieUuid = streamManager.addMovieStream(movieRecord, streamLocation) # TODO: re-wire stream to correct movie if necessary
-        # _processRequests()
-
-        # if pubSubReference.connected:
-        #     pubSubReference.write(unicode('["receive:movie:item", %s]' % streamManager.getMovieAsJson(movieUuid)))
-        #     _processRequests()
-
-        # if isDownloaderIdle:
-        #    queue.put('downloader:resume')
 
 
 def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridgeToken, bootToken, mustSecure, userConfig, useExternalConfig):
@@ -97,26 +87,9 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
             engine.poll(poll_timeout=0.005)
         time.sleep(0)
 
-    # logging.basicConfig(level=logging.INFO,
-    #                     format='%(asctime)s - %(message)s',
-    #                     datefmt='%Y-%m-%d %H:%M:%S')
-
-    # https://pythonhosted.org/watchdog/quickstart.html#a-simple-example
-    # http://stackoverflow.com/questions/19991033/generating-multiple-observers-with-python-watchdog
-    # http://stackoverflow.com/questions/21892080/combining-python-watchdog-with-multiprocessing-or-threading
-
-    # event_handler = LoggingEventHandler()
-    # streamWatcher = Observer()
-
-    # streamWatcher.schedule(event_handler, getLongPathname(r'\\DiskStation\Movies'), recursive=True)
-
-
-
-
     streamManager = StreamManager()
     streamGenerator = None
     syncFinished = False
-    # streamWatcherStarted = False
     isDownloaderIdle = False
 
     appModule.interProcessQueue = queue
@@ -172,10 +145,6 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                     streamGenerator = getStreamRecords(appModule.userConfig.get('sources', []))
 
                 queue.task_done()
-            # elif command == 'orchestrator:watch':
-            #     # streamWatcher.start()
-            #     streamWatcherStarted = True
-            #     queue.task_done()
             elif command == 'orchestrator:reload:config':
                 # appModule.userConfig = getCurrentUserConfig()
                 if useExternalConfig:
@@ -208,11 +177,7 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                 isDownloaderIdle = False
 
                 queue.task_done()
-            elif command == 'orchestrator:stop:all':
-                # if streamWatcherStarted:
-                #     streamWatcher.stop()
-                #     streamWatcher.join()
-
+            elif command == 'orchestrator:stop':
                 if engine is not None:
                     if pubSubReference is not None:
                         pubSubReference.close()
@@ -271,7 +236,7 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
 
                 syncFinished = None
 
-                queue.put('downloader:missing:artwork')
+                queue.put('downloader:missing:artwork') # TODO: rename to downloader:restock:artwork
 
             _processRequests()
 
@@ -288,4 +253,4 @@ def start(*args):
 
 def stop():
     global globalInterProcessQueue
-    globalInterProcessQueue.put('orchestrator:stop:all')
+    globalInterProcessQueue.put('orchestrator:stop')

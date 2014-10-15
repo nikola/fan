@@ -477,10 +477,9 @@ ka.lib.renderMovieObject = function (movieObj, movieId, posterId, posterWidth, p
     return $(
         '<div id="' + movieId + '" class="boom-' + infix + '-grid-item boom-grid-item">'
           + '<div class="boom-movie-grid-info-overlay' + extraClass + '">'
-              + '<div class="boom-movie-grid-info-overlay-image">'
-                  /* + '<img class="boom-movie-grid-image" id="' + posterId + '" width="' + posterWidth + '" height="' + posterHeight + '">' */
-                  + '<img class="boom-movie-grid-image" id="' + posterId + '">'
-              + '</div>'
+              /* + '<div class="boom-movie-grid-info-overlay-image">' */
+              + '<img class="boom-movie-grid-image" id="' + posterId + '">'
+              /* + '</div>' */
               + '<div class="boom-movie-grid-info-overlay-text">'
                   + '<div class="boom-movie-grid-info-overlay-title">' + title + '</div>'
                   + '<div class="boom-movie-grid-info-overlay-text-additional">' + additional + ' minutes</div>'

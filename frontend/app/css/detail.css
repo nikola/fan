@@ -271,7 +271,7 @@
 
 #boom-detail-large-poster img {
     position: absolute;
+    min-width: 300px; min-height: 450px;
+
     -webkit-backface-visibility: hidden;
-    min-width: 300px;
-    min-height: 450px;
     }

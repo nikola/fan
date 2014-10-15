@@ -590,7 +590,7 @@ ka.lib._animatePosterMove = function (animateElement, animateProperties, removeE
 
             var src = removeElement.attr('src');
             if (src) {
-                ka.lib._detachBrowserPoster(0, removeElement);
+                ka.lib._detachBrowserPoster(null, removeElement);
             } else {
                 removeElement.remove();
             }
@@ -687,5 +687,10 @@ ka.lib._rotateLargePoster = function (movieObj, direction) {
 
 
 ka.lib._detachBrowserPoster = function (index, element) {
+    if (index === 0) {
+        return;
+    } else if (index !== null) {
+        element = $(element);
+    }
     ka.state.detachedBrowserPosterByKey[element.attr('src').match(/\movie\/poster\/(.*?)-\d{2,3}\.image/)[1]] = element.detach();
 };

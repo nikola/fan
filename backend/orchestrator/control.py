@@ -214,18 +214,21 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                 else:
                     _processRequests()
 
-                    # print os.path.basename(streamLocation), '->', getShorthandFromFilename(streamLocation, basedataFromStream.get('year'))
+                    isContainerKnown = streamManager.isStreamKnown(streamLocation)
+                    _processRequests()
 
-                    if not streamManager.isStreamKnown(streamLocation):
+                    if not isContainerKnown:
                         movieRecord = _getMovieRecordFromLocation(streamLocation, basedataFromStream, basedataFromDir, _processRequests)
 
                         if movieRecord is None:
                             logger.warning('Could not identify file: %s' % streamLocation)
-                        else:
-                            version = getShorthandFromFilename(streamLocation, basedataFromStream.get('year'))
-                            movieId = streamManager.addMovieStream(movieRecord, streamLocation, version) # TODO: re-wire stream to correct movie if necessary
-                            _processRequests()
 
+                        version = getShorthandFromFilename(streamLocation, basedataFromStream.get('year'))
+                        _processRequests()
+                        movieId = streamManager.addMovieStream(movieRecord, streamLocation, version) # TODO: re-wire stream to correct movie if necessary
+                        _processRequests()
+
+                        if movieRecord is not None:
                             if pubSubReference.connected:
                                 pubSubReference.write(unicode('["receive:movie:item", %s]' % streamManager.getMovieAsJson(movieId)))
                                 _processRequests()

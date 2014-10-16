@@ -92,6 +92,9 @@ def processBacklogEntry(artworkType, key, pollingCallback=None):
         else:
             time.sleep(period)
 
+    os.remove(os.path.join(APP_STORAGE_PATH, 'backlog', artworkType + 's', key))
+    _yield()
+
     link = open(os.path.join(APP_STORAGE_PATH, 'artwork', artworkType + 's', key, 'source.url'), 'rU').read()
     _yield()
     sourceUrl = link[link.find('=') + 1:].strip()
@@ -120,11 +123,4 @@ def processBacklogEntry(artworkType, key, pollingCallback=None):
         else:
             pass # TODO: handle failure
 
-    if result:
-        try:
-            os.remove(os.path.join(APP_STORAGE_PATH, 'backlog', artworkType + 's', key))
-        except WindowsError:
-            # logger.error('Could not find backlog')
-            pass
-        _yield()
     return result

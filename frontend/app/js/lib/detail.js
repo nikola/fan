@@ -28,11 +28,9 @@ ka.lib.browser = {
   , setupExpansion: function () {
         if (!ka.lib.browser.isExpanded() && !ka.lib.browser.isHidden()) {
             var selectedPoster = $('#boom-detail-browser :nth-child(' + (ka.state.currentDetailBrowserPosterColumn + 2) + ')'),
-                snapshot = ka.lib.grid.getMovieListSnapshot(),
-                movieObj = snapshot[selectedPoster.data('boom.index')];
+                movieObj = ka.lib.grid.getMovieListSnapshot()[selectedPoster.data('boom.index')];
             ka.lib.browser.poster.setSource(movieObj.keyPoster);
             ka.lib.browser.expandUp();
-            /* $('#boom-detail-large-poster').css('right', 1920 - selectedPoster.offset().left - 150).attr('src', selectedPoster.attr('src').replace('-150.image', '-300.image')); */
         }
     }
 
@@ -116,15 +114,14 @@ ka.lib.browser = {
         }
 
       , onLoaded: function () {
+            $(this).data('boom.isLoaded', true);
+
             if (ka.lib.browser.isExpanded()) {
                 if (ka.lib.browser.poster.isHidden()) {
-                    $('#boom-detail-large-poster')
-                        .find('img').data('boom.isLoaded', true).end()
-                        .css('display', 'block').data('boom.isHidden', false).velocity({bottom: [10, -480]}, ka.settings.durationNormal);
+                    $('#boom-detail-large-poster').css('display', 'block')
+                        .data('boom.isHidden', false).velocity({bottom: [10, -480]}, ka.settings.durationNormal);
                 } else {
-                    $('#boom-detail-large-poster')
-                        .find('img').data('boom.isLoaded', true).end()
-                        .css('display', 'block');
+                    $('#boom-detail-large-poster').css('display', 'block');
                 }
             }
         }
@@ -651,7 +648,7 @@ ka.lib._rotateLargePoster = function (movieObj, direction) {
 
     if (movieObj.keyPoster in ka.cache.largeBrowserPosterByKey) {
         image = ka.cache.largeBrowserPosterByKey[movieObj.keyPoster]
-                        .css('webkitTransform', 'rotateY(' + startAngleNew + 'deg) translateZ(150px) scale(0.9225)');
+                    .css('webkitTransform', 'rotateY(' + startAngleNew + 'deg) translateZ(150px) scale(0.9225)');
     } else {
         image = $('<img>', {
             src: '/movie/poster/' + movieObj.keyPoster + '-300.image'
@@ -659,6 +656,7 @@ ka.lib._rotateLargePoster = function (movieObj, direction) {
                 backgroundColor: '#' + (movieObj.primaryPosterColor || '000000')
               , webkitTransform: 'rotateY(' + startAngleNew + 'deg) translateZ(150px) scale(0.9225)'
             }
+          , load: ka.lib.browser.poster.onLoaded
         });
     }
 
@@ -689,14 +687,11 @@ ka.lib._rotateLargePoster = function (movieObj, direction) {
             if (!!key && $(this).data('boom.isLoaded')) {
                 ka.cache.largeBrowserPosterByKey[key] = $(this).css('webkitFilter', 'none').detach();
             } else {
-                /* console.log('>>>>>>>>>>>>>>>>>>>>>>> key: ' + $(this).attr('src').match(/\movie\/poster\/(.*?)-\d{2,3}\.image/)[1]); */
                 $(this).remove();
             }
 
             newPosterStyle.webkitTransform = 'none';
             newPosterStyle.webkitFilter = 'none';
-
-            $('#boom-detail-large-poster img').on('load', ka.lib.browser.poster.onLoaded);
 
             ka.state.view = 'detail';
         }

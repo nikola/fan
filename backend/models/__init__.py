@@ -8,11 +8,12 @@ import os
 # import logging
 import json
 from contextlib import contextmanager
+from operator import itemgetter
 from sqlite3 import dbapi2 as sqlite
 
 from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
+from sqlalchemy.orm.exc import NoResultFound # , MultipleResultsFound
 
 from settings import EXE_PATH #, LOG_CONFIG
 # from utils.fs import getLogFileHandler
@@ -95,26 +96,6 @@ class StreamManager(object):
                 session.commit()
 
 
-    def getMovieById(self, identifier):
-        with self._session() as session:
-            try:
-                movie = session.query(Movie).filter(Movie.id == identifier).one()
-            except NoResultFound:
-                return None
-            else:
-                return movie
-
-
-    def getMovieTitleById(self, identifier):
-        with self._session() as session:
-            try:
-                movie = session.query(Movie).filter(Movie.id == identifier).one()
-            except NoResultFound:
-                return None
-            else:
-                return '%s (%d)' % (movie.titleOriginal, movie.releaseYear)
-
-
     def getMovieTitleById(self, identifier):
         with self._session() as session:
             try:
@@ -193,16 +174,6 @@ class StreamManager(object):
                 return True
 
 
-    def getCompilationById(self, identifier):
-        with self._session() as session:
-            try:
-                compilation = session.query(Compilation).filter(Compilation.id == identifier).one()
-            except NoResultFound:
-                return None
-            else:
-                return compilation
-
-
     def getMovieFromStreamLocation(self, streamLocation):
         with self._session() as session:
             try:
@@ -211,19 +182,6 @@ class StreamManager(object):
                 return None
             else:
                 return stream.movie
-
-
-    def getUnscaledPosterImage(self):
-        with self._session() as session:
-            try:
-                image = session.query(Image).filter(Image.isScaled == False, Image.imageType == 'Poster', Image.urlOriginal != None).first()
-            except NoResultFound:
-                return None, None
-            else:
-                if image is not None:
-                    return image.movie.id, image.urlOriginal
-                else:
-                    return None, None
 
 
     def getMissingBackdropMovieId(self):
@@ -466,15 +424,39 @@ class StreamManager(object):
             except NoResultFound:
                 return None
             else:
-                versions = []
+                containers = []
                 for stream in movie.streams:
-                    versions.append({
+                    containers.append({
                         'location': stream.location,
                         'format': stream.format,
                         'space': stream.space[::-1],
                         'resolution': stream.resolution,
                         'edit': stream.edit,
                     })
+
+                containers = sorted(containers, key=itemgetter('resolution'))
+
+                if all(version.get('space') == '2D' for version in containers):
+                    for version in containers:
+                        del version['space']
+
+                if all(version.get('edit') == 'Theatrical Cut' for version in containers):
+                    for version in containers:
+                        del version['edit']
+
+                if all(version.get('format') == 'Matroska' for version in containers):
+                    for version in containers:
+                        del version['format']
+
+                versions = []
+                for container in containers:
+                    versions.append([', '.join(filter(None, [
+                        container.get('edit'),
+                        container.get('resolution'),
+                        container.get('space'),
+                        container.get('format'),
+                    ])), container.get('location')])
+
                 return versions
 
 

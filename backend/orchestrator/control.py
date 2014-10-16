@@ -84,8 +84,9 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
 
     def _processRequests():
         if engine is not None:
-            engine.poll(poll_timeout=0.005)
-        time.sleep(0)
+            engine.poll(poll_timeout=0)
+        else:
+            time.sleep(0)
 
     streamManager = StreamManager()
     streamGenerator = None

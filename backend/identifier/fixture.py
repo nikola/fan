@@ -86,6 +86,7 @@ POSTERS = {
      19995: '6WYXT5jFs1aEKdpdTclS1bEY8IO',  # Avatar
      23629: 'jnCDFAssFafnkmljtyEaUKaoA4Q',  # Sucker Punch
      49051: '2ofYFSn6P7XmlVP7p4TLAncp7gz',  # The Hobbit: An Unexpected Journey
+     54138: 'xN3ueLKyE5uR8IrhQPvxHX8gIgE',  # Star Trek Into Darkness
      57158: '9r45CMd2WuQ2bW2PHk6NbMIiEvA',  # The Hobbit: The Desolation of Smaug
      64635: 'b9cvXMdcrUWvbCfys4Toz3mu0NF',  # Total Recall
     137113: 'fDf25sy8M6ZKdnb8OQkNbak4x02',  # Edge of Tomorrow

@@ -97,6 +97,8 @@ ka.transition.grid = {to: {
   , detail: function (movieObj, isCompilationSelected) {
         ka.state.view = 'limbo';
 
+        ka.lib.grid.snapshotMovieLookups();
+
         ka.state.lastGridMovieId = movieObj.id;
 
         ka.lib.updateDetailBrowserInfo(movieObj, false);
@@ -123,8 +125,6 @@ ka.transition.grid = {to: {
                 } else {
                     ka.lib.grid.focus.hide();
                 }
-
-                ka.lib.grid.snapshotMovieLookups();
 
                 if (ka.lib.browser.isExpanded()) {
                     ka.lib.browser.poster.setSource(movieObj.keyPoster);

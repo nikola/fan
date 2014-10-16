@@ -643,14 +643,18 @@ ka.lib._rotateLargePoster = function (movieObj, direction) {
         image = $('<img>', {
             src: '/movie/poster/' + movieObj.keyPoster + '-300.image'
           , css: {
-                backgroundColor: '#' + movieObj.primaryPosterColor
+                backgroundColor: '#' + (movieObj.primaryPosterColor || '000000')
               , webkitTransform: 'rotateY(' + startAngleNew + 'deg) translateZ(150px) scale(0.9225)'
             }
         });
     }
 
-    var oldPosterStyle = $('#boom-detail-large-poster img').eq(0).get(0).style,
-        newPosterStyle = image[['prependTo', 'appendTo'][direction]]('#boom-detail-large-poster').get(0).style;
+    try {
+        var oldPosterStyle = $('#boom-detail-large-poster img').eq(0).get(0).style,
+            newPosterStyle = image[['prependTo', 'appendTo'][direction]]('#boom-detail-large-poster').get(0).style;
+    } catch (e) {
+        return;
+    }
 
     $('#boom-detail-large-poster img').eq(!direction | 0).velocity({dummy: 0}, {
         delay: ka.settings.durationUltraShort

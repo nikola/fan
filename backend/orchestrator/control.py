@@ -20,7 +20,7 @@ from settings import APP_STORAGE_PATH
 from orchestrator.urls import module as appModule
 from orchestrator.pubsub import PubSub
 from downloader.images import processBacklogEntry
-from identifier import getStreamRecords, getFixedRecords, identifyMovieByTitleYear, getEditVersionFromFilename
+from identifier import getStreamRecords, getFixedRecords, identifyMovieByTitleYear, getShorthandFromFilename
 from utils.config import getCurrentUserConfig, getOverlayConfig, saveCurrentUserConfig
 from utils.net import deleteResponseCache
 
@@ -213,14 +213,16 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                 else:
                     _processRequests()
 
+                    # print os.path.basename(streamLocation), '->', getShorthandFromFilename(streamLocation, basedataFromStream.get('year'))
+
                     if not streamManager.isStreamKnown(streamLocation):
                         movieRecord = _getMovieRecordFromLocation(streamLocation, basedataFromStream, basedataFromDir, _processRequests)
 
                         if movieRecord is None:
                             logger.warning('Could not identify file: %s' % streamLocation)
                         else:
-                            editVersion = getEditVersionFromFilename(streamLocation, basedataFromStream.get('year'))
-                            movieId = streamManager.addMovieStream(movieRecord, streamLocation, editVersion) # TODO: re-wire stream to correct movie if necessary
+                            version = getShorthandFromFilename(streamLocation, basedataFromStream.get('year'))
+                            movieId = streamManager.addMovieStream(movieRecord, streamLocation, version) # TODO: re-wire stream to correct movie if necessary
                             _processRequests()
 
                             if pubSubReference.connected:

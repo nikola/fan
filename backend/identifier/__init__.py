@@ -23,7 +23,9 @@ THEMOVIEDB_API_KEY = 'ef89c0a371440a7226e1be2ddfe84318'
 STREAM_SIZE_THRESHOLD = 1024 * 1024 * 10 # 10 MiB
 
 # Compiled regular expressions.
-RE_CUT_INDICATOR_1 = re.compile(r"(([ \.\(](extended|final|theatrical|international|unrated|director[ \.']?s?))+([ \.]cut|[ \.]edition|[ \.]version|$))", re.I)
+RE_CUT_INDICATOR_1 = re.compile(r"(([ \.\(](remastered|extended|final|theatrical|international|ultimate|3-?in-?1|2-?in-?1|hybrid|imax|r-rated|unrated|uncut|dc|director[ \.']?s?))+([ \.]cut|[ \.]edition|[ \.]version|$))", re.I)
+RE_RESOLUTION_IND = re.compile(r'((720|1080)(p|i)?\d{0,2})', re.I)
+RE_SPACE_IND = re.compile(r'(?<=[ \.])3D(?=[ \.])', re.I)
 RE_SEARCH_YEAR = re.compile(r"(?<!^)((19|20)\d{2})[a-z0-9\.\-\) '\[\]]*$", re.I)
 RE_SEARCH_HEIGHT = re.compile(r"(?<!^)((72|108)0p?)[a-z0-9\.\-\) '\[\]]*$", re.I)
 RE_SAMPLE_DIR = re.compile(r'\\!?sample$', re.I)
@@ -37,6 +39,7 @@ RE_MULTI_ANGLE = re.compile(r'\d[\- ]*in[\- ]*\d')
 RE_EDITION_IND = re.compile(r'(?<= )(special edition|remastered|european version|hybrid|(2|3)d source|3d half sbs|half sbs|3d|open matte|tv aspect ratio)(?= |$)', re.I)
 RE_SOURCE_IND = re.compile(r'(?<= )(blu ?ray|hd dvd|hdtv|mkv)(?= |$)', re.I)
 RE_MULTI_SPACE = re.compile('  +')
+RE_MULTI_DOT = re.compile('\.\.+')
 RE_DIR_DRIVE = re.compile('"[a-z]\:\\\\', re.I)
 RE_DIR_TAIL = re.compile(r'(?<=\\)[^\\]*$', re.I)
 
@@ -115,7 +118,7 @@ def getOnlyStreams(root, files):
 
 
 def getBaseDataFromPathname(pathname):
-    releaseYear = None # 2014
+    releaseYear = None
 
     rawTitle = pathname
 
@@ -171,29 +174,54 @@ def getBaseDataFromPathname(pathname):
     return {'title': extractedTitle, 'year': releaseYear}
 
 
-def getEditVersionFromFilename(filename, year):
-    editVersion = 'Theatrical Cut'
+def getShorthandFromFilename(pathname, year):
+    filename = os.path.basename(pathname)
+
+    edit = 'Theatrical Cut'
+    resolution = '1080p24'
+    space = '2D'
+
+    searchResolutionIndicator =  RE_RESOLUTION_IND.search(filename)
+    if searchResolutionIndicator is not None:
+        resolution = searchResolutionIndicator.groups()[0]
+        filename = filename.replace(resolution, '')
+
+    searchSpaceIndicator = RE_SPACE_IND.search(filename)
+    if searchSpaceIndicator is not None:
+        space = '3D'
+        filename = filename.replace('3D', '').replace('3d', '')
+
+    # Collapse multiple separators.
+    filename = RE_MULTI_SPACE.sub(' ', filename)
+    filename = RE_MULTI_DOT.sub('.', filename)
 
     # Extract cut indicator.
-    searchCutIndicator = RE_CUT_INDICATOR_1.search(filename)
+    searchEditIndicator = RE_CUT_INDICATOR_1.search(filename)
 
     # Alternate case where cut indicator appears after production year.
-    if searchCutIndicator is None:
-        searchCutIndicator = re.search(r'(?<=%s[ \.])(extended|unrated|dc)(?=[ \.])' % year, filename, re.I)
+    if searchEditIndicator is None:
+        searchEditIndicator = re.search(r"(?<=%s)(([ \.](remastered|extended|final|theatrical|international|ultimate|3-?in-?1|2-?in-?1|hybrid|imax|r-rated|unrated|uncut|dc|director[ \.']?s?))+)(?=[ \.])" % year, filename, re.I)
 
-    if searchCutIndicator is not None:
-        editVersion = searchCutIndicator.groups()[0]
+    if searchEditIndicator is not None:
+        edit = searchEditIndicator.groups()[0]
 
         # Normalize edit version.
-        editVersion = editVersion.replace('.', ' ').replace('(', '').strip()
-        editVersion = editVersion.lower().replace('dc', "Director's Cut").replace(' version', '')
-        editVersion = editVersion.replace('directors ', "Director's ")
-        editVersion = editVersion.title().replace("'S", "'s")
-        editVersion = editVersion.replace(' Edition', ' Cut')
-        if not editVersion.endswith(' Cut'): editVersion += ' Cut'
-        editVersion = str(editVersion).strip()
+        edit = edit.replace('.', ' ').replace('(', '').strip()
+        edit = edit.lower().replace('dc', "Director's Cut").replace(' version', '')
+        edit = edit.replace('directors ', "Director's ")
+        edit = edit.title().replace("'S", "'s").replace('Imax', 'IMAX')
+        edit = edit.replace(' Edition', ' Cut')
+        if not edit.endswith(' Cut'): edit += ' Cut'
+        edit = str(edit).strip()
+        edit = edit.replace('IMAX Cut', 'IMAX Edition')
+        edit = edit.replace('Hybrid Cut', 'Hybrid Edition')
+        edit = edit.replace('Ultimate Cut', 'Ultimate Edition')
+        edit = edit.replace('3In1', '3-in-1')
+        edit = edit.replace('2In1', '2-in-1')
+        if edit.endswith('Uncut Cut'): edit = edit.replace('Uncut Cut', 'Uncut Edition')
+        if edit == 'Remastered Cut': edit = 'Remastered Theatrical Cut'
 
-    return editVersion
+    return space, resolution, edit
 
 
 def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary, yearSecondary, pollingCallback):

@@ -17,7 +17,9 @@ class Stream(Base):
     movieId = Column(Integer, ForeignKey('movies.id'))
 
     format = Column(Enum(*createNamedTuple('Matroska', 'BD')._asdict().values()))
-    version = Column(String(convert_unicode=False))
+    space = Column(Enum(*createNamedTuple('D2', 'D3')._asdict().values()))
+    resolution = Column(String(length=7, convert_unicode=False))
+    edit = Column(String(convert_unicode=False))
     location = Column(Unicode)
 
     movie = relationship('Movie', backref=backref('streams', order_by=id), cascade='all, delete, delete-orphan', single_parent=True)

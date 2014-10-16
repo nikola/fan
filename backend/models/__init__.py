@@ -125,7 +125,7 @@ class StreamManager(object):
                 return '%s (%d)' % (movie.titleOriginal, movie.releaseYear)
 
 
-    def addMovieStream(self, movieDict, streamLocation, editVersion):
+    def addMovieStream(self, movieDict, streamLocation, version):
         with self._session() as session:
             if streamLocation is not None:
                 try:
@@ -135,7 +135,9 @@ class StreamManager(object):
                     streamObject = Stream(
                         format = streamFormat,
                         location = streamLocation,
-                        version = editVersion,
+                        space = version[0][::-1],
+                        resolution = version[1],
+                        edit = version[2],
                     )
                     session.add(streamObject)
             else:

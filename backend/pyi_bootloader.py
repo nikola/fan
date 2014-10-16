@@ -178,7 +178,7 @@ if __name__ == '__main__':
         downloader = startDownloader(interProcessQueue)
         player = startPlayer(interProcessQueue)
 
-        setPriority('lower')
+        # setPriority('lower')
         orchestrator = startOrchestrator(interProcessQueue, certificateLocation, *arguments)
 
         setPriority('normal')

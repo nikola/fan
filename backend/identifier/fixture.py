@@ -62,6 +62,7 @@ BACKDROPS = {
      54138: 'ns0IojuqJe24AHTxe8RVcWJUCDM',  # Star Trek Into Darkness
      57158: 'o3G1XxdOSzvEsGGQwDgwoRLCalR',  # The Hobbit: The Desolation of Smaug
      64635: 'oh7GVViQ0DnanF1lMeegBhdXxBB',  # Total Recall
+     72190: '7NhgUfvLRkE7rWWaAbeqihiQTQs',  # World War Z
      76025: 'sZKDHpErUrhWPG5GPbxNlR5JKpb',  # Shame
     109445: 'irHmdlkdJphmk4HPfyAQfklKMbY',  # Frozen
     127585: '3KbXDu5FcDtyQyFzm2HZj8BFifi',  # X-Men: Days of Future Past

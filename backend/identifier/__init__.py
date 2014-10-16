@@ -8,8 +8,8 @@ import os
 import re
 import datetime
 import logging
+
 from simplejson import JSONDecodeError
-# from operator import itemgetter
 
 from settings import DEBUG
 from settings import LOG_CONFIG
@@ -25,7 +25,7 @@ STREAM_SIZE_THRESHOLD = 1024 * 1024 * 10 # 10 MiB
 # Compiled regular expressions.
 RE_CUT_INDICATOR_1 = re.compile(r"(([ \.\(](remastered|extended|final|theatrical|international|ultimate|3-?in-?1|2-?in-?1|hybrid|imax|r-rated|unrated|uncut|dc|director[ \.']?s?))+([ \.]cut|[ \.]edition|[ \.]version|$))", re.I)
 RE_RESOLUTION_IND = re.compile(r'((720|1080)(p|i)?\d{0,2})', re.I)
-RE_SPACE_IND = re.compile(r'(?<=[ \.])3D(?=[ \.])', re.I)
+RE_SPACE_IND = re.compile(r'(?<=[ \.\(])3D(?=[ \.])', re.I)
 RE_SEARCH_YEAR = re.compile(r"(?<!^)((19|20)\d{2})[a-z0-9\.\-\) '\[\]]*$", re.I)
 RE_SEARCH_HEIGHT = re.compile(r"(?<!^)((72|108)0p?)[a-z0-9\.\-\) '\[\]]*$", re.I)
 RE_SAMPLE_DIR = re.compile(r'\\!?sample$', re.I)
@@ -185,6 +185,7 @@ def getShorthandFromFilename(pathname, year):
     if searchResolutionIndicator is not None:
         resolution = searchResolutionIndicator.groups()[0]
         filename = filename.replace(resolution, '')
+        if resolution.endswith('p'): resolution += '24'
 
     searchSpaceIndicator = RE_SPACE_IND.search(filename)
     if searchSpaceIndicator is not None:
@@ -290,7 +291,6 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
             logger.warning('Movie with title "%s" not found at themoviedb.org, giving up for now.', searchTitlePrimary)
             pollingCallback()
         else:
-            # resultList = sorted(response['results'], key=itemgetter('id'))
             resultList = [result for result in response['results'] if result.get('backdrop_path') is not None] #  and result.get('vote_count') > 0]
             if len(resultList):
                 movieId = resultList[0]['id']

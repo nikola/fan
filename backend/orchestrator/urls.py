@@ -255,6 +255,11 @@ def ebc342eb0ab345369f216d6ad82561d8(request, identifier):
     return '', 200
 
 
+@module.route('/movie/<int:identifier>/get-available-versions', methods=('GET',), headers=SERVER_HEADERS, content_type='application/json')
+def getAvailableVersions(request, identifier):
+    return module.streamManager.getVersionsByMovieId(identifier), 200
+
+
 @module.route('/update/configuration', methods=('POST',), headers=SERVER_HEADERS, content_type='text/plain')
 def c33bf6cc87844d439f3b251b52764604(request):
     config = simplejson.loads(urllib.unquote(request.body))

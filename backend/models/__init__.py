@@ -459,6 +459,25 @@ class StreamManager(object):
                 return movie.streams[0].location
 
 
+    def getVersionsByMovieId(self, identifier):
+        with self._session() as session:
+            try:
+                movie = session.query(Movie).filter(Movie.id == identifier).one()
+            except NoResultFound:
+                return None
+            else:
+                versions = []
+                for stream in movie.streams:
+                    versions.append({
+                        'location': stream.location,
+                        'format': stream.format,
+                        'space': stream.space[::-1],
+                        'resolution': stream.resolution,
+                        'edit': stream.edit,
+                    })
+                return versions
+
+
     def updatePosterColorByMovieId(self, identifier, color):
         with self._session() as session:
             session.query(Movie).filter(Movie.id == identifier).update({'primaryColorPoster': color}) # , synchronize_session=False)

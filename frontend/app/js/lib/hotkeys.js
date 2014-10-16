@@ -118,7 +118,7 @@ ka.lib.handleKeypressSelect = function () {
     } else if (ka.state.view == 'grid-compilation') {
         ka.transition.grid.to.detail(ka.lib.getVariantFromGridFocus()[ka.state.currentCompilationFocusIndex], true);
     } else if (ka.state.view == 'detail') {
-        if (ka.state.currentDetailButton == 'play') {
+        /* if (ka.state.currentDetailButton == 'play') {
             $('#boom-movie-grid-container').css('display', 'none');
             $('#boom-movie-detail').velocity('fadeOut', {duration: ka.settings.durationNormal, complete: function () {
                 ka.state.view = 'play:movie';
@@ -138,7 +138,13 @@ ka.lib.handleKeypressSelect = function () {
 
                 ka.lib.startTrailerPlayer(ka.data.byId[ka.state.lastGridMovieId].trailer);
             }});
-        }
+        } */
+        $.getJSON(
+            '/movie/' + $('#boom-movie-detail').data('boom.id') + '/get-available-versions'
+          , function (data) {
+                console.log(data);
+            }
+        );
     }
 };
 

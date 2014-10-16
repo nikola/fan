@@ -82,10 +82,10 @@ RESOURCES_GUI_JS = [
 ]
 
 RESOURCES_FONT = [
-    'frontend/fonts/regular.ttf',
-    'frontend/fonts/bold.ttf',
-    'frontend/fonts/italic.ttf',
-    'frontend/fonts/icons.ttf',
+    'frontend/fonts/OpenSans-Regular.ttf',
+    'frontend/fonts/OpenSans-Bold.ttf',
+    'frontend/fonts/OpenSans-Italic.ttf',
+    'frontend/fonts/fontawesome-webfont.ttf',
 ]
 
 

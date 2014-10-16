@@ -1,20 +1,20 @@
 @font-face {
-    font-family: 'Ka Boom';
-    src: url('/regular.ttf') format('truetype');
+    font-family: 'cd817b231ec04451b3457feacab854ad';
+    src: url('/OpenSans-Regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
     }
 
 @font-face {
-    font-family: 'Ka Boom';
-    src: url('/bold.ttf') format('truetype');
+    font-family: 'cd817b231ec04451b3457feacab854ad';
+    src: url('/OpenSans-Bold.ttf') format('truetype');
     font-weight: bold;
     font-style: normal;
     }
 
 @font-face {
-    font-family: 'Ka Boom';
-    src: url('/italic.ttf') format('truetype');
+    font-family: 'cd817b231ec04451b3457feacab854ad';
+    src: url('/OpenSans-Italic.ttf') format('truetype');
     font-weight: normal;
     font-style: italic;
     }

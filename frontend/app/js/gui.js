@@ -102,9 +102,9 @@ function c4b77b2bcc804808a9ab107b8e2ac434() {
     });
 
     ka.state.socketDispatcher.bind('resume:detail:screen', function () {
-        $('#boom-movie-grid-container').css('display', 'block');
+        /* $('#boom-movie-grid-container').css('display', 'block'); */
         $('#boom-movie-detail').velocity('fadeIn', {duration: ka.settings.durationNormal, complete: function () {
-            ka.state.view = 'detail';
+            ka.state.view = 'select-stream';
         }});
     });
 
@@ -209,6 +209,7 @@ $(document).ready(function () {
 
     $('#boom-movie-detail-poster-foreground').on('load', ka.lib.browser.backdrop.onLoaded);
     $('#boom-detail-large-poster').data('boom.isHidden', true).find('img').on('load', ka.lib.browser.poster.onLoaded);
+    $('#boom-detail-watch-trailer').data('boom.type', 'trailer');
 
     $.get(
         'https://www.youtube.com/iframe_api'

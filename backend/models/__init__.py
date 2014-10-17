@@ -407,14 +407,14 @@ class StreamManager(object):
                 return json.dumps(record, separators=(',',':'))
 
 
-    def getStreamLocationByMovie(self, identifier):
+    def getStreamLocationById(self, identifier):
         with self._session() as session:
             try:
-                movie = session.query(Movie).filter(Movie.id == identifier).one()
+                stream = session.query(Stream).filter(Stream.id == identifier).one()
             except NoResultFound:
                 return None
             else:
-                return movie.streams[0].location
+                return stream.location
 
 
     def getVersionsByMovieId(self, identifier):
@@ -427,7 +427,7 @@ class StreamManager(object):
                 containers = []
                 for stream in movie.streams:
                     containers.append({
-                        'location': stream.location,
+                        'stream': stream.id,
                         'format': stream.format,
                         'space': stream.space[::-1],
                         'resolution': stream.resolution,
@@ -455,7 +455,7 @@ class StreamManager(object):
                         container.get('resolution'),
                         container.get('space'),
                         container.get('format'),
-                    ])), container.get('location')])
+                    ])), container.get('stream')])
 
                 return versions
 

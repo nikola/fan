@@ -37,7 +37,9 @@ def _startPlayer(queue):
                     isPlayerUpToDate = True
                 queue.put('orchestrator:player:updated')
 
-                playFile(playerStreamManager.getStreamLocationByMovie(command[-32:]))
+                streamLocation = playerStreamManager.getStreamLocationById(command[12:])
+                if streamLocation is not None:
+                    playFile(streamLocation)
 
                 queue.task_done()
 

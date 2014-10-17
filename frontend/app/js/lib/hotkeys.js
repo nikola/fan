@@ -49,6 +49,8 @@ ka.lib.handleKeypressUp = function () {
         ka.lib.moveFocusUp();
     } else if (ka.state.view == 'grid-compilation') {
         ka.lib.moveCompilationFocusUp();
+    } else if (ka.state.view == 'select-stream') {
+        ka.lib.moveStreamSelectionUp();
     }
 };
 
@@ -65,6 +67,8 @@ ka.lib.handleKeypressDown = function () {
         ka.lib.moveFocusDown();
     } else if (ka.state.view == 'grid-compilation') {
         ka.lib.moveCompilationFocusDown();
+    } else if (ka.state.view == 'select-stream') {
+        ka.lib.moveStreamSelectionDown();
     }
 };
 
@@ -118,33 +122,29 @@ ka.lib.handleKeypressSelect = function () {
     } else if (ka.state.view == 'grid-compilation') {
         ka.transition.grid.to.detail(ka.lib.getVariantFromGridFocus()[ka.state.currentCompilationFocusIndex], true);
     } else if (ka.state.view == 'detail') {
-        /* if (ka.state.currentDetailButton == 'play') {
-            $('#boom-movie-grid-container').css('display', 'none');
+        ka.lib.toggleAvailableStreams();
+    } else if (ka.state.view == 'select-stream') {
+        var selected = $('#boom-detail-available-streams .boom-active'),
+            actionType = selected.data('boom.type');
+        if (actionType == 'stream') {
             $('#boom-movie-detail').velocity('fadeOut', {duration: ka.settings.durationNormal, complete: function () {
                 ka.state.view = 'play:movie';
 
                 if (!ka.state.isPlayerUpdated) {
                     $('#boom-playback-wait').velocity('fadeIn', {display: 'flex', duration: ka.settings.durationNormal, complete: function () {
-                        ka.state.socketDispatcher.push('movie:play', $('#boom-movie-detail').data('boom.id'));
+                        ka.state.socketDispatcher.push('movie:play', selected.data('boom.stream'));
                     }});
                 } else {
-                    ka.state.socketDispatcher.push('movie:play', ka.state.lastGridMovieId);
+                    ka.state.socketDispatcher.push('movie:play', selected.data('boom.stream'));
                 }
             }});
-        } else if (ka.state.currentDetailButton == 'trailer') {
-            $('#boom-movie-grid-container').css('display', 'none');
+        } else if (actionType == 'trailer') {
             $('#boom-movie-detail').velocity('fadeOut', {duration: ka.settings.durationNormal, complete: function () {
                 ka.state.view = 'play:trailer';
 
-                ka.lib.startTrailerPlayer(ka.data.byId[ka.state.lastGridMovieId].trailer);
+                ka.lib.startTrailerPlayer(ka.data.byId[$('#boom-movie-detail').data('boom.id')].trailer);
             }});
-        } */
-        $.getJSON(
-            '/movie/' + $('#boom-movie-detail').data('boom.id') + '/get-available-versions'
-          , function (data) {
-                console.log(data);
-            }
-        );
+        }
     }
 };
 
@@ -154,6 +154,8 @@ ka.lib.handleKeypressBack = function () {
         ka.transition.menu.to.grid();
     } else if (ka.state.view == 'detail') {
         ka.transition.detail.to.grid();
+    } else if (ka.state.view == 'select-stream') {
+        ka.lib.toggleAvailableStreams();
     } else if (ka.state.view == 'grid-compilation') {
         ka.transition.compilation.to.grid();
     } else if (ka.state.view == 'grid') {

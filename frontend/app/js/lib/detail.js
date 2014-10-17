@@ -312,11 +312,11 @@ ka.lib.closeTrailerPlayer = function () {
     ka.state.movieTrailerPlayer.stopVideo();
     ka.state.movieTrailerPlayer.clearVideo();
 
-    ka.state.view = 'detail';
+    ka.state.view = 'select-stream';
 
     $('#boom-movie-trailer').css('display', 'none');
 
-    $('#boom-movie-grid-container').css('display', 'block');
+    /* $('#boom-movie-grid-container').css('display', 'block'); */
 
     $('#boom-movie-detail').velocity('fadeIn', ka.settings.durationNormal);
 
@@ -706,4 +706,85 @@ ka.lib._detachSmallBrowserPoster = function (index, element) {
         element = $(element);
     }
     ka.cache.smallBrowserPosterByKey[element.attr('src').match(/\movie\/poster\/(.*?)-\d{2,3}\.image/)[1]] = element.detach();
+};
+
+
+ka.lib.toggleAvailableStreams = function () {
+    if (ka.state.view == 'select-stream') {
+        ka.state.view = 'limbo';
+
+        $('#boom-detail-focus').velocity({opacity: 1}, ka.settings.durationShort);
+
+        $('#boom-detail-available-streams').velocity('transition.expandOut', {duration: ka.settings.durationShort, display: 'none', complete: function () {
+            ka.state.view = 'detail';
+        }});
+        $('#boom-detail-buttons-shade').velocity({opacity: 0}, {duration: ka.settings.durationShort, display: 'none', complete: function () {
+
+        }});
+    } else {
+        ka.state.view = 'limbo';
+
+        var movieObj = ka.data.byId[$('#boom-movie-detail').data('boom.id')],
+            height = ka.lib.browser.isHidden() ? 1080 : ka.lib.browser.isExpanded() ? 610 : 833;
+        $('#boom-detail-available-streams, #boom-detail-buttons-shade').velocity({height: height}, {duration: 0, complete: function () {
+            $('#boom-detail-focus').velocity({opacity: 0}, ka.settings.durationShort);
+
+            $('#boom-detail-buttons-shade').css('display', 'block').velocity({opacity: 0.5}, {duration: ka.settings.durationShort, complete: function () {
+                $.getJSON(
+                    '/movie/' + movieObj.id + '/get-available-versions'
+                  , function (versions) {
+                        $('#boom-detail-available-streams .boom-button').slice(1).remove();
+
+                        for (var version, index = 0; version = versions[index]; index++) {
+                            $('<div>', {
+                                text: 'Play movie: ' + version[0] + ''
+                              , class: 'boom-button'
+                              , data: {
+                                    'boom.stream': version[1]
+                                  , 'boom.color': '#' + movieObj.primaryPosterColor
+                                  , 'boom.type': 'stream'
+                                }
+                            }).appendTo('#boom-detail-available-streams');
+                        }
+
+                        if (movieObj.trailer) {
+                            $('#boom-detail-watch-trailer').addClass('boom-active').css('display', 'block').data('boom.color', '#' + movieObj.primaryPosterColor);
+                        } else {
+                            $('#boom-detail-watch-trailer').removeClass('boom-active').css('display', 'none');
+                            $('#boom-detail-available-streams .boom-button:nth-child(2)').addClass('boom-active');
+                        }
+
+                        var selected = $('#boom-detail-available-streams .boom-active');
+                        selected.css('backgroundColor', selected.data('boom.color')).data('type');
+
+                        $('#boom-detail-available-streams').velocity('transition.expandIn', {display: 'flex', duration: ka.settings.durationShort, complete: function () {
+                            ka.state.view = 'select-stream';
+                        }});
+                    }
+                );
+            }});
+        }});
+    }
+};
+
+
+ka.lib.moveStreamSelectionUp = function () {
+    var index = $('#boom-detail-available-streams .boom-active').index('#boom-detail-available-streams .boom-button:visible');
+    if (index > 0) {
+        var selected = $('#boom-detail-available-streams .boom-button:visible')
+            .removeClass('boom-active').css('backgroundColor', 'transparent')
+            .eq(index - 1);
+        selected.addClass('boom-active').css('backgroundColor', selected.data('boom.color'));
+    }
+};
+
+
+ka.lib.moveStreamSelectionDown = function () {
+    var index = $('#boom-detail-available-streams .boom-active').index('#boom-detail-available-streams .boom-button:visible');
+    if (index < $('#boom-detail-available-streams .boom-button:visible').size() - 1) {
+        var selected = $('#boom-detail-available-streams .boom-button:visible')
+            .removeClass('boom-active').css('backgroundColor', 'transparent')
+            .eq(index + 1);
+        selected.addClass('boom-active').css('backgroundColor', selected.data('boom.color'));
+    }
 };

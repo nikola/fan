@@ -239,7 +239,7 @@ out/
 
 ## Project-specific.
 dummy.exe
-compiler/clean/
+builder/clean/
 compiler/pyminifier/
 trident.not.compressed/
 shaders/

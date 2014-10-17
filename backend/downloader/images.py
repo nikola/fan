@@ -20,8 +20,8 @@ from settings import ENTROPY_SEED
 from . import logger
 
 
-CONVERT_EXE = os.path.join(ASSETS_PATH, 'tools', 'convert.exe')
-CWEBP_EXE = os.path.join(ASSETS_PATH, 'tools', 'cwebp.exe')
+CONVERT_EXE = os.path.join(ASSETS_PATH, 'thirdparty', 'convert', 'convert.exe')
+CWEBP_EXE = os.path.join(ASSETS_PATH, 'thirdparty', 'cwebp', 'cwebp.exe')
 
 
 def downloadArtwork(imageUrl, imageType, imageId, pollingCallback=None):

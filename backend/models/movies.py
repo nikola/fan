@@ -1,19 +1,30 @@
 # coding: utf-8
 """
+fan - A movie compilation and playback app for Windows. Fast. Lean. No weather widget.
+Copyright (C) 2013-2014 Nikola Klaric.
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 __author__ = 'Nikola Klaric (nikola@klaric.org)'
-__copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
+__copyright__ = 'Copyright (C) 2013-2014 Nikola Klaric'
 
 from sqlalchemy import ForeignKey, Column, SmallInteger, Integer, BigInteger, String, Unicode, Boolean
 from sqlalchemy.orm import relationship, backref
 
-from models import Base # , GUID, createUuid
+from models import Base
 
-# Association table.
-# movie_genres = Table('movie_genres', Base.metadata,
-#     Column('movie_id', Integer, ForeignKey('movies.id')),
-#     Column('genre_id', Integer, ForeignKey('genres.id')),
-# )
 
 class Movie(Base):
     __tablename__ = 'movies'
@@ -21,7 +32,6 @@ class Movie(Base):
     id = Column(Integer, primary_key=True)
     compilationId = Column(Integer, ForeignKey('compilations.id'))
 
-    # uuid = Column(GUID, default=createUuid)
     streamless = Column(Boolean, default=True)
 
     idTheMovieDb = Column(Integer)
@@ -40,22 +50,11 @@ class Movie(Base):
 
     genres = Column(String(convert_unicode=False))
 
-    # sourceBackdrop = Column(String(convert_unicode=False))
     keyBackdrop = Column(String(convert_unicode=False))
     isBackdropCached = Column(Boolean, default=False)
-    # isBackdropDownloading = Column(Boolean, default=False)
 
-    # sourcePoster = Column(String(convert_unicode=False))
     keyPoster = Column(String(convert_unicode=False))
     primaryColorPoster = Column(String(length=6, convert_unicode=False))
-
-
-    # urlPoster = Column(String(convert_unicode=False))
-
-    # isPosterDownloading = Column(Boolean, default=False)
-
-    # Many-to-many Movies <-> Genres.
-    # genres = relationship('Genre', secondary=movie_genres, backref='movies')
 
     compilation = relationship('Compilation', backref=backref('movies', order_by=id), cascade='all, delete, delete-orphan', single_parent=True)
 

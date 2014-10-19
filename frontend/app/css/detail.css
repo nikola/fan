@@ -1,8 +1,23 @@
 /**
- *  Movie detail styles.
+ *  fan - A movie compilation and playback app for Windows. Fast. Lean. No weather widget.
+ *  Copyright (C) 2013-2014 Nikola Klaric.
+ *
+ *  This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License
+ *  as published by the Free Software Foundation; either version 2
+ *  of the License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  *  @author Nikola Klaric (nikola@klaric.org)
- *  @copyright Copyright (c) 2013-2014 Nikola Klaric
+ *  @copyright Copyright (C) 2013-2014 Nikola Klaric
  */
 
 #boom-movie-detail {
@@ -13,44 +28,25 @@
     position: absolute; top: 0; left: 1920px;
 
     background-size: 1920px 1080px;
-    /* background-position-x: -20px; */
     background-repeat: no-repeat;
     background-color: black;
-
-    /* -webkit-transform: translate3d(0, 0, 0);
-    -webkit-backface-visibility: hidden;
-    -webkit-perspective: 1000;
-    -webkit-transform-style: preserve-3d; */
     }
 
 #boom-detail-panel {
     display: block;
 
-    /* width: 2080px; height: 245px;
-    position: absolute; top: 1080px; left: -160px; */
-    width: 1920px; height: 470px; /* 247px; */
-    position: absolute; left: 0; /* top: 1080px; */ bottom: -223px;  /* top: 833px; */
+    width: 1920px; height: 470px;
+    position: absolute; left: 0; bottom: -223px;
     background: linear-gradient(to right, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.25) 50%, rgba(0, 0, 0, 0.25) 100%),
                 linear-gradient(to top, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.25) 50%, rgba(0, 0, 0, 0) 75%);
-
-    /* -webkit-perspective: 1000px;
-    -webkit-perspective-origin: 50% 50%; */
-
-    /* -webkit-transform: translate3d(0, 0, 0);
-    -webkit-backface-visibility: hidden;
-    -webkit-perspective: 1000;
-    -webkit-transform-style: preserve-3d; */
     }
 
 #boom-detail-browser {
-    /* display: inline-block; */
     display: none;
     width: 1150px; height: 247px; /* width = 990x + 150 + 10 */
 
-    position: absolute; margin-left: -160px; /* margin-top: 1px; */ /* bottom: -247px; */ bottom: -24px;
+    position: absolute; margin-left: -160px; bottom: -24px;
     clip: rect(12px, 960px, 237px, 170px);
-
-    /* background-color: rgba(0, 0, 0, 0.25); */
     }
 
 #boom-detail-browser img {
@@ -59,7 +55,7 @@
 
 #boom-detail-fields {
     display: inline-block;
-    width: 1079px; /* height: 224px; */
+    width: 1079px;
     padding: 25px 0 0 30px;
     }
 
@@ -72,7 +68,7 @@
 
 #boom-detail-title {
     display: inline-block;
-    width: 1049px; height: 155px; /* -> 100px */
+    width: 1049px; height: 155px;
 
     font-size: 40px; font-weight: bold; line-height: 50px;
 
@@ -134,49 +130,9 @@
     overflow-y: hidden;
     }
 
-#boom-movie-detail-browser-buttons {
-    list-style: none;
-    margin: 0;
-    padding: 10px 0;
-
-    position: absolute; bottom: -20px; right: 820px;
-    width: 46px; height: 245px;
-    }
-
-#boom-movie-detail-browser-buttons li {
-    display: block;
-    width: 20px; height: 34px;
-    opacity: 0.75;
-
-    font: bold 28px/32px cd817b231ec04451b3457feacab854ad;
-    color: white; text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.75);
-    /* letter-spacing: 0.05em; */
-    text-align: center;
-
-    margin-bottom: 16px;
-    padding: 4px 12px;
-    border: 1px solid transparent; border-radius: 2px;
-
-    background-color: rgba(0, 0, 0, 0.75);
-    }
-
-#boom-movie-detail-browser-buttons li.boom-active {
-    opacity: 1;
-
-    border: 1px solid rgba(0, 0, 0, 0.5);
-    background-color: rgb(21, 34, 50);
-    box-shadow: 0 2px 6px rgba(0, 0 , 0, 0.5),inset 1px 1px rgba(255, 255, 255, 0.2),inset 0 1px rgba(255, 255, 255, 0.2),inset 0 10px 20px rgba(255, 255, 255, 0.25),inset 0 0 4px rgba(255, 255, 255, 0.3);
-    }
-
-#boom-movie-detail-browser-buttons i {
-    display: inline-block;
-    width: 19px;
-    }
-
 #boom-detail-focus {
-    /* display: block; */
     display: none;
-    position: absolute; /* top: 1084px; left: 2px; */ /* top: 837px; */ /* bottom: 4px; */ bottom: -21px;
+    position: absolute; bottom: -21px;
 
     width: 156px; height: 231px;
     border: 4px solid white;
@@ -210,23 +166,15 @@
     width: auto;
     height: auto;
 
-    /* -webkit-filter: drop-shadow(0px 10px 10px rgba(0, 0, 0, 0.5)); */
-    /* -webkit-box-shadow: 0px 5px 25px 10px rgba(0, 0, 0, 0.5); */
     -webkit-box-shadow: 0 2px 30px 4px rgba(0, 0, 0, 0.5);
-    /* -webkit-transform: translate3d(0, 0, 0); */
-
-    /* box-shadow: inset 0 1px 0 rgba(255,255,255,.6), 0 22px 70px 4px rgba(0,0,0,0.56), 0 0 0 1px rgba(0, 0, 0, 0.3); */
     }
 
 .boom-detail-info {
     color: white;
 
-    /* margin: 30px 0 0 0; */
-    width: 300px;
-    height: 45px;
+    width: 300px; height: 45px;
 
     font-size: 26px;
-    /* line-height: 30px; */
     letter-spacing: 1px;
     }
 

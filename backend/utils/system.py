@@ -1,5 +1,21 @@
 # coding: utf-8
 """
+fan - A movie compilation and playback app for Windows. Fast. Lean. No weather widget.
+Copyright (C) 2013-2014 Nikola Klaric.
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 __author__ = 'Nikola Klaric (nikola@klaric.org)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
@@ -27,7 +43,7 @@ PRIORITIES = {
     'higher': win32process.ABOVE_NORMAL_PRIORITY_CLASS,
 }
 
-TRIDENT_ID = None
+INSTANCE_ID = None
 
 VERSION_TO_TOKEN = {
     '6.3':  'Windows 8.1',
@@ -65,7 +81,7 @@ class Process(multiprocessing.Process):
 def setPriority(priority='normal'):
     pid = win32api.GetCurrentProcessId()
     handle = win32api.OpenProcess(win32con.PROCESS_ALL_ACCESS, True, pid)
-    win32process.SetPriorityClass(handle, PRIORITIES.get(priority)) # , win32process.NORMAL_PRIORITY_CLASS))
+    win32process.SetPriorityClass(handle, PRIORITIES.get(priority))
 
 
 def getSystemVersion():
@@ -77,8 +93,6 @@ def getPlatformToken():
 
 
 def isCompatiblePlatform():
-    """ Must be Windows 7 or higher, non-debug revision, and 32-bit Python interpreter due to CEF dependency.
-    """
     return getPlatformToken() in COMPATIBLE_PLATFORMS \
         and not platform.win32_ver()[-1].endswith(" Checked") \
         and platform.architecture()[0] == "32bit"
@@ -100,16 +114,16 @@ def isDesktopCompositionEnabled():
 
 
 def getCurrentInstanceIdentifier():
-    global TRIDENT_ID
+    global INSTANCE_ID
 
-    if TRIDENT_ID is None:
-        version = getProductVersion(os.path.join(ASSETS_PATH, 'trident', 'libcef.dll'))
+    if INSTANCE_ID is None:
+        version = getProductVersion(os.path.join(ASSETS_PATH, 'thirdparty', 'cef', 'libcef.dll'))
 
         md5 = MD5()
         md5.update(os.path.join(EXE_PATH, version))
-        TRIDENT_ID = md5.hexdigest()[:16]
+        INSTANCE_ID = md5.hexdigest()[:16]
 
-    return TRIDENT_ID
+    return INSTANCE_ID
 
 
 def getProductVersion(pathname):
@@ -132,3 +146,5 @@ def getProductVersion(pathname):
                 return '.'.join([num.rstrip('\x00') for num in ctypes.string_at(r.value, l.value).split('.')])
 
     raise ValueError
+
+

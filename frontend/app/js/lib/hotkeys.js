@@ -1,16 +1,63 @@
 /**
- *  Process global hotkeys.
+ *  fan - A movie compilation and playback app for Windows. Fast. Lean. No weather widget.
+ *  Copyright (C) 2013-2014 Nikola Klaric.
+ *
+ *  This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License
+ *  as published by the Free Software Foundation; either version 2
+ *  of the License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  *  @author Nikola Klaric (nikola@klaric.org)
- *  @copyright Copyright (c) 2013-2014 Nikola Klaric
+ *  @copyright Copyright (C) 2013-2014 Nikola Klaric
  */
+
 ; var ka = ka || {}; if (!('lib' in ka)) ka.lib = {};
+
+
+ka.lib.handleKeypressAny = function (evt) {
+    if (ka.state.view != 'grid') {
+        return;
+    } else {
+        var character = String.fromCharCode(evt.keyCode);
+
+        if (/^[a-z]$/i.test(character)) {
+            var key = character.toUpperCase();
+            if (key in ka.state.gridLookupLinesByKey) {
+                var line = ka.state.gridLookupLinesByKey[key][0] % ka.settings.gridMaxRows;
+                ka.state.gridPage = Math.floor(ka.state.gridLookupLinesByKey[key][0] / ka.settings.gridMaxRows);
+                ka.state.gridFocusX = 0;
+                ka.state.gridFocusY = line;
+
+                ka.lib.repositionMovieGrid();
+                ka.lib.repositionMovieFocus();
+
+                $('#boom-movie-grid-key-' + key).velocity({
+                    color: '#000000'
+                  , backgroundColor: '#ffffff'
+                  , borderColor: '#ffffff'
+                }, ka.settings.durationNormal).velocity('reverse');
+            } else {
+                $('#boom-movie-grid-container').velocity('callout.shake');
+            }
+        } else if (/^[1-7]$/.test(character)) {
+            ka.lib.moveFocusToIndex(character - 1);
+        }
+    }
+};
 
 
 ka.lib.handleKeypressFirstItem = function () {
     if (ka.state.view == 'grid') {
         ka.lib.moveFocusFirstItem();
-
     }
 };
 
@@ -25,7 +72,6 @@ ka.lib.handleKeypressLastItem = function () {
 ka.lib.handleKeypressPreviousPage = function () {
     if (ka.state.view == 'grid') {
         ka.lib.moveFocusPageUp();
-
     }
 };
 
@@ -167,71 +213,3 @@ ka.lib.handleKeypressBack = function () {
         $('#boom-credit-text').stop();
     }
 };
-
-
-ka.lib.handleKeypressAny = function (evt) {
-    if (ka.state.view != 'grid') {
-        return;
-    } else {
-        var character = String.fromCharCode(evt.keyCode);
-
-        if (/^[a-z]$/i.test(character)) {
-            var key = character.toUpperCase();
-            if (key in ka.state.gridLookupLinesByKey) {
-                var line = ka.state.gridLookupLinesByKey[key][0] % ka.settings.gridMaxRows;
-                ka.state.gridPage = Math.floor(ka.state.gridLookupLinesByKey[key][0] / ka.settings.gridMaxRows);
-                ka.state.gridFocusX = 0;
-                ka.state.gridFocusY = line;
-
-                /* ka.lib.refocusGrid(); */
-                ka.lib.repositionMovieGrid();
-                ka.lib.repositionMovieFocus();
-
-                $('#boom-movie-grid-key-' + key).velocity({
-                    color: '#000000'
-                  , backgroundColor: '#ffffff'
-                  , borderColor: '#ffffff'
-                }, ka.settings.durationNormal).velocity('reverse');
-            } else {
-                $('#boom-movie-grid-container').velocity('callout.shake');
-            }
-        } else if (/^[1-7]$/.test(character)) {
-            ka.lib.moveFocusToIndex(character - 1);
-        }
-    }
-
-
-};
-
-/*
-		el.swipeEvents().bind("swipeDown",  function(event){
-			event.preventDefault();
-			el.moveUp();
-		}).bind("swipeUp", function(event){
-			event.preventDefault();
-			el.moveDown();
-		});
-
-		$(window).bind('mousewheel DOMMouseScroll', function(event) {
-			event.preventDefault();
-			var delta = event.originalEvent.wheelDelta || -event.originalEvent.detail;
-			// init_scroll(event, delta);
-            var deltaOfInterest = delta,
-				timeNow = new Date().getTime();
-			// Cancel scroll if currently animating or within quiet period
-			if(timeNow - lastAnimation < quietPeriod + settings.animationTime) {
-				event.preventDefault();
-				return;
-			}
-
-			if (deltaOfInterest < 0) {
-				el.moveDown()
-			} else {
-				el.moveUp()
-			}
-			lastAnimation = timeNow;
-		});
-
-
-		return false;
-*/

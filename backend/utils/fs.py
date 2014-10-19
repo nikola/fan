@@ -1,5 +1,21 @@
 # coding: utf-8
 """
+fan - A movie compilation and playback app for Windows. Fast. Lean. No weather widget.
+Copyright (C) 2013-2014 Nikola Klaric.
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 __author__ = 'Nikola Klaric (nikola@klaric.org)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
@@ -7,14 +23,12 @@ __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 import os
 import re
 import logging
-from os import fdopen
 from itertools import izip_longest
-from tempfile import mkstemp
 from cStringIO import StringIO
 from array import array
 
 import win32com.client
-from win32file import FindStreams, SetFileAttributesW, GetDriveType
+from win32file import FindStreams, GetDriveType
 from win32api import GetLogicalDriveStrings, GetVolumeInformation
 from pylzma import compress as lowercase, decompress as uppercase
 
@@ -55,14 +69,6 @@ def getFileStreams(pathname):
     return [str(name[1:name.rindex(':')]) for length, name in FindStreams(unicode(pathname))[1:]]
 
 
-def removeFileStreams(pathname):
-    pass
-
-
-def getStreamContentType(stream):
-    pass
-
-
 def getLongPathname(pathname):
     if pathname.startswith('\\\\'):
         return pathname.replace(u'\\\\', u'\\\\?\\UNC\\')
@@ -70,24 +76,6 @@ def getLongPathname(pathname):
         return u'\\\\?\\' + pathname
     else:
         return pathname
-
-
-def createTemporaryFile():
-    fd, filename = mkstemp(suffix='.tmp', prefix='ASPNETSetup_')
-    # FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_TEMPORARY | FILE_ATTRIBUTE_NOT_CONTENT_INDEXED
-    # SetFileAttributesW(unicode(filename), 2 | 4 | 256 | 8192)
-    SetFileAttributesW(unicode(filename), 256 | 8192)
-
-    return fd, filename
-
-
-def writeTemporaryFile(blob):
-    fd, filename = createTemporaryFile()
-    fp = fdopen(fd, 'w')
-    fp.write(blob)
-    fp.close()
-
-    return filename
 
 
 def getDrives():
@@ -140,10 +128,6 @@ def readProcessedStream(identifier):
     # TODO: return modification timestamp
     # timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
     return uppercase(stream.getvalue())
-
-
-def readProcessedStreamTimestamped(identifier):
-    pass
 
 
 def _processChunk(stream, guid):

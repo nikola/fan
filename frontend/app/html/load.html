@@ -11,13 +11,13 @@
                     gui.style.width = gui.style.height = '100%';
                     gui.contentWindow.focus();
 
-                    evt.source.c4b77b2bcc804808a9ab107b8e2ac434();
+                    evt.source.onPageLoaded();
                 }
             };
         </script>
     </head>
     <body style="background-color: black;margin: 0; padding: 0;overflow: hidden;width: 100%; height: 100%;cursor: none !important;">
         <div id="spinner" style="cursor: none !important;display: table;position: absolute;height: 100%;width: 100%"><div style="cursor: none !important;display: table-cell;vertical-align: middle"><img src="/loader.gif" style="cursor: none !important;display: block;margin: 0 auto"></div></div>
-        <iframe seamless="seamless" src="/gui.asp" style="background-color: transparent;border: 0 none transparent;padding: 0;overflow: hidden;width: 0; height: 0"></iframe>
+        <iframe seamless="seamless" src="/gui.html" style="background-color: transparent;border: 0 none transparent;padding: 0;overflow: hidden;width: 0; height: 0"></iframe>
     </body>
 </html>

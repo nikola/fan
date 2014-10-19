@@ -1,5 +1,21 @@
 # coding: utf-8
 """
+fan - A movie compilation and playback app for Windows. Fast. Lean. No weather widget.
+Copyright (C) 2013-2014 Nikola Klaric.
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 from __future__ import division
 
@@ -14,11 +30,9 @@ from contextlib import closing
 import requests
 
 from settings import ASSETS_PATH, APP_STORAGE_PATH
-from settings import ENTROPY_SEED
-
+from settings import CLIENT_AGENT
 
 from . import logger
-
 
 CONVERT_EXE = os.path.join(ASSETS_PATH, 'thirdparty', 'convert', 'convert.exe')
 CWEBP_EXE = os.path.join(ASSETS_PATH, 'thirdparty', 'cwebp', 'cwebp.exe')
@@ -51,7 +65,7 @@ def downloadArtwork(imageUrl, imageType, imageId, pollingCallback=None):
         chunks = 0
         try:
             logger.info('Starting download of %s from %s', imageName, imageUrl)
-            with closing(requests.get(imageUrl, headers={'User-Agent': ENTROPY_SEED}, stream=True)) as response:
+            with closing(requests.get(imageUrl, headers={'User-Agent': CLIENT_AGENT}, stream=True)) as response:
                 timeStart = time.clock()
                 for chunk in response.iter_content(chunk_size=4096):
                     if chunk:

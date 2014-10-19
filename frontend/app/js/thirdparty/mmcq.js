@@ -5,22 +5,8 @@
  * palette. Still a work in progress.
  *
  * @author Nick Rabinowitz
- * @example
-
-// array of pixels as [R,G,B] arrays
-var myPixels = [[190,197,190], [202,204,200], [207,214,210], [211,214,211], [205,207,207]
-                // etc
-                ];
-var maxColors = 4;
-
-var cmap = MMCQ.quantize(myPixels, maxColors);
-var newPalette = cmap.palette();
-var newPixels = myPixels.map(function(p) {
-    return cmap.map(p);
-});
-
  */
-var MMCQ = (function() {
+; var MMCQ = (function() {
     // private constants
     var sigbits = 5,
         rshift = 8 - sigbits,
@@ -208,8 +194,9 @@ var MMCQ = (function() {
     // histo (1-d array, giving the number of pixels in
     // each quantized region of color space), or null on error
     function getHisto(pixels) {
-        var histosize = 1 << (3 * sigbits),
-            histo = new Array(histosize),
+        var /* histosize = 1 << (3 * sigbits), */
+            /* histo = new Array(histosize), */
+            histo = [],
             index, rval, gval, bval;
         pixels.forEach(function(pixel) {
             rval = pixel[0] >> rshift;
@@ -338,8 +325,8 @@ var MMCQ = (function() {
 
         // XXX: check color content and convert to grayscale if insufficient
 
-        var histo = getHisto(pixels),
-            histosize = 1 << (3 * sigbits);
+        var histo = getHisto(pixels) /*,
+            histosize = 1 << (3 * sigbits) */;
 
         // check that we aren't below maxcolors already
         var nColors = 0;
@@ -410,3 +397,27 @@ var MMCQ = (function() {
         quantize: quantize
     };
 })();
+
+
+/*!
+ * Block below copied from Protovis: http://mbostock.github.com/protovis/
+ * Copyright 2010 Stanford Visualization Group
+ * Licensed under the BSD License: http://www.opensource.org/licenses/bsd-license.php
+ */
+
+var pv = {
+    map: function(array, f) {
+      var o = {};
+      return f ? array.map(function(d, i) { o.index = i; return f.call(o, d); }) : array.slice();
+    },
+    naturalOrder: function(a, b) {
+        return (a < b) ? -1 : ((a > b) ? 1 : 0);
+    },
+    /* sum: function(array, f) {
+      var o = {};
+      return array.reduce(f ? function(p, d, i) { o.index = i; return p + f.call(o, d); } : function(p, d) { return p + d; }, 0);
+    }, */
+    max: function(array, f) {
+      return Math.max.apply(null, f ? pv.map(array, f) : array);
+    }
+};

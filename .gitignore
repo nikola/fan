@@ -240,6 +240,4 @@ out/
 ## Project-specific.
 dummy.exe
 builder/clean/
-compiler/pyminifier/
-trident.not.compressed/
 shaders/

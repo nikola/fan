@@ -1,9 +1,25 @@
 /**
- *  Render menu page items.
+ *  fan - A movie compilation and playback app for Windows. Fast. Lean. No weather widget.
+ *  Copyright (C) 2013-2014 Nikola Klaric.
+ *
+ *  This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License
+ *  as published by the Free Software Foundation; either version 2
+ *  of the License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  *  @author Nikola Klaric (nikola@klaric.org)
- *  @copyright Copyright (c) 2013-2014 Nikola Klaric
+ *  @copyright Copyright (C) 2013-2014 Nikola Klaric
  */
+
 ; var ka = ka || {}; if (!('lib' in ka)) ka.lib = {};
 
 
@@ -21,13 +37,13 @@ ka.lib.executeMenuSelection = function () {
         ka.state.hotkeyListener.reset();
 
         $('#boom-menu, #boom-movie-grid-container').velocity('fadeOut', {duration: ka.settings.durationNormal, complete: function () {
-            ka.state.socketDispatcher.push('loopback:command', 'shutdown');
+            console.exitApplication();
         }});
     } else if (id == 'boom-config-button-change-import') {
         ka.state.hotkeyListener.reset();
 
         $('#boom-menu, #boom-movie-grid-container').velocity('fadeOut', {duration: 360, complete: function () {
-            window.top.location.href = '/configure.asp#return';
+            window.top.location.href = '/configure.html#return';
         }});
     } else if (id == 'boom-config-button-show-credits') {
         if (ka.state.view != 'credits') {

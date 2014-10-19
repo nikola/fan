@@ -1,10 +1,27 @@
 /**
- *  Configurator screen.
+ *  fan - A movie compilation and playback app for Windows. Fast. Lean. No weather widget.
+ *  Copyright (C) 2013-2014 Nikola Klaric.
+ *
+ *  This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License
+ *  as published by the Free Software Foundation; either version 2
+ *  of the License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  *  @author Nikola Klaric (nikola@klaric.org)
- *  @copyright Copyright (c) 2013-2014 Nikola Klaric
+ *  @copyright Copyright (C) 2013-2014 Nikola Klaric
  */
+
 ; var ka = ka || {};
+
 
 ka.data = {
     drives: null
@@ -82,7 +99,7 @@ function handleKeypressLeft() {
         ka.state.currentDriveIndex = 0;
         ka.state.initialChoiceMade = true;
 
-        $('#boom-choice-right, #boom-choice-splitter').velocity('fadeOut', {display: null, duration: ka.settings.durationNormal});
+        $('#boom-choice-right, #boom-choice-splitter').velocity('fadeOut', {display: 'none', duration: ka.settings.durationNormal});
         $("#boom-split-choices").velocity({marginLeft: '+=420'}, {duration: ka.settings.durationNormal, complete: function (elements) {
             $('#boom-button-selection-floater').css('opacity', 1);
         }});
@@ -96,13 +113,13 @@ function handleKeypressLeft() {
         }
 
         $("#boom-split-choices").velocity({marginLeft: '+=420'}, {duration: ka.settings.durationNormal, easing: 'ease-in'});
-        $('#boom-choice-left, #boom-choice-splitter').velocity('fadeIn', {display: null, duration: ka.settings.durationNormal});
-        $('#boom-choice-right').velocity('fadeOut', {display: null, duration: ka.settings.durationNormal, complete: function (elements) {
+        $('#boom-choice-left, #boom-choice-splitter').velocity('fadeIn', {display: 'none', duration: ka.settings.durationNormal});
+        $('#boom-choice-right').velocity('fadeOut', {display: 'none', duration: ka.settings.durationNormal, complete: function (elements) {
             if (!ka.state.hasDrivesSelected) {
                 $('#boom-choice-confirm .boom-button').velocity('fadeOut', {display: 'inline-block', duration: ka.settings.durationNormal});
             }
 
-            $('#boom-choice-splitter').velocity('fadeOut', {display: null, duration: ka.settings.durationNormal});
+            $('#boom-choice-splitter').velocity('fadeOut', {display: 'none', duration: ka.settings.durationNormal});
             $("#boom-split-choices").velocity({marginLeft: '+=420'}, {duration: ka.settings.durationNormal, easing: 'ease-out', complete: function () {
                 if (!ka.state.isStartButtonSelected) {
                     $('#boom-button-selection-floater').css('opacity', 1);
@@ -125,8 +142,7 @@ function handleKeypressRight() {
 
         $('#boom-button-start-floater').velocity({opacity: 1, backgroundColorGreen: 116, backgroundColorBlue: 217}, ka.settings.durationNormal);
 
-        /* TODO: 'null' correct? */
-        $('#boom-choice-left, #boom-choice-splitter').velocity('fadeOut', {display: null, duration: ka.settings.durationNormal});
+        $('#boom-choice-left, #boom-choice-splitter').velocity('fadeOut', {display: 'none', duration: ka.settings.durationNormal});
         $("#boom-split-choices").velocity({marginLeft: '-=420'}, {duration: ka.settings.durationNormal});
         $('#boom-choice-confirm .boom-button').velocity('fadeIn', {display: 'inline-block', duration: ka.settings.durationNormal});
     } else {
@@ -134,9 +150,9 @@ function handleKeypressRight() {
         $('#boom-button-start-floater').velocity({opacity: 1, backgroundColorGreen: 116, backgroundColorBlue: 217}, ka.settings.durationLong);
 
         $("#boom-split-choices").velocity({marginLeft: '-=420'}, {duration: ka.settings.durationNormal, easing: 'ease-in'});
-        $('#boom-choice-right, #boom-choice-splitter').velocity('fadeIn', {display: null, duration: ka.settings.durationNormal});
-        $('#boom-choice-left').velocity('fadeOut', {display: null, duration: ka.settings.durationNormal, complete: function (elements) {
-            $('#boom-choice-splitter').velocity('fadeOut', {display: null, duration: ka.settings.durationNormal});
+        $('#boom-choice-right, #boom-choice-splitter').velocity('fadeIn', {display: 'none', duration: ka.settings.durationNormal});
+        $('#boom-choice-left').velocity('fadeOut', {display: 'none', duration: ka.settings.durationNormal, complete: function (elements) {
+            $('#boom-choice-splitter').velocity('fadeOut', {display: 'none', duration: ka.settings.durationNormal});
             $("#boom-split-choices").velocity({marginLeft: '-=420'}, {duration: ka.settings.durationNormal, easing: 'ease-out'});
 
             if (!ka.state.hasDrivesSelected) {
@@ -181,7 +197,7 @@ function handleKeypressQuit() {
     if (window.location.hash == '#return') {
         ka.state.socketDispatcher.push('loopback:redirect', 'return');
     } else {
-        ka.state.socketDispatcher.push('loopback:command', 'shutdown');
+        console.exitApplication();
     }
 }
 

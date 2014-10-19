@@ -1,5 +1,21 @@
 # coding: utf-8
 """
+fan - A movie compilation and playback app for Windows. Fast. Lean. No weather widget.
+Copyright (C) 2013-2014 Nikola Klaric.
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 __author__ = 'Nikola Klaric (nikola@klaric.org)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
@@ -20,7 +36,6 @@ from settings import DEBUG
 from settings import LOG_CONFIG
 from models import initialize as initStreamManager
 from utils.system import isCompatiblePlatform, isNtfsFilesystem, getScreenResolution, isDesktopCompositionEnabled, setPriority
-from utils.agent import getUserAgent
 from utils.net import getCertificateLocation
 from utils.fs import getLogFileHandler
 from utils.config import getCurrentUserConfig, getOverlayConfig, exportUserConfig
@@ -28,7 +43,6 @@ from orchestrator.control import start as startOrchestrator, stop as stopOrchest
 from downloader.control import start as startDownloader, stop as stopDownloader
 from player.control import start as startPlayer, stop as stopPlayer
 from presenter.control import start as present
-# from analyzer.control import start as startAnalyzer, stop as stopAnalyzer
 
 
 if __name__ == '__main__':
@@ -38,7 +52,6 @@ if __name__ == '__main__':
         # Presenter has been closed, now kick off clean-up tasks.
         stopOrchestrator()
         stopPlayer()
-        # stopAnalyzer()
         stopDownloader()
 
         # Remove pending commands from queue if not essential.
@@ -75,17 +88,13 @@ if __name__ == '__main__':
             # Gracefully stop processes.
             orchestrator.join()
             player.join()
-            # analyzer.join()
             downloader.join()
             logger.info('All processes gracefully terminated.')
 
         os.remove(certificateLocation)
 
         logger.info('Closing application.')
-        # logger.info('<' * 80)
-        # logger.info('')
 
-        # Circumvent SystemExit exception handler.
         os._exit(1)
 
     logging.basicConfig(**LOG_CONFIG)
@@ -114,27 +123,20 @@ if __name__ == '__main__':
             logger.critical('Aborting because DWM is disabled.')
             sys.exit()
 
-        # Hide unpacked directory.
         if getattr(sys, 'frozen', None):
-            # FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_ATTRIBUTE_NOT_CONTENT_INDEXED
             win32file.SetFileAttributesW(unicode(sys._MEIPASS), 2 | 4 | 8192)
 
-            # Enable SSL support in requests library when running as EXE.
             os.environ['REQUESTS_CA_BUNDLE'] = os.path.join(sys._MEIPASS, 'requests', 'cacert.pem')
-
-        # sys.excepthook = handleException
-
-        if True: # DEBUG
+        else:
             from scripts.packBlobs import run as runPackBlobs
             runPackBlobs()
-        # END if DEBUG
 
         logger.info('Starting application.')
 
         useExternalConfig = None
 
         parser = argparse.ArgumentParser(
-            prog='ka-BOOM',
+            prog='fan',
             description='A movie compilation and playback app for Windows. Fast. Lean. No weather widget.',
         )
 
@@ -164,13 +166,12 @@ if __name__ == '__main__':
             logger.info('Current configuration saved in: %s' % exportConfigPathname)
             sys.exit()
 
-        # Create DB connection here to initialize models.
         initStreamManager()
 
-        serverPort = 0xe95d # 59741
+        serverPort = 59741
         certificateLocation = getCertificateLocation()
 
-        arguments = (getUserAgent(), serverPort, uuid4().hex, uuid4().hex, False, userConfig, useExternalConfig)
+        arguments = (serverPort, False, userConfig, useExternalConfig)
 
         interProcessQueue = InterProcessQueue()
 
@@ -178,7 +179,6 @@ if __name__ == '__main__':
         downloader = startDownloader(interProcessQueue)
         player = startPlayer(interProcessQueue)
 
-        # setPriority('lower')
         orchestrator = startOrchestrator(interProcessQueue, certificateLocation, *arguments)
 
         setPriority('normal')

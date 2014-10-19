@@ -1,8 +1,23 @@
 /**
- *  Application loop.
+ *  fan - A movie compilation and playback app for Windows. Fast. Lean. No weather widget.
+ *  Copyright (C) 2013-2014 Nikola Klaric.
+ *
+ *  This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License
+ *  as published by the Free Software Foundation; either version 2
+ *  of the License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  *  @author Nikola Klaric (nikola@klaric.org)
- *  @copyright Copyright (c) 2013-2014 Nikola Klaric
+ *  @copyright Copyright (C) 2013-2014 Nikola Klaric
  */
 
 ; var ka = ka || {}; if (!('lib' in ka)) ka.lib = {};
@@ -82,7 +97,7 @@ ka.state = {
 };
 
 
-function c4b77b2bcc804808a9ab107b8e2ac434() {
+function onPageLoaded() {
     var script = window.top.document.getElementsByTagName('script')[0];
     script.parentNode.removeChild(script);
 
@@ -97,20 +112,15 @@ function c4b77b2bcc804808a9ab107b8e2ac434() {
         ka.lib.updateMovieGridOnAdd(true); /* immediate mode */
     });
 
-    ka.state.socketDispatcher.bind('receive:command:token', function (command) {
-        eval(command);
-    });
-
-    ka.state.socketDispatcher.bind('resume:detail:screen', function () {
-        /* $('#boom-movie-grid-container').css('display', 'block'); */
-        $('#boom-movie-detail').velocity('fadeIn', {duration: ka.settings.durationNormal, complete: function () {
-            ka.state.view = 'select-stream';
-        }});
-    });
-
     ka.state.socketDispatcher.bind('player:update:complete', function () {
         $('#boom-playback-wait').css('display', 'none');
         ka.state.isPlayerUpdated = true;
+    });
+
+    ka.state.socketDispatcher.bind('resume:detail:screen', function () {
+        $('#boom-movie-detail').velocity('fadeIn', {duration: ka.settings.durationNormal, complete: function () {
+            ka.state.view = 'select-stream';
+        }});
     });
 
     ka.state.socketDispatcher.bind('movie:poster:refresh', function (id) {
@@ -121,7 +131,7 @@ function c4b77b2bcc804808a9ab107b8e2ac434() {
 }
 
 
-function a4b4e7515096403cb29247517b276397() {
+function onBackendReady() {
     var listener = ka.state.hotkeyListener = new keypress.Listener(document.body, {prevent_repeat: true}),
         _hotkeys = ka.config.hotkeys;
 
@@ -155,8 +165,6 @@ function a4b4e7515096403cb29247517b276397() {
     $.ajax({
         url: '/movies/all',
         success: function (list) {
-            /* list = list.slice(0, 9); */
-
             var index = list.length, movie;
             if (index) {
                 ka.state.shouldFocusFadeIn = false;
@@ -171,19 +179,18 @@ function a4b4e7515096403cb29247517b276397() {
                 ka.lib.recalcMovieGrid();
                 ka.lib.updateMovieGridOnChange();
             } else {
-                ed59df96be5e4cdc88fe356cd99c4ac6();
+                onPostersLoaded();
             }
         }
     });
 }
 
 
-function ed59df96be5e4cdc88fe356cd99c4ac6() {
+function onPostersLoaded() {
     window.top.postMessage('', location.protocol + '//' + location.host);
 }
 
 
-/* Prevent all input events. */
 document.oncontextmenu = document.onmousedown = document.onselectstart = function (evt) {
     evt.preventDefault();
 };
@@ -194,7 +201,6 @@ window.onerror = function (message, filename, lineno, colno, error) {
 };
 
 
-/* Disable back button. */
 window.history.pushState(null, null, 'c7b4165ce062400e90f943066564582a');
 window.onpopstate = function () {
     window.history.pushState(null, null, 'c7b4165ce062400e90f943066564582a');
@@ -220,6 +226,5 @@ $(document).ready(function () {
       , 'script'
     );
 
-    var v = 'http://localhost:59741/verify';
-    $.ajax({url: ᴠ, type: 'PATCH', success: a4b4e7515096403cb29247517b276397});
+    $.ajax({url: '/ready', type: 'PATCH', success: onBackendReady});
 });

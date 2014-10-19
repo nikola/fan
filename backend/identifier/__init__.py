@@ -1,5 +1,21 @@
 # coding: utf-8
 """
+fan - A movie compilation and playback app for Windows. Fast. Lean. No weather widget.
+Copyright (C) 2013-2014 Nikola Klaric.
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 __author__ = 'Nikola Klaric (nikola@klaric.org)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
@@ -8,8 +24,6 @@ import os
 import re
 import datetime
 import logging
-
-from simplejson import JSONDecodeError
 
 from settings import DEBUG
 from settings import LOG_CONFIG
@@ -68,7 +82,7 @@ def getImageConfiguration():
 
 def getFixedRecords():
     for title, year in TOP_250:
-        yield '\\\\03cab2fbe3354d838578b09178ac2a1a\\ka-BOOM\\%s (%d).mkv' % (title, year), {'title': title, 'year': year}, {'title': None, 'year': None}
+        yield '\\\\03cab2fbe3354d838578b09178ac2a1a\\fan\\%s (%d).mkv' % (title, year), {'title': title, 'year': year}, {'title': None, 'year': None}
 
 
 def getStreamRecords(sources):
@@ -247,139 +261,136 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
 
     record = None
 
-    try:
-        logger.info('Trying to identify "%s" at themoviedb.org ...' % searchTitlePrimary)
+
+    logger.info('Trying to identify "%s" at themoviedb.org ...' % searchTitlePrimary)
+    pollingCallback()
+
+    url = 'https://api.themoviedb.org/3/search/movie'
+    params = {
+        'api_key': THEMOVIEDB_API_KEY,
+        'query': searchTitlePrimary.encode('utf-8'),
+        'page': 1,
+        'language': language,
+        'include_adult': False,
+    }
+    if searchYearPrimary is not None:
+        params['year'] = searchYearPrimary
+
+    response = getThrottledJsonResponse(url, params, pollingCallback)
+
+    if response['total_results'] == 0 and params.has_key('year'):
+        logger.warning('Movie with title "%s" not found at themoviedb.org, omitting year ...', searchTitlePrimary)
+        pollingCallback()
+        del params['year']
+        response = getThrottledJsonResponse(url, params, pollingCallback)
         pollingCallback()
 
-        url = 'https://api.themoviedb.org/3/search/movie'
-        params = {
-            'api_key': THEMOVIEDB_API_KEY,
-            'query': searchTitlePrimary.encode('utf-8'),
-            'page': 1,
-            'language': language,
-            'include_adult': False,
-        }
-        if searchYearPrimary is not None:
-            params['year'] = searchYearPrimary
+    if response['total_results'] == 0 and searchTitleSecondary is not None:
+        logger.warning('Movie with title "%s" not found at themoviedb.org, retrying with title "%s" ...', searchTitlePrimary, searchTitleSecondary)
+        pollingCallback()
+        params['query'] = searchTitleSecondary.encode('utf-8')
+        if searchYearSecondary is not None:
+            params['year'] = searchYearSecondary
+        response = getThrottledJsonResponse(url, params, pollingCallback)
+        pollingCallback()
 
+    if response['total_results'] == 0 and searchTitleSecondary is not None:
+        logger.warning('Movie with title "%s" still not found at themoviedb.org, retrying with title "%s", omitting year ...', searchTitlePrimary, searchTitleSecondary)
+        pollingCallback()
+        params['query'] = searchTitleSecondary.encode('utf-8')
+        del params['year']
         response = getThrottledJsonResponse(url, params, pollingCallback)
 
-        if response['total_results'] == 0 and params.has_key('year'):
-            logger.warning('Movie with title "%s" not found at themoviedb.org, omitting year ...', searchTitlePrimary)
-            pollingCallback()
-            del params['year']
-            response = getThrottledJsonResponse(url, params, pollingCallback)
-            pollingCallback()
-
-        if response['total_results'] == 0 and searchTitleSecondary is not None:
-            logger.warning('Movie with title "%s" not found at themoviedb.org, retrying with title "%s" ...', searchTitlePrimary, searchTitleSecondary)
-            pollingCallback()
-            params['query'] = searchTitleSecondary.encode('utf-8')
-            if searchYearSecondary is not None:
-                params['year'] = searchYearSecondary
-            response = getThrottledJsonResponse(url, params, pollingCallback)
-            pollingCallback()
-
-        if response['total_results'] == 0 and searchTitleSecondary is not None:
-            logger.warning('Movie with title "%s" still not found at themoviedb.org, retrying with title "%s", omitting year ...', searchTitlePrimary, searchTitleSecondary)
-            pollingCallback()
-            params['query'] = searchTitleSecondary.encode('utf-8')
-            del params['year']
-            response = getThrottledJsonResponse(url, params, pollingCallback)
-
-        if response['total_results'] == 0:
-            logger.warning('Movie with title "%s" not found at themoviedb.org, giving up for now.', searchTitlePrimary)
-            pollingCallback()
-        else:
-            resultList = [result for result in response['results'] if result.get('backdrop_path') is not None] #  and result.get('vote_count') > 0]
-            if len(resultList):
-                movieId = resultList[0]['id']
-
-                url = 'https://api.themoviedb.org/3/movie/%d' % movieId
-                params = {
-                    'api_key': THEMOVIEDB_API_KEY,
-                    'language': language,
-                    'append_to_response': 'trailers,credits',
-                }
-                response = getThrottledJsonResponse(url, params, pollingCallback)
-
-                if response.get('poster_path', None) is not None:
-                    logger.info('Movie identified at themoviedb.org as "%s" with ID: %d.' % (response['original_title'], movieId))
-                    pollingCallback()
-
-                    overview = response.get('overview', None)
-                    if overview is None:
-                        logger.info('Movie has no overview in locale "%s", falling back to English ...' % language)
-                        pollingCallback()
-                        params['language'] = 'en'
-                        response = getThrottledJsonResponse(url, params, pollingCallback)
-
-                    # Fetch rating from IMDB instead of TheMovieDB.
-                    rating = None
-                    idImdb = response['imdb_id']
-                    if idImdb is not None:
-                        url = 'http://www.imdb.com/title/%s/' % idImdb
-                        responseImdb = makeUnthrottledGetRequest(url)
-                        pollingCallback()
-                        if responseImdb is not None:
-                            ratingSearch = re.search('<span itemprop="ratingValue">\s*([^<]+)', responseImdb.text)
-                            if ratingSearch is not None:
-                                rating = float(ratingSearch.group(1)) * 10
-
-                    if POSTERS.has_key(movieId):
-                        urlPoster = '/%s.jpg' % POSTERS[movieId]
-                    else:
-                        urlPoster = response['poster_path']
-
-                    if BACKDROPS.has_key(movieId):
-                        urlBackdrop = '/%s.jpg' % BACKDROPS[movieId]
-                    else:
-                        urlBackdrop = response['backdrop_path']
-
-                    if TRAILERS_HD.has_key(movieId):
-                        idYoutubeTrailer = TRAILERS_HD[movieId]
-                    elif response['trailers'].has_key('youtube') and len(response['trailers']['youtube']):
-                        idYoutubeTrailer = response['trailers']['youtube'][0].get('source')
-                    else:
-                        idYoutubeTrailer = None
-
-                    belongsToCollection = response['belongs_to_collection']
-                    if belongsToCollection is not None:
-                        collectionId, collectionName = belongsToCollection['id'], belongsToCollection['name'].replace(' Collection', '')
-                    else:
-                        collectionId, collectionName = None, None
-
-                    genres = ', '.join(sorted([genre['name'] for genre in response.get('genres', []) if genre['name'] not in ('Adventure',)])) or ''
-
-                    record = dict(
-                        idTheMovieDb  = movieId,
-                        idImdb        = idImdb,
-                        idYoutubeTrailer = idYoutubeTrailer,
-
-                        titleOriginal   = response['original_title'],
-                        releaseYear     = datetime.datetime.strptime(response['release_date'], '%Y-%m-%d').year,
-                        runtime         = response['runtime'] or None,
-
-                        urlPoster       = urlPoster,
-                        urlBackdrop     = urlBackdrop,
-
-                        homepage        = response['homepage'],
-                        budget          = response['budget'] or None,
-                        revenue         = response['revenue'] or None,
-
-                        rating          = rating,
-
-                        genres          = genres,
-
-                        locale          = language,
-                        title           = response['title'] or response['original_title'],
-                        storyline       = overview,
-
-                        compilationId   = collectionId,
-                        compilationName = collectionName,
-                    )
-    except (JSONDecodeError, AttributeError, TypeError, KeyError):
-        logger.error('Error while querying themoviedb.org for "%s" or "%s".', searchTitlePrimary, searchTitleSecondary)
+    if response['total_results'] == 0:
+        logger.warning('Movie with title "%s" not found at themoviedb.org, giving up for now.', searchTitlePrimary)
         pollingCallback()
+    else:
+        resultList = [result for result in response['results'] if result.get('backdrop_path') is not None] #  and result.get('vote_count') > 0]
+        if len(resultList):
+            movieId = resultList[0]['id']
+
+            url = 'https://api.themoviedb.org/3/movie/%d' % movieId
+            params = {
+                'api_key': THEMOVIEDB_API_KEY,
+                'language': language,
+                'append_to_response': 'trailers,credits',
+            }
+            response = getThrottledJsonResponse(url, params, pollingCallback)
+
+            if response.get('poster_path', None) is not None:
+                logger.info('Movie identified at themoviedb.org as "%s" with ID: %d.' % (response['original_title'], movieId))
+                pollingCallback()
+
+                overview = response.get('overview', None)
+                if overview is None:
+                    logger.info('Movie has no overview in locale "%s", falling back to English ...' % language)
+                    pollingCallback()
+                    params['language'] = 'en'
+                    response = getThrottledJsonResponse(url, params, pollingCallback)
+
+                # Fetch rating from IMDB instead of TheMovieDB.
+                rating = None
+                idImdb = response['imdb_id']
+                if idImdb is not None:
+                    url = 'http://www.imdb.com/title/%s/' % idImdb
+                    responseImdb = makeUnthrottledGetRequest(url)
+                    pollingCallback()
+                    if responseImdb is not None:
+                        ratingSearch = re.search('<span itemprop="ratingValue">\s*([^<]+)', responseImdb.text)
+                        if ratingSearch is not None:
+                            rating = float(ratingSearch.group(1)) * 10
+
+                if POSTERS.has_key(movieId):
+                    urlPoster = '/%s.jpg' % POSTERS[movieId]
+                else:
+                    urlPoster = response['poster_path']
+
+                if BACKDROPS.has_key(movieId):
+                    urlBackdrop = '/%s.jpg' % BACKDROPS[movieId]
+                else:
+                    urlBackdrop = response['backdrop_path']
+
+                if TRAILERS_HD.has_key(movieId):
+                    idYoutubeTrailer = TRAILERS_HD[movieId]
+                elif response['trailers'].has_key('youtube') and len(response['trailers']['youtube']):
+                    idYoutubeTrailer = response['trailers']['youtube'][0].get('source')
+                else:
+                    idYoutubeTrailer = None
+
+                belongsToCollection = response['belongs_to_collection']
+                if belongsToCollection is not None:
+                    collectionId, collectionName = belongsToCollection['id'], belongsToCollection['name'].replace(' Collection', '')
+                else:
+                    collectionId, collectionName = None, None
+
+                genres = ', '.join(sorted([genre['name'] for genre in response.get('genres', []) if genre['name'] not in ('Adventure',)])) or ''
+
+                record = dict(
+                    idTheMovieDb  = movieId,
+                    idImdb        = idImdb,
+                    idYoutubeTrailer = idYoutubeTrailer,
+
+                    titleOriginal   = response['original_title'],
+                    releaseYear     = datetime.datetime.strptime(response['release_date'], '%Y-%m-%d').year,
+                    runtime         = response['runtime'] or None,
+
+                    urlPoster       = urlPoster,
+                    urlBackdrop     = urlBackdrop,
+
+                    homepage        = response['homepage'],
+                    budget          = response['budget'] or None,
+                    revenue         = response['revenue'] or None,
+
+                    rating          = rating,
+
+                    genres          = genres,
+
+                    locale          = language,
+                    title           = response['title'] or response['original_title'],
+                    storyline       = overview,
+
+                    compilationId   = collectionId,
+                    compilationName = collectionName,
+                )
 
     return record

@@ -1,52 +1,32 @@
 # coding: utf-8
 """
+fan - A movie compilation and playback app for Windows. Fast. Lean. No weather widget.
+Copyright (C) 2013-2014 Nikola Klaric.
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 __author__ = 'Nikola Klaric (nikola@klaric.org)'
-__copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
+__copyright__ = 'Copyright (C) 2013-2014 Nikola Klaric'
 
-# import uuid
-from collections import namedtuple # , OrderedDict
+from collections import namedtuple
 
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.types import TypeDecorator, CHAR
 
 
 Base = declarative_base()
 
+
 def createNamedTuple(*values):
     return namedtuple('NamedTuple', values)(*values)
-
-
-# def createUuid():
-#     return uuid.uuid4().hex
-#
-#
-# class GUID(TypeDecorator):
-#
-#     impl = CHAR
-#
-#     def load_dialect_impl(self, dialect):
-#         return dialect.type_descriptor(CHAR(32))
-#
-#     def process_bind_param(self, value, dialect):
-#         if value is None:
-#             return None
-#         else:
-#             if not isinstance(value, uuid.UUID):
-#                 return '%.32x' % uuid.UUID(value)
-#             else:
-#                 return '%.32x' % value
-#
-#     def process_result_value(self, value, dialect):
-#         return uuid.UUID(value).hex if value is not None else None
-
-
-"""
-class DictSerializable(object):
-
-    def _asdict(self):
-        result = OrderedDict()
-        for key in self.__mapper__.c.keys():
-            result[key] = getattr(self, key)
-        return result
-"""

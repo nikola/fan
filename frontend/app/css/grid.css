@@ -1,8 +1,23 @@
 /**
- *  Movie grid styles.
+ *  fan - A movie compilation and playback app for Windows. Fast. Lean. No weather widget.
+ *  Copyright (C) 2013-2014 Nikola Klaric.
+ *
+ *  This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License
+ *  as published by the Free Software Foundation; either version 2
+ *  of the License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  *  @author Nikola Klaric (nikola@klaric.org)
- *  @copyright Copyright (c) 2013-2014 Nikola Klaric
+ *  @copyright Copyright (C) 2013-2014 Nikola Klaric
  */
 
 #boom-image-sampler-canvas {
@@ -11,7 +26,7 @@
     }
 
 #boom-movie-grid-container {
-    width: 1920px; /* height: 1080px; */
+    width: 1920px;
 
     position: absolute; top: 0; left: 0;
 
@@ -99,10 +114,8 @@
 .boom-movie-grid-item, .boom-compilation-grid-item {
     padding: 0;
     width: 260px; height: 300px;
-    /* text-align: center; */
     display: inline-block;
     margin: 30px 0;
-    /* vertical-align: top; */
     }
 
 .boom-compilation-grid-item {
@@ -111,10 +124,6 @@
 
 .boom-movie-grid-image, .boom-compilation-grid-item img {
     display: block;
-    /* max-width: 200px;
-    max-height: 300px;
-    width: auto;
-    height: auto; */
     width: 200px; height: 300px;
     margin: 0 30px;
 
@@ -127,46 +136,8 @@
     }
 
 .boom-compilation-grid-item img {
-    /* max-width: 300px;
-    max-height: 450px; */
     width: 300px; height: 450px;
     }
-
-/* .boom-movie-grid-item img.desaturate {
-    -webkit-animation: fx-desaturate 0.36s 1 normal linear forwards;
-    }
-
-.boom-movie-grid-item img.desaturated {
-    -webkit-filter: grayscale(100%);
-    }
-
-@-webkit-keyframes fx-desaturate {
-    from {
-        -webkit-filter: grayscale(0%);
-    }
-    to {
-        -webkit-filter: grayscale(100%);
-    }
-}
-
-.boom-movie-grid-item img.undesaturate {
-    -webkit-animation: fx-undesaturate 0.36s 1 normal linear forwards;
-    }
-
-@-webkit-keyframes fx-undesaturate {
-    from {
-        -webkit-filter: grayscale(100%);
-    }
-    to {
-        -webkit-filter: grayscale(0%);
-    }
-}
-*/
-
-/* .boom-movie-grid-item-title {
-    text-align: center;
-    display: block;
-} */
 
 /* ================================================================================================================== */
 
@@ -176,22 +147,10 @@
     justify-content: center;
     position: absolute; left: 0; top: 0;
     height: 1080px;
-
-
-
-    /* -webkit-transform: translate3d(0, 0, 0);
-    -webkit-backface-visibility: hidden;
-    -webkit-perspective: 1000;
-    -webkit-transform-style: preserve-3d; */
     }
 
 #boom-compilation-grid {
     margin: 0 auto;
-
-    /* -webkit-transform: translate3d(0, 0, 0);
-    -webkit-backface-visibility: hidden;
-    -webkit-perspective: 1000;
-    -webkit-transform-style: preserve-3d; */
     }
 
 /* ================================================================================================================== */
@@ -261,12 +220,11 @@
     }
 
 .boom-movie-grid-info-overlay, .boom-movie-grid-info-overlay-text, .boom-movie-grid-info-overlay-image, .boom-movie-grid-info-overlay-text div {
-    /* -webkit-transition: all 0.36s ease-in-out; */
     }
 
 .active .boom-movie-grid-info-overlay-text {
     visibility: visible;
-    opacity: 0.9;
+    opacity: 0.75;
     }
 
 .active .boom-movie-grid-info-overlay-title, .active .boom-movie-grid-info-overlay-text-additional {

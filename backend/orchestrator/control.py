@@ -1,5 +1,21 @@
 # coding: utf-8
 """
+fan - A movie compilation and playback app for Windows. Fast. Lean. No weather widget.
+Copyright (C) 2013-2014 Nikola Klaric.
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 __author__ = 'Nikola Klaric (nikola@klaric.org)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
@@ -10,6 +26,7 @@ from contextlib import closing
 from utils.system import Process
 from Queue import Empty
 
+from simplejson import JSONDecodeError
 from pants import Engine as HttpServerEngine
 from pants.http import HTTPServer
 from pants.web import Application
@@ -63,7 +80,7 @@ def _getMovieRecordFromLocation(streamLocation, basedataFromStream, basedataFrom
     return movieRecord
 
 
-def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridgeToken, bootToken, mustSecure, userConfig, useExternalConfig):
+def _startOrchestrator(queue, certificateLocation, serverPort, mustSecure, userConfig, useExternalConfig):
     global pubSubReference
     pubSubReference = None
 
@@ -72,10 +89,9 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
         pubSubReference = reference
 
     def _proxy(request):
-        if DEBUG or (request.protocol == 'HTTP/1.1' and request.headers.get('User-Agent', None) == userAgent):
-            # if request.headers.get('Sec-WebSocket-Version', None) == 13:
+        if request.protocol == 'HTTP/1.1':
             if request.headers.get('Upgrade', None) == 'websocket':
-                PubSub(queue, request, userAgent, bridgeToken, _getPubSubReference)
+                PubSub(request, queue, _getPubSubReference)
             else:
                 app(request)
         else:
@@ -95,14 +111,8 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
 
     appModule.interProcessQueue = queue
     appModule.streamManager = streamManager
-    appModule.bootToken = bootToken
     appModule.userConfig = userConfig
     appModule.useExternalConfig = useExternalConfig
-
-    if DEBUG:
-        appModule.userAgent = userAgent
-        appModule.serverPort = serverPort
-    # END if DEBUG
 
     app = Application(debug=DEBUG)
     app.add('', appModule)
@@ -127,7 +137,21 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
         try:
             command = queue.get_nowait()
 
-            if command == 'orchestrator:start:scan':
+            if command == 'orchestrator:stop':
+                if engine is not None:
+                    if pubSubReference is not None:
+                        pubSubReference.close()
+                        pubSubReference = None
+                    engine.stop()
+                    engine = None
+
+                streamManager.shutdown()
+
+                queue.task_done()
+                _processRequests()
+
+                break
+            elif command == 'orchestrator:start:scan':
                 if useExternalConfig:
                     appModule.userConfig = getOverlayConfig(useExternalConfig)
                 else:
@@ -146,7 +170,14 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                     streamGenerator = getStreamRecords(appModule.userConfig.get('sources', []))
 
                 queue.task_done()
+
+                _processRequests()
             elif command == 'orchestrator:reload:config':
+                syncFinished = False
+                isDownloaderIdle = True
+                queue.put('downloader:pause')
+                time.sleep(0)
+
                 # appModule.userConfig = getCurrentUserConfig()
                 if useExternalConfig:
                     appModule.userConfig = getOverlayConfig(useExternalConfig)
@@ -159,13 +190,17 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                 elif appModule.userConfig.get('hasDemoMovies', False):
                     streamManager.purge()
 
-                pubSubReference.write(unicode('["force:redirect:url", "load.asp"]'))
+                pubSubReference.write(unicode('["force:redirect:url", "load.html"]'))
 
                 queue.task_done()
+
+                _processRequests()
             elif command == 'orchestrator:resume:detail':
                 pubSubReference.write(unicode('["resume:detail:screen", ""]'))
 
                 queue.task_done()
+
+                _processRequests()
             elif command == 'orchestrator:player:updated':
                 pubSubReference.write(unicode('["player:update:complete", ""]'))
 
@@ -174,22 +209,14 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                 isDownloaderIdle = True
 
                 queue.task_done()
+
+                _processRequests()
             elif command == 'orchestrator:active:downloader':
                 isDownloaderIdle = False
 
                 queue.task_done()
-            elif command == 'orchestrator:stop':
-                if engine is not None:
-                    if pubSubReference is not None:
-                        pubSubReference.close()
-                        pubSubReference = None
-                    engine.stop()
-                    engine = None
 
-                streamManager.shutdown()
-
-                queue.task_done()
-                break
+                _processRequests()
             elif command.startswith('orchestrator:poster-refresh:'):
                 if pubSubReference is not None and pubSubReference.connected:
                     movieId = command.replace('orchestrator:poster-refresh:', '')
@@ -197,6 +224,8 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                     _processRequests()
 
                 queue.task_done()
+
+                _processRequests()
             else:
                 queue.task_done()
                 queue.put(command)
@@ -218,24 +247,27 @@ def _startOrchestrator(queue, certificateLocation, userAgent, serverPort, bridge
                     _processRequests()
 
                     if not isContainerKnown:
-                        movieRecord = _getMovieRecordFromLocation(streamLocation, basedataFromStream, basedataFromDir, _processRequests)
+                        try:
+                            movieRecord = _getMovieRecordFromLocation(streamLocation, basedataFromStream, basedataFromDir, _processRequests)
+                        except (JSONDecodeError, AttributeError, TypeError, KeyError):
+                            logger.error('Error while querying themoviedb.org')
+                        else:
+                            if movieRecord is None:
+                                logger.warning('Could not identify file: %s' % streamLocation)
 
-                        if movieRecord is None:
-                            logger.warning('Could not identify file: %s' % streamLocation)
+                            version = getShorthandFromFilename(streamLocation, basedataFromStream.get('year'))
+                            _processRequests()
+                            movieId = streamManager.addMovieStream(movieRecord, streamLocation, version) # TODO: re-wire stream to correct movie if necessary
+                            _processRequests()
 
-                        version = getShorthandFromFilename(streamLocation, basedataFromStream.get('year'))
-                        _processRequests()
-                        movieId = streamManager.addMovieStream(movieRecord, streamLocation, version) # TODO: re-wire stream to correct movie if necessary
-                        _processRequests()
+                            if movieRecord is not None:
+                                if pubSubReference.connected:
+                                    pubSubReference.write(unicode('["receive:movie:item", %s]' % streamManager.getMovieAsJson(movieId)))
+                                    _processRequests()
 
-                        if movieRecord is not None:
-                            if pubSubReference.connected:
-                                pubSubReference.write(unicode('["receive:movie:item", %s]' % streamManager.getMovieAsJson(movieId)))
-                                _processRequests()
-
-                            if isDownloaderIdle:
-                                queue.put('downloader:resume')
-                                _processRequests()
+                                if isDownloaderIdle:
+                                    queue.put('downloader:resume')
+                                    _processRequests()
 
             elif syncFinished is True:
                 deleteResponseCache()

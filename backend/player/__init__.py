@@ -1,17 +1,27 @@
 # coding: utf-8
-""" The secret sauce here is that if you change the EXE’s modification date time stamp,
-    the loader will look again for a manifest.  This seems to work reliably every time.
+"""
+fan - A movie compilation and playback app for Windows. Fast. Lean. No weather widget.
+Copyright (C) 2013-2014 Nikola Klaric.
 
-    http://www.emailarchitect.net/easendmail/sdk/html/object_reg_a.htm
-    http://www.s-code.com/kayako/index.php?_m=knowledgebase&_a=viewarticle&kbarticleid=64
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
 
-    DSVidRen=12 -> madVR
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 __author__ = 'Nikola Klaric (nikola@klaric.org)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 import logging
-from subprocess import Popen # , PIPE, CREATE_NEW_PROCESS_GROUP
+from subprocess import Popen
 
 import win32api
 from utils.fs import readProcessedStream
@@ -21,14 +31,12 @@ from settings import LOG_CONFIG, APP_STORAGE_PATH
 from utils.fs import getLogFileHandler
 from updater.lib import *
 
-
-PLAYER_AMALGAM_PATH = os.path.join(APP_STORAGE_PATH, 'amalgam')
-
-
 logging.basicConfig(**LOG_CONFIG)
 logger = logging.getLogger('updater')
 logger.propagate = DEBUG
 logger.addHandler(getLogFileHandler('updater'))
+
+PLAYER_AMALGAM_PATH = os.path.join(APP_STORAGE_PATH, 'amalgam')
 
 
 def _updateComponents():
@@ -128,7 +136,6 @@ def _patchManifest():
             win32api.UpdateResource(handle, 24, 1, manifestXml)
             win32api.EndUpdateResource(handle, 0)
 
-            # Touch file.
             with open(location, 'a'):
                 os.utime(location, None)
 

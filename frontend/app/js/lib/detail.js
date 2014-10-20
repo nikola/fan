@@ -146,6 +146,7 @@ ka.lib.browser = {
             $('#boom-detail-large-poster')
                 .find('img').attr('src', '').data('boom.isLoaded', false).end()
                 .data('boom.isHidden', true).velocity({bottom: [-480, 10]}, {duration: 0, display: 'none'});
+            // TODO: remove and cache
         }
 
       , slideDown: function () {

@@ -392,7 +392,7 @@ ka.lib.updateMovieGridOnChange = function () {
                     if (ka.state.view == 'config') {
                         ka.state.desaturationImageCache[movie.id] = element;
                         element.style.webkitTransform = 'translate3d(0, 0, 0)';
-                        element.style.webkitFilter = 'grayscale(100%)';
+                        element.style.webkitFilter = 'saturate(0%)';
                     }
                 } else {
                     if (ka.state.view == 'config') {
@@ -848,7 +848,7 @@ ka.lib.openCompilation = function (callback) {
                   , '-webkit-transform': 'scale3d(1, 1, 1)'
                 })
                 .velocity({scaleX: 0.75, scaleY: 0.75, scaleZ: 1, opacity: 0.15}, {duration: ka.settings.durationNormal, progress: function(elements, percentComplete) {
-                    elements[0].style.webkitFilter = 'blur(' + Math.round(4 * percentComplete) + 'px)';
+                    elements[0].style.webkitFilter = 'blur(' + Math.round(3 * percentComplete) + 'px)';
                 }});
         }
     }
@@ -895,7 +895,7 @@ ka.lib.closeCompilation = function (callback) {
                 .velocity({scaleX: 1, scaleY: 1, scaleZ: 1, opacity: 1}, {
                     duration: ka.settings.durationNormal
                   , progress: function(elements, percentComplete) {
-                        elements[0].style.webkitFilter = 'blur(' + Math.round(4 - 4 * percentComplete) + 'px)'; /* TODO: optimize! */
+                        elements[0].style.webkitFilter = 'blur(' + Math.round(3 - 3 * percentComplete) + 'px)'; /* TODO: optimize! */
                     }
                   , complete: function (elements) {
                         elements[0].style.webkitFilter = 'none';

@@ -39,7 +39,7 @@ ka.transition.menu = {to: {
                     elements[2].style.opacity = percentComplete;
 
                     $.each(ka.state.desaturationImageCache, function (key, value) {
-                        value.style.webkitFilter = 'grayscale(' + Math.round(100 - 100 * percentComplete) + '%)';
+                        value.style.webkitFilter = 'saturate(' + Math.round(100 * percentComplete) + '%)';
                     });
                 }
               , complete: function () {
@@ -96,7 +96,7 @@ ka.transition.grid = {to: {
                     elements[2].style.opacity = 1 - percentComplete;        /* #boom-grid-focus           */
 
                     $.each(ka.state.desaturationImageCache, function (key, value) {
-                        value.style.webkitFilter = 'grayscale(' + Math.round(100 * percentComplete) + '%)';
+                        value.style.webkitFilter = 'saturate(' + Math.round(100 - 100 * percentComplete) + '%)';
                     });
                 }
               , complete: function () {

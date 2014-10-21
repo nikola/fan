@@ -182,6 +182,7 @@ def getBackdropByKey(request, key):
             link = open(os.path.join(pathname, 'source.url'), 'rU').read()
             time.sleep(0)
             sourceUrl = link[link.find('=') + 1:].strip()
+            sourceUrl = link[link.find('=') + 1:].strip()
             downloadArtwork(sourceUrl, 'backdrop', key)
             time.sleep(0)
 
@@ -203,24 +204,6 @@ def getBackdropByKey(request, key):
             return open(filename, 'rb').read(), 200, HTTPHeaders(data=headers)
         else:
             return '', 304, HTTPHeaders(data=headers)
-
-
-@module.route('/<string:identifier>.ttf', methods=('GET',), content_type='application/x-font-ttf')
-def getTypeface(request, identifier):
-    md5 = MD5()
-    md5.update(identifier)
-    filename = md5.hexdigest()
-    pathname = os.path.join(ASSETS_PATH, 'shaders', filename + '.cso')
-    if os.path.exists(pathname):
-        return readProcessedStream(filename), 200
-    else:
-        request.finish()
-        request.connection.close()
-
-
-@module.route('/loader.gif', methods=('GET',), content_type='image/gif')
-def getSpinner(request):
-    return readProcessedStream('1e57809d2a5d461793d14bddb773a77a'), 200
 
 
 @module.route('/movies/all', methods=('GET',), content_type='application/json')

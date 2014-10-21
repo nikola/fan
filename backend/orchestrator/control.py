@@ -30,10 +30,11 @@ from simplejson import JSONDecodeError
 from pants import Engine as HttpServerEngine
 from pants.http import HTTPServer
 from pants.web import Application
+from pants.web.fileserver import FileServer
 
 from models import StreamManager
 from settings import DEBUG
-from settings import APP_STORAGE_PATH
+from settings import APP_STORAGE_PATH, STATIC_PATH
 from orchestrator.urls import module as appModule
 from orchestrator.pubsub import PubSub
 from downloader.images import processBacklogEntry
@@ -116,6 +117,7 @@ def _startOrchestrator(queue, certificateLocation, serverPort, mustSecure, userC
 
     app = Application(debug=DEBUG)
     app.add('', appModule)
+    FileServer(STATIC_PATH, headers={'Cache-Control': 'max-age=0'}).attach(app, '/static/')
 
     if mustSecure:
         sslOptions = dict(

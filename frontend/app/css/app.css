@@ -24,10 +24,10 @@ body {
     cursor: none !important;
     pointer-events: none !important;
 
-    font-family: 'cd817b231ec04451b3457feacab854ad';
+    font-family: 'Segoe UI', sans-serif;
     color: white; background-color: black;
 
-    /* width: 1920px; */ /* height: 1080px; */
+    width: 1920px; height: 1080px;
     margin: 0; padding: 0;
     overflow: hidden;
     }

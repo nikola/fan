@@ -1,6 +1,7 @@
 <!doctype html>
 <html>
     <head>
+        <meta charset="utf-8">
         <script async defer>
             window.onmessage = function (evt) {
                 if (evt.origin ==  location.protocol + '//' + location.host) {
@@ -17,7 +18,7 @@
         </script>
     </head>
     <body style="background-color: black;margin: 0; padding: 0;overflow: hidden;width: 100%; height: 100%;cursor: none !important;">
-        <div id="spinner" style="cursor: none !important;display: table;position: absolute;height: 100%;width: 100%"><div style="cursor: none !important;display: table-cell;vertical-align: middle"><img src="/loader.gif" style="cursor: none !important;display: block;margin: 0 auto"></div></div>
+        <div id="spinner" style="cursor: none !important;display: table;position: absolute;height: 100%;width: 100%"><div style="cursor: none !important;display: table-cell;vertical-align: middle"><img src="/static/img/loader.gif" style="cursor: none !important;display: block;margin: 0 auto"></div></div>
         <iframe seamless="seamless" src="/gui.html" style="background-color: transparent;border: 0 none transparent;padding: 0;overflow: hidden;width: 0; height: 0"></iframe>
     </body>
 </html>

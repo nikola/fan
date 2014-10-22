@@ -28,6 +28,7 @@ from utils.fs import readProcessedStream
 
 from settings import DEBUG
 from settings import LOG_CONFIG, APP_STORAGE_PATH
+from settings.player import MPCHC_INI, MT_PATCH
 from utils.fs import getLogFileHandler
 from updater.lib import *
 
@@ -129,7 +130,7 @@ def _patchManifest():
 
     if manifestXml is not None:
         if manifestXml.find('<file name="madVR.ax">') == -1:
-            manifestXml = manifestXml.replace('</assembly>', readProcessedStream('d2062963ddf644299341f12439990aa8') + '</assembly>').replace('\n', '')
+            manifestXml = manifestXml.replace('</assembly>', (MT_PATCH + '</assembly>')).replace('\n', '')
             manifestXml = re.sub(' {2,}', '', manifestXml)
 
             handle = win32api.BeginUpdateResource(location, 0)
@@ -142,7 +143,7 @@ def _patchManifest():
 
 def _writeConfig():
     with open(os.path.join(PLAYER_AMALGAM_PATH, 'mpc-hc.ini'), 'wb') as fp:
-        fp.write(readProcessedStream('4ebc0ca1e8324ba6a134ca78b1ca3088'))
+        fp.write(MPCHC_INI)
 
 
 def update():

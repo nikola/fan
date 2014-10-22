@@ -21,23 +21,19 @@ __author__ = 'Nikola Klaric (nikola@klaric.org)'
 __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 
 import os.path
-import gzip
 import urllib
 import datetime
 import time
-from cStringIO import StringIO
-from hashlib import md5 as MD5
 
 import simplejson
-from pants.web.application import Module
+from pants.web.application import Module, abort
 from pants.http.utils import HTTPHeaders
 
-from settings import DEBUG
-from settings import ASSETS_PATH, APP_STORAGE_PATH
+from settings import APP_STORAGE_PATH, STATIC_PATH
 from identifier import getImageConfiguration
 from downloader.images import downloadArtwork
 from utils.rfc import getRfc1123Timestamp, parseRfc1123Timestamp
-from utils.fs import getDrives, readProcessedStream
+from utils.fs import getDrives
 from utils.config import getCurrentUserConfig
 from identifier.fixture import TOP_250
 
@@ -56,70 +52,17 @@ def ready(request):
     return '', 200
 
 
-@module.route('/load.html', methods=('GET',), content_type='text/html')
-def load(request):
-    string = readProcessedStream('b1932b8b02de45bc9ec66ebf1c75bb15')
+@module.route('/<string:screen>.html', methods=('GET',), content_type='text/html')
+def present(request, screen):
+    if screen in ('load', 'configure', 'gui'):
+        with open(os.path.join(STATIC_PATH, 'html', '%s.html' % screen)) as fp:
+            content = fp.read()
+        if screen in ('configure', 'gui'):
+            content = content.replace('</head>', '<script>var ka = ka || {}; ka.config = %s;</script></head>' % simplejson.dumps(module.userConfig))
 
-    # filename = os.path.join(ASSETS_PATH, 'shaders', 'b1932b8b02de45bc9ec66ebf1c75bb15.cso')
-    # timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
-
-    stream = StringIO()
-    with gzip.GzipFile(filename='dummy', mode='wb', fileobj=stream) as gzipStream:
-        gzipStream.write(string)
-
-    headers = {
-        # 'Last-modified': getRfc1123Timestamp(timestamp),
-        'Cache-Control': 'no-cache',
-        'Content-Encoding': 'gzip',
-    }
-
-    return stream.getvalue(), 200, HTTPHeaders(data=headers)
-
-
-@module.route('/configure.html', methods=('GET',), content_type='text/html')
-def configure(request):
-    string = readProcessedStream('e7edf96693d14aa8a011da221782f4a6')
-
-    # Inject current user configuration.
-    string = string.replace('</script>', '; ka.config = %s;</script>' % simplejson.dumps(module.userConfig))
-
-    # filename = os.path.join(ASSETS_PATH, 'shaders', 'e7edf96693d14aa8a011da221782f4a6.cso')
-    # timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
-
-    stream = StringIO()
-    with gzip.GzipFile(filename='dummy', mode='wb', fileobj=stream) as gzipStream:
-        gzipStream.write(string)
-
-    headers = {
-        # 'Last-modified': getRfc1123Timestamp(timestamp),
-        'Cache-Control': 'no-cache', # 'max-age=0, must-revalidate',
-        'Content-Encoding': 'gzip',
-    }
-
-    return stream.getvalue(), 200, HTTPHeaders(data=headers)
-
-
-@module.route('/gui.html', methods=('GET',), content_type='text/html')
-def present(request):
-    content = readProcessedStream('c9d25707d3a84c4d80fdb6b0789bdcf6')
-
-    # filename = os.path.join(ASSETS_PATH, 'shaders', 'c9d25707d3a84c4d80fdb6b0789bdcf6.cso')
-    # timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
-
-    # Inject current user configuration.
-    content = content.replace('</script>', '; ka.config = %s;</script>' % simplejson.dumps(module.userConfig))
-
-    stream = StringIO()
-    with gzip.GzipFile(filename='dummy', mode='wb', fileobj=stream) as gzipStream:
-        gzipStream.write(content)
-
-    headers = {
-        # 'Last-modified': getRfc1123Timestamp(timestamp),
-        'Cache-Control': 'no-cache',
-        'Content-Encoding': 'gzip',
-    }
-
-    return stream.getvalue(), 200, HTTPHeaders(data=headers)
+        return content, 200, HTTPHeaders(data={'Cache-Control': 'no-cache, max-age=0'})
+    else:
+        abort()
 
 
 @module.route('/movie/poster/<string:key>-<int:width>.image', methods=('GET',), content_type='application/octet-stream')
@@ -155,7 +98,7 @@ def getScaledPosterByKey(request, key, width):
 
         headers = {
             'Last-modified': getRfc1123Timestamp(fileTimestamp),
-            'Cache-Control': 'no-cache, max-age=0' if not imageIsScaled else 'must-revalidate, max-age=604800', # actually, no-cache means must-revalidate on each request
+            'Cache-Control': 'no-cache, max-age=0' if not imageIsScaled else 'must-revalidate, max-age=604800',
         }
 
         if cachedTimestamp < fileTimestamp:
@@ -181,7 +124,6 @@ def getBackdropByKey(request, key):
             time.sleep(0)
             link = open(os.path.join(pathname, 'source.url'), 'rU').read()
             time.sleep(0)
-            sourceUrl = link[link.find('=') + 1:].strip()
             sourceUrl = link[link.find('=') + 1:].strip()
             downloadArtwork(sourceUrl, 'backdrop', key)
             time.sleep(0)
@@ -241,7 +183,7 @@ def getAvailableVersions(request, identifier):
 @module.route('/update/configuration', methods=('POST',), content_type='text/plain')
 def updateConfiguration(request):
     config = simplejson.loads(urllib.unquote(request.body))
-    getCurrentUserConfig(config) # TODO: update here external config
+    getCurrentUserConfig(config) # TODO: update external config
     module.interProcessQueue.put('orchestrator:reload:config')
 
     return '', 200

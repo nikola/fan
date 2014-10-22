@@ -24,12 +24,12 @@ import os
 
 import simplejson
 
-from settings import EXE_PATH
-from utils.fs import readProcessedStream
+from settings import EXE_PATH, BASE_DIR
 
 
 def getCurrentUserConfig(config=None):
-    configDefaults = simplejson.loads(readProcessedStream('781354b1bf474046888a703d21148e65'))
+    with open(os.path.join(BASE_DIR, 'config', 'default.json'), 'rU') as fp:
+        configDefaults = simplejson.load(fp)
 
     configUser = configDefaults.copy()
 
@@ -55,7 +55,8 @@ def saveCurrentUserConfig(config, pathname=None):
 
 
 def getOverlayConfig(pathname):
-    configDefaults = simplejson.loads(readProcessedStream('781354b1bf474046888a703d21148e65'))
+    with open(os.path.join(BASE_DIR, 'config', 'default.json'), 'rU') as fp:
+        configDefaults = simplejson.load(fp)
 
     configOverlayed = configDefaults.copy()
 

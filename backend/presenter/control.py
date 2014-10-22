@@ -144,12 +144,11 @@ def start(callback, serverPort, mustSecure, userConfig, *args):
     windowInfo = cef.WindowInfo()
     windowInfo.SetAsChild(windowId)
 
-    protocol = 'https:' if mustSecure else 'http:'
     screen = 'configure' if not len(userConfig['sources']) and not userConfig.get('isDemoMode', False) else 'load'
     browser = cef.CreateBrowserSync(
         windowInfo,
         CEF_BROWSER_SETTINGS,
-        navigateUrl='%s//127.0.0.1:%d/%s.html' % (protocol, serverPort, screen),
+        navigateUrl='http://127.0.0.1:%d/%s.html' % (serverPort, screen),
     )
 
     # clientHandler = ClientHandler()
@@ -158,7 +157,6 @@ def start(callback, serverPort, mustSecure, userConfig, *args):
     bridge = JavascriptBridge(browser, windowId)
 
     jsBindings = cef.JavascriptBindings(bindToFrames=True, bindToPopups=True)
-    jsBindings.SetProperty('ka', {'config': userConfig})
     jsBindings.SetObject('console', bridge)
     browser.SetJavascriptBindings(jsBindings)
 

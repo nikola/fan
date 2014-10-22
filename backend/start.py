@@ -25,7 +25,6 @@ import os
 import time
 import logging
 import argparse
-from uuid import uuid4
 from multiprocessing import JoinableQueue as InterProcessQueue, freeze_support
 from Queue import Empty
 from ctypes import windll
@@ -35,7 +34,7 @@ import win32file
 from settings import DEBUG
 from settings import LOG_CONFIG
 from models import initialize as initStreamManager
-from utils.system import isCompatiblePlatform, isNtfsFilesystem, getScreenResolution, isDesktopCompositionEnabled, setPriority
+from utils.system import isCompatiblePlatform, getScreenResolution, isDesktopCompositionEnabled, setPriority
 from utils.net import getCertificateLocation
 from utils.fs import getLogFileHandler
 from utils.config import getCurrentUserConfig, getOverlayConfig, exportUserConfig
@@ -49,12 +48,10 @@ if __name__ == '__main__':
     freeze_support()
 
     def _shutdown():
-        # Presenter has been closed, now kick off clean-up tasks.
         stopOrchestrator()
         stopPlayer()
         stopDownloader()
 
-        # Remove pending commands from queue if not essential.
         counter = 0
         unsafe = False
         while True:
@@ -67,7 +64,7 @@ if __name__ == '__main__':
                 if command.find(':stop') != -1:
                     interProcessQueue.put(command)
                 counter += 1
-                if counter > 600: # 60 second timeout
+                if counter > 600:
                     orchestrator.terminate()
                     player.terminate()
                     downloader.terminate()
@@ -80,16 +77,13 @@ if __name__ == '__main__':
             interProcessQueue.close()
             logger.warning('All processes forcefully terminated after grace period.')
         else:
-            # Block until all queue items have been processed.
             interProcessQueue.join()
             interProcessQueue.close()
-            logger.info('Pending IPC items successfully processed.')
 
-            # Gracefully stop processes.
             orchestrator.join()
             player.join()
             downloader.join()
-            logger.info('All processes gracefully terminated.')
+            logger.info('All processes stopped.')
 
         os.remove(certificateLocation)
 
@@ -108,11 +102,6 @@ if __name__ == '__main__':
             logger.critical('Aborting because system is not Windows Vista or newer.')
             sys.exit()
 
-        if not isNtfsFilesystem():
-            windll.user32.MessageBoxA(0, 'This application must be run from an NTFS partition.', 'Error', 0)
-            logger.critical('Aborting because system is not on NTFS partition.')
-            sys.exit()
-
         if getScreenResolution() != (1920, 1080):
             windll.user32.MessageBoxA(0, 'This application must be run at 1920x1080 screen resolution.', 'Error', 0)
             logger.critical('Aborting because screen resolution is not 1920x1080.')
@@ -124,12 +113,9 @@ if __name__ == '__main__':
             sys.exit()
 
         if getattr(sys, 'frozen', None):
-            win32file.SetFileAttributesW(unicode(sys._MEIPASS), 2 | 4 | 8192)
+            win32file.SetFileAttributesW(unicode(sys._MEIPASS), 8198)
 
             os.environ['REQUESTS_CA_BUNDLE'] = os.path.join(sys._MEIPASS, 'requests', 'cacert.pem')
-        else:
-            from scripts.packBlobs import run as runPackBlobs
-            runPackBlobs()
 
         logger.info('Starting application.')
 

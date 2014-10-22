@@ -16,7 +16,7 @@ A movie compilation and playback app for Windows. Fast. Lean. No weather widget.
 **Latest release version of Windows binary:**  
 [fan &raquo; Releases &raquo; 0.13.0.0]
 
-**License:**
+**License:**  
 [GPL v2]
 
 **Documentation:**  
@@ -32,23 +32,33 @@ A movie compilation and playback app for Windows. Fast. Lean. No weather widget.
 
 **Screenshots:**
 
-[![Screenshot: Movie grid](https://raw.githubusercontent.com/nikola/ka-BOOM/master/screenshots/movie-grid-thumb.png)](https://raw.githubusercontent.com/nikola/ka-BOOM/master/screenshots/movie-grid.png)
+[![Screenshot: Movie grid](https://raw.githubusercontent.com/nikola/fan/master/screenshots/movie-grid-thumb.png)](https://raw.githubusercontent.com/nikola/fan/master/screenshots/movie-grid.png)
   
-[![Screenshot: Movie compilation](https://raw.githubusercontent.com/nikola/ka-BOOM/master/screenshots/compilation-thumb.png)](https://raw.githubusercontent.com/nikola/ka-BOOM/master/screenshots/compilation.png)
+[![Screenshot: Movie compilation](https://raw.githubusercontent.com/nikola/fan/master/screenshots/compilation-thumb.png)](https://raw.githubusercontent.com/nikola/fan/master/screenshots/compilation.png)
   
-[![Screenshot: Detail browser](https://raw.githubusercontent.com/nikola/ka-BOOM/master/screenshots/detail-browser-thumb.png)](https://raw.githubusercontent.com/nikola/ka-BOOM/master/screenshots/detail-browser.png)
+[![Screenshot: Detail browser](https://raw.githubusercontent.com/nikola/fan/master/screenshots/detail-browser-thumb.png)](https://raw.githubusercontent.com/nikola/fan/master/screenshots/detail-browser.png)
   
-[![Screenshot: Movie detail](https://raw.githubusercontent.com/nikola/ka-BOOM/master/screenshots/movie-detail-thumb.png)](https://raw.githubusercontent.com/nikola/ka-BOOM/master/screenshots/movie-detail.png)
+[![Screenshot: Movie detail](https://raw.githubusercontent.com/nikola/fan/master/screenshots/movie-detail-thumb.png)](https://raw.githubusercontent.com/nikola/fan/master/screenshots/movie-detail.png)
   
-[![Screenshot: Menu](https://raw.githubusercontent.com/nikola/ka-BOOM/master/screenshots/menu-thumb.png)](https://raw.githubusercontent.com/nikola/ka-BOOM/master/screenshots/menu.png)
+[![Screenshot: Menu](https://raw.githubusercontent.com/nikola/fan/master/screenshots/menu-thumb.png)](https://raw.githubusercontent.com/nikola/fan/master/screenshots/menu.png)
 
 ---
 
 **Copyright 2013-2014 Nikola Klaric.**
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
-WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 [GPL v2]:http://www.gnu.org/licenses/gpl-2.0.html
 [The Movie Database (TMDb)]:http://www.themoviedb.org/

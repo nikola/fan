@@ -24,7 +24,6 @@ import logging
 from subprocess import Popen
 
 import win32api
-from utils.fs import readProcessedStream
 
 from settings import DEBUG
 from settings import LOG_CONFIG, APP_STORAGE_PATH

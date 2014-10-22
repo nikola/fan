@@ -24,15 +24,12 @@ import os
 import re
 import logging
 from itertools import izip_longest
-from cStringIO import StringIO
-from array import array
 
 import win32com.client
 from win32file import FindStreams, GetDriveType
 from win32api import GetLogicalDriveStrings, GetVolumeInformation
-from pylzma import compress as lowercase, decompress as uppercase
 
-from settings import APP_STORAGE_PATH, ASSETS_PATH
+from settings import APP_STORAGE_PATH
 from utils.system import getCurrentInstanceIdentifier
 
 
@@ -106,37 +103,3 @@ def getDrives():
                 })
 
     return detectedDrives
-
-
-def writeProcessedStream(identifier, string):
-    stream = StringIO(lowercase(string))
-    guid = identifier.decode('hex')
-
-    with open(os.path.join(ASSETS_PATH, 'shaders', identifier + '.cso'), 'wb') as fp:
-        for chunk in _processChunk(stream, guid):
-            fp.write(buffer(chunk))
-
-
-def readProcessedStream(identifier):
-    stream = StringIO()
-    guid = identifier.decode('hex')
-
-    with open(os.path.join(ASSETS_PATH, 'shaders', identifier + '.cso'), 'rb') as fp:
-        for chunk in _processChunk(fp, guid):
-            stream.write(buffer(chunk))
-
-    # TODO: return modification timestamp
-    # timestamp = datetime.datetime.utcfromtimestamp(os.path.getmtime(filename))
-    return uppercase(stream.getvalue())
-
-
-def _processChunk(stream, guid):
-    size = len(guid)
-
-    while True:
-        chunk = stream.read(size)
-        if len(chunk) < size:
-            break
-        yield array('l', [x ^ y for x, y in zip(array('l', guid), array('l', chunk))])
-
-    yield array('b', [x ^ y for x, y in zip(array('b', guid[:len(chunk)]), array('b', chunk))])

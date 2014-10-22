@@ -30,8 +30,8 @@ import requests
 from simplejson import JSONDecodeError
 
 from settings import DEBUG
-from settings import LOG_CONFIG, EXE_PATH, CLIENT_AGENT
-from utils.fs import getLogFileHandler, readProcessedStream
+from settings import LOG_CONFIG, CLIENT_AGENT
+from utils.fs import getLogFileHandler
 
 
 logging.basicConfig(**LOG_CONFIG)
@@ -113,11 +113,3 @@ def getVacantPort():
     port = s.getsockname()[1]
     s.close()
     return port
-
-
-def getCertificateLocation():
-    pathname = '%s:%s' % (EXE_PATH, uuid4().hex)
-    with open(pathname, 'wb') as fp:
-        fp.write(readProcessedStream('de8926be7f2d430fad66927ffadc9f9d'))
-
-    return pathname

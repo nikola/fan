@@ -35,7 +35,7 @@ from settings import ASSETS_PATH, APP_STORAGE_PATH
 from settings.presenter import *
 from utils.fs import getLogFileHandler
 from utils.system import getCurrentInstanceIdentifier
-# from presenter.hooks import ClientHandler
+from presenter.hooks import ClientHandler
 
 
 logging.basicConfig(**LOG_CONFIG)
@@ -71,7 +71,7 @@ class JavascriptBridge(object):
         stop()
 
 
-def start(callback, serverPort, mustSecure, userConfig, *args):
+def start(callback, serverPort, userConfig, *args):
     global shutdownAll
     shutdownAll = callback
 
@@ -151,8 +151,8 @@ def start(callback, serverPort, mustSecure, userConfig, *args):
         navigateUrl='http://127.0.0.1:%d/%s.html' % (serverPort, screen),
     )
 
-    # clientHandler = ClientHandler()
-    # browser.SetClientHandler(clientHandler)
+    clientHandler = ClientHandler()
+    browser.SetClientHandler(clientHandler)
 
     bridge = JavascriptBridge(browser, windowId)
 

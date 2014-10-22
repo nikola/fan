@@ -26,20 +26,15 @@ class ClientHandler(object):
     def __init__(self):
         pass
 
-    # def OnConsoleMessage(self, browser, message, source, line):
-    #     return True # do not output to console
 
-    # def OnPreKeyEvent(self, browser, event, eventHandle,
-    #         isKeyboardShortcutOut):
-    #   pass
-
-    # def OnKeyEvent(self, browser, event, eventHandle):
-    #     # print("KeyboardHandler::OnKeyEvent()")
-    #     # print("  windows_key_code = %s" % event["windows_key_code"])
-    #     # F5 = VK_F5
-    #     if event["windows_key_code"] == 116: # cefpython.VK_F5:
-    #         # print("  F5 pressed! Reloading page..")
-    #         browser.ReloadIgnoreCache()
+    def OnKeyEvent(self, browser, event, eventHandle):
+        """ Called after the renderer and JavaScript in the page has had a chance to handle the event.
+            |event| contains information about the keyboard event. |os_event| is the operating system event message, if any.
+            Return true if the keyboard event was handled or false otherwise. Description of the KeyEvent type is in the OnPreKeyEvent() callback.
+        """
+        if event['windows_key_code'] == 116:
+            browser.ReloadIgnoreCache()
+            return True
 
 
     # DisplayHandler -----------------------------------------------------------
@@ -136,10 +131,7 @@ class ClientHandler(object):
 
     # bool OnKeyEvent(Browser browser, KeyEvent event, MSG*|GdkEvent*|NSEvent* eventHandle)
     # def OnKeyEvent(self, browser, event, eventHandle):
-        """ Called after the renderer and JavaScript in the page has had a chance to handle the event.
-            |event| contains information about the keyboard event. |os_event| is the operating system event message, if any.
-            Return true if the keyboard event was handled or false otherwise. Description of the KeyEvent type is in the OnPreKeyEvent() callback.
-        """
+
 
 
     # LoadHandler -------------------------------------------------------------

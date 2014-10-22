@@ -24,38 +24,40 @@ import os
 
 import simplejson
 
-from settings import EXE_PATH, BASE_DIR
+from settings import BASE_DIR, APP_STORAGE_PATH
+from utils.system import getCurrentInstanceIdentifier
+
+DEFAULT_CONFIG_FILE = os.path.join(BASE_DIR, 'config', 'default.json')
+USER_CONFIG_FILE = os.path.join(APP_STORAGE_PATH, getCurrentInstanceIdentifier() + '.config', 'fan-config.json')
 
 
 def getCurrentUserConfig(config=None):
-    with open(os.path.join(BASE_DIR, 'config', 'default.json'), 'rU') as fp:
+    with open(DEFAULT_CONFIG_FILE, 'rU') as fp:
         configDefaults = simplejson.load(fp)
 
     configUser = configDefaults.copy()
 
-    if os.path.exists(EXE_PATH + ':a024b2cd63e44400a8ff18f548dfb54b'):
-        with open(EXE_PATH + ':a024b2cd63e44400a8ff18f548dfb54b', 'rU') as fp:
+    if os.path.exists(USER_CONFIG_FILE):
+        with open(USER_CONFIG_FILE, 'rU') as fp:
             configUser.update(simplejson.load(fp))
 
     if config is not None:
         configUser.update(config)
 
-    with open(EXE_PATH + ':a024b2cd63e44400a8ff18f548dfb54b', 'w') as fp:
+    with open(USER_CONFIG_FILE, 'w') as fp:
         simplejson.dump(configUser, fp, indent=4, sort_keys=True)
 
     return configUser
 
 
-def saveCurrentUserConfig(config, pathname=None):
-    if pathname is None:
-        pathname = EXE_PATH + ':a024b2cd63e44400a8ff18f548dfb54b'
+def saveCurrentUserConfig(config, pathname=USER_CONFIG_FILE):
     with open(pathname, 'w') as fp:
         simplejson.dump(config, fp, indent=4, sort_keys=True)
     return config
 
 
 def getOverlayConfig(pathname):
-    with open(os.path.join(BASE_DIR, 'config', 'default.json'), 'rU') as fp:
+    with open(DEFAULT_CONFIG_FILE, 'rU') as fp:
         configDefaults = simplejson.load(fp)
 
     configOverlayed = configDefaults.copy()

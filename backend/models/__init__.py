@@ -30,12 +30,13 @@ from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import NoResultFound
 
-from settings import EXE_PATH
+from settings import APP_STORAGE_PATH
 from models.common import Base, createNamedTuple
 from models.movies import Movie
 from models.localizations import Localization
 from models.compilations import Compilation
 from models.streams import Stream
+from utils.system import getCurrentInstanceIdentifier
 
 
 # TODO: use named tuples ?
@@ -64,7 +65,7 @@ class StreamManager(object):
 
 
     def __init__(self, cleanUp=False):
-        location = 'sqlite:///' + (EXE_PATH + ':b582b94058ff4bbea424c5af17f68586').replace('\\', r'\\\\')
+        location = 'sqlite:///' + os.path.join(APP_STORAGE_PATH, getCurrentInstanceIdentifier() + '.data', 'fan-db.sqlite').replace('\\', r'\\\\')
 
         self.engine = create_engine(location, echo=False, module=sqlite)
         self.engine.execute('select 1').scalar()

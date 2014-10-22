@@ -38,6 +38,7 @@ def createAppStorageStructure():
     for pathname in [
         'amalgam',
         'thirdparty',
+        prefix + '.data',
         prefix + '.cache',
         prefix + '.log',
         prefix + '.config',

@@ -33,7 +33,7 @@ import win32api
 import win32con
 import win32process
 
-from settings import BASE_DIR, EXE_PATH, ASSETS_PATH
+from settings import EXE_PATH, ASSETS_PATH
 
 
 PRIORITIES = {
@@ -116,7 +116,7 @@ def getCurrentInstanceIdentifier():
         version = getProductVersion(os.path.join(ASSETS_PATH, 'thirdparty', 'cef', 'libcef.dll'))
 
         md5 = MD5()
-        md5.update(os.path.join(EXE_PATH, version))
+        md5.update('%s:%s' % (EXE_PATH, version))
         INSTANCE_ID = md5.hexdigest()[:16]
 
     return INSTANCE_ID

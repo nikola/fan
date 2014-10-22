@@ -29,7 +29,7 @@ from contextlib import closing
 DEBUG = True
 BASE_DIR = os.path.dirname(sys.executable) if getattr(sys, 'frozen', None) else os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..'))
 ASSETS_PATH = sys._MEIPASS if getattr(sys, 'frozen', None) else BASE_DIR
-STATIC_PATH = os.path.join(ASSETS_PATH, 'frontend', 'app')
+STATIC_PATH = os.path.join(ASSETS_PATH, 'frontend')
 if getattr(sys, 'frozen', None):
     EXE_PATH = sys.executable
 else:

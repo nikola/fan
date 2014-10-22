@@ -24,10 +24,10 @@ import os
 
 import simplejson
 
-from settings import BASE_DIR, APP_STORAGE_PATH
+from settings import APP_STORAGE_PATH, ASSETS_PATH
 from utils.system import getCurrentInstanceIdentifier
 
-DEFAULT_CONFIG_FILE = os.path.join(BASE_DIR, 'config', 'default.json')
+DEFAULT_CONFIG_FILE = os.path.join(ASSETS_PATH, 'config', 'default.json')
 USER_CONFIG_FILE = os.path.join(APP_STORAGE_PATH, getCurrentInstanceIdentifier() + '.config', 'fan-config.json')
 
 

@@ -24,8 +24,6 @@ import json
 
 from pants.http import WebSocket
 
-from settings import DEBUG
-
 
 class PubSub(WebSocket):
 

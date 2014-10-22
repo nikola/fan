@@ -23,7 +23,6 @@ __copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
 import socket
 import time
 import logging
-from uuid import uuid4
 from collections import OrderedDict
 
 import requests

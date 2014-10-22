@@ -25,7 +25,7 @@ import os
 import ctypes
 
 
-DEBUG = True # END DEBUG
+DEBUG = True
 BASE_DIR = os.path.dirname(sys.executable) if getattr(sys, 'frozen', None) else os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..'))
 ASSETS_PATH = sys._MEIPASS if getattr(sys, 'frozen', None) else BASE_DIR
 EXE_PATH = sys.executable if getattr(sys, 'frozen', None) else os.path.join(BASE_DIR, 'dummy.exe')
@@ -40,7 +40,7 @@ LOG_CONFIG = dict(
 CLIENT_AGENT = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.80 Safari/537.36'
 
 
-def getAppStoragePathname():
+def _getAppStoragePathname():
     """
         CSIDL_APPDATA: 26 (Roaming)
         CSIDL_LOCAL_APPDATA: 28 (Local)
@@ -57,4 +57,4 @@ def getAppStoragePathname():
     return pathname
 
 
-APP_STORAGE_PATH = getAppStoragePathname()
+APP_STORAGE_PATH = _getAppStoragePathname()

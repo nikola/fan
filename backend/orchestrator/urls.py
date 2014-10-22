@@ -18,7 +18,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 __author__ = 'Nikola Klaric (nikola@klaric.org)'
-__copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
+__copyright__ = 'Copyright (C) 2013-2014 Nikola Klaric'
 
 import os.path
 import urllib
@@ -60,7 +60,7 @@ def present(request, screen):
         if screen in ('configure', 'gui'):
             content = content.replace('</head>', '<script>var ka = ka || {}; ka.config = %s;</script></head>' % simplejson.dumps(module.userConfig))
 
-        return content, 200, HTTPHeaders(data={'Cache-Control': 'no-cache, max-age=0'})
+        return content, 200, HTTPHeaders(data={'Cache-Control': 'no-cache,max-age=0'})
     else:
         abort()
 
@@ -98,7 +98,7 @@ def getScaledPosterByKey(request, key, width):
 
         headers = {
             'Last-modified': getRfc1123Timestamp(fileTimestamp),
-            'Cache-Control': 'no-cache, max-age=0' if not imageIsScaled else 'must-revalidate, max-age=604800',
+            'Cache-Control': 'no-cache,max-age=0' if not imageIsScaled else 'must-revalidate, max-age=604800',
         }
 
         if cachedTimestamp < fileTimestamp:

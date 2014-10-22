@@ -35,14 +35,13 @@ from pants.web.fileserver import FileServer
 from models import StreamManager
 from settings import DEBUG
 from settings import APP_STORAGE_PATH, STATIC_PATH
+from orchestrator import logger
 from orchestrator.urls import module as appModule
 from orchestrator.pubsub import PubSub
 from downloader.images import processBacklogEntry
 from identifier import getStreamRecords, getFixedRecords, identifyMovieByTitleYear, getShorthandFromFilename
 from utils.config import getCurrentUserConfig, getOverlayConfig, saveCurrentUserConfig
 from utils.net import deleteResponseCache
-
-from . import logger
 
 
 def _getMovieRecordFromLocation(streamLocation, basedataFromStream, basedataFromDir, processCallback):
@@ -81,7 +80,7 @@ def _getMovieRecordFromLocation(streamLocation, basedataFromStream, basedataFrom
     return movieRecord
 
 
-def _startOrchestrator(queue, certificateLocation, serverPort, mustSecure, userConfig, useExternalConfig):
+def _startOrchestrator(queue, serverPort, userConfig, useExternalConfig):
     global pubSubReference
     pubSubReference = None
 
@@ -91,7 +90,7 @@ def _startOrchestrator(queue, certificateLocation, serverPort, mustSecure, userC
 
     def _proxy(request):
         if request.protocol == 'HTTP/1.1':
-            if request.headers.get('Upgrade', None) == 'websocket':
+            if request.headers.get('Upgrade', '') == 'websocket':
                 PubSub(request, queue, _getPubSubReference)
             else:
                 app(request)
@@ -117,19 +116,9 @@ def _startOrchestrator(queue, certificateLocation, serverPort, mustSecure, userC
 
     app = Application(debug=DEBUG)
     app.add('', appModule)
-    FileServer(STATIC_PATH, headers={'Cache-Control': 'max-age=0'}).attach(app, '/static/')
+    FileServer(STATIC_PATH, headers={'Cache-Control': 'no-cache,max-age=0'}).attach(app, '/static/')
 
-    if mustSecure:
-        sslOptions = dict(
-            do_handshake_on_connect=False,
-            server_side=True,
-            certfile=certificateLocation,
-            ssl_version=3,
-            ciphers='ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS',
-        )
-        HTTPServer(_proxy).startSSL(sslOptions).listen(('', serverPort))
-    else:
-        HTTPServer(_proxy).listen(('', serverPort))
+    HTTPServer(_proxy).listen(('', serverPort))
 
     engine = HttpServerEngine.instance()
 

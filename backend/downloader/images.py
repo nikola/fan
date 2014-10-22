@@ -32,7 +32,7 @@ import requests
 from settings import ASSETS_PATH, APP_STORAGE_PATH
 from settings import CLIENT_AGENT
 
-from . import logger
+from downloader import logger
 
 CONVERT_EXE = os.path.join(ASSETS_PATH, 'thirdparty', 'convert', 'convert.exe')
 CWEBP_EXE = os.path.join(ASSETS_PATH, 'thirdparty', 'cwebp', 'cwebp.exe')
@@ -86,7 +86,7 @@ def downloadArtwork(imageUrl, imageType, imageId, pollingCallback=None):
             localStream.close()
             _yield()
 
-        # TODO: check file size of image to be > 5000
+        # TODO: check if file size of image > 5000 bytes
         os.rename(incompleteImagePath, completeImagePath)
 
     return True

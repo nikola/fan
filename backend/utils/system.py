@@ -98,10 +98,6 @@ def isCompatiblePlatform():
         and platform.architecture()[0] == "32bit"
 
 
-def isNtfsFilesystem():
-    return bool(win32api.GetVolumeInformation(os.path.splitdrive(BASE_DIR)[0] + '/')[3] & 0x00040000) # FILE_NAMED_STREAMS
-
-
 def getScreenResolution():
     return win32api.GetSystemMetrics(0), win32api.GetSystemMetrics(1)
 
@@ -146,5 +142,3 @@ def getProductVersion(pathname):
                 return '.'.join([num.rstrip('\x00') for num in ctypes.string_at(r.value, l.value).split('.')])
 
     raise ValueError
-
-

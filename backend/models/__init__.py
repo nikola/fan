@@ -80,7 +80,6 @@ class StreamManager(object):
     def purge(self):
         with self._session() as session:
             session.query(Localization).delete()
-            session.query(Image).delete()
             session.query(Stream).delete()
             session.query(Movie).delete()
 
@@ -184,17 +183,6 @@ class StreamManager(object):
                 return None
             else:
                 return stream.movie
-
-
-    def getMissingBackdropMovieId(self):
-        with self._session() as session:
-            try:
-                movie = session.query(Movie).join(Image).filter(Movie.images.any(Image.imageType == 'Poster')).group_by(Movie.id).having(func.count(Movie.images) == 1).first()
-            except NoResultFound:
-                return None
-            else:
-                if movie is not None:
-                    return movie.id
 
 
     def getAllMoviesAsJson(self):

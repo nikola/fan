@@ -35,7 +35,6 @@ from settings import DEBUG
 from settings import LOG_CONFIG
 from models import initialize as initStreamManager
 from utils.system import isCompatiblePlatform, getScreenResolution, isDesktopCompositionEnabled, setPriority
-from utils.net import getCertificateLocation
 from utils.fs import getLogFileHandler
 from utils.config import getCurrentUserConfig, getOverlayConfig, exportUserConfig
 from orchestrator.control import start as startOrchestrator, stop as stopOrchestrator
@@ -84,8 +83,6 @@ if __name__ == '__main__':
             player.join()
             downloader.join()
             logger.info('All processes stopped.')
-
-        os.remove(certificateLocation)
 
         logger.info('Closing application.')
 
@@ -155,9 +152,8 @@ if __name__ == '__main__':
         initStreamManager()
 
         serverPort = 59741
-        certificateLocation = getCertificateLocation()
 
-        arguments = (serverPort, False, userConfig, useExternalConfig)
+        arguments = (serverPort, userConfig, useExternalConfig)
 
         interProcessQueue = InterProcessQueue()
 
@@ -165,7 +161,7 @@ if __name__ == '__main__':
         downloader = startDownloader(interProcessQueue)
         player = startPlayer(interProcessQueue)
 
-        orchestrator = startOrchestrator(interProcessQueue, certificateLocation, *arguments)
+        orchestrator = startOrchestrator(interProcessQueue, *arguments)
 
         setPriority('normal')
         present(_shutdown, *arguments)

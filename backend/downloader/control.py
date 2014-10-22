@@ -24,9 +24,8 @@ import time
 from utils.system import Process
 from Queue import Empty
 
+from downloader import logger
 from downloader.images import getBacklogEntry, processBacklogEntry
-
-from . import logger
 
 
 def _startDownloader(queue):

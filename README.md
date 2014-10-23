@@ -1,6 +1,6 @@
 ### fan
 
-A movie compilation and playback app for Windows. Fast. Lean. No weather widget. [See it in action!]
+A movie compilation and playback app for Windows. Fast. Lean. No weather widget. **[See it in action!]**
 
 **Key features:**
 

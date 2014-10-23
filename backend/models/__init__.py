@@ -36,15 +36,14 @@ from models.movies import Movie
 from models.localizations import Localization
 from models.compilations import Compilation
 from models.streams import Stream
-from utils.system import getCurrentInstanceIdentifier
 
 
 # TODO: use named tuples ?
 #   https://docs.python.org/2/library/collections.html#collections.namedtuple
 
 
-def initialize():
-    StreamManager(cleanUp=True).shutdown()
+def initialize(profile):
+    StreamManager(profile, cleanUp=True).shutdown()
 
 
 class StreamManager(object):
@@ -64,8 +63,8 @@ class StreamManager(object):
                 session.commit()
 
 
-    def __init__(self, cleanUp=False):
-        location = 'sqlite:///' + os.path.join(APP_STORAGE_PATH, getCurrentInstanceIdentifier() + '.data', 'fan-db.sqlite').replace('\\', r'\\\\')
+    def __init__(self, profile, cleanUp=False):
+        location = 'sqlite:///' + os.path.join(APP_STORAGE_PATH, profile + '.data', 'fan-db.sqlite').replace('\\', r'\\\\')
 
         self.engine = create_engine(location, echo=False, module=sqlite)
         self.engine.execute('select 1').scalar()
@@ -284,9 +283,9 @@ class StreamManager(object):
                     for version in containers:
                         del version['space']
 
-                if all(version.get('edit') == 'Theatrical Cut' for version in containers):
+                if all(version.get('resolution') == '1080p24' for version in containers) or len(containers) == 1:
                     for version in containers:
-                        del version['edit']
+                        del version['resolution']
 
                 if all(version.get('format') == 'Matroska' for version in containers):
                     for version in containers:

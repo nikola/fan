@@ -30,9 +30,6 @@ A movie compilation and playback app for Windows. Fast. Lean. No weather widget.
 * Windows Vista, Windows 7 or Windows 8/8.1, 32-bit or 64-bit.
 * Screen resolution of 1920x1080 (Full HD).
 
-**Video:**
-<iframe width="560" height="315" src="https://www.youtube.com/embed/d78GJJeES3c?vq=hd1080&modestbranding=1&iv_load_policy=3&rel=0&color=white" frameborder="0"></iframe>
-
 **Screenshots:**
 
 [![Screenshot: Movie grid](https://raw.githubusercontent.com/nikola/fan/master/screenshots/movie-grid-thumb.png)](https://raw.githubusercontent.com/nikola/fan/master/screenshots/movie-grid.png)

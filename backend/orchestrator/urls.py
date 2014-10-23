@@ -34,7 +34,7 @@ from identifier import getImageConfiguration
 from downloader.images import downloadArtwork
 from utils.rfc import getRfc1123Timestamp, parseRfc1123Timestamp
 from utils.fs import getDrives
-from utils.config import getCurrentUserConfig
+from utils.config import processCurrentUserConfig
 from identifier.fixture import TOP_250
 
 
@@ -43,7 +43,7 @@ module = Module()
 
 @module.route('/ready', methods=('PATCH',), content_type='text/plain')
 def ready(request):
-    module.imageBaseUrl, module.imageClosestSize = getImageConfiguration()
+    module.imageBaseUrl, module.imageClosestSize = getImageConfiguration(module.profile)
 
     if module.imageBaseUrl is not None:
         module.interProcessQueue.put('orchestrator:start:scan')
@@ -58,7 +58,8 @@ def present(request, screen):
         with open(os.path.join(STATIC_PATH, 'html', '%s.html' % screen)) as fp:
             content = fp.read()
         if screen in ('configure', 'gui'):
-            content = content.replace('</head>', '<script>var ka = ka || {}; ka.config = %s;</script></head>' % simplejson.dumps(module.userConfig))
+            content = content.replace('</head>', '<script>var ka = ka || {}; ka.config = %s;</script></head>'
+                % simplejson.dumps(module.userConfig))
 
         return content, 200, HTTPHeaders(data={'Cache-Control': 'no-cache,max-age=0'})
     else:
@@ -81,7 +82,7 @@ def getScaledPosterByKey(request, key, width):
             link = open(os.path.join(pathname, 'source.url'), 'rU').read()
             time.sleep(0)
             sourceUrl = link[link.find('=') + 1:].replace('original', module.imageClosestSize).strip()
-            downloadArtwork(sourceUrl, 'poster@draft', key)
+            downloadArtwork(module.profile, sourceUrl, 'poster@draft', key)
             time.sleep(0)
 
         filename += '@draft.jpg'
@@ -125,7 +126,7 @@ def getBackdropByKey(request, key):
             link = open(os.path.join(pathname, 'source.url'), 'rU').read()
             time.sleep(0)
             sourceUrl = link[link.find('=') + 1:].strip()
-            downloadArtwork(sourceUrl, 'backdrop', key)
+            downloadArtwork(module.profile, sourceUrl, 'backdrop', key)
             time.sleep(0)
 
     if not os.path.exists(filename):
@@ -182,8 +183,7 @@ def getAvailableVersions(request, identifier):
 
 @module.route('/update/configuration', methods=('POST',), content_type='text/plain')
 def updateConfiguration(request):
-    config = simplejson.loads(urllib.unquote(request.body))
-    getCurrentUserConfig(config) # TODO: update external config
+    module.userConfig = processCurrentUserConfig(module.profile, simplejson.loads(urllib.unquote(request.body)))
     module.interProcessQueue.put('orchestrator:reload:config')
 
     return '', 200

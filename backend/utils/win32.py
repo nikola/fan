@@ -18,7 +18,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 __author__ = 'Nikola Klaric (nikola@klaric.org)'
-__copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
+__copyright__ = 'Copyright (C) 2013-2014 Nikola Klaric'
 
 import ctypes
 

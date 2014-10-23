@@ -18,11 +18,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 __author__ = 'Nikola Klaric (nikola@klaric.org)'
-__copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
+__copyright__ = 'Copyright (C) 2013-2014 Nikola Klaric'
 
 import os
 import re
-import logging
 from itertools import izip_longest
 
 import win32com.client
@@ -30,37 +29,24 @@ from win32file import FindStreams, GetDriveType
 from win32api import GetLogicalDriveStrings, GetVolumeInformation
 
 from settings import APP_STORAGE_PATH
-from utils.system import getCurrentInstanceIdentifier
 
 
-def createAppStorageStructure():
-    prefix = getCurrentInstanceIdentifier()
+def createAppStorageStructure(profile):
     for pathname in [
         'amalgam',
-        'thirdparty',
-        prefix + '.data',
-        prefix + '.cache',
-        prefix + '.log',
-        prefix + '.config',
-        prefix + '.lock',
-        os.path.join('artwork', 'backdrops'),
+        profile + '.data',
+        profile + '.cache',
+        profile + '.log',
+        profile + '.config',
         os.path.join('artwork', 'posters'),
-        os.path.join('backlog', 'backdrops'),
+        os.path.join('artwork', 'backdrops'),
         os.path.join('backlog', 'posters'),
+        os.path.join('backlog', 'backdrops'),
     ]:
         try:
             os.makedirs(os.path.join(APP_STORAGE_PATH, pathname))
         except OSError:
             pass
-
-
-def getLogFileHandler(name):
-    createAppStorageStructure()
-
-    handler = logging.FileHandler(os.path.join(APP_STORAGE_PATH, getCurrentInstanceIdentifier() + '.log', '%(name)s.log' % locals()))
-    handler.setFormatter(logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s', '%Y-%m-%d %H:%M'))
-    handler.setLevel(logging.INFO)
-    return handler
 
 
 def getFileStreams(pathname):

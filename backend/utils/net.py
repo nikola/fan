@@ -18,7 +18,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 __author__ = 'Nikola Klaric (nikola@klaric.org)'
-__copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
+__copyright__ = 'Copyright (C) 2013-2014 Nikola Klaric'
 
 import socket
 import time
@@ -28,15 +28,8 @@ from collections import OrderedDict
 import requests
 from simplejson import JSONDecodeError
 
-from settings import DEBUG
-from settings import LOG_CONFIG, CLIENT_AGENT
-from utils.fs import getLogFileHandler
-
-
-logging.basicConfig(**LOG_CONFIG)
-logger = logging.getLogger('requests')
-logger.propagate = DEBUG
-logger.addHandler(getLogFileHandler('requests'))
+from settings import CLIENT_AGENT
+from utils.logs import getLogger
 
 REQUESTS_LOGGER = logging.getLogger('requests.packages.urllib3')
 REQUESTS_LOGGER.setLevel(logging.CRITICAL)
@@ -46,7 +39,7 @@ LAST_TMDB_ACCESS = time.clock()
 TMDB_RESPONSE_CACHE = {}
 
 
-def getThrottledJsonResponse(url, params, pollingCallback=None):
+def getThrottledJsonResponse(profile, url, params, pollingCallback=None):
 
     def _yield():
         if pollingCallback is not None:
@@ -55,6 +48,8 @@ def getThrottledJsonResponse(url, params, pollingCallback=None):
             time.sleep(0)
 
     global TMDB_RESPONSE_CACHE, LAST_TMDB_ACCESS
+
+    logger = getLogger(profile, 'net')
 
     tuples = []
     for k, v in OrderedDict(sorted(params.items(), key=lambda t: t[0])).iteritems():
@@ -85,15 +80,16 @@ def getThrottledJsonResponse(url, params, pollingCallback=None):
                 TMDB_RESPONSE_CACHE[key] = response.json()
             except JSONDecodeError:
                 logger.error('Invalid JSON response from TMDb!')
+                return None
 
     return TMDB_RESPONSE_CACHE.get(key)
 
 
-def makeUnthrottledGetRequest(url):
+def makeUnthrottledGetRequest(profile, url):
     try:
         response = requests.get(url, headers={'User-Agent': CLIENT_AGENT}, timeout=5)
     except (requests.Timeout, requests.ConnectionError):
-        logger.error('Could not GET %s', url)
+        getLogger(profile, 'net').error('Could not GET %s', url)
         return None
     else:
         return response

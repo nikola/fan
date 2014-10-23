@@ -18,7 +18,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 __author__ = 'Nikola Klaric (nikola@klaric.org)'
-__copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
+__copyright__ = 'Copyright (C) 2013-2014 Nikola Klaric'
 
 import os
 import time
@@ -34,18 +34,21 @@ from pants.web.fileserver import FileServer
 
 from models import StreamManager
 from settings import DEBUG
-from settings import APP_STORAGE_PATH, STATIC_PATH
-from orchestrator import logger
+from settings import APP_STORAGE_PATH, STATIC_PATH, SERVER_PORT
 from orchestrator.urls import module as appModule
 from orchestrator.pubsub import PubSub
 from downloader.images import processBacklogEntry
 from identifier import getStreamRecords, getFixedRecords, identifyMovieByTitleYear, getShorthandFromFilename
-from utils.config import getCurrentUserConfig, getOverlayConfig, saveCurrentUserConfig
+from utils.config import processCurrentUserConfig
 from utils.net import deleteResponseCache
+from utils.logs import getLogger
 
 
-def _getMovieRecordFromLocation(streamLocation, basedataFromStream, basedataFromDir, processCallback):
+def _getMovieRecordFromLocation(profile, streamLocation, basedataFromStream, basedataFromDir, processCallback):
     processCallback()
+
+    logger = getLogger(profile, 'orchestrator')
+
     if not appModule.userConfig.get('isDemoMode', False):
         logger.info('Found new supported file: %s' % streamLocation)
     else:
@@ -54,6 +57,7 @@ def _getMovieRecordFromLocation(streamLocation, basedataFromStream, basedataFrom
     processCallback()
 
     movieRecord = identifyMovieByTitleYear(
+        profile,
         appModule.userConfig.get('language', 'en'),
         basedataFromDir.get('title'), basedataFromDir.get('year'),
         basedataFromStream.get('title'), basedataFromStream.get('year'),
@@ -75,12 +79,12 @@ def _getMovieRecordFromLocation(streamLocation, basedataFromStream, basedataFrom
             closing(open(os.path.join(APP_STORAGE_PATH, 'backlog', imageType.lower() + 's', movieRecord['key' + imageType]), 'w+'))
             processCallback()
             del movieRecord['url' + imageType]
-        processBacklogEntry('backdrop', movieRecord.get('keyBackdrop'), processCallback)
+        processBacklogEntry(profile, 'backdrop', movieRecord.get('keyBackdrop'), processCallback)
 
     return movieRecord
 
 
-def _startOrchestrator(queue, serverPort, userConfig, useExternalConfig):
+def _startOrchestrator(profile, queue):
     global pubSubReference
     pubSubReference = None
 
@@ -100,26 +104,26 @@ def _startOrchestrator(queue, serverPort, userConfig, useExternalConfig):
 
     def _processRequests():
         if engine is not None:
-            engine.poll(poll_timeout=0)
+            engine.poll(poll_timeout=0.015)
         else:
-            time.sleep(0)
+            time.sleep(0.015)
 
-    streamManager = StreamManager()
+    streamManager = StreamManager(profile)
     streamGenerator = None
     syncFinished = False
     isDownloaderIdle = False
+    logger = getLogger(profile, 'orchestrator')
 
     appModule.interProcessQueue = queue
     appModule.streamManager = streamManager
-    appModule.userConfig = userConfig
-    appModule.useExternalConfig = useExternalConfig
+    appModule.profile = profile
+    appModule.userConfig = processCurrentUserConfig(profile)
 
     app = Application(debug=DEBUG)
     app.add('', appModule)
     FileServer(STATIC_PATH, headers={'Cache-Control': 'no-cache,max-age=0'}).attach(app, '/static/')
 
-    HTTPServer(_proxy).listen(('', serverPort))
-
+    HTTPServer(_proxy).listen(('', SERVER_PORT))
     engine = HttpServerEngine.instance()
 
     while True:
@@ -139,24 +143,21 @@ def _startOrchestrator(queue, serverPort, userConfig, useExternalConfig):
                 streamManager.shutdown()
 
                 queue.task_done()
-                _processRequests()
+                time.sleep(0)
 
                 break
             elif command == 'orchestrator:start:scan':
-                if useExternalConfig:
-                    appModule.userConfig = getOverlayConfig(useExternalConfig)
-                else:
-                    appModule.userConfig = getCurrentUserConfig()
+                appModule.userConfig = processCurrentUserConfig(profile)
 
                 if appModule.userConfig.get('isDemoMode', False):
                     appModule.userConfig['hasDemoMovies'] = True
-                    appModule.userConfig = saveCurrentUserConfig(appModule.userConfig) # , useExternalConfig)
+                    processCurrentUserConfig(profile, appModule.userConfig)
 
                     streamGenerator = getFixedRecords()
                 else:
                     if appModule.userConfig.get('hasDemoMovies', False):
                         appModule.userConfig['hasDemoMovies'] = False
-                        appModule.userConfig = saveCurrentUserConfig(appModule.userConfig) # , useExternalConfig)
+                        processCurrentUserConfig(profile, appModule.userConfig)
 
                     streamGenerator = getStreamRecords(appModule.userConfig.get('sources', []))
 
@@ -164,16 +165,14 @@ def _startOrchestrator(queue, serverPort, userConfig, useExternalConfig):
 
                 _processRequests()
             elif command == 'orchestrator:reload:config':
-                syncFinished = False
-                isDownloaderIdle = True
+                queue.task_done()
                 queue.put('downloader:pause')
                 time.sleep(0)
 
-                # appModule.userConfig = getCurrentUserConfig()
-                if useExternalConfig:
-                    appModule.userConfig = getOverlayConfig(useExternalConfig)
-                else:
-                    appModule.userConfig = getCurrentUserConfig()
+                syncFinished = False
+                isDownloaderIdle = True
+
+                appModule.userConfig = processCurrentUserConfig(profile)
 
                 if appModule.userConfig.get('isDemoMode', False):
                     if not appModule.userConfig.get('hasDemoMovies', False):
@@ -182,9 +181,6 @@ def _startOrchestrator(queue, serverPort, userConfig, useExternalConfig):
                     streamManager.purge()
 
                 pubSubReference.write(unicode('["force:redirect:url", "load.html"]'))
-
-                queue.task_done()
-
                 _processRequests()
             elif command == 'orchestrator:resume:detail':
                 pubSubReference.write(unicode('["resume:detail:screen", ""]'))
@@ -239,7 +235,7 @@ def _startOrchestrator(queue, serverPort, userConfig, useExternalConfig):
 
                     if not isContainerKnown:
                         try:
-                            movieRecord = _getMovieRecordFromLocation(streamLocation, basedataFromStream, basedataFromDir, _processRequests)
+                            movieRecord = _getMovieRecordFromLocation(profile, streamLocation, basedataFromStream, basedataFromDir, _processRequests)
                         except (JSONDecodeError, AttributeError, TypeError, KeyError):
                             logger.error('Error while querying themoviedb.org')
                         else:
@@ -272,7 +268,7 @@ def _startOrchestrator(queue, serverPort, userConfig, useExternalConfig):
 
 def start(*args):
     global globalInterProcessQueue
-    globalInterProcessQueue = args[0]
+    globalInterProcessQueue = args[1]
 
     process = Process(target=_startOrchestrator, args=args)
     process.start()

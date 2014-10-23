@@ -29,8 +29,8 @@ from models import StreamManager
 from player import playFile, update as updatePlayer
 
 
-def _startPlayer(queue):
-    playerStreamManager = StreamManager()
+def _startPlayer(profile, queue):
+    playerStreamManager = StreamManager(profile)
 
     isPlayerUpToDate = False
 
@@ -49,7 +49,7 @@ def _startPlayer(queue):
                 break
             elif command.startswith('player:play:'):
                 if not isPlayerUpToDate:
-                    updatePlayer()
+                    updatePlayer(profile)
                     isPlayerUpToDate = True
                 queue.put('orchestrator:player:updated')
 
@@ -64,14 +64,14 @@ def _startPlayer(queue):
                 queue.task_done()
                 queue.put(command)
 
-                time.sleep(0.015)
+                time.sleep(0)
         except Empty:
-            time.sleep(0.5)
+            time.sleep(2)
 
 
 def start(*args):
     global globalInterProcessQueue
-    globalInterProcessQueue = args[0]
+    globalInterProcessQueue = args[1]
 
     process = Process(target=_startPlayer, args=args)
     process.start()

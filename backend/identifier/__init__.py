@@ -18,22 +18,18 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 __author__ = 'Nikola Klaric (nikola@klaric.org)'
-__copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
+__copyright__ = 'Copyright (C) 2013-2014 Nikola Klaric'
 
 import os
 import re
 import datetime
-import logging
 
-from settings import DEBUG
-from settings import LOG_CONFIG
-from utils.net import getThrottledJsonResponse, makeUnthrottledGetRequest
-from utils.fs import getLogFileHandler
 from identifier.fixture import TOP_250, POSTERS, BACKDROPS, TRAILERS_HD
+from utils.net import getThrottledJsonResponse, makeUnthrottledGetRequest
+from utils.logs import getLogger
 
 STREAM_SIZE_THRESHOLD = 1024 * 1024 * 10 # 10 MiB
 
-# Compiled regular expressions.
 RE_CUT_INDICATOR_1 = re.compile(r"(([ \.\(](remastered|extended|final|theatrical|international|ultimate|3-?in-?1|2-?in-?1|hybrid|imax|r-rated|unrated|uncut|dc|director[ \.']?s?))+([ \.]cut|[ \.]edition|[ \.]version|$))", re.I)
 RE_RESOLUTION_IND = re.compile(r'((720|1080)(p|i)?\d{0,2})', re.I)
 RE_MULTI_SPACE = re.compile('  +')
@@ -55,19 +51,14 @@ RE_DIR_DRIVE = re.compile('"[a-z]:\\\\', re.I)
 RE_DIR_TAIL = re.compile(r'(?<=\\)[^\\]*$', re.I)
 
 
-logging.basicConfig(**LOG_CONFIG)
-logger = logging.getLogger('tmdb')
-logger.propagate = DEBUG
-logger.addHandler(getLogFileHandler('tmdb'))
-
-
 def getFixedRecords():
     for title, year in TOP_250:
         yield '\\\\03cab2fbe3354d838578b09178ac2a1a\\fan\\%s (%d).mkv' % (title, year), {'title': title, 'year': year}, {'title': None, 'year': None}
 
 
-def getImageConfiguration():
+def getImageConfiguration(profile):
     configuration = getThrottledJsonResponse(
+        profile,
         'https://api.themoviedb.org/3/configuration',
         params={'ncv_xrl'.decode((str(255-0xe0)+'\x74\x6f\x72')[::-1]): 'rs89p0n371440n7226r1or2qqsr84318'.decode('\x72\x6f\x74' + str((2 << 3) - 3))}
     )
@@ -239,7 +230,9 @@ def getShorthandFromFilename(pathname, year):
     return space, resolution, edit
 
 
-def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary, yearSecondary, pollingCallback):
+def identifyMovieByTitleYear(profile, language, titlePrimary, yearPrimary, titleSecondary, yearSecondary, pollingCallback):
+    logger = getLogger(profile, 'identifier')
+
     if yearPrimary is not None and yearSecondary is None:
         searchTitlePrimary, searchTitleSecondary = titlePrimary, titleSecondary
         searchYearPrimary, searchYearSecondary = yearPrimary, yearSecondary
@@ -276,13 +269,13 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
     if searchYearPrimary is not None:
         params['year'] = searchYearPrimary
 
-    response = getThrottledJsonResponse(url, params, pollingCallback)
+    response = getThrottledJsonResponse(profile, url, params, pollingCallback)
 
     if response['total_results'] == 0 and params.has_key('year'):
         logger.warning('Movie with title "%s" not found at themoviedb.org, omitting year ...', searchTitlePrimary)
         pollingCallback()
         del params['year']
-        response = getThrottledJsonResponse(url, params, pollingCallback)
+        response = getThrottledJsonResponse(profile, url, params, pollingCallback)
         pollingCallback()
 
     if response['total_results'] == 0 and searchTitleSecondary is not None:
@@ -291,7 +284,7 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
         params['query'] = searchTitleSecondary.encode('utf-8')
         if searchYearSecondary is not None:
             params['year'] = searchYearSecondary
-        response = getThrottledJsonResponse(url, params, pollingCallback)
+        response = getThrottledJsonResponse(profile, url, params, pollingCallback)
         pollingCallback()
 
     if response['total_results'] == 0 and searchTitleSecondary is not None:
@@ -299,7 +292,7 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
         pollingCallback()
         params['query'] = searchTitleSecondary.encode('utf-8')
         del params['year']
-        response = getThrottledJsonResponse(url, params, pollingCallback)
+        response = getThrottledJsonResponse(profile, url, params, pollingCallback)
 
     if response['total_results'] == 0:
         logger.warning('Movie with title "%s" not found at themoviedb.org, giving up for now.', searchTitlePrimary)
@@ -315,7 +308,7 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
                 'language': language,
                 'append_to_response': 'trailers,credits',
             }
-            response = getThrottledJsonResponse(url, params, pollingCallback)
+            response = getThrottledJsonResponse(profile, url, params, pollingCallback)
 
             if response.get('poster_path', None) is not None:
                 logger.info('Movie identified at themoviedb.org as "%s" with ID: %d.' % (response['original_title'], movieId))
@@ -326,14 +319,14 @@ def identifyMovieByTitleYear(language, titlePrimary, yearPrimary, titleSecondary
                     logger.info('Movie has no overview in locale "%s", falling back to English ...' % language)
                     pollingCallback()
                     params['language'] = 'en'
-                    response = getThrottledJsonResponse(url, params, pollingCallback)
+                    response = getThrottledJsonResponse(profile, url, params, pollingCallback)
 
                 # Fetch rating from IMDB instead of TheMovieDB.
                 rating = None
                 idImdb = response['imdb_id']
                 if idImdb is not None:
                     url = 'http://www.imdb.com/title/%s/' % idImdb
-                    responseImdb = makeUnthrottledGetRequest(url)
+                    responseImdb = makeUnthrottledGetRequest(profile, url)
                     pollingCallback()
                     if responseImdb is not None:
                         ratingSearch = re.search('<span itemprop="ratingValue">\s*([^<]+)', responseImdb.text)

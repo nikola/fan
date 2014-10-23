@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 from __future__ import division
 
 __author__ = 'Nikola Klaric (nikola@klaric.org)'
-__copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
+__copyright__ = 'Copyright (C) 2013-2014 Nikola Klaric'
 
 import os
 import time
@@ -29,16 +29,14 @@ from contextlib import closing
 
 import requests
 
-from settings import ASSETS_PATH, APP_STORAGE_PATH
-from settings import CLIENT_AGENT
-
-from downloader import logger
+from settings import ASSETS_PATH, APP_STORAGE_PATH, CLIENT_AGENT
+from utils.logs import getLogger
 
 CONVERT_EXE = os.path.join(ASSETS_PATH, 'thirdparty', 'convert', 'convert.exe')
 CWEBP_EXE = os.path.join(ASSETS_PATH, 'thirdparty', 'cwebp', 'cwebp.exe')
 
 
-def downloadArtwork(imageUrl, imageType, imageId, pollingCallback=None):
+def downloadArtwork(profile, imageUrl, imageType, imageId, pollingCallback=None):
 
     def _yield(period=0):
         if pollingCallback is not None:
@@ -46,13 +44,15 @@ def downloadArtwork(imageUrl, imageType, imageId, pollingCallback=None):
         else:
             time.sleep(period)
 
+    logger = getLogger(profile, 'downloader')
+
     imageName = imageType[:imageType.find('@')] if imageType.find('@') != -1 else imageType
 
     imageDirectory = os.path.join(APP_STORAGE_PATH, 'artwork', imageName + 's', imageId)
     incompleteImagePath = os.path.join(imageDirectory, imageType + '.incomplete')
     completeImagePath = os.path.join(imageDirectory, imageType + '.jpg')
 
-    if not os.path.exists(completeImagePath):
+    if not (os.path.exists(completeImagePath) or os.path.exists(incompleteImagePath)):
         try:
             os.makedirs(imageDirectory)
         except OSError:
@@ -98,7 +98,7 @@ def getBacklogEntry(artworkType):
     return backlogItems[0] if len(backlogItems) else None
 
 
-def processBacklogEntry(artworkType, key, pollingCallback=None):
+def processBacklogEntry(profile, artworkType, key, pollingCallback=None):
 
     def _yield(period=0):
         if pollingCallback is not None:
@@ -113,7 +113,7 @@ def processBacklogEntry(artworkType, key, pollingCallback=None):
     _yield()
     sourceUrl = link[link.find('=') + 1:].strip()
 
-    result = downloadArtwork(sourceUrl, artworkType, key)
+    result = downloadArtwork(profile, sourceUrl, artworkType, key)
     if artworkType == 'poster':
         if result:
             pathname = os.path.join(APP_STORAGE_PATH, 'artwork', 'posters', key)

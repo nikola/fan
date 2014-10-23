@@ -18,59 +18,31 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 __author__ = 'Nikola Klaric (nikola@klaric.org)'
-__copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
+__copyright__ = 'Copyright (C) 2013-2014 Nikola Klaric'
 
 import os
 
 import simplejson
 
 from settings import APP_STORAGE_PATH, ASSETS_PATH
-from utils.system import getCurrentInstanceIdentifier
-
-DEFAULT_CONFIG_FILE = os.path.join(ASSETS_PATH, 'config', 'default.json')
-USER_CONFIG_FILE = os.path.join(APP_STORAGE_PATH, getCurrentInstanceIdentifier() + '.config', 'fan-config.json')
 
 
-def getCurrentUserConfig(config=None):
-    with open(DEFAULT_CONFIG_FILE, 'rU') as fp:
+def processCurrentUserConfig(profile, config=None):
+    userConfigFile = os.path.join(APP_STORAGE_PATH, profile + '.config', 'fan-config.json')
+
+    with open(os.path.join(ASSETS_PATH, 'config', 'default.json'), 'rU') as fp:
         configDefaults = simplejson.load(fp)
 
     configUser = configDefaults.copy()
 
-    if os.path.exists(USER_CONFIG_FILE):
-        with open(USER_CONFIG_FILE, 'rU') as fp:
+    if os.path.exists(userConfigFile):
+        with open(userConfigFile, 'rU') as fp:
             configUser.update(simplejson.load(fp))
 
     if config is not None:
         configUser.update(config)
 
-    with open(USER_CONFIG_FILE, 'w') as fp:
+    with open(userConfigFile, 'w') as fp:
         simplejson.dump(configUser, fp, indent=4, sort_keys=True)
 
-    return configUser
-
-
-def saveCurrentUserConfig(config, pathname=USER_CONFIG_FILE):
-    with open(pathname, 'w') as fp:
-        simplejson.dump(config, fp, indent=4, sort_keys=True)
-    return config
-
-
-def getOverlayConfig(pathname):
-    with open(DEFAULT_CONFIG_FILE, 'rU') as fp:
-        configDefaults = simplejson.load(fp)
-
-    configOverlayed = configDefaults.copy()
-
-    with open(pathname, 'rU') as fp:
-        configOverlayed.update(simplejson.load(fp))
-
-    with open(pathname, 'w') as fp:
-        simplejson.dump(configOverlayed, fp, indent=4, sort_keys=True)
-
-    return configOverlayed
-
-
-def exportUserConfig(config, pathname):
-    with open(pathname, 'w') as fp:
-        simplejson.dump(config, fp, indent=4, sort_keys=True)
+    return configUser.copy()

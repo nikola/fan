@@ -25,8 +25,8 @@ import os
 import ctypes
 from contextlib import closing
 
-
-DEBUG = True
+DEBUG = False
+SERVER_PORT = 59741
 BASE_DIR = os.path.dirname(sys.executable) if getattr(sys, 'frozen', None) else os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..'))
 ASSETS_PATH = sys._MEIPASS if getattr(sys, 'frozen', None) else BASE_DIR
 STATIC_PATH = os.path.join(ASSETS_PATH, 'frontend')
@@ -37,14 +37,7 @@ else:
     if not os.path.exists(EXE_PATH):
         closing(open(EXE_PATH, 'w+'))
 
-LOG_CONFIG = dict(
-    format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
-    datefmt='%Y-%m-%d %H:%M',
-    level=20, # logging.INFO
-    filemode='a',
-)
 CLIENT_AGENT = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.80 Safari/537.36'
-
 
 def _getAppStoragePathname():
     """
@@ -61,6 +54,5 @@ def _getAppStoragePathname():
     pathname = os.path.join(os.path.normpath(bufferUnicode.value), 'fan')
 
     return pathname
-
 
 APP_STORAGE_PATH = _getAppStoragePathname()

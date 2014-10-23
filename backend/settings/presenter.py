@@ -87,3 +87,5 @@ CEF_BROWSER_SETTINGS = dict(
     # accelerated_compositing_disabled = True,
     # webgl_disabled = True,
 )
+
+CEF_REMOTE_DEBUGGING_PORT = 8090

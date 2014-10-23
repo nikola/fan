@@ -23,25 +23,15 @@ __copyright__ = 'Copyright (C) 2013-2014 Nikola Klaric'
 import os
 import uuid
 import imp
-import logging
 
 import win32gui
 import win32api
 import win32con
 
-from settings import DEBUG
-from settings import LOG_CONFIG
-from settings import ASSETS_PATH, APP_STORAGE_PATH
+from settings import DEBUG, ASSETS_PATH, APP_STORAGE_PATH
 from settings.presenter import *
-from utils.fs import getLogFileHandler
-from utils.system import getCurrentInstanceIdentifier
 from presenter.hooks import ClientHandler
-
-
-logging.basicConfig(**LOG_CONFIG)
-logger = logging.getLogger('gui')
-logger.propagate = DEBUG
-logger.addHandler(getLogFileHandler('gui'))
+from utils.logs import getLogger
 
 
 shutdownAll = None
@@ -49,21 +39,22 @@ shutdownAll = None
 
 class JavascriptBridge(object):
 
-    def __init__(self, mainBrowser, windowId):
+    def __init__(self, mainBrowser, windowId, logger):
         self.mainBrowser = mainBrowser
         self.windowId = windowId
+        self.logger = logger
 
     def log(self, message):
-        logger.info(message)
+        self.logger.info(message)
 
     def debug(self, message):
-        logger.debug(message)
+        self.logger.debug(message)
 
     def warn(self, message):
-        logger.warning(message)
+        self.logger.warning(message)
 
     def error(self, message):
-        logger.error(message)
+        self.logger.error(message)
 
     def exitApplication(self):
         win32gui.ShowWindow(self.windowId, win32con.SW_HIDE)
@@ -71,7 +62,7 @@ class JavascriptBridge(object):
         stop()
 
 
-def start(callback, serverPort, userConfig, *args):
+def start(callback, initialPage, profile, *args):
     global shutdownAll
     shutdownAll = callback
 
@@ -80,19 +71,18 @@ def start(callback, serverPort, userConfig, *args):
 
     appSettings = CEF_APP_SETTINGS
     appSettings.update({
-        'cache_path':              os.path.join(APP_STORAGE_PATH, getCurrentInstanceIdentifier() + '.cache'),
+        'cache_path':              os.path.join(APP_STORAGE_PATH, profile + '.cache'),
         'log_severity':            cef.LOGSEVERITY_DISABLE,
         'browser_subprocess_path': os.path.join(ASSETS_PATH, 'thirdparty', 'cef', 'subprocess'),
         'locales_dir_path':        os.path.join(ASSETS_PATH, 'thirdparty', 'cef'),
     })
-    if False: # DEBUG
+    if DEBUG:
         appSettings.update({
             'debug':                  True,
             'release_dcheck_enabled': True,
-            'remote_debugging_port':  8090,
+            'remote_debugging_port':  CEF_REMOTE_DEBUGGING_PORT,
             'log_severity':           cef.LOGSEVERITY_INFO,
         })
-    # END if DEBUG
 
     cef.Initialize(appSettings, CEF_CMD_LINE_SETTINGS)
 
@@ -144,17 +134,16 @@ def start(callback, serverPort, userConfig, *args):
     windowInfo = cef.WindowInfo()
     windowInfo.SetAsChild(windowId)
 
-    screen = 'configure' if not len(userConfig['sources']) and not userConfig.get('isDemoMode', False) else 'load'
     browser = cef.CreateBrowserSync(
         windowInfo,
         CEF_BROWSER_SETTINGS,
-        navigateUrl='http://127.0.0.1:%d/%s.html' % (serverPort, screen),
+        navigateUrl=initialPage,
     )
 
     clientHandler = ClientHandler()
     browser.SetClientHandler(clientHandler)
 
-    bridge = JavascriptBridge(browser, windowId)
+    bridge = JavascriptBridge(browser, windowId, getLogger(profile, 'presenter'))
 
     jsBindings = cef.JavascriptBindings(bindToFrames=True, bindToPopups=True)
     jsBindings.SetObject('console', bridge)

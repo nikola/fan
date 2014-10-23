@@ -18,32 +18,27 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 __author__ = 'Nikola Klaric (nikola@klaric.org)'
-__copyright__ = 'Copyright (c) 2013-2014 Nikola Klaric'
+__copyright__ = 'Copyright (C) 2013-2014 Nikola Klaric'
 
-import logging
 from subprocess import Popen
 
 import win32api
 
-from settings import DEBUG
-from settings import LOG_CONFIG, APP_STORAGE_PATH
+from settings import APP_STORAGE_PATH
 from settings.player import MPCHC_INI, MT_PATCH
-from utils.fs import getLogFileHandler
+from utils.logs import getLogger
 from updater.lib import *
 
-logging.basicConfig(**LOG_CONFIG)
-logger = logging.getLogger('updater')
-logger.propagate = DEBUG
-logger.addHandler(getLogFileHandler('updater'))
 
 PLAYER_AMALGAM_PATH = os.path.join(APP_STORAGE_PATH, 'amalgam')
 
 
-def _updateComponents():
-    def _log(text, color=BLACK):
+def _updateComponents(profile):
+    def _log(text, *args):
         if text.strip():
             logger.info(text.strip())
 
+    logger = getLogger(profile, 'updater')
     setLogger(_log)
 
     components = [
@@ -145,8 +140,8 @@ def _writeConfig():
         fp.write(MPCHC_INI)
 
 
-def update():
-    if _updateComponents():
+def update(profile):
+    if _updateComponents(profile):
         _patchManifest()
         _writeConfig()
 

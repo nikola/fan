@@ -249,7 +249,7 @@ $LAB
         $('#boom-detail-watch-trailer').data('boom.type', 'trailer');
 
         $.get(
-            'https://www.youtube.com/iframe_api'
+            'http://www.youtube.com/iframe_api'
           , null
           , function () {
 

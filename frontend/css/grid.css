@@ -170,6 +170,7 @@
 
 .boom-movie-grid-info-overlay-title {
     color: white; background-color: black;
+    text-shadow: 2px 2px 1px rgb(0, 0, 0);
 
     text-align: center;
     font-size: 16px;
@@ -191,8 +192,10 @@
 
     position: absolute;
     top: 0; right: 0; bottom: 0; left: 0;
-    text-align: center;
+
     background: rgba(0, 0, 0, 0.5);
+
+    text-align: center;
     }
 
 .boom-movie-grid-info-overlay-text-additional {
@@ -202,7 +205,7 @@
     line-height: 24px;
     margin-top: 8px;
 
-    text-shadow: 2px 2px 1px rgba(32, 32, 32, 0.9);
+    text-shadow: 2px 2px 1px rgb(0, 0, 0);
     text-align: center;
 
     position: relative;
@@ -224,7 +227,7 @@
 
 .active .boom-movie-grid-info-overlay-text {
     visibility: visible;
-    opacity: 0.75;
+    opacity: 0.9;
     }
 
 .active .boom-movie-grid-info-overlay-title, .active .boom-movie-grid-info-overlay-text-additional {

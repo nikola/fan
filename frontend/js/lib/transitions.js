@@ -200,34 +200,6 @@ ka.transition.compilation = {to: {
         });
     }
 
-  , detail: function () {
-        ka.state.actualScreenMode = 'grid-compilation';
-        ka.state.view = 'limbo';
-
-        ka.lib.grid.snapshotMovieLookups();
-
-        var movieObj = ka.lib.getVariantFromGridFocus()[ka.state.currentCompilationFocusIndex];
-
-        ka.state.lastGridMovieId = movieObj.id;
-
-        ka.lib.updateDetailPage(movieObj, false, true); /* refresh backdrop, too, and use the non-collection title */
-        ka.lib.updateDetailButtonSelection();
-
-        ka.state.actualScreenMode = null;
-
-        $('#boom-movie-detail').velocity('fadeIn', {
-            duration: 0
-          , complete: function () {
-                $('#boom-compilation-container, #boom-compilation-focus, #boom-movie-detail').velocity({translateZ: 0, left: '-=1920'}, {
-                    duration: ka.settings.durationLong
-                  , complete: function () {
-                        ka.state.view = 'detail';
-                    }
-                });
-            }
-        });
-    }
-
 }};
 
 

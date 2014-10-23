@@ -246,75 +246,6 @@ ka.lib.browser = {
 };
 
 
-ka.lib.updateDetailPage = function (movie, skipBackdropUpdate, noCollection) {
-    if (!movie) {
-        return;
-    }
-
-    $('#boom-movie-detail').data('boom.id', movie.id);
-
-    /*
-    if (!movie.streamless) {
-        ka.state.currentDetailButton = 'play';
-    } else if (movie.trailer) {
-        ka.state.currentDetailButton = 'trailer';
-    } else {
-        ka.state.currentDetailButton = 'details';
-    }
-
-    $('#boom-movie-detail .boom-button').data('boom.select-color', movie.primaryPosterColor || '000000');
-
-    $('#boom-detail-release span').text(movie.releaseYear);
-    $('#boom-detail-runtime span').text(movie.runtime);
-    $('#boom-detail-rating span').text((movie.rating) ? (movie.rating / 10) : '?');
-    $('#boom-movie-detail-title').text(ka.lib.getLocalizedTitle(movie, false, noCollection));
-    $('#boom-movie-detail-description').text(movie.storyline);
-
-    $('#boom-movie-detail-play-button').css('display', (movie.streamless) ? 'none' : 'inline-block');
-    $('#boom-movie-detail-trailer-button').css('display', (movie.trailer) ? 'inline-block' : 'none');
-
-    var poster = $('#boom-movie-detail-top img')
-    if (poster.data('boom.ikeyBackdrop') != movie.uuid) {
-        if (!skipBackdropUpdate) {
-            $('#boom-movie-detail').css('backgroundImage', 'none');
-        }
-
-        poster.css('visibility', 'hidden').data({'boom.isLoading': true, 'boom.keyBackdrop': movie.keyBackdrop})
-            .on('load', function () {
-                if (poster.data('boom.isLoading')) {
-                    poster.data('boom.isLoading', false).css('visibility', 'visible').off();
-                    if (!skipBackdropUpdate) {
-                        $('#boom-movie-detail').css('backgroundImage', 'url(/movie/backdrop/' + poster.data('boom.keyBackdrop') + '.jpg)');
-                    }
-                }
-            })
-            .attr('src', '/movie/poster/' + movie.keyPoster + '-300.image');
-    }
-    */
-
-};
-
-
-ka.lib.updateDetailButtonSelection = function (skipAnimation) {
-    $('#boom-detail-button-group .boom-active').removeClass('boom-active')
-        .css('backgroundColor', 'transparent');
-
-    var button = $('#boom-movie-detail-' + ka.state.currentDetailButton + '-button');
-    button.addClass('boom-active')
-        .css('backgroundColor', '#' + button.data('boom.select-color'));
-
-    if (!skipAnimation) {
-        if (ka.state.currentDetailButton == 'details') {
-            $('#boom-movie-detail-shade').velocity({translateZ: 0, opacity: 0.75}, {duration: ka.settings.durationNormal});
-            $('#boom-movie-detail-description').velocity('transition.expandIn', {duration: ka.settings.durationNormal, display: 'flex'});
-        } else {
-            $('#boom-movie-detail-shade').velocity({translateZ: 0, opacity: 0}, ka.settings.durationNormal);
-            $('#boom-movie-detail-description').velocity('transition.expandOut', ka.settings.durationNormal);
-        }
-    }
-};
-
-
 ka.lib.startTrailerPlayer = function (id) {
     ka.state.movieTrailerPlayer.loadVideoById({
         videoId: id
@@ -450,25 +381,13 @@ ka.lib._updateDetailBrowserInfo = function (movieObj) {
     $('#boom-detail-title').text(title);
     $('#boom-detail-collection').html(collectionName || '&nbsp;');
 
-    if (rating.length == 4) {
+    if (rating.length == 4 && movieObj.rating) {
         rating = rating.replace('/', '.0/');
     }
     $('#boom-detail-release').text(movieObj.releaseYear);
     $('#boom-detail-rating').text(rating);
     $('#boom-detail-runtime').text(movieObj.runtime + ' min');
     $('#boom-detail-genres').text(movieObj.genres || '');
-
-    /*
-    if (ka.lib.browser.isExpanded() && !collectionName) {
-        $('#boom-detail-collection').text(movieObj.genres || '');
-        $('#boom-detail-genres').text('');
-    } else {
-        $('#boom-detail-collection').text(collectionName);
-        $('#boom-detail-genres').text(movieObj.genres || '');
-    }
-    */
-
-
     $('#boom-detail-storyline').text(movieObj.storyline);
 };
 
@@ -491,7 +410,7 @@ ka.lib.moveDetailBrowserLeft = function () {
                 ka.lib._rotateLargePoster(snapshot[currentPosterIndex - 1], 0);
             }
 
-            ka.lib._triggerBrowserUpdate(snapshot[currentPosterIndex - 1]);
+            ka.lib.updateDetailBrowserInfo(snapshot[currentPosterIndex - 1], true);
             ka.lib._moveDetailBrowserFocus(posters.eq(column + 1), posters.eq(column), '-=160', isPosterGridOffscreen);
             ka.state.currentDetailBrowserPosterColumn -= 1;
         }, ka.settings.durationUltraShort);
@@ -516,7 +435,7 @@ ka.lib.moveDetailBrowserLeft = function () {
                 ka.lib._rotateLargePoster(snapshot[firstPosterIndex + 1], 0);
             }
 
-            ka.lib._triggerBrowserUpdate(snapshot[firstPosterIndex + 1]);
+            ka.lib.updateDetailBrowserInfo(snapshot[firstPosterIndex + 1], true);
             ka.lib._animatePosterMove(
                  ka.lib._addBrowserGridDummy()
               , {translateZ: 0, width: 150, marginLeft: 10}
@@ -548,7 +467,7 @@ ka.lib.moveDetailBrowserRight = function () {
                 ka.lib._rotateLargePoster(snapshot[currentPosterIndex + 1], 1);
             }
 
-            ka.lib._triggerBrowserUpdate(snapshot[currentPosterIndex + 1]);
+            ka.lib.updateDetailBrowserInfo(snapshot[currentPosterIndex + 1], true);
             ka.lib._moveDetailBrowserFocus(posters.eq(column + 1), posters.eq(column + 2), '+=160', isPosterGridOffscreen);
             ka.state.currentDetailBrowserPosterColumn += 1;
         }, ka.settings.durationUltraShort);
@@ -564,7 +483,7 @@ ka.lib.moveDetailBrowserRight = function () {
                 ka.lib._rotateLargePoster(snapshot[lastPosterIndex - 1], 1);
             }
 
-            ka.lib._triggerBrowserUpdate(snapshot[lastPosterIndex - 1]);
+            ka.lib.updateDetailBrowserInfo(snapshot[lastPosterIndex - 1], true);
             ka.lib._animatePosterMove(
                 posters.eq(0)
               , {translateZ: 0, width: 0, marginLeft: 0}
@@ -617,13 +536,6 @@ ka.lib._animatePosterMove = function (animateElement, animateProperties, removeE
                ka.state.view = 'detail';
             }
     }});
-};
-
-
-ka.lib._triggerBrowserUpdate = function (movieObj) {
-    ka.lib.updateDetailBrowserInfo(movieObj, true);
-
-    /* $('#boom-movie-detail-browser-buttons li.boom-active').velocity({backgroundColor: '#' + (movieObj.primaryPosterColor || '000000')}, ka.settings.durationNormal); */
 };
 
 
@@ -754,7 +666,7 @@ ka.lib.toggleAvailableStreams = function () {
 
                         for (var version, index = 0; version = versions[index]; index++) {
                             $('<div>', {
-                                text: 'Play movie: ' + version[0] + ''
+                                text: version[0]
                               , class: 'boom-button'
                               , data: {
                                     'boom.stream': version[1]

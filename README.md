@@ -1,6 +1,6 @@
 ### fan
 
-A movie compilation and playback app for Windows. Fast. Lean. No weather widget.
+A movie compilation and playback app for Windows. Fast. Lean. No weather widget. [See it in action!]
 
 **Key features:**
 
@@ -60,6 +60,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+[See it in action!]:https://www.youtube.com/watch?v=d78GJJeES3c
 [GPL v2]:http://www.gnu.org/licenses/gpl-2.0.html
 [The Movie Database (TMDb)]:http://www.themoviedb.org/
 [MPC-HC]:http://mpc-hc.org/

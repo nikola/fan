@@ -430,18 +430,9 @@ ka.lib.updateMovieGridOnAdd = function (isImmediateUpdate) {
     } else if (ka.state.view != 'limbo' && (ka.state.hasDeferredGridUpdate || isImmediateUpdate)) {
         ka.state.hasDeferredGridUpdate = false;
 
-        /* if (ka.state.currentCompilationPosterCount == 0 && (ka.state.view == 'detail' || ka.state.view == 'detail-browser' || ka.state.view == 'play:movie' || ka.state.view == 'play:trailer')) {
-            ka.lib.updateMovieGridRefocused(true, ka.lib.unoccludeMovieGrid);
-
-            ka.lib.occludeMovieGrid();
-
-            var currentLeftPos = parseInt($('#boom-grid-focus').css('left'));
-            if (currentLeftPos > 0 && currentLeftPos < 1920) {
-                $('#boom-grid-focus').velocity({left: currentLeftPos - 1920}, {duration: 0, display: 'none'});
-            }
-        } else */ if (ka.state.view == 'config') {
+        if (ka.state.view == 'config') {
             ka.lib.updateDesaturatedGrid();
-        } else if (ka.state.view == 'grid') {
+        } else if (ka.state.view != 'grid-compilation') {
             ka.lib.recalcMovieGrid();
             ka.lib.updateMovieGridOnChange();
         }

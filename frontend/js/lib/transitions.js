@@ -222,9 +222,6 @@ ka.transition.detail = {to: {
 
             ka.lib.grid.unocclude();
 
-            ka.lib.recalcMovieGrid();
-            ka.lib.updateMovieGridOnChange();
-
             ka.lib.recalcPositionById(currentDetailMovieId);
             ka.lib.repositionMovieGrid();
             ka.lib.repositionMovieFocus(true); /* offscreen */

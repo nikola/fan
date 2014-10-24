@@ -271,12 +271,6 @@ window.onerror = function (message, filename, lineno, colno, error) {
 };
 
 
-window.history.pushState(null, null, 'c7b4165ce062400e90f943066564582a');
-window.onpopstate = function () {
-    window.history.pushState(null, null, 'c7b4165ce062400e90f943066564582a');
-};
-
-
 $LAB.setGlobalDefaults({
     UseLocalXHR: true
   , AlwaysPreserveOrder: true

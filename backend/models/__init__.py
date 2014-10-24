@@ -269,13 +269,14 @@ class StreamManager(object):
             else:
                 containers = []
                 for stream in movie.streams:
-                    containers.append({
-                        'stream': stream.id,
-                        'format': stream.format,
-                        'space': stream.space[::-1],
-                        'resolution': stream.resolution,
-                        'edit': stream.edit,
-                    })
+                    if os.path.exists(stream.location):
+                        containers.append({
+                            'stream': stream.id,
+                            'format': stream.format,
+                            'space': stream.space[::-1],
+                            'resolution': stream.resolution,
+                            'edit': stream.edit,
+                        })
 
                 containers = sorted(containers, key=itemgetter('resolution'))
 

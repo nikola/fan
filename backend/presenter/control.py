@@ -32,6 +32,7 @@ from settings import DEBUG, ASSETS_PATH, APP_STORAGE_PATH
 from settings.presenter import *
 from presenter.hooks import ClientHandler
 from utils.logs import getLogger
+from utils.win32 import getColorBrush
 
 
 shutdownAll = None
@@ -94,7 +95,7 @@ def start(callback, initialPage, profile, *args):
     wndclass.hInstance = win32api.GetModuleHandle(None)
     wndclass.lpszClassName = className
     wndclass.style = win32con.CS_NOCLOSE | win32con.CS_VREDRAW | win32con.CS_HREDRAW
-    wndclass.hbrBackground = win32gui.GetStockObject(win32con.BLACK_BRUSH)
+    wndclass.hbrBackground = getColorBrush(0, 0, 0) # win32gui.GetStockObject(win32con.BLACK_BRUSH)
     wndclass.hCursor = win32gui.SetCursor(None)
     wndclass.lpfnWndProc = {
         win32con.WM_CLOSE: CloseWindow,

@@ -103,7 +103,7 @@ ka.lib.grid = {
 };
 
 
-ka.lib.onPosterLoaded = function () {
+ka.lib.decreasePosterCounter = function () {
     if (ka.state.isProcessingInitialItems) {
         ka.state.processingInitialItemsCount -= 1;
 
@@ -111,7 +111,7 @@ ka.lib.onPosterLoaded = function () {
             ka.state.isProcessingInitialItems = false;
             ka.state.processingInitialItemsCount = null;
 
-            onPostersLoaded();
+            onAllPostersLoaded();
         }
     }
 };
@@ -127,11 +127,11 @@ ka.lib.hideBrokenPoster = function () {
 
     $(this).hide();
 
-    ka.lib.onPosterLoaded();
+    ka.lib.decreasePosterCounter();
 };
 
 
-ka.lib.setPrimaryPosterColor = function () {
+ka.lib.onPosterLoaded = function () {
     var gridItem = $(this).closest('.boom-movie-grid-item'),
         id = gridItem.data('boom.id');
 
@@ -161,7 +161,7 @@ ka.lib.setPrimaryPosterColor = function () {
         delete ka.state.setOfUnknownPosters[id];
     }
 
-    ka.lib.onPosterLoaded();
+    ka.lib.decreasePosterCounter();
 };
 
 
@@ -451,7 +451,7 @@ ka.lib.renderMovieGridCell = function (movie, operation, context) {
               , 'boom-poster-' + movie.id
               , 200, 300
               , 'movie'
-              , ka.lib.setPrimaryPosterColor
+              , ka.lib.onPosterLoaded
               , ka.lib.hideBrokenPoster
             );
         }

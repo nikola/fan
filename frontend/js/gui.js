@@ -188,14 +188,14 @@ function onBackendReady() {
                 ka.lib.recalcMovieGrid();
                 ka.lib.updateMovieGridOnChange();
             } else {
-                onPostersLoaded();
+                onAllPostersLoaded();
             }
         }
     });
 }
 
 
-function onPostersLoaded() {
+function onAllPostersLoaded() {
     window.top.postMessage('', location.protocol + '//' + location.host);
 }
 

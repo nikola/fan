@@ -112,11 +112,13 @@ function onPageLoaded() {
     ka.state.socketDispatcher = new ka.lib.WebSocketDispatcher(url);
 
     ka.state.socketDispatcher.bind('receive:movie:item', function (movie) {
-        ka.state.setOfUnknownPosters[movie.id] = true;
+        if (!(movie.id in ka.data.byId)) {
+            ka.state.setOfUnknownPosters[movie.id] = true;
 
-        ka.lib.addMovie(movie);
+            ka.lib.addMovie(movie);
 
-        ka.lib.updateMovieGridOnAdd(true); /* immediate mode */
+            ka.lib.updateMovieGridOnAdd(true); /* immediate mode */
+        }
     });
 
     ka.state.socketDispatcher.bind('player:update:complete', function () {

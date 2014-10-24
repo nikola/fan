@@ -202,7 +202,7 @@ ka.lib.browser = {
             clearTimeout(ka.state.uncachedBackdropDelayTimer);
             $('#boom-movie-detail-poster-background').velocity('stop');
 
-            $('#boom-movie-detail-poster-foreground').velocity({translateZ: 0, opacity: 1}, {duration: 360, complete: function () {
+            $('#boom-movie-detail-poster-foreground').velocity({translateZ: 0, opacity: 1}, {duration: ka.settings.durationNormal, complete: function () {
                 $('#boom-movie-detail').css('backgroundImage', 'url(' + $(this).attr('src') + ')');
 
                 $('#boom-movie-detail-poster-background')

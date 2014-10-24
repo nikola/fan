@@ -348,13 +348,13 @@ ka.lib.populateDetailBrowserGrid = function () {
     } while (++index < end);
 
     /* Pre-cache previous/next posters. */
-    var lookBehindIndex = index - 3, lookAheadIndex = index + 3;
+    /* var lookBehindIndex = index - 3, lookAheadIndex = index + 3;
     if (lookBehindIndex > -1) {
         new Image().src = '/movie/poster/' + movieList[lookBehindIndex].keyPoster + '-150.image';
     }
     if (lookAheadIndex < movieList.length) {
         new Image().src = '/movie/poster/' + movieList[lookAheadIndex].keyPoster + '-150.image';
-    }
+    } */
 
     return focused;
 };

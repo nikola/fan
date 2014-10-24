@@ -37,7 +37,7 @@ from settings import DEBUG
 from settings import APP_STORAGE_PATH, STATIC_PATH, SERVER_PORT
 from orchestrator.urls import module as appModule
 from orchestrator.pubsub import PubSub
-from downloader.images import processBacklogEntry
+from downloader.images import processBacklogEntry, downloadArtwork
 from identifier import getStreamRecords, getFixedRecords, identifyMovieByTitleYear, getShorthandFromFilename
 from utils.config import processCurrentUserConfig
 from utils.net import deleteResponseCache
@@ -79,7 +79,6 @@ def _getMovieRecordFromLocation(profile, streamLocation, basedataFromStream, bas
             closing(open(os.path.join(APP_STORAGE_PATH, 'backlog', imageType.lower() + 's', movieRecord['key' + imageType]), 'w+'))
             processCallback()
             del movieRecord['url' + imageType]
-        processBacklogEntry(profile, 'backdrop', movieRecord.get('keyBackdrop'), processCallback)
 
     return movieRecord
 
@@ -241,6 +240,9 @@ def _startOrchestrator(profile, queue):
                         else:
                             if movieRecord is None:
                                 logger.warning('Could not identify file: %s' % streamLocation)
+                            else:
+                                processBacklogEntry(profile, 'backdrop', movieRecord.get('keyBackdrop'), _processRequests)
+                                downloadArtwork(profile, '%s%s/%s.jpg' % (appModule.imageBaseUrl,  appModule.imageClosestSize, movieRecord.get('keyPoster')), 'poster@draft', movieRecord.get('keyPoster'), _processRequests)
 
                             version = getShorthandFromFilename(streamLocation, basedataFromStream.get('year'))
                             _processRequests()

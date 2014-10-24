@@ -42,7 +42,7 @@ ka.lib.executeMenuSelection = function () {
     } else if (id == 'boom-config-button-change-import') {
         ka.state.hotkeyListener.reset();
 
-        $('#boom-menu, #boom-movie-grid-container').velocity('fadeOut', {duration: 360, complete: function () {
+        $('#boom-menu, #boom-movie-grid-container').velocity('fadeOut', {duration: ka.settings.durationNormal, complete: function () {
             window.top.location.href = '/configure.html#return';
         }});
     } else if (id == 'boom-config-button-show-credits') {

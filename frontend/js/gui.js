@@ -101,6 +101,7 @@ ka.state = {
 
   , setOfKnownPosters: {}
   , setOfUnknownPosters: {}
+  , isPosterScaled: {}
 };
 
 
@@ -134,6 +135,7 @@ function onPageLoaded() {
 
     ka.state.socketDispatcher.bind('movie:poster:refresh', function (id) {
         $(".boom-movie-grid-image[src^='/movie/poster/" + id + "']").each(function () {
+            /* TODO: invalidate ka.cache.poster items and set ka.state.isPosterCached to true */
             $(this).attr('src', $(this).attr('src') + '#' + new Date().getTime());
         });
     });

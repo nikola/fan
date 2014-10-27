@@ -133,14 +133,16 @@ ka.lib.hideBrokenPoster = function () {
 
 ka.lib.onPosterLoaded = function () {
     var gridItem = $(this).closest('.boom-movie-grid-item'),
-        id = gridItem.data('boom.id');
+        id = gridItem.data('boom.id'),
+        image = $(this).get(0);
+
+    ka.state.isPosterScaled[$(this).data('boom.key')] = Boolean(image.naturalWidth == 200);
 
     if ('primaryPosterColor' in ka.data.byId[id] && !!ka.data.byId[id].primaryPosterColor) {
         /*  Weird bug:
          *  Trigger full render of grid by painting every single poster on canvas.
          */
-        var image = $(this).get(0),
-            context = ka.state.canvasContext;
+        var context = ka.state.canvasContext;
 
         context.canvas.width = image.naturalWidth;
         context.canvas.height = image.naturalHeight;
@@ -148,7 +150,7 @@ ka.lib.onPosterLoaded = function () {
 
         gridItem.find('.boom-movie-grid-info-overlay-title').css('backgroundColor', '#' + ka.data.byId[id].primaryPosterColor);
     } else {
-        var pixelArray = ka.lib.getPixelsFromImage($(this));
+        var pixelArray = ka.lib.getPixelsFromImage(image);
         pixelArray.unshift(id);
         ka.state.imagePosterPixelArrayBacklog.push(pixelArray);
 
@@ -495,6 +497,7 @@ ka.lib.renderMovieObject = function (movieObj, movieId, posterId, posterWidth, p
         .find('img')
             .error(onError)
             .on('load', onLoaded)
+            .data('boom.key', movieObj.keyPoster)
             .attr('src', '/movie/poster/' + movieObj.keyPoster + '-' + posterWidth + '.image')
         .end();
 };

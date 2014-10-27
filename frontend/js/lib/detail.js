@@ -126,7 +126,7 @@ ka.lib.browser = {
       , setSource: function (key) {
             $('#boom-detail-large-poster img')
                 .data('boom.isLoaded', false)
-                .attr('src', '/movie/poster/' + key + '-300.image');
+                .attr('src', '/movie/poster/' + key + '-' + (ka.state.isPosterScaled[key] ? 300 : 200) + '.image');
         }
 
       , onLoaded: function () {
@@ -284,7 +284,7 @@ ka.lib._addBrowserGridImage = function (keyPoster, index, unselected) {
         return ka.cache.smallBrowserPosterByKey[keyPoster].data('boom.index', index).css(styles).appendTo('#boom-detail-browser');
     } else {
         return $('<img>', {
-            src: '/movie/poster/' + keyPoster + '-150.image'
+            src: '/movie/poster/' + keyPoster + '-' + (ka.state.isPosterScaled[keyPoster] ? 150 : 200) + '.image'
           , width: 150
           , height: 225
           , data: {'boom.index': index}
@@ -350,10 +350,12 @@ ka.lib.populateDetailBrowserGrid = function () {
     /* Pre-cache previous/next posters. */
     /* var lookBehindIndex = index - 3, lookAheadIndex = index + 3;
     if (lookBehindIndex > -1) {
-        new Image().src = '/movie/poster/' + movieList[lookBehindIndex].keyPoster + '-150.image';
+        var lookBehindKey = movieList[lookBehindIndex].keyPoster;
+        new Image().src = '/movie/poster/' + lookBehindKey + '-' + (ka.state.isPosterScaled[lookBehindKey] ? 150 : 200) + '.image';
     }
     if (lookAheadIndex < movieList.length) {
-        new Image().src = '/movie/poster/' + movieList[lookAheadIndex].keyPoster + '-150.image';
+        var lookaAheadKey = movieList[lookAheadIndex].keyPoster;
+        new Image().src = '/movie/poster/' + lookBehindKey + '-' + (ka.state.isPosterScaled[lookaAheadKey] ? 150 : 200) + '.image';
     } */
 
     return focused;
@@ -425,7 +427,7 @@ ka.lib.moveDetailBrowserLeft = function () {
                     .data('boom.index', firstPosterIndex - 1)
             );
         } else {
-            posters.eq(0).attr('src', '/movie/poster/' + keyPoster + '-150.image').data('boom.index', firstPosterIndex - 1);
+            posters.eq(0).attr('src', '/movie/poster/' + keyPoster + '-' + (ka.state.isPosterScaled[keyPoster] ? 150 : 200) + '.image').data('boom.index', firstPosterIndex - 1);
         }
 
         ka.lib.browser.backdrop.loadPessimistic(snapshot[currentPosterIndex - 1]);
@@ -580,7 +582,7 @@ ka.lib._rotateLargePoster = function (movieObj, direction) {
                     .css('webkitTransform', 'rotateY(' + startAngleNew + 'deg) translateZ(150px) scale(0.9225)');
     } else {
         image = $('<img>', {
-            src: '/movie/poster/' + movieObj.keyPoster + '-300.image'
+            src: '/movie/poster/' + movieObj.keyPoster + '-' + (ka.state.isPosterScaled[movieObj.keyPoster] ? 300 : 200) + '.image'
           , css: {
                 backgroundColor: '#' + (movieObj.primaryPosterColor || '000000')
               , webkitTransform: 'rotateY(' + startAngleNew + 'deg) translateZ(150px) scale(0.9225)'

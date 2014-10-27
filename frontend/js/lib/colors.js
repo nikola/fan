@@ -35,9 +35,8 @@ ka.lib.getLuminance = function (color) {
 };
 
 
-ka.lib.getPixelsFromImage = function (element) {
-    var image = element.get(0),
-        context = ka.state.canvasContext;
+ka.lib.getPixelsFromImage = function (image) {
+    var context = ka.state.canvasContext;
 
     context.canvas.width = image.naturalWidth;
     context.canvas.height = image.naturalHeight;

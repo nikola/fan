@@ -58,6 +58,8 @@ def _startDownloader(profile, queue):
             else:
                 queue.task_done()
                 queue.put(command)
+
+            time.sleep(0)
         except Empty:
             if isIdle:
                 time.sleep(5)
@@ -65,27 +67,33 @@ def _startDownloader(profile, queue):
                 time.sleep(1)
             else:
                 missingBackdrop = getBacklogEntry('backdrop')
+                time.sleep(0)
                 if missingBackdrop is not None:
                     processBacklogEntry(profile, 'backdrop', missingBackdrop) # TODO: handle network errors
+                    time.sleep(0)
                 else:
                     unscaledPoster = getBacklogEntry('poster')
+                    time.sleep(0)
                     if unscaledPoster is not None:
-                        if processBacklogEntry(profile, 'poster', unscaledPoster):  # TODO: handle network errors
-                            try:
-                                command = queue.get_nowait()
-                            except Empty:
-                                queue.put('orchestrator:poster-refresh:%s' % unscaledPoster)
-                            else:
-                                if command == 'downloader:stop':
-                                    queue.task_done()
-                                    break
-                                else:
-                                    queue.put(command)
-                                    queue.task_done()
+                        processBacklogEntry(profile, 'poster', unscaledPoster)  # TODO: handle network errors
+                        time.sleep(0)
+                            # try:
+                            #     command = queue.get_nowait()
+                            # except Empty:
+                            #     queue.put('orchestrator:poster-refresh:%s' % unscaledPoster)
+                            # else:
+                            #     if command == 'downloader:stop':
+                            #         queue.task_done()
+                            #         break
+                            #     else:
+                            #         queue.put(command)
+                            #         queue.task_done()
                     else:
                         logger.debug('Assuming idle mode ...')
+                        time.sleep(0)
                         isIdle = True
                         queue.put('orchestrator:wake-up:downloader')
+                        time.sleep(0)
 
 
 def start(*args):

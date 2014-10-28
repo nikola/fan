@@ -203,15 +203,15 @@ def _startOrchestrator(profile, queue):
                 queue.task_done()
 
                 _processRequests()
-            elif command.startswith('orchestrator:poster-refresh:'):
-                if pubSubReference is not None and pubSubReference.connected:
-                    movieId = command.replace('orchestrator:poster-refresh:', '')
-                    pubSubReference.write(unicode('["movie:poster:refresh", "%s"]' % movieId))
-                    _processRequests()
+            # elif command.startswith('orchestrator:poster-refresh:'):
+            #     if pubSubReference is not None and pubSubReference.connected:
+            #         movieId = command.replace('orchestrator:poster-refresh:', '')
+            #         pubSubReference.write(unicode('["movie:poster:refresh", "%s"]' % movieId))
+            #         _processRequests()
 
-                queue.task_done()
+            #     queue.task_done()
 
-                _processRequests()
+            #     _processRequests()
             else:
                 queue.task_done()
                 queue.put(command)

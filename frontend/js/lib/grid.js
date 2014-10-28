@@ -192,10 +192,6 @@ ka.lib.onPrimaryColorsCalculated = function (evt) {
     metric.elapsed = Math.round(metric.end - metric.start);
     console.log('Primary poster color for "' + ka.lib.getLocalizedTitle(movieObj, false, true) + ' (' + movieObj.releaseYear + ')" calculated in: ' + metric.elapsed + ' msec');
 
-    if (ka.lib.getLocalizedTitle(movieObj, false, true) == 'A Fish Called Wanda') {
-
-    }
-
     $('#boom-movie-grid-item-' + id + ' .boom-movie-grid-info-overlay-title').css('backgroundColor', '#' + primaryColorHex);
     ka.data.byId[id].primaryPosterColor = primaryColorHex;
     ka.state.imagePosterPrimaryColorById[id] = primaryColorHex;

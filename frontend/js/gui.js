@@ -45,6 +45,14 @@ ka.cache = {
   , largeBrowserPosterByKey: {}
 };
 
+ka.workers = {
+    mmcq: {}
+};
+
+ka.metrics = {
+    primaryPosterColor: {}
+};
+
 ka.settings = {
     gridMaxRows: 3
   , gridMaxColumns: 7
@@ -227,7 +235,6 @@ $LAB.setGlobalDefaults({
 });
 
 $LAB
-    .script('thirdparty/mmcq.min.js')
     .script('thirdparty/jquery.min.js')
     .script('thirdparty/keypress.min.js')
     .script('thirdparty/velocity.min.js')
@@ -242,9 +249,12 @@ $LAB
     .script('lib/grid.js')
     .script('lib/detail.js')
     .script('lib/transitions.js')
+    .script('lib/workers.js')
     .script('lib/youtube.js')
     .script('lib/credits.js')
     .wait(function () {
+        ka.lib.setupWorkers();
+
         ka.state.maxConfigButton = $('#boom-menu .boom-button').length;
         ka.state.canvasContext = $('#boom-image-sampler-canvas').get(0).getContext('2d');
 

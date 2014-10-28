@@ -139,27 +139,30 @@ ka.lib.onPosterLoaded = function () {
 
     target.off('load');
 
-    /* console.log('load fired for poster ' + id); */
-
     ka.state.isPosterScaled[target.data('boom.key')] = Boolean(image.naturalWidth == 200);
 
+    var context = ka.state.canvasContext;
+    context.canvas.width = image.naturalWidth;
+    context.canvas.height = image.naturalHeight;
+    context.drawImage(image, 0, 0, image.naturalWidth, image.naturalHeight);
+
     if ('primaryPosterColor' in ka.data.byId[id] && !!ka.data.byId[id].primaryPosterColor) {
-        /*  Weird bug:
-         *  Trigger full render of grid by painting every single poster on canvas.
-         */
-        var context = ka.state.canvasContext;
-
-        context.canvas.width = image.naturalWidth;
-        context.canvas.height = image.naturalHeight;
-        context.drawImage(image, 0, 0, image.naturalWidth, image.naturalHeight);
-
+        /*  Trigger complete render step of grid by painting every poster on the canvas. */
         gridItem.find('.boom-movie-grid-info-overlay-title').css('backgroundColor', '#' + ka.data.byId[id].primaryPosterColor);
     } else {
-        var pixelArray = ka.lib.getPixelsFromImage(image);
-        pixelArray.unshift(id);
-        ka.state.imagePosterPixelArrayBacklog.push(pixelArray);
+        ka.metrics.primaryPosterColor[id] = {start: performance.now()};
 
-        setTimeout(ka.lib.processPixelArray, 0);
+        var pixels = context.getImageData(0, 0, image.naturalWidth, image.naturalHeight).data,
+            pixelCount = image.naturalWidth * image.naturalHeight,
+            pixelArray = new Uint8ClampedArray(pixelCount * 3),
+            sourceIndex = -1, targetIndex = 0;
+        while (++sourceIndex < pixelCount) {
+            pixelArray[targetIndex++] = pixels[sourceIndex++];
+            pixelArray[targetIndex++] = pixels[sourceIndex++];
+            pixelArray[targetIndex++] = pixels[sourceIndex++];
+        }
+
+        ka.workers.mmcq.postMessage({id: id, array: pixelArray.buffer}, [pixelArray.buffer]);
     }
 
     gridItem.find('.boom-movie-grid-info-overlay').removeClass('active');
@@ -172,19 +175,26 @@ ka.lib.onPosterLoaded = function () {
 };
 
 
-ka.lib.processPixelArray = function () {
-    if (!ka.state.imagePosterPixelArrayBacklog.length) return;
+ka.lib.onPrimaryColorsCalculated = function (evt) {
+    var id = evt.data.id, movieObj = ka.data.byId[id],
+        primaryColors = evt.data.palette.slice(0, 3),
+        luminanceAll = primaryColors.map(ka.lib.getLuminance);
 
-    var nextPixelArray = ka.state.imagePosterPixelArrayBacklog.shift(),
-        id = nextPixelArray.shift(),
-        primaryColors = MMCQ.quantize(nextPixelArray, 5),
-        colorLuminance = [
-            ka.lib.getLuminance(primaryColors[0])
-          , ka.lib.getLuminance(primaryColors[1])
-          , ka.lib.getLuminance(primaryColors[2])
-        ],
-        primaryColorRGB = primaryColors[colorLuminance.indexOf(Math.min.apply(Math, colorLuminance))],
+    /* Remove the darkest color from the palette. */
+    primaryColors.splice(luminanceAll.indexOf(Math.min.apply(Math, luminanceAll)), 1);
+
+    var luminanceFiltered = primaryColors.map(ka.lib.getLuminance),
+        primaryColorRGB = primaryColors[luminanceFiltered.indexOf(Math.min.apply(Math, luminanceFiltered))],
         primaryColorHex = ((1 << 24) + (primaryColorRGB[0] << 16) + (primaryColorRGB[1] << 8) + primaryColorRGB[2]).toString(16).slice(1);
+
+    var metric = ka.metrics.primaryPosterColor[id];
+    metric.end = performance.now();
+    metric.elapsed = Math.round(metric.end - metric.start);
+    console.log('Primary poster color for "' + ka.lib.getLocalizedTitle(movieObj, false, true) + ' (' + movieObj.releaseYear + ')" calculated in: ' + metric.elapsed + ' msec');
+
+    if (ka.lib.getLocalizedTitle(movieObj, false, true) == 'A Fish Called Wanda') {
+
+    }
 
     $('#boom-movie-grid-item-' + id + ' .boom-movie-grid-info-overlay-title').css('backgroundColor', '#' + primaryColorHex);
     ka.data.byId[id].primaryPosterColor = primaryColorHex;

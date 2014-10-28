@@ -52,7 +52,7 @@ ka.lib.getPixelsFromImage = function (image) {
         index += 38;
         block += 10;
         if (!(r > 250 && g > 250 && b > 250)) {
-            pixelArray.push([r, g, b]);
+            pixelArray.push(r, g, b);
         }
     }
     return pixelArray;

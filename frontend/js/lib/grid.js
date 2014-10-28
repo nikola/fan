@@ -172,7 +172,7 @@ ka.lib.processPixelArray = function () {
 
     var nextPixelArray = ka.state.imagePosterPixelArrayBacklog.shift(),
         id = nextPixelArray.shift(),
-        primaryColors = MMCQ.quantize(nextPixelArray, 5).palette(),
+        primaryColors = MMCQ.quantize(nextPixelArray, 5),
         colorLuminance = [
             ka.lib.getLuminance(primaryColors[0])
           , ka.lib.getLuminance(primaryColors[1])

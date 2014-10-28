@@ -132,11 +132,16 @@ ka.lib.hideBrokenPoster = function () {
 
 
 ka.lib.onPosterLoaded = function () {
-    var gridItem = $(this).closest('.boom-movie-grid-item'),
+    var target = $(this),
+        gridItem = target.closest('.boom-movie-grid-item'),
         id = gridItem.data('boom.id'),
-        image = $(this).get(0);
+        image = target.get(0);
 
-    ka.state.isPosterScaled[$(this).data('boom.key')] = Boolean(image.naturalWidth == 200);
+    target.off('load');
+
+    /* console.log('load fired for poster ' + id); */
+
+    ka.state.isPosterScaled[target.data('boom.key')] = Boolean(image.naturalWidth == 200);
 
     if ('primaryPosterColor' in ka.data.byId[id] && !!ka.data.byId[id].primaryPosterColor) {
         /*  Weird bug:

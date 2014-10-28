@@ -227,7 +227,7 @@ $LAB.setGlobalDefaults({
 });
 
 $LAB
-    .script('thirdparty/mmcq.js')
+    .script('thirdparty/mmcq.min.js')
     .script('thirdparty/jquery.min.js')
     .script('thirdparty/keypress.min.js')
     .script('thirdparty/velocity.min.js')

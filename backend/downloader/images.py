@@ -24,6 +24,7 @@ __copyright__ = 'Copyright (C) 2013-2014 Nikola Klaric'
 
 import os
 import time
+from socket import error as SocketError
 from subprocess import call
 from contextlib import closing
 
@@ -74,7 +75,7 @@ def downloadArtwork(profile, imageUrl, imageType, imageId, pollingCallback=None)
                         _yield()
                 duration = time.clock() - timeStart
                 _yield()
-        except requests.ConnectionError:
+        except (requests.ConnectionError, SocketError):
             logger.error('Could not connect to image host server at URL: %s', imageUrl)
             _yield()
             return False

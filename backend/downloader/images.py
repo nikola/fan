@@ -53,7 +53,10 @@ def downloadArtwork(profile, imageUrl, imageType, imageId, pollingCallback=None)
     incompleteImagePath = os.path.join(imageDirectory, imageType + '.incomplete')
     completeImagePath = os.path.join(imageDirectory, imageType + '.jpg')
 
-    if not (os.path.exists(completeImagePath) or os.path.exists(incompleteImagePath)):
+    if os.path.exists(incompleteImagePath):
+        os.remove(incompleteImagePath)
+
+    if not os.path.exists(completeImagePath):
         try:
             os.makedirs(imageDirectory)
         except OSError:

@@ -12,7 +12,7 @@ A movie compilation and playback app for Windows. Fast. Lean. No weather widget.
     * downscales poster artwork from the original full-resolution images at ultra-high quality (using EWA RobidouxSharp)
     * detects when a movie belongs to a collection, and displays collections as expandable grids for a very compact overview of vast movie libraries.
     * installs best-of-breed third-party software for high-quality playback: [MPC-HC], [madVR] and [LAV Filters] \(not bundled with _fan_\).
-    * calculates primary colors of poster images for artistic coherence in the UI (using a very fast, multithreaded [implementation] of [MMCQ])
+    * calculates primary colors of poster images for artistic coherence in the UI (using a very fast, multithreaded [implementation] of [MMCQ], <25ms for a 350x500px poster)
 
 **Latest release version of Windows binary:**  
 [fan &raquo; Releases &raquo; 0.13.0.0]

@@ -12,6 +12,7 @@ A movie compilation and playback app for Windows. Fast. Lean. No weather widget.
     * downscales poster artwork from the original full-resolution images at ultra-high quality (using EWA RobidouxSharp)
     * detects when a movie belongs to a collection, and displays collections as expandable grids for a very compact overview of vast movie libraries.
     * installs best-of-breed third-party software for high-quality playback: [MPC-HC], [madVR] and [LAV Filters] \(not bundled with _fan_\).
+    * calculates primary colors of poster images for artistic coherence in the UI (using a very fast, multithreaded [implementation] of [MMCQ])
 
 **Latest release version of Windows binary:**  
 [fan &raquo; Releases &raquo; 0.13.0.0]
@@ -66,6 +67,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 [MPC-HC]:http://mpc-hc.org/
 [LAV Filters]:https://github.com/Nevcairiel/LAVFilters
 [madVR]:http://madshi.net/
+[implementation]:https://github.com/nikola/MMCQ.js
+[MMCQ]:http://www.leptonica.com/papers/mediancut.pdf
 [fan &raquo; Releases &raquo; 0.13.0.0]:https://github.com/nikola/fan/releases/tag/v0.13.0.0
 [fan &raquo; Wiki]:https://github.com/nikola/fan/wiki
 [fan &raquo; Wiki &raquo; FAQ]:https://github.com/nikola/fan/wiki/FAQ

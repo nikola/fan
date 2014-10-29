@@ -197,8 +197,7 @@ ka.transition.compilation = {to: {
             ka.lib.grid.unocclude();
             ka.lib.updateMovieGridOnChange();
 
-            ka.lib.repositionMovieGrid();
-            ka.lib.repositionMovieFocus();
+            ka.lib.repositionGrid();
 
             ka.state.view = 'grid';
         });
@@ -229,8 +228,7 @@ ka.transition.detail = {to: {
             /* ka.lib.grid.unocclude(); */
 
             ka.lib.recalcPositionById(currentDetailMovieId);
-            ka.lib.repositionMovieGrid();
-            ka.lib.repositionMovieFocus(true); /* offscreen */
+            ka.lib.repositionGrid(true);  /* offscreen */
 
             /* ka.lib.grid.occlude(); */
         }

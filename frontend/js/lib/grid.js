@@ -1006,13 +1006,17 @@ ka.lib.isCompilationAtFocus = function () {
 };
 
 
-ka.lib.repositionMovieGrid = function () {
-    $('#boom-movie-grid-container')
-        .velocity({translateZ: 0, translateY: '-' + (ka.state.gridPage * 1080) + 'px'}, 0);
+ka.lib.recalcPositionById = function (id) {
+    var coordinates = ka.state.gridLookupCoordById[id];
+    ka.state.gridPage = Math.floor(coordinates[1] / ka.settings.gridMaxRows);
+    ka.state.gridFocusX = coordinates[0];
+    ka.state.gridFocusY = coordinates[1] % ka.settings.gridMaxRows;
 };
 
 
-ka.lib.repositionMovieFocus = function (offscreen) {
+ka.lib.repositionGrid = function (offscreen) {
+    $('#boom-movie-grid-container').velocity({translateZ: 0, translateY: '-' + (ka.state.gridPage * 1080) + 'px'}, 0);
+
     var top = 16 + 360 * ka.state.gridFocusY, left = 116 + 260 * ka.state.gridFocusX, display = 'block';
     if (offscreen) {
         left -= 1920;
@@ -1020,12 +1024,4 @@ ka.lib.repositionMovieFocus = function (offscreen) {
     }
 
     $('#boom-grid-focus').velocity({top: top, left: left}, {duration: 0, display: display});
-};
-
-
-ka.lib.recalcPositionById = function (id) {
-    var coordinates = ka.state.gridLookupCoordById[id];
-    ka.state.gridPage = Math.floor(coordinates[1] / ka.settings.gridMaxRows);
-    ka.state.gridFocusX = coordinates[0];
-    ka.state.gridFocusY = coordinates[1] % ka.settings.gridMaxRows;
 };

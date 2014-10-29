@@ -94,8 +94,7 @@ ka.lib.updateDesaturatedGrid = function () {
     ka.state.desaturationImageCache = {};
     ka.lib.updateMovieGridOnChange();
 
-    ka.lib.repositionMovieGrid();
-    ka.lib.repositionMovieFocus();
+    ka.lib.repositionGrid();
 
     $('#boom-grid-focus').velocity({translateZ: 0, left: '+=780'}, 0);
 };

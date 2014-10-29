@@ -272,24 +272,32 @@ ka.lib.closeTrailerPlayer = function () {
 };
 
 
-ka.lib._addBrowserGridImage = function (keyPoster, index, unselected) {
+ka.lib._addBrowserGridImage = function (movieObj, index, unselected) {
     var styles = {
-        webkitTransform: 'translate3d(0, 0, 0)'
+        webkitTransform: 'translateZ(0)'
       , webkitFilter: (unselected) ? 'saturate(0%) opacity(0.5)' : ''
       , width: 150
       , marginLeft: 10
     };
 
-    if (keyPoster in ka.cache.smallBrowserPosterByKey) {
-        return ka.cache.smallBrowserPosterByKey[keyPoster].data('boom.index', index).css(styles).appendTo('#boom-detail-browser');
+    if (movieObj.keyPoster in ka.cache.smallBrowserPosterByKey) {
+        return ka.cache.smallBrowserPosterByKey[movieObj.keyPoster].data('boom.index', index).css(styles).appendTo('#boom-detail-browser');
     } else {
-        return $('<img>', {
-            src: '/movie/poster/' + keyPoster + '-' + (ka.state.isPosterScaled[keyPoster] ? 150 : 200) + '.image'
-          , width: 150
-          , height: 225
-          , data: {'boom.index': index}
-          , css: styles
-        }).appendTo('#boom-detail-browser');
+        var gridPoster = $('#boom-poster-' + movieObj.id);
+
+        if (ka.state.isPosterScaled[movieObj.keyPoster] || gridPoster.size() == 0) {
+            return $('<img>', {
+                src: '/movie/poster/' + movieObj.keyPoster + '-150.image'
+              , width: 150
+              , height: 225
+              , data: {'boom.index': index}
+              , css: styles
+            }).appendTo('#boom-detail-browser');
+        } else {
+            return gridPoster.clone(false)
+                .removeAttr('id class').attr({width: 150, height: 225}).css(styles).data('boom.index', index)
+                .appendTo('#boom-detail-browser');
+        }
     }
 };
 
@@ -344,7 +352,7 @@ ka.lib.populateDetailBrowserGrid = function () {
     }
 
     do {
-        ka.lib._addBrowserGridImage(movieList[index].keyPoster, index, index != current);
+        ka.lib._addBrowserGridImage(movieList[index], index, index != current);
     } while (++index < end);
 
     /* Pre-cache previous/next posters. */
@@ -419,15 +427,29 @@ ka.lib.moveDetailBrowserLeft = function () {
     } else if (firstPosterIndex > 0) {
         ka.state.view = 'limbo';
 
-        var keyPoster = snapshot[firstPosterIndex - 1].keyPoster;
-        if (keyPoster in ka.cache.smallBrowserPosterByKey) {
+        var movieObj = snapshot[firstPosterIndex - 1],
+            styles = {
+                webkitTransform: 'translateZ(0)'
+              , webkitFilter: 'saturate(0%) opacity(0.5)'
+              , width: 150
+              , marginLeft: 10
+        };
+        if (movieObj.keyPoster in ka.cache.smallBrowserPosterByKey) {
             posters.eq(0).replaceWith(
-                ka.cache.smallBrowserPosterByKey[keyPoster]
-                    .css({width: 150, marginLeft: 10, webkitFilter: 'saturate(0%) opacity(0.5)'})
-                    .data('boom.index', firstPosterIndex - 1)
+                ka.cache.smallBrowserPosterByKey[movieObj.keyPoster].css(styles).data('boom.index', firstPosterIndex - 1)
             );
         } else {
-            posters.eq(0).attr('src', '/movie/poster/' + keyPoster + '-' + (ka.state.isPosterScaled[keyPoster] ? 150 : 200) + '.image').data('boom.index', firstPosterIndex - 1);
+            var gridPoster = $('#boom-poster-' + movieObj.id);
+
+            if (ka.state.isPosterScaled[movieObj.keyPoster] || gridPoster.size() == 0) {
+                posters.eq(0).attr('src', '/movie/poster/' + movieObj.keyPoster + '-150.image').data('boom.index', firstPosterIndex - 1);
+            } else {
+                posters.eq(0).replaceWith(
+                    gridPoster.clone(false)
+                        .removeAttr('id class').attr({width: 150, height: 225})
+                        .css(styles).data('boom.index', firstPosterIndex - 1)
+                );
+            }
         }
 
         ka.lib.browser.backdrop.loadPessimistic(snapshot[currentPosterIndex - 1]);
@@ -476,7 +498,7 @@ ka.lib.moveDetailBrowserRight = function () {
     } else if (posters.length == 6 && lastPosterIndex + 1 < snapshot.length) {
         ka.state.view = 'limbo';
 
-        ka.lib._addBrowserGridImage(snapshot[lastPosterIndex + 1].keyPoster, lastPosterIndex + 1, true);
+        ka.lib._addBrowserGridImage(snapshot[lastPosterIndex + 1], lastPosterIndex + 1, true);
 
         ka.lib.browser.backdrop.loadPessimistic(snapshot[lastPosterIndex - 1]);
 

@@ -165,7 +165,7 @@ ka.lib.onPosterLoaded = function () {
         ka.workers.mmcq.postMessage({id: id, array: pixelArray.buffer}, [pixelArray.buffer]);
     }
 
-    gridItem.find('.boom-movie-grid-info-overlay').removeClass('active');
+    /* gridItem.find('.boom-movie-grid-info-overlay').removeClass('active'); */
     ka.state.setOfKnownPosters[id] = true;
     if (id in ka.state.setOfUnknownPosters) {
         delete ka.state.setOfUnknownPosters[id];

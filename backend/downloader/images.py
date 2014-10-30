@@ -139,6 +139,7 @@ def processBacklogEntry(profile, artworkType, key, pollingCallback=None):
                          shell=True, **kwargs)
                     _yield()
         else:
-            pass # TODO: handle failure
+            closing(open(os.path.join(APP_STORAGE_PATH, 'backlog', artworkType + 's', key), 'w+'))
+            _yield()
 
     return result

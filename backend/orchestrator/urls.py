@@ -99,7 +99,7 @@ def getScaledPosterByKey(request, key, width):
 
         headers = {
             'Last-modified': getRfc1123Timestamp(fileTimestamp),
-            'Cache-Control': 'no-cache,max-age=0' if not imageIsScaled else 'must-revalidate, max-age=604800',
+            'Cache-Control': 'no-cache,max-age=0' if not imageIsScaled else 'must-revalidate,max-age=604800',
         }
 
         if cachedTimestamp < fileTimestamp:
@@ -140,7 +140,7 @@ def getBackdropByKey(request, key):
 
         headers = {
             'Last-modified': getRfc1123Timestamp(fileTimestamp),
-            'Cache-Control': 'must-revalidate, max-age=604800',
+            'Cache-Control': 'must-revalidate,max-age=604800',
         }
 
         if cachedTimestamp < fileTimestamp:

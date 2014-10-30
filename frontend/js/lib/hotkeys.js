@@ -89,7 +89,7 @@ ka.lib.handleKeypressUp = function () {
             ka.lib.updateMenuButtonSelection();
         }
     } else if (ka.state.view == 'detail') {
-        ka.lib.browser.setupExpansion();
+        ka.lib.browser.expandUp();
     } else if (ka.state.view == 'grid') {
         ka.lib.moveFocusUp();
     } else if (ka.state.view == 'grid-compilation') {

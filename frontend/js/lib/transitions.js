@@ -111,6 +111,8 @@ ka.transition.grid = {to: {
   , detail: function (movieObj, isCompilationSelected) {
         ka.state.view = 'limbo';
 
+        $('#boom-movie-detail').css('display', 'block');
+
         ka.lib.grid.snapshotMovieLookups();
 
         ka.state.lastGridMovieId = movieObj.id;
@@ -128,7 +130,9 @@ ka.transition.grid = {to: {
             ka.lib.grid.occlude();
         }
 
-        ka.lib.browser.show();
+        if (ka.lib.browser.isExpanded()) {
+            ka.lib.browser.poster.setSource(movieObj);
+        }
 
         var targetElements = (isCompilationSelected) ? $('#boom-compilation-container, #boom-compilation-focus, #boom-movie-detail') : $('#boom-movie-grid-container, #boom-grid-focus, #boom-movie-detail');
         targetElements.velocity({translateZ: 0, left: '-=1920'}, {
@@ -138,14 +142,7 @@ ka.transition.grid = {to: {
                     ka.lib.grid.unocclude();
                 }
 
-                if (isCompilationSelected) {
-
-                } else {
-                    ka.lib.grid.focus.hide();
-                }
-
                 if (ka.lib.browser.isExpanded()) {
-                    ka.lib.browser.poster.setSource(movieObj.keyPoster);
                     if (!movieObj.isBackdropCached) {
                             ka.lib.browser.backdrop.loadOptimistic(movieObj);
                         }
@@ -225,12 +222,8 @@ ka.transition.detail = {to: {
                 ka.lib.grid.unocclude();
             }
 
-            /* ka.lib.grid.unocclude(); */
-
             ka.lib.recalcPositionById(currentDetailMovieId);
             ka.lib.repositionGrid(true);  /* offscreen */
-
-            /* ka.lib.grid.occlude(); */
         }
 
         if (!hasOpenCompilation) {
@@ -265,9 +258,7 @@ ka.transition.detail = {to: {
                     $('#boom-detail-browser img').each(ka.lib._detachSmallBrowserPoster);
                 }});
 
-                if (ka.lib.browser.isExpanded()) {
-                    ka.lib.browser.poster.hide();
-                }
+                $('#boom-movie-detail').css('display', 'none');
 
                 if (hasOpenCompilation) {
                     ka.state.view = 'grid-compilation';
@@ -282,13 +273,12 @@ ka.transition.detail = {to: {
         ka.state.view = 'limbo';
 
         $('#boom-compilation-container, #boom-compilation-focus, #boom-movie-detail').velocity(
-            {translateZ: 0, left: '+=1920'},
-            {
+            {translateZ: 0, left: '+=1920'}, {
                 duration: ka.settings.durationLong
               , complete: function () {
-                $('#boom-movie-detail').velocity('fadeOut', 0);
+                    $('#boom-movie-detail').css('display', 'none');
 
-                ka.state.view = 'grid-compilation';
+                    ka.state.view = 'grid-compilation';
                 }
             }
         );

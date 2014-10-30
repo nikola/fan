@@ -270,6 +270,7 @@ ka.lib._addBrowserGridImage = function (movieObj, index, unselected) {
       , webkitFilter: (unselected) ? 'saturate(0%) opacity(0.5)' : ''
       , width: 150
       , marginLeft: 10
+      , backgroundColor: '#' + (movieObj.primaryPosterColor || '000000')
     };
 
     if (movieObj.keyPoster in ka.cache.smallBrowserPosterByKey) {
@@ -414,6 +415,7 @@ ka.lib.moveDetailBrowserLeft = function () {
               , webkitFilter: 'saturate(0%) opacity(0.5)'
               , width: 150
               , marginLeft: 10
+              , backgroundColor: '#' + (movieObj.primaryPosterColor || '000000')
         };
         if (movieObj.keyPoster in ka.cache.smallBrowserPosterByKey) {
             posters.eq(0).replaceWith(
@@ -423,7 +425,8 @@ ka.lib.moveDetailBrowserLeft = function () {
             var gridPoster = $('#boom-poster-' + movieObj.id);
 
             if (ka.state.isPosterScaled[movieObj.keyPoster] || gridPoster.size() == 0) {
-                posters.eq(0).attr('src', '/movie/poster/' + movieObj.keyPoster + '-150.image').data('boom.index', firstPosterIndex - 1);
+                posters.eq(0).attr('src', '/movie/poster/' + movieObj.keyPoster + '-150.image')
+                    .css(styles).data('boom.index', firstPosterIndex - 1);
             } else {
                 posters.eq(0).replaceWith(
                     gridPoster.clone(false)
@@ -597,7 +600,7 @@ ka.lib._rotateLargePoster = function (movieObj, direction) {
         } else {
             image = gridPoster.clone(false)
                 .removeAttr('id class').attr({width: 300, height: 450})
-                .css(styles)
+                .css(styles);
         }
     }
 

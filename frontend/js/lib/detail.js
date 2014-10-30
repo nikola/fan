@@ -154,10 +154,10 @@ ka.lib.browser = {
   , backdrop: {
 
         fadeIn: function (movieObj) {
-            var backdrops = $('.boom-backdrop').velocity('stop');
+            var backdrops = $('.boom-backdrop').velocity('stop'), size = backdrops.size();
 
             if (movieObj.keyBackdrop in ka.cache.backdropByKey) {
-                var size = backdrops.size(), backdrop;
+                var backdrop;
                 if (size) {
                     if (size > 1) {
                         ka.lib.browser.backdrop.detachAll(backdrops.slice(0, -1));
@@ -179,7 +179,31 @@ ka.lib.browser = {
                     }
                 });
                 if (!relocated) {
-                    console.log('Must be fetched.');
+                    if (size > 1) {
+                        ka.lib.browser.backdrop.detachAll(backdrops.slice(0, -1));
+                    }
+
+                    $('<img>', {
+                        class: 'boom-backdrop'
+                      , width: 1920
+                      , height: 1080
+                      , src: '/movie/backdrop/' + movieObj.keyBackdrop + '.jpg'
+                      , data: {
+                            'boom.key': movieObj.keyBackdrop
+                        }
+                      , css: {
+                            position: 'absolute'
+                          , left: 0
+                          , top: 0
+                          , opacity: 0
+                          , css: {
+                                webkitTransform: 'translateZ(0)'
+                            }
+                        }
+                      , load: function () {
+                            $(this).velocity({translateZ: 0, opacity: 1}, ka.settings.durationNormal);
+                        }
+                    }).insertAfter(backdrops.last());
                 }
             }
         }
@@ -655,40 +679,48 @@ ka.lib.toggleAvailableStreams = function () {
         $('#boom-detail-available-streams, #boom-detail-buttons-shade').velocity({height: height}, {duration: 0, complete: function () {
             $('#boom-detail-focus').velocity({translateZ: 0, opacity: 0}, ka.settings.durationShort);
 
-            $('#boom-detail-buttons-shade').css('display', 'block').velocity({translateZ: 0, opacity: 0.5}, {duration: ka.settings.durationShort, complete: function () {
-                $.getJSON(
-                    '/movie/' + movieObj.id + '/get-available-versions'
-                  , function (versions) {
-                        $('#boom-detail-available-streams .boom-button').slice(1).remove();
+            $('#boom-detail-buttons-shade').css('display', 'block').velocity({translateZ: 0, opacity: 0.5}, {
+                duration: ka.settings.durationShort
+              , complete: function () {
+                    $.getJSON(
+                        '/movie/' + movieObj.id + '/get-available-versions'
+                      , function (versions) {
+                            $('#boom-detail-available-streams .boom-button').slice(1).remove();
 
-                        for (var version, index = 0; version = versions[index]; index++) {
-                            $('<div>', {
-                                text: version[0]
-                              , class: 'boom-button'
-                              , data: {
-                                    'boom.stream': version[1]
-                                  , 'boom.color': '#' + movieObj.primaryPosterColor
-                                  , 'boom.type': 'stream'
+                            for (var version, index = 0; version = versions[index]; index++) {
+                                $('<div>', {
+                                    text: version[0]
+                                  , class: 'boom-button'
+                                  , data: {
+                                        'boom.stream': version[1]
+                                      , 'boom.color': '#' + movieObj.primaryPosterColor
+                                      , 'boom.type': 'stream'
+                                    }
+                                }).appendTo('#boom-detail-available-streams');
+                            }
+
+                            if (movieObj.trailer) {
+                                $('#boom-detail-watch-trailer').addClass('boom-active').css('display', 'block')
+                                    .data('boom.color', '#' + movieObj.primaryPosterColor);
+                            } else {
+                                $('#boom-detail-watch-trailer').removeClass('boom-active').css('display', 'none');
+                                $('#boom-detail-available-streams .boom-button:nth-child(2)').addClass('boom-active');
+                            }
+
+                            var selected = $('#boom-detail-available-streams .boom-active');
+                            selected.css('backgroundColor', selected.data('boom.color')).data('type');
+
+                            $('#boom-detail-available-streams').velocity('transition.expandIn', {
+                                display: 'flex'
+                              , duration: ka.settings.durationShort
+                              , complete: function () {
+                                    ka.state.view = 'select-stream';
                                 }
-                            }).appendTo('#boom-detail-available-streams');
+                            });
                         }
-
-                        if (movieObj.trailer) {
-                            $('#boom-detail-watch-trailer').addClass('boom-active').css('display', 'block').data('boom.color', '#' + movieObj.primaryPosterColor);
-                        } else {
-                            $('#boom-detail-watch-trailer').removeClass('boom-active').css('display', 'none');
-                            $('#boom-detail-available-streams .boom-button:nth-child(2)').addClass('boom-active');
-                        }
-
-                        var selected = $('#boom-detail-available-streams .boom-active');
-                        selected.css('backgroundColor', selected.data('boom.color')).data('type');
-
-                        $('#boom-detail-available-streams').velocity('transition.expandIn', {display: 'flex', duration: ka.settings.durationShort, complete: function () {
-                            ka.state.view = 'select-stream';
-                        }});
-                    }
-                );
-            }});
+                    );
+                }
+            });
         }});
     }
 };

@@ -133,13 +133,17 @@ ka.lib.hideBrokenPoster = function () {
 
 ka.lib.onPosterLoaded = function () {
     var target = $(this),
+        key = target.data('boom.key'),
         gridItem = target.closest('.boom-movie-grid-item'),
         id = gridItem.data('boom.id'),
-        image = target.get(0);
+        image = target.get(0),
+        isScaled = Boolean(image.naturalWidth == 200);
 
     target.off('load');
 
-    ka.state.isPosterScaled[target.data('boom.key')] = Boolean(image.naturalWidth == 200);
+    ka.state.isPosterScaled[key] = isScaled;
+    ka.cache.smallBrowserPosterByKey[key] = $('<img>', {width: 150, height: 225, src: '/movie/poster/' + key + '-' + (isScaled ? 150 : 200) + '.image'});
+    ka.cache.largeBrowserPosterByKey[key] = $('<img>', {width: 300, height: 450, src: '/movie/poster/' + key + '-' + (isScaled ? 300 : 200) + '.image'});
 
     var context = ka.state.canvasContext;
     context.canvas.width = image.naturalWidth;
@@ -496,9 +500,7 @@ ka.lib.renderMovieObject = function (movieObj, movieId, posterId, posterWidth, p
     return $(
         '<div id="' + movieId + '" class="boom-' + infix + '-grid-item boom-grid-item">'
           + '<div class="boom-movie-grid-info-overlay' + extraClass + '">'
-              /* + '<div class="boom-movie-grid-info-overlay-image">' */
               + '<img class="boom-movie-grid-image" id="' + posterId + '">'
-              /* + '</div>' */
               + '<div class="boom-movie-grid-info-overlay-text">'
                   + '<div class="boom-movie-grid-info-overlay-title">' + title + '</div>'
                   + '<div class="boom-movie-grid-info-overlay-text-additional">' + additional + ' minutes</div>'

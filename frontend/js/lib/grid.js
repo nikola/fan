@@ -133,17 +133,49 @@ ka.lib.hideBrokenPoster = function () {
 
 ka.lib.onPosterLoaded = function () {
     var target = $(this),
-        key = target.data('boom.key'),
         gridItem = target.closest('.boom-movie-grid-item'),
         id = gridItem.data('boom.id'),
+        movieObj = ka.data.byId[id],
         image = target.get(0),
         isScaled = Boolean(image.naturalWidth == 200);
 
     target.off('load');
 
-    ka.state.isPosterScaled[key] = isScaled;
-    ka.cache.smallBrowserPosterByKey[key] = $('<img>', {width: 150, height: 225, src: '/movie/poster/' + key + '-' + (isScaled ? 150 : 200) + '.image'});
-    ka.cache.largeBrowserPosterByKey[key] = $('<img>', {width: 300, height: 450, src: '/movie/poster/' + key + '-' + (isScaled ? 300 : 200) + '.image'});
+    ka.state.isPosterScaled[movieObj.keyPoster] = isScaled;
+    ka.cache.smallBrowserPosterByKey[movieObj.keyPoster] = $('<img>', {
+        width: 150
+      , height: 225
+      , src: '/movie/poster/' + movieObj.keyPoster + '-' + (isScaled ? 150 : 200) + '.image'
+      , css: {
+            webkitTransform: 'translateZ(0)'
+        }
+    });
+    ka.cache.largeBrowserPosterByKey[movieObj.keyPoster] = $('<img>', {
+        width: 300
+      , height: 450
+      , src: '/movie/poster/' + movieObj.keyPoster + '-' + (isScaled ? 300 : 200) + '.image'
+      , css: {
+            webkitTransform: 'translateZ(0)'
+        }
+    });
+    ka.cache.backdropByKey[movieObj.keyBackdrop] = $('<img>', {
+        class: 'boom-backdrop'
+      , width: 1920
+      , height: 1080
+      , src: '/movie/backdrop/' + movieObj.keyBackdrop + '.jpg'
+      , data: {
+            'boom.key': movieObj.keyBackdrop
+        }
+      , css: {
+            position: 'absolute'
+          , left: 0
+          , top: 0
+          , opacity: 0
+          , css: {
+                webkitTransform: 'translateZ(0)'
+            }
+        }
+    });
 
     var context = ka.state.canvasContext;
     context.canvas.width = image.naturalWidth;
@@ -408,7 +440,7 @@ ka.lib.updateMovieGridOnChange = function () {
                         && column < 4) {
                     if (ka.state.view == 'config') {
                         ka.state.desaturationImageCache[movie.id] = element;
-                        element.style.webkitTransform = 'translate3d(0, 0, 0)';
+                        element.style.webkitTransform = 'translateZ(0)';
                         element.style.webkitFilter = 'saturate(0%)';
                     }
                 } else {

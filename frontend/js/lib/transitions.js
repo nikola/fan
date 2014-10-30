@@ -119,13 +119,6 @@ ka.transition.grid = {to: {
 
         ka.lib.updateDetailBrowserInfo(movieObj, false);
 
-        ka.lib.browser.backdrop.init();
-        if (movieObj.isBackdropCached) {
-            ka.lib.browser.backdrop.setImmediate(movieObj);
-        } else {
-            ka.lib.browser.backdrop.clear();
-        }
-
         if (!isCompilationSelected) {
             ka.lib.grid.occlude();
         }
@@ -142,25 +135,17 @@ ka.transition.grid = {to: {
                     ka.lib.grid.unocclude();
                 }
 
-                if (ka.lib.browser.isExpanded()) {
-                    if (!movieObj.isBackdropCached) {
-                            ka.lib.browser.backdrop.loadOptimistic(movieObj);
-                        }
-                    ka.lib.browser.posters.fadeUp();
+                ka.lib.browser.backdrop.fadeIn(movieObj);
 
-                    ka.state.view = 'detail';
+                if (ka.lib.browser.isExpanded()) {
+                    ka.lib.browser.posters.hide();
                 } else {
                     ka.state.currentDetailBrowserPosterColumn = ka.lib.populateDetailBrowserGrid();
 
                     ka.lib.browser.focus.reposition();
-                    ka.lib.browser.posters.show(function () {
-                        if (!movieObj.isBackdropCached) {
-                            ka.lib.browser.backdrop.loadOptimistic(movieObj);
-                        }
-
-                        ka.state.view = 'detail';
-                    });
+                    ka.lib.browser.posters.show();
                 }
+                ka.state.view = 'detail';
             }
         });
     }
@@ -259,6 +244,8 @@ ka.transition.detail = {to: {
                 }});
 
                 $('#boom-movie-detail').css('display', 'none');
+
+                ka.lib.browser.backdrop.removeAll();
 
                 if (hasOpenCompilation) {
                     ka.state.view = 'grid-compilation';

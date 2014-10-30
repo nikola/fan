@@ -43,6 +43,7 @@ ka.data = {
 ka.cache = {
     smallBrowserPosterByKey: {}
   , largeBrowserPosterByKey: {}
+  , backdropByKey: {}
 };
 
 ka.workers = {
@@ -259,7 +260,6 @@ $LAB
         ka.state.maxConfigButton = $('#boom-menu .boom-button').length;
         ka.state.canvasContext = $('#boom-image-sampler-canvas').get(0).getContext('2d');
 
-        $('#boom-movie-detail-poster-foreground').on('load', ka.lib.browser.backdrop.onLoaded);
         $('#boom-detail-watch-trailer').data('boom.type', 'trailer');
 
         $.get(

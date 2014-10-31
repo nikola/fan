@@ -679,49 +679,61 @@ ka.lib.toggleAvailableStreams = function () {
         $('#boom-detail-available-streams, #boom-detail-buttons-shade').velocity({height: height}, {duration: 0, complete: function () {
             $('#boom-detail-focus').velocity({translateZ: 0, opacity: 0}, ka.settings.durationShort);
 
+            if (movieObj.streamless) {
+                ka.lib._updateAvailableStreams(movieObj);
+            }
             $('#boom-detail-buttons-shade').css('display', 'block').velocity({translateZ: 0, opacity: 0.5}, {
                 duration: ka.settings.durationShort
               , complete: function () {
-                    $.getJSON(
-                        '/movie/' + movieObj.id + '/get-available-versions'
-                      , function (versions) {
-                            $('#boom-detail-available-streams .boom-button').slice(1).remove();
-
-                            for (var version, index = 0; version = versions[index]; index++) {
-                                $('<div>', {
-                                    text: version[0]
-                                  , class: 'boom-button'
-                                  , data: {
-                                        'boom.stream': version[1]
-                                      , 'boom.color': '#' + movieObj.primaryPosterColor
-                                      , 'boom.type': 'stream'
-                                    }
-                                }).appendTo('#boom-detail-available-streams');
+                    if (!movieObj.streamless) {
+                        $.getJSON(
+                            '/movie/' + movieObj.id + '/get-available-versions'
+                          , function (versions) {
+                                ka.lib._updateAvailableStreams(movieObj, versions);
                             }
-
-                            if (movieObj.trailer) {
-                                $('#boom-detail-watch-trailer').addClass('boom-active').css('display', 'block')
-                                    .data('boom.color', '#' + movieObj.primaryPosterColor);
-                            } else {
-                                $('#boom-detail-watch-trailer').removeClass('boom-active').css('display', 'none');
-                                $('#boom-detail-available-streams .boom-button:nth-child(2)').addClass('boom-active');
-                            }
-
-                            var selected = $('#boom-detail-available-streams .boom-active');
-                            selected.css('backgroundColor', selected.data('boom.color')).data('type');
-
-                            $('#boom-detail-available-streams').velocity('transition.expandIn', {
-                                display: 'flex'
-                              , duration: ka.settings.durationShort
-                              , complete: function () {
-                                    ka.state.view = 'select-stream';
-                                }
-                            });
-                        }
-                    );
+                        );
+                    }
                 }
             });
         }});
+    }
+};
+
+
+ka.lib._updateAvailableStreams = function (movieObj, versions) {
+    if (!(movieObj.trailer || versions)) {
+        /* TODO: indicate that there is nothing to play */
+    } else {
+        $('#boom-detail-available-streams .boom-button').slice(1).remove();
+
+        if (versions) {
+            for (var version, index = 0; version = versions[index]; index++) {
+                $('<div>', {
+                    text: version[0], class: 'boom-button', data: {
+                        'boom.stream': version[1], 'boom.color': '#' + movieObj.primaryPosterColor, 'boom.type': 'stream'
+                    }
+                }).appendTo('#boom-detail-available-streams');
+            }
+        }
+
+        if (movieObj.trailer) {
+            $('#boom-detail-watch-trailer').addClass('boom-active').css('display', 'block')
+                .data('boom.color', '#' + movieObj.primaryPosterColor);
+        } else {
+            $('#boom-detail-watch-trailer').removeClass('boom-active').css('display', 'none');
+            if (versions) {
+                $('#boom-detail-available-streams .boom-button:nth-child(2)').addClass('boom-active');
+            }
+        }
+
+        var selected = $('#boom-detail-available-streams .boom-active');
+        selected.css('backgroundColor', selected.data('boom.color')).data('type');
+
+        $('#boom-detail-available-streams').velocity('transition.expandIn', {
+            display: 'flex', duration: ka.settings.durationShort, complete: function () {
+                ka.state.view = 'select-stream';
+            }
+        });
     }
 };
 

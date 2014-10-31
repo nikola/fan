@@ -15,7 +15,7 @@ A movie compilation and playback app for Windows. Fast. Lean. No weather widget.
     * calculates primary colors of poster images for artistic coherence in the UI (using a very fast, multithreaded [implementation] of [MMCQ], <25ms for a 350x500px poster)
 
 **Latest release version of Windows binary:**  
-[fan &raquo; Releases &raquo; 0.13.1.0]
+[fan &raquo; Releases &raquo; 0.13.1.1]
 
 **License:**  
 [GPL v2]
@@ -70,6 +70,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 [EWA RobidouxSharp]:http://www.imagemagick.org/Usage/filter/nicolas/#downsample
 [implementation]:https://github.com/nikola/MMCQ.js
 [MMCQ]:http://www.leptonica.com/papers/mediancut.pdf
-[fan &raquo; Releases &raquo; 0.13.1.0]:https://github.com/nikola/fan/releases/tag/v0.13.1.0
+[fan &raquo; Releases &raquo; 0.13.1.1]:https://github.com/nikola/fan/releases/tag/v0.13.1.1
 [fan &raquo; Wiki]:https://github.com/nikola/fan/wiki
 [fan &raquo; Wiki &raquo; FAQ]:https://github.com/nikola/fan/wiki/FAQ

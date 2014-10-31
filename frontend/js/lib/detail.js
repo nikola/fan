@@ -183,7 +183,7 @@ ka.lib.browser = {
                         ka.lib.browser.backdrop.detachAll(backdrops.slice(0, -1));
                     }
 
-                    $('<img>', {
+                    var poster = $('<img>', {
                         class: 'boom-backdrop'
                       , width: 1920
                       , height: 1080
@@ -201,9 +201,18 @@ ka.lib.browser = {
                             }
                         }
                       , load: function () {
-                            $(this).velocity({translateZ: 0, opacity: 1}, ka.settings.durationNormal);
+                            $(this).velocity({translateZ: 0, opacity: 1}, {duration: ka.settings.durationNormal, complete: function () {
+                                movieObj.isBackdropCached = true;
+                                $.get('/movie/' + movieObj.id + '/set-backdrop-cached');
+                            }});
                         }
-                    }).insertAfter(backdrops.last());
+                    });
+
+                    if (size) {
+                        poster.insertAfter(backdrops.last());
+                    } else {
+                        poster.prependTo('#boom-movie-detail');
+                    }
                 }
             }
         }

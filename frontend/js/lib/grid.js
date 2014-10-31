@@ -158,24 +158,32 @@ ka.lib.onPosterLoaded = function () {
             webkitTransform: 'translateZ(0)'
         }
     });
-    ka.cache.backdropByKey[movieObj.keyBackdrop] = $('<img>', {
-        class: 'boom-backdrop'
-      , width: 1920
-      , height: 1080
-      , src: '/movie/backdrop/' + movieObj.keyBackdrop + '.jpg'
-      , data: {
-            'boom.key': movieObj.keyBackdrop
-        }
-      , css: {
-            position: 'absolute'
-          , left: 0
-          , top: 0
-          , opacity: 0
-          , css: {
-                webkitTransform: 'translateZ(0)'
+
+    if (!movieObj.isBackdropCached) {
+        $('<img>', {
+            class: 'boom-backdrop'
+          , width: 1920
+          , height: 1080
+          , src: '/movie/backdrop/' + movieObj.keyBackdrop + '.jpg'
+          , data: {
+                'boom.key': movieObj.keyBackdrop
             }
-        }
-    });
+          , css: {
+                position: 'absolute'
+              , left: 0
+              , top: 0
+              , opacity: 0
+              , css: {
+                    webkitTransform: 'translateZ(0)'
+                }
+            }
+          , load: function () {
+                movieObj.isBackdropCached = true;
+                $.get('/movie/' + movieObj.id + '/set-backdrop-cached');
+                $(this).remove();
+            }
+        });
+    }
 
     var context = ka.state.canvasContext;
     context.canvas.width = image.naturalWidth;

@@ -19,6 +19,12 @@ A movie compilation and playback app for Windows. Fast. Lean. No weather widget.
     * installs best-of-breed third-party software for high-quality playback: [MPC-HC], [madVR] and [LAV Filters] \(not bundled with _fan_\).
     * calculates primary colors of poster images for artistic coherence in the UI (using a very fast, multithreaded [implementation] of [MMCQ], <25ms for a 350x500px poster)
 
+**Technology stack:**
+
+* Written in pure Javascript and Python, and [released] as a single Windows executable - no installation, no dependencies!
+* _fan_ is actually a desktop web application: JS/HTML5/CSS3-powered frontend, Python backend, SQL-based ORM, built-in HTTP application server.
+* Want to change the GUI? Just run fan.exe, open http://127.0.0.1:59741/gui.html in the latest Chrome ... and start hacking! It's that easy!
+
 **License:**  
 [GPL v2]
 
@@ -63,7 +69,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-[See it in action!]:https://www.youtube.com/watch?v=d78GJJeES3c
+[released]:https://github.com/nikola/fan/releases
 [GPL v2]:http://www.gnu.org/licenses/gpl-2.0.html
 [The Movie Database (TMDb)]:http://www.themoviedb.org/
 [MPC-HC]:http://mpc-hc.org/

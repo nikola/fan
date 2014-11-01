@@ -1,6 +1,11 @@
 ### fan
 
-A movie compilation and playback app for Windows. Fast. Lean. No weather widget. **[See it in action!]**
+A movie compilation and playback app for Windows. Fast. Lean. No weather widget.
+
+**Download EXE for Windows 7/8:**  
+[fan &raquo; Releases &raquo; 0.13.1.1]
+
+[![YouTube video](https://raw.githubusercontent.com/nikola/fan/master/screenshots/screencap.png)](https://www.youtube.com/watch?v=d78GJJeES3c)
 
 **Key features:**
 
@@ -13,9 +18,6 @@ A movie compilation and playback app for Windows. Fast. Lean. No weather widget.
     * detects when a movie belongs to a collection, and displays collections as expandable grids for a very compact overview of vast movie libraries.
     * installs best-of-breed third-party software for high-quality playback: [MPC-HC], [madVR] and [LAV Filters] \(not bundled with _fan_\).
     * calculates primary colors of poster images for artistic coherence in the UI (using a very fast, multithreaded [implementation] of [MMCQ], <25ms for a 350x500px poster)
-
-**Latest release version of Windows binary:**  
-[fan &raquo; Releases &raquo; 0.13.1.1]
 
 **License:**  
 [GPL v2]

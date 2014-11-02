@@ -5,6 +5,7 @@ A movie compilation and playback app for Windows. Fast. Lean. No weather widget.
 **Download EXE for Windows 7/8:**  
 [fan &raquo; Releases &raquo; 0.13.1.1]
 
+**Screencast:**  
 [![YouTube video](https://raw.githubusercontent.com/nikola/fan/master/screenshots/screencap.png)](https://www.youtube.com/watch?v=d78GJJeES3c)
 
 **Key features:**
@@ -22,7 +23,7 @@ A movie compilation and playback app for Windows. Fast. Lean. No weather widget.
 **Technology stack:**
 
 * Written in pure Javascript and Python, and [released] as a single Windows executable - no installation, no dependencies!
-* _fan_ is actually a desktop web application: JS/HTML5/CSS3-powered frontend, Python backend, SQL-based ORM, built-in HTTP application server.
+* _fan_ is actually a desktop web application: JS/HTML5/CSS3-powered single-page frontend, Python backend, SQL-based ORM, built-in HTTP application server.
 * Want to change the GUI? Just run fan.exe, open http://127.0.0.1:59741/gui.html in the latest Chrome ... and start hacking! It's that easy!
 
 **License:**  

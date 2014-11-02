@@ -133,10 +133,13 @@ class StreamManager(object):
                     if movieDict['certificationDict'].has_key(movieDict['country']):
                         certificationObject = Certification(
                             country = movieDict['country'],
-                            certification = movieDict['certificationDict'][movieDict['country']],
+                            certification = movieDict['certificationDict'][movieDict['country']] or u'Unrated',
                         )
                     else:
-                        certificationObject = None
+                        certificationObject = Certification(
+                            country = movieDict['country'],
+                            certification = u'Unrated',
+                        )
 
                     localizationObject = Localization(
                         locale = movieDict['language'],

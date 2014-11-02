@@ -498,11 +498,12 @@ ka.lib.updateMovieGridOnAdd = function (isImmediateUpdate) {
 
 
 ka.lib.renderMovieGridCell = function (movie, operation, context) {
+    var cell;
     if (typeof movie != 'undefined' && movie != null) {
         if (movie.id in ka.state.detachedGridCells) {
-            var cell = ka.state.detachedGridCells[movie.id];
+            cell = ka.state.detachedGridCells[movie.id];
         } else {
-            var cell = ka.lib.renderMovieObject(
+            cell = ka.lib.renderMovieObject(
                 movie
               , 'boom-movie-grid-item-' + movie.id
               , 'boom-poster-' + movie.id
@@ -513,7 +514,7 @@ ka.lib.renderMovieGridCell = function (movie, operation, context) {
             );
         }
     } else {
-        var cell = $('<div class="boom-movie-grid-item empty"></div>');
+        cell = $('<div class="boom-movie-grid-item empty"></div>');
     }
 
     if (operation == 'replaceWith') {

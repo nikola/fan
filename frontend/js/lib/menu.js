@@ -98,3 +98,14 @@ ka.lib.updateDesaturatedGrid = function () {
 
     $('#boom-grid-focus').velocity({translateZ: 0, left: '+=780'}, 0);
 };
+
+
+ka.lib.updatePendingObjects = function (force) {
+    if (ka.state.view == 'config' || force) {
+        if (ka.state.totalPendingContainers) {
+            ka.state.pendingObjectsElement.text('Pending movie file scans: ' + ka.state.totalPendingContainers);
+        } else {
+            $('#boom-menu-pending-objects').css('display', 'none');
+        }
+    }
+};

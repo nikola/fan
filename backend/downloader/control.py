@@ -20,10 +20,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 __author__ = 'Nikola Klaric (nikola@klaric.org)'
 __copyright__ = 'Copyright (C) 2013-2014 Nikola Klaric'
 
+import os
 import time
 from utils.system import Process
 from Queue import Empty
 
+from settings import APP_STORAGE_PATH
 from downloader.images import getBacklogEntry, processBacklogEntry
 from utils.logs import getLogger
 
@@ -39,6 +41,10 @@ def _startDownloader(profile, queue):
             if command == 'downloader:missing:artwork':
                 processMissingArtwork = True
                 isIdle = False
+
+                directory = os.path.join(APP_STORAGE_PATH, 'backlog', 'posters')
+                countUnprocessedPosters = sum(1 for _ in os.listdir(directory))
+                # TODO: implement push
 
                 queue.task_done()
             elif command == 'downloader:pause':

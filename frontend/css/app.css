@@ -42,6 +42,23 @@ body {
     padding-left: 30px;
     }
 
+#boom-menu-pending-objects {
+    display: none;
+    width: 720px; height: 45px;
+
+    color: rgb(128, 128, 128);
+    font-size: 30px;
+    font-weight: bold;
+    line-height: 45px;
+
+    margin: 306px 0 0 -2px;
+    padding-left: 12px;
+    }
+
+#boom-menu-pending-objects i {
+    margin: 0 16px 0 8px;
+}
+
 iframe[seamless] {
     background-color: transparent;
     border: 0 none transparent;

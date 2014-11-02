@@ -38,7 +38,7 @@ from settings import APP_STORAGE_PATH, STATIC_PATH, SERVER_PORT
 from orchestrator.urls import module as appModule
 from orchestrator.pubsub import PubSub
 from downloader.images import processBacklogEntry, downloadArtwork
-from identifier import getStreamRecords, getFixedRecords, identifyMovieByTitleYear, getShorthandFromFilename
+from identifier import getContainerCount, getStreamRecords, getFixedRecords, identifyMovieByTitleYear, getShorthandFromFilename
 from utils.config import processCurrentUserConfig
 from utils.net import deleteResponseCache
 from utils.logs import getLogger
@@ -111,6 +111,7 @@ def _startOrchestrator(profile, queue):
     streamGenerator = None
     syncFinished = False
     isDownloaderIdle = False
+    mustSendContainerCount = None
     logger = getLogger(profile, 'orchestrator')
 
     appModule.interProcessQueue = queue
@@ -158,7 +159,11 @@ def _startOrchestrator(profile, queue):
                         appModule.userConfig['hasDemoMovies'] = False
                         processCurrentUserConfig(profile, appModule.userConfig)
 
+                    mustSendContainerCount = getContainerCount(appModule.userConfig.get('sources', []))
+                    _processRequests()
+
                     streamGenerator = getStreamRecords(appModule.userConfig.get('sources', []))
+                    _processRequests()
 
                 queue.task_done()
 
@@ -229,8 +234,17 @@ def _startOrchestrator(profile, queue):
                 else:
                     _processRequests()
 
+                    if mustSendContainerCount and pubSubReference.connected:
+                        pubSubReference.write(unicode('["receive:container:count", %d]' % mustSendContainerCount))
+                        mustSendContainerCount = None
+                        _processRequests()
+
                     isContainerKnown = streamManager.isStreamKnown(streamLocation)
                     _processRequests()
+
+                    if pubSubReference.connected:
+                        pubSubReference.write(unicode('["receive:container:decrement", 1]'))
+                        _processRequests()
 
                     if not isContainerKnown:
                         try:

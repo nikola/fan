@@ -76,6 +76,10 @@ def getImageConfiguration(profile):
         return configuration.get('images').get('secure_base_url'), closestWidth
 
 
+def getContainerCount(sources):
+    return sum(1 for _ in getStreamRecords(sources))
+
+
 def getStreamRecords(sources):
     for source in sources:
         for root, dirs, files in os.walk(unicode(source.get('pathname'))):

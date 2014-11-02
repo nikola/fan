@@ -67,6 +67,7 @@ ka.transition.grid = {to: {
         ka.state.view = 'limbo';
 
         $('#boom-menu').css('display', 'block');
+        ka.lib.updatePendingObjects(true);
 
         ka.lib.grid.occlude();
 

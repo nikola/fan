@@ -111,6 +111,8 @@ ka.state = {
   , setOfKnownPosters: {}
   , setOfUnknownPosters: {}
   , isPosterScaled: {}
+
+  , totalPendingContainers: null
 };
 
 
@@ -128,6 +130,21 @@ function onPageLoaded() {
             ka.lib.addMovie(movie);
 
             ka.lib.updateMovieGridOnAdd(true); /* immediate mode */
+        }
+    });
+
+    ka.state.socketDispatcher.bind('receive:container:count', function (count) {
+        ka.state.totalPendingContainers = count;
+
+        $('#boom-menu-pending-objects').css('display', 'block');
+        ka.lib.updatePendingObjects();
+    });
+
+    ka.state.socketDispatcher.bind('receive:container:decrement', function (step) {
+        if (ka.state.totalPendingContainers) {
+            ka.state.totalPendingContainers -= step;
+
+            ka.lib.updatePendingObjects();
         }
     });
 
@@ -258,6 +275,7 @@ $LAB
         ka.lib.setupWorkers();
 
         ka.state.maxConfigButton = $('#boom-menu .boom-button').length;
+        ka.state.pendingObjectsElement = $('#boom-menu-pending-objects span');
         ka.state.canvasContext = $('#boom-image-sampler-canvas').get(0).getContext('2d');
 
         $('#boom-detail-watch-trailer').data('boom.type', 'trailer');

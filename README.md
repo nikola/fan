@@ -24,7 +24,7 @@ A movie compilation and playback app for Windows. Fast. Lean. No weather widget.
 
 * Written in pure Javascript and Python, and [released] as a single Windows executable - no installation, no dependencies!
 * _fan_ is actually a desktop web application:
-    * JS/HTML5/CSS3-powered single-page frontend,
+    * JS/HTML5/CSS3-powered single-page frontend rendered using a built-in Chromium Embedded browser,
     * Python backend with multi-processing and access to Win32 APIs,
     * SQLAlchemy-based persistence in a SQLite database,
     * built-in HTTP application server with URL routing and WebSocket channels.

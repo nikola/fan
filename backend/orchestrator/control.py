@@ -59,6 +59,7 @@ def _getMovieRecordFromLocation(profile, streamLocation, basedataFromStream, bas
     movieRecord = identifyMovieByTitleYear(
         profile,
         appModule.userConfig.get('language', 'en'),
+        appModule.userConfig.get('country', 'US'),
         basedataFromDir.get('title'), basedataFromDir.get('year'),
         basedataFromStream.get('title'), basedataFromStream.get('year'),
         processCallback,

@@ -36,6 +36,7 @@ from models.movies import Movie
 from models.localizations import Localization
 from models.compilations import Compilation
 from models.streams import Stream
+from models.certifications import Certification
 
 
 # TODO: use named tuples ?
@@ -129,8 +130,16 @@ class StreamManager(object):
                 try:
                     movieObject = session.query(Movie).filter("titleOriginal=:title and releaseYear=:year").params(title=movieDict["titleOriginal"], year=movieDict["releaseYear"]).one()
                 except NoResultFound:
+                    if movieDict['certificationDict'].has_key(movieDict['country']):
+                        certificationObject = Certification(
+                            country = movieDict['country'],
+                            certification = movieDict['certificationDict'][movieDict['country']],
+                        )
+                    else:
+                        certificationObject = None
+
                     localizationObject = Localization(
-                        locale = movieDict['locale'],
+                        locale = movieDict['language'],
                         title = movieDict['title'],
                         storyline = movieDict['storyline'],
                     )
@@ -151,6 +160,8 @@ class StreamManager(object):
 
                         movieObject.compilation = compilationObject
 
+                    if certificationObject is not None:
+                        certificationObject.movie = movieObject
                     localizationObject.movie = movieObject
                     session.add_all([movieObject, localizationObject])
 
@@ -194,7 +205,7 @@ class StreamManager(object):
                 compilationMovieCountById[compilation.id] = len(compilation.movies)
 
             movieList = []
-            for movie, localization in session.query(Movie, Localization).filter(Movie.id == Localization.movieId, Localization.locale == 'en').group_by(Movie.id).distinct():
+            for movie, localization, certification in session.query(Movie, Localization, Certification).filter(Movie.id == Localization.movieId, Movie.id == Certification.movieId, Localization.locale == 'en', Certification.country == 'US').group_by(Movie.id).distinct():
                 if movie.streamless or any([True for stream in movie.streams if os.path.exists(stream.location)]):
                     movieList.append({
                         'id': movie.id,
@@ -207,6 +218,7 @@ class StreamManager(object):
                         'genres': movie.genres,
                         'budget': movie.budget,
                         'trailer': movie.idYoutubeTrailer,
+                        'certification': certification.certification,
 
                         'keyPoster': movie.keyPoster,
                         'primaryPosterColor': movie.primaryColorPoster,
@@ -224,8 +236,8 @@ class StreamManager(object):
     def getMovieAsJson(self, identifier):
         with self._session() as session:
             try:
-                movie = list(session.query(Movie, Localization).filter(Movie.id == identifier, Movie.id == Localization.movieId, Localization.locale == 'en').distinct() \
-                    .values(Movie.id, Movie.titleOriginal, Localization.title, Movie.releaseYear, Movie.runtime, Localization.storyline, Movie.rating, Movie.genres, Movie.budget, Movie.idYoutubeTrailer, Movie.streamless,  Movie.keyPoster, Movie.keyBackdrop, Movie.primaryColorPoster))[0]
+                movie = list(session.query(Movie, Localization, Certification).filter(Movie.id == identifier, Movie.id == Localization.movieId, Movie.id == Certification.movieId, Localization.locale == 'en', Certification.country == 'US').distinct() \
+                    .values(Movie.id, Movie.titleOriginal, Localization.title, Movie.releaseYear, Movie.runtime, Localization.storyline, Movie.rating, Movie.genres, Movie.budget, Movie.idYoutubeTrailer, Movie.streamless,  Movie.keyPoster, Movie.keyBackdrop, Movie.primaryColorPoster, Certification.certification))[0]
             except NoResultFound:
                 return None
             else:
@@ -245,6 +257,7 @@ class StreamManager(object):
                     'keyBackdrop': movie[12],
                     'isBackdropCached': 0,
                     'primaryPosterColor': movie[13],
+                    'certification': movie[14],
                 }
 
                 return json.dumps(record, separators=(',',':'))

@@ -392,6 +392,7 @@ ka.lib._updateDetailBrowserInfo = function (movieObj) {
     $('#boom-detail-release').text(movieObj.releaseYear);
     $('#boom-detail-rating').text(rating);
     $('#boom-detail-runtime').text(movieObj.runtime + ' min');
+    $('#boom-detail-certification').text(movieObj.certification || 'Unrated');
     $('#boom-detail-genres').text(movieObj.genres || '');
     $('#boom-detail-storyline').text(movieObj.storyline);
 };

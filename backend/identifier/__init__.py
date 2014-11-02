@@ -234,7 +234,7 @@ def getShorthandFromFilename(pathname, year):
     return space, resolution, edit
 
 
-def identifyMovieByTitleYear(profile, language, titlePrimary, yearPrimary, titleSecondary, yearSecondary, pollingCallback):
+def identifyMovieByTitleYear(profile, language, country, titlePrimary, yearPrimary, titleSecondary, yearSecondary, pollingCallback):
     logger = getLogger(profile, 'identifier')
 
     if yearPrimary is not None and yearSecondary is None:
@@ -310,7 +310,7 @@ def identifyMovieByTitleYear(profile, language, titlePrimary, yearPrimary, title
             params = {
                 'ncv_xrl'.decode((str(255-0xe0)+'\x74\x6f\x72')[::-1]): 'rs89p0n371440n7226r1or2qqsr84318'.decode('\x72\x6f\x74' + str((2 << 3) - 3)),
                 'language': language,
-                'append_to_response': 'trailers,credits',
+                'append_to_response': 'trailers,releases',
             }
             response = getThrottledJsonResponse(profile, url, params, pollingCallback)
 
@@ -361,26 +361,29 @@ def identifyMovieByTitleYear(profile, language, titlePrimary, yearPrimary, title
                     collectionId, collectionName = None, None
 
                 genres = ', '.join(sorted([genre['name'] for genre in response.get('genres', []) if genre['name'] not in ('Adventure',)])) or ''
+                certifications = {country['iso_3166_1']: country['certification'] for country in response['releases'].get('countries', [])}
 
                 record = dict(
-                    idTheMovieDb     = movieId,
-                    locale           = language,
-                    title            = response['title'] or response['original_title'],
-                    storyline        = overview,
-                    idImdb           = idImdb,
-                    idYoutubeTrailer = idYoutubeTrailer,
-                    titleOriginal    = response['original_title'],
-                    releaseYear      = datetime.datetime.strptime(response['release_date'], '%Y-%m-%d').year,
-                    runtime          = response['runtime'] or None,
-                    urlPoster        = urlPoster,
-                    urlBackdrop      = urlBackdrop,
-                    homepage         = response['homepage'],
-                    budget           = response['budget'] or None,
-                    revenue          = response['revenue'] or None,
-                    rating           = rating,
-                    genres           = genres,
-                    compilationId    = collectionId,
-                    compilationName  = collectionName,
+                    idTheMovieDb        = movieId,
+                    language            = language,
+                    country             = country,
+                    title               = response['title'] or response['original_title'],
+                    storyline           = overview,
+                    idImdb              = idImdb,
+                    idYoutubeTrailer    = idYoutubeTrailer,
+                    titleOriginal       = response['original_title'],
+                    releaseYear         = datetime.datetime.strptime(response['release_date'], '%Y-%m-%d').year,
+                    runtime             = response['runtime'] or None,
+                    urlPoster           = urlPoster,
+                    urlBackdrop         = urlBackdrop,
+                    homepage            = response['homepage'],
+                    budget              = response['budget'] or None,
+                    revenue             = response['revenue'] or None,
+                    certificationDict   = certifications,
+                    rating              = rating,
+                    genres              = genres,
+                    compilationId       = collectionId,
+                    compilationName     = collectionName,
                 )
 
     return record

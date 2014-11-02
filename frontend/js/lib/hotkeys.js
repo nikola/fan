@@ -134,9 +134,9 @@ ka.lib.handleKeypressRight = function () {
         ka.lib.moveFocusRight();
     } else if (ka.state.view == 'grid-compilation') {
         ka.lib.moveCompilationFocusRight();
-    } else if (ka.state.view == 'config') {
+    } /* else if (ka.state.view == 'config') {
         ka.transition.menu.to.grid();
-    } else if (ka.state.view == 'detail') {
+    } */ else if (ka.state.view == 'detail') {
         ka.lib.moveDetailBrowserRight();
     }
 };

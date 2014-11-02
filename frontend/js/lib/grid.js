@@ -67,8 +67,8 @@ ka.lib.grid = {
 
             buffer.css('display', 'none');
             $('#boom-movie-grid-container')
-                .css('transform', 'translate(0,0)')
-                .velocity({translateZ: 0, translateY: '0px'}, 0);
+                .css({'transform': 'translate3d(0,0,0)', height: 1080})
+                .velocity({translateY: '0px'}, 0);
         }
     }
 
@@ -76,8 +76,8 @@ ka.lib.grid = {
         if (ka.state.occludedGridItems !== null && ka.state.occludedGridItems.length > 0) {
             ka.state.occludedGridItems.css({display: 'inline-block'});
             $('#boom-movie-grid-container')
-                .css('transform', 'translate(0,-' + (ka.state.gridPage * 1080) + 'px)')
-                .velocity({translateZ: 0, translateY: '-' + (ka.state.gridPage * 1080) + 'px'}, 0);
+                .css({'transform': 'translate3d(0,-' + (ka.state.gridPage * 1080) + 'px,0)', height: ka.state.gridTotalPages * 1080})
+                .velocity({translateY: '-' + (ka.state.gridPage * 1080) + 'px'}, 0);
         }
     }
 

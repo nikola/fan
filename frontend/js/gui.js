@@ -113,6 +113,7 @@ ka.state = {
   , isPosterScaled: {}
 
   , totalPendingContainers: null
+  , totalPendingPosters: null
 };
 
 
@@ -143,6 +144,21 @@ function onPageLoaded() {
     ka.state.socketDispatcher.bind('receive:container:decrement', function (step) {
         if (ka.state.totalPendingContainers) {
             ka.state.totalPendingContainers -= step;
+
+            ka.lib.updatePendingObjects();
+        }
+    });
+
+    ka.state.socketDispatcher.bind('receive:poster:count', function (count) {
+        ka.state.totalPendingPosters = count;
+
+        $('#boom-menu-pending-objects').css('display', 'block');
+        ka.lib.updatePendingObjects();
+    });
+
+    ka.state.socketDispatcher.bind('receive:poster:decrement', function (step) {
+        if (ka.state.totalPendingPosters) {
+            ka.state.totalPendingPosters -= step;
 
             ka.lib.updatePendingObjects();
         }

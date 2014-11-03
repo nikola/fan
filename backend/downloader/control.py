@@ -42,11 +42,11 @@ def _startDownloader(profile, queue):
                 processMissingArtwork = True
                 isIdle = False
 
-                directory = os.path.join(APP_STORAGE_PATH, 'backlog', 'posters')
-                countUnprocessedPosters = sum(1 for _ in os.listdir(directory))
-                # TODO: implement push
+                countUnprocessedPosters = sum(1 for _ in os.listdir(os.path.join(APP_STORAGE_PATH, 'backlog', 'posters')))
+                time.sleep(0)
 
                 queue.task_done()
+                queue.put('orchestrator:push:pending:poster-count:%d' % countUnprocessedPosters)
             elif command == 'downloader:pause':
                 processMissingArtwork = False
                 isIdle = True
@@ -83,17 +83,9 @@ def _startDownloader(profile, queue):
                     if unscaledPoster is not None:
                         processBacklogEntry(profile, 'poster', unscaledPoster)  # TODO: handle network errors
                         time.sleep(0)
-                            # try:
-                            #     command = queue.get_nowait()
-                            # except Empty:
-                            #     queue.put('orchestrator:poster-refresh:%s' % unscaledPoster)
-                            # else:
-                            #     if command == 'downloader:stop':
-                            #         queue.task_done()
-                            #         break
-                            #     else:
-                            #         queue.put(command)
-                            #         queue.task_done()
+
+                        queue.put('orchestrator:push:poster-decrement')
+                        time.sleep(0)
                     else:
                         logger.debug('Assuming idle mode ...')
                         time.sleep(0)

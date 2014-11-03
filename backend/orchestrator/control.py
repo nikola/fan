@@ -113,6 +113,7 @@ def _startOrchestrator(profile, queue):
     syncFinished = False
     isDownloaderIdle = False
     mustSendContainerCount = None
+    mustSendPosterCount = None
     logger = getLogger(profile, 'orchestrator')
 
     appModule.interProcessQueue = queue
@@ -191,7 +192,6 @@ def _startOrchestrator(profile, queue):
                 pubSubReference.write(unicode('["resume:detail:screen", ""]'))
 
                 queue.task_done()
-
                 _processRequests()
             elif command == 'orchestrator:player:updated':
                 pubSubReference.write(unicode('["player:update:complete", ""]'))
@@ -201,13 +201,11 @@ def _startOrchestrator(profile, queue):
                 isDownloaderIdle = True
 
                 queue.task_done()
-
                 _processRequests()
             elif command == 'orchestrator:active:downloader':
                 isDownloaderIdle = False
 
                 queue.task_done()
-
                 _processRequests()
             # elif command.startswith('orchestrator:poster-refresh:'):
             #     if pubSubReference is not None and pubSubReference.connected:
@@ -218,6 +216,16 @@ def _startOrchestrator(profile, queue):
             #     queue.task_done()
 
             #     _processRequests()
+            elif command.startswith('orchestrator:push:pending:poster-count:'):
+                mustSendPosterCount = int(command[command.rindex(':')+1:])
+
+                queue.task_done()
+                _processRequests()
+            elif command == 'orchestrator:push:poster-decrement':
+                queue.task_done()
+                if pubSubReference.connected:
+                    pubSubReference.write(unicode('["receive:poster:decrement", 1]'))
+                    _processRequests()
             else:
                 queue.task_done()
                 queue.put(command)
@@ -272,13 +280,15 @@ def _startOrchestrator(profile, queue):
                                 if isDownloaderIdle:
                                     queue.put('downloader:resume')
                                     _processRequests()
-
             elif syncFinished is True:
                 deleteResponseCache()
 
                 syncFinished = None
 
                 queue.put('downloader:missing:artwork') # TODO: rename to downloader:restock:artwork
+            elif mustSendPosterCount and pubSubReference.connected:
+                pubSubReference.write(unicode('["receive:poster:count", %d]' % mustSendPosterCount))
+                mustSendPosterCount = None
 
             _processRequests()
 

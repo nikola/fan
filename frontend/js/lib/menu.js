@@ -104,6 +104,8 @@ ka.lib.updatePendingObjects = function (force) {
     if (ka.state.view == 'config' || force) {
         if (ka.state.totalPendingContainers) {
             ka.state.pendingObjectsElement.text('Pending movie file scans: ' + ka.state.totalPendingContainers);
+        } else if (ka.state.totalPendingPosters) {
+            ka.state.pendingObjectsElement.text('Pending poster updates: ' + ka.state.totalPendingPosters);
         } else {
             $('#boom-menu-pending-objects').css('display', 'none');
         }

@@ -105,6 +105,12 @@
     margin-right: 40px;
     }
 
+#boom-detail-metadata li:last-of-type {
+    margin-right: 0;
+    width: 0;
+    white-space: nowrap;
+    }
+
 #boom-detail-storyline {
     position: absolute; left: 0; top: 240px;
     width: 1550px; height: 325px;

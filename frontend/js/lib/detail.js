@@ -156,7 +156,7 @@ ka.lib.browser = {
         fadeIn: function (movieObj) {
             var backdrops = $('.boom-backdrop').velocity('stop'), size = backdrops.size();
 
-            if (movieObj.keyBackdrop in ka.cache.backdropByKey) {
+            /* if (movieObj.keyBackdrop in ka.cache.backdropByKey) {
                 var backdrop;
                 if (size) {
                     if (size > 1) {
@@ -169,7 +169,7 @@ ka.lib.browser = {
                 backdrop.velocity({translateZ: 0, opacity: 1}, ka.settings.durationNormal);
 
                 delete ka.cache.backdropByKey[movieObj.keyBackdrop];
-            } else {
+            } else { */
                 var relocated = false;
                 backdrops.each(function () {
                     if ($(this).data('boom.key') == movieObj.keyBackdrop) {
@@ -214,7 +214,7 @@ ka.lib.browser = {
                         poster.prependTo('#boom-movie-detail');
                     }
                 }
-            }
+            /* } */
         }
 
       , removeAll: function () {
@@ -222,10 +222,11 @@ ka.lib.browser = {
         }
 
       , detachAll: function (collection) {
-            collection.each(function () {
+            /* collection.each(function () {
                 var element = $(this);
                 ka.cache.backdropByKey[element.data('boom.key')] = element.detach().css('opacity', 0);
-            });
+            }); */
+            collection.remove();
         }
 
     }

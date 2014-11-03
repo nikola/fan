@@ -62,6 +62,7 @@ CEF_APP_SETTINGS = {
     'ignore_certificate_errors':    True,
     'log_file':                     '',
     'locale':                       'en-US',
+    'pack_loading_disabled':        1,
     # 'auto_zooming':                 '',
     # 'downloads_enabled':            False,
     # 'remote_debugging_port ':       -1,

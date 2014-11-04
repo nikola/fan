@@ -86,10 +86,13 @@ ka.lib.executeMenuSelection = function () {
 
 
 ka.lib.updateDesaturatedGrid = function () {
-    var id = ka.lib.getFirstMovieObjectFromCoord(ka.state.gridFocusX, ka.lib.getGridFocusAbsoluteY()).id;
+    var movieObj = ka.lib.getFirstMovieObjectFromCoord(ka.state.gridFocusX, ka.lib.getGridFocusAbsoluteY()),
+        id = movieObj ?movieObj.id : null;
 
     ka.lib.recalcMovieGrid();
-    ka.lib.recalcPositionById(id);
+    if (id) {
+        ka.lib.recalcPositionById(id);
+    }
 
     ka.state.desaturationImageCache = {};
     ka.lib.updateMovieGridOnChange();

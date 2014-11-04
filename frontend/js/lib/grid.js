@@ -570,12 +570,17 @@ ka.lib.scrollGrid = function (skipEvents) {
 
 
 ka.lib.getFirstMovieObjectFromCoord = function (x, y) {
-    var obj = ka.state.gridLookupMatrix[y][x];
+    var row = ka.state.gridLookupMatrix[y];
+    if (row) {
+        var obj = row[x];
 
-    if ($.isArray(obj)) {
-        return obj[0];
+        if ($.isArray(obj)) {
+            return obj[0];
+        } else {
+            return obj;
+        }
     } else {
-        return obj;
+        return null;
     }
 };
 

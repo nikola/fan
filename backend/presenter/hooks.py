@@ -27,14 +27,14 @@ class ClientHandler(object):
         pass
 
 
-    def OnKeyEvent(self, browser, event, eventHandle):
-        """ Called after the renderer and JavaScript in the page has had a chance to handle the event.
-            |event| contains information about the keyboard event. |os_event| is the operating system event message, if any.
-            Return true if the keyboard event was handled or false otherwise. Description of the KeyEvent type is in the OnPreKeyEvent() callback.
-        """
-        if event['windows_key_code'] == 116:
-            browser.ReloadIgnoreCache()
-            return True
+    # def OnKeyEvent(self, browser, event, eventHandle):
+    #     """ Called after the renderer and JavaScript in the page has had a chance to handle the event.
+    #         |event| contains information about the keyboard event. |os_event| is the operating system event message, if any.
+    #         Return true if the keyboard event was handled or false otherwise. Description of the KeyEvent type is in the OnPreKeyEvent() callback.
+    #     """
+    #     if event['windows_key_code'] == 116:
+    #         browser.ReloadIgnoreCache()
+    #         return True
 
 
     # DisplayHandler -----------------------------------------------------------

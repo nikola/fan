@@ -87,6 +87,9 @@ def _startDownloader(profile, queue):
                         queue.put('orchestrator:push:poster-decrement')
                         time.sleep(0)
                     else:
+                        queue.put('orchestrator:push:posters-done')
+                        time.sleep(0)
+
                         logger.debug('Assuming idle mode ...')
                         time.sleep(0)
                         isIdle = True

@@ -223,8 +223,15 @@ def _startOrchestrator(profile, queue):
                 _processRequests()
             elif command == 'orchestrator:push:poster-decrement':
                 queue.task_done()
+
                 if pubSubReference.connected:
                     pubSubReference.write(unicode('["receive:poster:decrement", 1]'))
+                    _processRequests()
+            elif command == 'orchestrator:push:posters-done':
+                queue.task_done()
+
+                if pubSubReference.connected:
+                    pubSubReference.write(unicode('["receive:posters:processed", null]'))
                     _processRequests()
             else:
                 queue.task_done()

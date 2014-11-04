@@ -164,6 +164,14 @@ function onPageLoaded() {
         }
     });
 
+    ka.state.socketDispatcher.bind('receive:posters:processed', function () {
+        if (ka.state.totalPendingPosters) {
+            ka.state.totalPendingPosters = null;
+
+            ka.lib.updatePendingObjects();
+        }
+    });
+
     ka.state.socketDispatcher.bind('player:update:complete', function () {
         $('#boom-playback-wait').css('display', 'none');
         ka.state.isPlayerUpdated = true;

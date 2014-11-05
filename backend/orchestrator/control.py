@@ -281,7 +281,8 @@ def _startOrchestrator(profile, queue):
 
                             if movieRecord is not None:
                                 if pubSubReference.connected:
-                                    pubSubReference.write(unicode('["receive:movie:item", %s]' % streamManager.getMovieAsJson(movieId)))
+                                    pubSubReference.write(unicode('["receive:movie:item", %s]'
+                                        % streamManager.getMovieAsJson(movieId, appModule.userConfig.get('language'), appModule.userConfig.get('country'))))
                                     _processRequests()
 
                                 if isDownloaderIdle:

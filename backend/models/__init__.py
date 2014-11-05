@@ -199,7 +199,7 @@ class StreamManager(object):
                 return stream.movie
 
 
-    def getAllMoviesAsJson(self):
+    def getAllMoviesAsJson(self, language, country):
         with self._session() as session:
             compilationNameById = {}
             compilationMovieCountById = {}
@@ -208,7 +208,7 @@ class StreamManager(object):
                 compilationMovieCountById[compilation.id] = len(compilation.movies)
 
             movieList = []
-            for movie, localization, certification in session.query(Movie, Localization, Certification).filter(Movie.id == Localization.movieId, Movie.id == Certification.movieId, Localization.locale == 'en', Certification.country == 'US').group_by(Movie.id).distinct():
+            for movie, localization, certification in session.query(Movie, Localization, Certification).filter(Movie.id == Localization.movieId, Movie.id == Certification.movieId, Localization.locale == language, Certification.country == country).group_by(Movie.id).distinct():
                 if movie.streamless or any([True for stream in movie.streams if os.path.exists(stream.location)]):
                     movieList.append({
                         'id': movie.id,
@@ -236,10 +236,10 @@ class StreamManager(object):
             return json.dumps(movieList, separators=(',',':'))
 
 
-    def getMovieAsJson(self, identifier):
+    def getMovieAsJson(self, identifier, language, country):
         with self._session() as session:
             try:
-                movie = list(session.query(Movie, Localization, Certification).filter(Movie.id == identifier, Movie.id == Localization.movieId, Movie.id == Certification.movieId, Localization.locale == 'en', Certification.country == 'US').distinct() \
+                movie = list(session.query(Movie, Localization, Certification).filter(Movie.id == identifier, Movie.id == Localization.movieId, Movie.id == Certification.movieId, Localization.locale == language, Certification.country == country).distinct() \
                     .values(Movie.id, Movie.titleOriginal, Localization.title, Movie.releaseYear, Movie.runtime, Localization.storyline, Movie.rating, Movie.genres, Movie.budget, Movie.idYoutubeTrailer, Movie.streamless,  Movie.keyPoster, Movie.keyBackdrop, Movie.primaryColorPoster, Certification.certification))[0]
             except NoResultFound:
                 return None

@@ -151,7 +151,7 @@ def getBackdropByKey(request, key):
 
 @module.route('/movies/all', methods=('GET',), content_type='application/json')
 def getAllMovies(request):
-    return module.streamManager.getAllMoviesAsJson(), 200
+    return module.streamManager.getAllMoviesAsJson(module.userConfig.get('language'), module.userConfig.get('country')), 200
 
 
 @module.route('/movies/top250', methods=('GET',), content_type='application/json')

@@ -293,7 +293,7 @@ def _startOrchestrator(profile, queue):
 
                 syncFinished = None
 
-                queue.put('downloader:missing:artwork') # TODO: rename to downloader:restock:artwork
+                queue.put('downloader:process:missing:artwork')
             elif mustSendPosterCount and pubSubReference.connected:
                 pubSubReference.write(unicode('["receive:poster:count", %d]' % mustSendPosterCount))
                 mustSendPosterCount = None

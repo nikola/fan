@@ -38,7 +38,7 @@ def _startDownloader(profile, queue):
     while True:
         try:
             command = queue.get_nowait()
-            if command == 'downloader:missing:artwork':
+            if command == 'downloader:process:missing:artwork':
                 processMissingArtwork = True
                 isIdle = False
 

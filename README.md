@@ -3,7 +3,7 @@
 A movie compilation and playback app for Windows. Fast. Lean. No weather widget.
 
 **Download EXE for Windows 7/8:**  
-[fan &raquo; Releases &raquo; 0.13.2.2]
+[fan &raquo; Releases &raquo; 0.13.2.3]
 
 **Screencast:**  
 [![YouTube video](https://raw.githubusercontent.com/nikola/fan/master/screenshots/screencap.png)](https://www.youtube.com/watch?v=d78GJJeES3c)
@@ -82,6 +82,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 [EWA RobidouxSharp]:http://www.imagemagick.org/Usage/filter/nicolas/#downsample
 [implementation]:https://github.com/nikola/MMCQ.js
 [MMCQ]:http://www.leptonica.com/papers/mediancut.pdf
-[fan &raquo; Releases &raquo; 0.13.2.2]:https://github.com/nikola/fan/releases/tag/v0.13.2.2
+[fan &raquo; Releases &raquo; 0.13.2.3]:https://github.com/nikola/fan/releases/tag/v0.13.2.3
 [fan &raquo; Wiki]:https://github.com/nikola/fan/wiki
 [fan &raquo; Wiki &raquo; FAQ]:https://github.com/nikola/fan/wiki/FAQ

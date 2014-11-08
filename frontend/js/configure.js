@@ -70,7 +70,7 @@ function handleKeypressUp() {
         } else if (ka.state.currentDriveIndex > 0) {
             ka.state.currentDriveIndex -= 1;
 
-            $('#boom-button-selection-floater').velocity({top: '-=50'}, {duration: 120});
+            $('#boom-button-selection-floater').velocity({top: '-=50'}, ka.settings.durationShort);
         }
     }
 }
@@ -83,7 +83,7 @@ function handleKeypressDown() {
         if (ka.state.currentDriveIndex + 1 < ka.data.drives.length) {
             ka.state.currentDriveIndex += 1;
 
-            $('#boom-button-selection-floater').velocity({top: '+=50'}, {duration: 120});
+            $('#boom-button-selection-floater').velocity({top: '+=50'}, ka.settings.durationShort);
         } else if (ka.state.currentDriveIndex + 1 == ka.data.drives.length && ka.state.hasDrivesSelected) {
             ka.state.isStartButtonSelected = true;
 
@@ -92,7 +92,6 @@ function handleKeypressDown() {
                 opacity: 1
               , backgroundColor: 'rgb(0, 116, 217)'
             });
-            $('#boom-choice-confirm .boom-button').css('display', 'inline-block');
         }
     }
 }
@@ -105,13 +104,13 @@ function handleKeypressLeft() {
         ka.state.currentDriveIndex = 0;
         ka.state.initialChoiceMade = true;
 
-        $('#boom-choice-right, #boom-choice-splitter').velocity('fadeOut', {display: 'none', duration: ka.settings.durationNormal});
-        $("#boom-split-choices").velocity({marginLeft: '+=420'}, {duration: ka.settings.durationNormal, complete: function (elements) {
+        $('#boom-choice-right, #boom-choice-splitter').velocity({opacity: 0}, ka.settings.durationNormal);
+        $("#boom-split-choices").velocity({marginLeft: '+=420'}, {duration: ka.settings.durationNormal, complete: function () {
             $('#boom-button-selection-floater').css('opacity', 1);
         }});
 
         if (ka.state.hasDrivesSelected) {
-            $('#boom-choice-confirm .boom-button').velocity('fadeIn', {display: 'inline-block', duration: ka.settings.durationNormal});
+            $('#boom-choice-confirm .boom-button').velocity({opacity: 1}, ka.settings.durationNormal);
         }
     } else {
         if (!ka.state.isStartButtonSelected) {
@@ -119,13 +118,13 @@ function handleKeypressLeft() {
         }
 
         $("#boom-split-choices").velocity({marginLeft: '+=420'}, {duration: ka.settings.durationNormal, easing: 'ease-in'});
-        $('#boom-choice-left, #boom-choice-splitter').velocity('fadeIn', {display: 'none', duration: ka.settings.durationNormal});
-        $('#boom-choice-right').velocity('fadeOut', {display: 'none', duration: ka.settings.durationNormal, complete: function (elements) {
+        $('#boom-choice-left, #boom-choice-splitter').velocity({opacity: 1}, ka.settings.durationNormal);
+        $('#boom-choice-right').velocity({opacity: 0}, {duration: ka.settings.durationNormal, complete: function () {
             if (!ka.state.hasDrivesSelected) {
-                $('#boom-choice-confirm .boom-button').velocity('fadeOut', {display: 'inline-block', duration: ka.settings.durationNormal});
+                $('#boom-choice-confirm .boom-button').velocity({opacity: 0}, ka.settings.durationNormal);
             }
 
-            $('#boom-choice-splitter').velocity('fadeOut', {display: 'none', duration: ka.settings.durationNormal});
+            $('#boom-choice-splitter').velocity({opacity: 0}, ka.settings.durationNormal);
             $("#boom-split-choices").velocity({marginLeft: '+=420'}, {duration: ka.settings.durationNormal, easing: 'ease-out', complete: function () {
                 if (!ka.state.isStartButtonSelected) {
                     $('#boom-button-selection-floater').css('opacity', 1);
@@ -148,21 +147,21 @@ function handleKeypressRight() {
 
         $('#boom-button-start-floater').velocity({opacity: 1, backgroundColorGreen: 116, backgroundColorBlue: 217}, ka.settings.durationNormal);
 
-        $('#boom-choice-left, #boom-choice-splitter').velocity('fadeOut', {display: 'none', duration: ka.settings.durationNormal});
-        $("#boom-split-choices").velocity({marginLeft: '-=420'}, {duration: ka.settings.durationNormal});
-        $('#boom-choice-confirm .boom-button').velocity('fadeIn', {display: 'inline-block', duration: ka.settings.durationNormal});
+        $('#boom-choice-left, #boom-choice-splitter').velocity({opacity: 0}, ka.settings.durationNormal);
+        $("#boom-split-choices").velocity({marginLeft: '-=420'}, ka.settings.durationNormal);
+        $('#boom-choice-confirm .boom-button').velocity({opacity: 1}, ka.settings.durationNormal);
     } else {
         $('#boom-button-selection-floater').css('opacity', 0);
         $('#boom-button-start-floater').velocity({opacity: 1, backgroundColorGreen: 116, backgroundColorBlue: 217}, ka.settings.durationLong);
 
         $("#boom-split-choices").velocity({marginLeft: '-=420'}, {duration: ka.settings.durationNormal, easing: 'ease-in'});
-        $('#boom-choice-right, #boom-choice-splitter').velocity('fadeIn', {display: 'none', duration: ka.settings.durationNormal});
-        $('#boom-choice-left').velocity('fadeOut', {display: 'none', duration: ka.settings.durationNormal, complete: function (elements) {
-            $('#boom-choice-splitter').velocity('fadeOut', {display: 'none', duration: ka.settings.durationNormal});
+        $('#boom-choice-right, #boom-choice-splitter').velocity({opacity: 1}, ka.settings.durationNormal);
+        $('#boom-choice-left').velocity({opacity: 0}, {duration: ka.settings.durationNormal, complete: function () {
+            $('#boom-choice-splitter').velocity({opacity: 0}, ka.settings.durationNormal);
             $("#boom-split-choices").velocity({marginLeft: '-=420'}, {duration: ka.settings.durationNormal, easing: 'ease-out'});
 
             if (!ka.state.hasDrivesSelected) {
-                $('#boom-choice-confirm .boom-button').velocity('fadeIn', {display: 'inline-block', duration: ka.settings.durationNormal});
+                $('#boom-choice-confirm .boom-button').velocity({opacity: 1}, ka.settings.durationNormal);
             }
         }});
     }
@@ -188,9 +187,9 @@ function handleKeypressSelect() {
             var previouslySelected = ka.state.hasDrivesSelected;
             ka.state.hasDrivesSelected = $('#boom-drives-list li .fa-check-square').size() > 0;
             if (ka.state.hasDrivesSelected && !previouslySelected) {
-                $('#boom-choice-confirm .boom-button').velocity('fadeIn', {display: 'inline-block', duration: ka.settings.durationNormal});
+                $('#boom-choice-confirm .boom-button').velocity({opacity: 1}, ka.settings.durationNormal);
             } else if (!ka.state.hasDrivesSelected && previouslySelected) {
-                $('#boom-choice-confirm .boom-button').velocity('fadeOut', {display: 'none', duration: ka.settings.durationNormal});
+                $('#boom-choice-confirm .boom-button').velocity({opacity: 0}, ka.settings.durationNormal);
             }
         }
     } else if (ka.state.currentChoice == 'right') {
@@ -325,7 +324,7 @@ $LAB
                             }).appendTo('#boom-drives-list');
                         }
 
-                        $('#boom-panel').velocity('fadeIn', ka.settings.durationNormal);
+                        $('#boom-panel').velocity({opacity: 1}, ka.settings.durationNormal);
                     }
                 });
             }

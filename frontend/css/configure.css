@@ -119,8 +119,8 @@
     }
 
 #boom-choice-confirm .boom-button {
-    display: none;
-    /* display: inline-block; */
+    display: inline-block;
+    opacity: 0;
     }
 
 #boom-choice-confirm .boom-button.boom-active {
@@ -136,7 +136,7 @@
 #boom-button-selection-floater {
     opacity: 0;
 
-    top: 412px;
+    top: 416px;
     left: 672px;
     z-index: 1;
     background-color: transparent;

@@ -116,7 +116,7 @@ def getCurrentInstanceIdentifier():
         version = getProductVersion(os.path.join(ASSETS_PATH, 'thirdparty', 'cef', 'libcef.dll'))
 
         md5 = MD5()
-        md5.update('%s:%s' % (EXE_PATH, version))
+        md5.update('%s:%s:DB-Schema-0001' % (EXE_PATH, version))
         INSTANCE_ID = md5.hexdigest()[:16]
 
     return INSTANCE_ID

@@ -37,6 +37,7 @@ from models.localizations import Localization
 from models.compilations import Compilation
 from models.streams import Stream
 from models.certifications import Certification
+from models.genres import GenresString
 
 
 # TODO: use named tuples ?
@@ -133,13 +134,17 @@ class StreamManager(object):
                     if movieDict['certificationDict'].has_key(movieDict['country']):
                         certificationObject = Certification(
                             country = movieDict['country'],
-                            certification = movieDict['certificationDict'][movieDict['country']] or u'Unrated',
+                            certification = movieDict['certificationDict'][movieDict['country']] or u'',
                         )
                     else:
                         certificationObject = Certification(
                             country = movieDict['country'],
-                            certification = u'Unrated',
+                            certification = u'',
                         )
+                    genresObject = GenresString(
+                        country = movieDict['country'],
+                        genresAsString = movieDict['genres'],
+                    )
 
                     localizationObject = Localization(
                         locale = movieDict['language'],
@@ -163,8 +168,8 @@ class StreamManager(object):
 
                         movieObject.compilation = compilationObject
 
-                    if certificationObject is not None:
-                        certificationObject.movie = movieObject
+                    certificationObject.movie = movieObject
+                    genresObject.movie = movieObject
                     localizationObject.movie = movieObject
                     session.add_all([movieObject, localizationObject])
 
@@ -208,7 +213,7 @@ class StreamManager(object):
                 compilationMovieCountById[compilation.id] = len(compilation.movies)
 
             movieList = []
-            for movie, localization, certification in session.query(Movie, Localization, Certification).filter(Movie.id == Localization.movieId, Movie.id == Certification.movieId, Localization.locale == language, Certification.country == country).group_by(Movie.id).distinct():
+            for movie, localization, certification, genres in session.query(Movie, Localization, Certification, GenresString).filter(Movie.id == Localization.movieId, Movie.id == Certification.movieId, Localization.locale == language, Certification.country == country, GenresString.country == country).group_by(Movie.id).distinct():
                 if movie.streamless or any([True for stream in movie.streams if os.path.exists(stream.location)]):
                     movieList.append({
                         'id': movie.id,
@@ -218,7 +223,7 @@ class StreamManager(object):
                         'runtime': movie.runtime,
                         'storyline': localization.storyline,
                         'rating': movie.rating,
-                        'genres': movie.genres,
+                        'genres': genres.genresAsString,
                         'budget': movie.budget,
                         'trailer': movie.idYoutubeTrailer,
                         'certification': certification.certification,
@@ -239,8 +244,8 @@ class StreamManager(object):
     def getMovieAsJson(self, identifier, language, country):
         with self._session() as session:
             try:
-                movie = list(session.query(Movie, Localization, Certification).filter(Movie.id == identifier, Movie.id == Localization.movieId, Movie.id == Certification.movieId, Localization.locale == language, Certification.country == country).distinct() \
-                    .values(Movie.id, Movie.titleOriginal, Localization.title, Movie.releaseYear, Movie.runtime, Localization.storyline, Movie.rating, Movie.genres, Movie.budget, Movie.idYoutubeTrailer, Movie.streamless,  Movie.keyPoster, Movie.keyBackdrop, Movie.primaryColorPoster, Certification.certification))[0]
+                movie = list(session.query(Movie, Localization, Certification, GenresString).filter(Movie.id == identifier, Movie.id == Localization.movieId, Movie.id == Certification.movieId, Localization.locale == language, Certification.country == country, GenresString.country == country).distinct() \
+                    .values(Movie.id, Movie.titleOriginal, Localization.title, Movie.releaseYear, Movie.runtime, Localization.storyline, Movie.rating, GenresString.genresAsString, Movie.budget, Movie.idYoutubeTrailer, Movie.streamless,  Movie.keyPoster, Movie.keyBackdrop, Movie.primaryColorPoster, Certification.certification))[0]
             except NoResultFound:
                 return None
             else:

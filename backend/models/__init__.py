@@ -163,7 +163,8 @@ class StreamManager(object):
                         except NoResultFound:
                             compilationObject = Compilation(
                                 id = movieDict['compilationId'],
-                                name = movieDict['compilationName']
+                                name = movieDict['compilationName'],
+                                language = movieDict['language'],
                             )
                             session.add(compilationObject)
 
@@ -209,7 +210,7 @@ class StreamManager(object):
         with self._session() as session:
             compilationNameById = {}
             compilationMovieCountById = {}
-            for compilation in session.query(Compilation).all():
+            for compilation in session.query(Compilation).filter(Compilation.language == language):
                 compilationNameById[compilation.id] = compilation.name
                 compilationMovieCountById[compilation.id] = len(compilation.movies)
 

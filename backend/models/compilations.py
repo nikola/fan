@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 __author__ = 'Nikola Klaric (nikola@klaric.org)'
 __copyright__ = 'Copyright (C) 2013-2014 Nikola Klaric'
 
-from sqlalchemy import Column, Unicode, Integer
+from sqlalchemy import Column, Unicode, Integer, String
 
 from models import Base
 
@@ -29,6 +29,7 @@ class Compilation(Base):
     __tablename__ = 'compilations'
 
     id = Column(Integer, primary_key=True)
+    language = Column(String(length=2, convert_unicode=False))
     name = Column(Unicode)
 
     def __repr__(self):

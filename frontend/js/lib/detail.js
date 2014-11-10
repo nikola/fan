@@ -380,13 +380,20 @@ ka.lib.updateDetailBrowserInfo = function (movieObj, fade) {
 ka.lib._updateDetailBrowserInfo = function (movieObj) {
     $('#boom-movie-detail').data('boom.id', movieObj.id);
 
-    var title = (ka.state.gridSortDisplayLanguage == 'localized') ? movieObj.titleLocalized : movieObj.titleOriginal,
-        rating = ((movieObj.rating) ? (movieObj.rating / 10) : '?') + '/10',
-        collectionName = (movieObj.isCompiled) ? (movieObj.compilation + ' Collection') : '';
+    $('#boom-detail-title').text(ka.state.gridSortDisplayLanguage == 'localized' ? movieObj.titleLocalized : movieObj.titleOriginal);
 
-    $('#boom-detail-title').text(title);
-    $('#boom-detail-collection').html(collectionName || '&nbsp;');
+    var collectionName = '&nbsp;'
+    if (movieObj.isCompiled) {
+        collectionName = movieObj.compilation;
+        if (ka.config.language == 'en') {
+            collectionName += ' Collection';
+        } else if (ka.config.language == 'de') {
+            collectionName = 'Filmreihe: ' + collectionName;
+        }
+    }
+    $('#boom-detail-collection').html(collectionName);
 
+    var rating = ((movieObj.rating) ? (movieObj.rating / 10) : '?') + '/10';
     if (rating.length == 4 && movieObj.rating) {
         rating = rating.replace('/', '.0/');
     }
@@ -403,7 +410,7 @@ ka.lib._updateDetailBrowserInfo = function (movieObj) {
         $('#boom-detail-certification').css('display', 'none');
     }
 
-    $('#boom-detail-genres').text(movieObj.genres || '');
+    $('#boom-detail-genres').html(movieObj.genres || '&nbsp;');
     $('#boom-detail-storyline').text(movieObj.storyline);
 };
 

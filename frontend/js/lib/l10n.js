@@ -32,7 +32,12 @@ ka.lib.getLocalizedTitle = function (movieObj, insertHardBreak, noCollection) {
     var title;
 
     if (!noCollection && movieObj.isCompiled && ka.lib.isCompilationAtFocus() && ka.state.actualScreenMode != 'grid-compilation') {
-        title = movieObj.compilation + ' Collection';
+        title = movieObj.compilation;
+        if (ka.config.language == 'en') {
+            title += ' Collection';
+        } else if (ka.config.language == 'de') {
+            title = 'Filmreihe: ' + title;
+        }
     } else if (ka.state.gridSortDisplayLanguage == 'localized') {
         title = movieObj.titleLocalized;
     } else {

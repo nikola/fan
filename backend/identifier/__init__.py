@@ -356,7 +356,12 @@ def identifyMovieByTitleYear(profile, language, country, titlePrimary, yearPrima
 
                 belongsToCollection = response['belongs_to_collection']
                 if belongsToCollection is not None:
-                    collectionId, collectionName = belongsToCollection['id'], belongsToCollection['name'].replace(' Collection', '')
+                    collectionId = belongsToCollection['id']
+                    collectionName = belongsToCollection['name']
+                    if language == 'en':
+                        collectionName = collectionName.replace(' Collection', '')
+                    elif language == 'de':
+                        collectionName = collectionName.replace(' Reihe', '').replace(' Filmreihe', '')
                 else:
                     collectionId, collectionName = None, None
 

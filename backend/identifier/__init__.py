@@ -360,7 +360,7 @@ def identifyMovieByTitleYear(profile, language, country, titlePrimary, yearPrima
                 else:
                     collectionId, collectionName = None, None
 
-                genres = ', '.join(sorted([genre['name'] for genre in response.get('genres', []) if genre['name'] not in ('Adventure',)])) or ''
+                genres = ', '.join(sorted([genre['name'] for genre in response.get('genres', []) if genre['name'] not in ('Adventure', 'Abenteuer')])) or ''
                 certifications = {country['iso_3166_1']: country['certification'] for country in response['releases'].get('countries', [])}
 
                 record = dict(

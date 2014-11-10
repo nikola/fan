@@ -145,6 +145,7 @@ class StreamManager(object):
                         country = movieDict['country'],
                         genresAsString = movieDict['genres'],
                     )
+                    del movieDict['genres']
 
                     localizationObject = Localization(
                         locale = movieDict['language'],

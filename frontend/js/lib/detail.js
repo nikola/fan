@@ -396,9 +396,7 @@ ka.lib._updateDetailBrowserInfo = function (movieObj) {
 
     if (movieObj.certification) {
         var certificationConfig = ka.config.certification[ka.config.country],
-            certificationFormat = certificationConfig.format,
-            certificationDefault = certificationConfig.default,
-            certificationValue = certificationFormat.replace('{{certification}}', movieObj.certification || certificationDefault);
+            certificationValue = certificationConfig.format.replace('{{certification}}', movieObj.certification || certificationConfig.default);
 
         $('#boom-detail-certification').css('display', 'inline-block').text(certificationValue);
     } else {

@@ -393,7 +393,18 @@ ka.lib._updateDetailBrowserInfo = function (movieObj) {
     $('#boom-detail-release').text(movieObj.releaseYear);
     $('#boom-detail-rating').text(rating);
     $('#boom-detail-runtime').text(movieObj.runtime + ' min');
-    $('#boom-detail-certification').text(movieObj.certification || 'Unrated');
+
+    if (movieObj.certification) {
+        var certificationConfig = ka.config.certification[ka.config.country],
+            certificationFormat = certificationConfig.format,
+            certificationDefault = certificationConfig.default,
+            certificationValue = certificationFormat.replace('{{certification}}', movieObj.certification || certificationDefault);
+
+        $('#boom-detail-certification').css('display', 'inline-block').text(certificationValue);
+    } else {
+        $('#boom-detail-certification').css('display', 'none');
+    }
+
     $('#boom-detail-genres').text(movieObj.genres || '');
     $('#boom-detail-storyline').text(movieObj.storyline);
 };

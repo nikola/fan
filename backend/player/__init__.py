@@ -157,3 +157,7 @@ def playFile(location):
         '/play', '/close', '/fullscreen',
     ]) # , stdin=PIPE, stdout=PIPE, stderr=PIPE, **kwargs)
     process.wait()
+
+    # kernel32 = ctypes.windll.kernel32
+    # handle = kernel32.OpenProcess(1, 0, pid)
+    # return (0 != kernel32.TerminateProcess(handle, 0))

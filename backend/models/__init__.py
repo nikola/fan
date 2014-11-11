@@ -245,6 +245,7 @@ class StreamManager(object):
 
     def getMovieAsJson(self, identifier, language, country):
         with self._session() as session:
+            # TODO: return compilation as well
             try:
                 movie = list(session.query(Movie, Localization, Certification, GenresString).filter(Movie.id == identifier, Movie.id == Localization.movieId, Movie.id == Certification.movieId, Localization.locale == language, Certification.country == country, GenresString.country == country).distinct() \
                     .values(Movie.id, Movie.titleOriginal, Localization.title, Movie.releaseYear, Movie.runtime, Localization.storyline, Movie.rating, GenresString.genresAsString, Movie.budget, Movie.idYoutubeTrailer, Movie.streamless,  Movie.keyPoster, Movie.keyBackdrop, Movie.primaryColorPoster, Certification.certification))[0]

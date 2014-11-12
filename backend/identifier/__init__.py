@@ -361,7 +361,7 @@ def identifyMovieByTitleYear(profile, language, country, titlePrimary, yearPrima
                     if language == 'en':
                         collectionName = collectionName.replace(' Collection', '')
                     elif language == 'de':
-                        collectionName = collectionName.replace(' Reihe', '').replace(' Filmreihe', '')
+                        collectionName = re.sub(r' [a-zA-Z]*reihe$', '', collectionName, flags=re.IGNORECASE)
                 else:
                     collectionId, collectionName = None, None
 

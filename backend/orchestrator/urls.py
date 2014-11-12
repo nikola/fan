@@ -43,7 +43,7 @@ module = Module()
 
 @module.route('/ready', methods=('PATCH',), content_type='text/plain')
 def ready(request):
-    module.imageBaseUrl, module.imageClosestSize = getImageConfiguration(module.profile)
+    module.imageBaseUrl, module.imageClosestSize = getImageConfiguration(module.profile, 300)
 
     if module.imageBaseUrl is not None:
         module.interProcessQueue.put('orchestrator:start:scan')

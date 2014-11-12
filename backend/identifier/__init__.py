@@ -56,7 +56,7 @@ def getFixedRecords():
         yield '\\\\03cab2fbe3354d838578b09178ac2a1a\\fan\\%s (%d).mkv' % (title, year), {'title': title, 'year': year}, {'title': None, 'year': None}
 
 
-def getImageConfiguration(profile):
+def getImageConfiguration(profile, targetWidth):
     configuration = getThrottledJsonResponse(
         profile,
         'https://api.themoviedb.org/3/configuration',
@@ -69,8 +69,8 @@ def getImageConfiguration(profile):
         return None, None
     else:
         if 'original' in sizes: sizes.remove('original')
-        closestWidth = min(sizes, key=lambda x: abs(int(x[1:]) - 300))
-        if int(closestWidth[1:]) < 300:
+        closestWidth = min(sizes, key=lambda x: abs(int(x[1:]) - targetWidth))
+        if int(closestWidth[1:]) < targetWidth:
             closestWidth = sizes[sizes.index(closestWidth) + 1]
 
         return configuration.get('images').get('secure_base_url'), closestWidth

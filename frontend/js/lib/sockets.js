@@ -24,7 +24,8 @@
 
 
 ka.lib.WebSocketDispatcher = function (url) {
-    var connection = new WebSocket(url), callbacks = {};
+    var connection = new WebSocket(url),
+        callbacks = {};
 
     function dispatch(name, payload) {
         if (name in callbacks) {

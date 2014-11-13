@@ -28,9 +28,9 @@ ka.lib.setupWorkers = function () {
         new Blob([$('script[type="javascript/worker"]').text()], {type: 'text/javascript'})
     ));
 
-    ka.workers.mmcq.onmessage = ka.lib.onPrimaryColorsCalculated;
-
-    ka.workers.mmcq.onerror = function(error) {
+    ka.workers.mmcq.onerror = function (error) {
         console.error('MMCQ worker: ' + error.message);
     };
+
+    ka.workers.mmcq.onmessage = ka.lib.onPrimaryColorsCalculated;
 };

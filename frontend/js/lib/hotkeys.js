@@ -24,9 +24,7 @@
 
 
 ka.lib.handleKeypressAny = function (evt) {
-    if (ka.state.view != 'grid') {
-        return;
-    } else {
+    if (ka.state.view == 'grid') {
         var character = String.fromCharCode(evt.keyCode);
 
         if (/^[a-z]$/i.test(character)) {

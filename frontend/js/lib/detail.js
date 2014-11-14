@@ -96,11 +96,11 @@ ka.lib.browser = {
             direction = isHidden ? '+' : '-',
             distance = ka.lib.browser.isExpanded() ? 470 : 247;
 
-        $('#boom-detail-panel').data('boom.isHidden', !isHidden);
-
-        $('#boom-detail-panel').velocity({translateZ: 0, bottom: direction + '=' + distance}, {duration: ka.settings.durationNormal, complete: function () {
-            ka.state.view = 'detail';
-        }});
+        $('#boom-detail-panel')
+            .data('boom.isHidden', !isHidden)
+            .velocity({translateZ: 0, bottom: direction + '=' + distance}, {duration: ka.settings.durationNormal, complete: function () {
+                ka.state.view = 'detail';
+            }});
     }
 
   , focus: {

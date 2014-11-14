@@ -55,7 +55,7 @@ ka.lib.getLocalizedTitle = function (movieObj, insertHardBreak, noCollection) {
 ka.lib.getLocalizedArticles = function () {
     return {
         'en': 'the'
-      , 'de': '(?:der|die|das)'
+      , 'de': '' /* '(?:der|die|das)' */
     }[ka.config.language];
 };
 

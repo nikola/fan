@@ -222,13 +222,24 @@ ka.lib.onPosterLoaded = function () {
 ka.lib.onPrimaryColorsCalculated = function (evt) {
     var id = evt.data.id,
         movieObj = ka.data.byId[id],
-        primaryColors = evt.data.palette.slice(0, 3),
+        primaryColors = evt.data.palette.slice(0, 4),
         luminanceAll = primaryColors.map(ka.lib.getLuminance);
 
-    /* Remove synthetic color artifact. */
-    var luminanceArtifact = ka.lib.getLuminance([192, 256, 128]);
-    if (luminanceAll.indexOf(luminanceArtifact) != -1) {
-        primaryColors.splice(luminanceAll.indexOf(luminanceArtifact), 1);
+    /* Remove synthetic color artifacts. */
+    var artifacts = [
+        [192, 256, 128]
+      , [32, 96, 64]
+      , [32, 32, 96]
+      , [32, 32, 84]
+      , [64, 64, 192]
+      , [64, 192, 128]
+      , [124, 64, 192]
+    ];
+    for (var artifact, a = 0; artifact = artifacts[a]; a++) {
+        var luminanceArtifact = ka.lib.getLuminance(artifact);
+        if (luminanceAll.indexOf(luminanceArtifact) != -1) {
+            primaryColors.splice(luminanceAll.indexOf(luminanceArtifact), 1);
+        }
     }
 
     /* Remove the darkest color from the palette. */

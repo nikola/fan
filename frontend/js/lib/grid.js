@@ -185,13 +185,13 @@ ka.lib.onPosterLoaded = function () {
         });
     }
 
+    /*  Trigger complete render step of grid by painting every poster on the canvas. */
     var context = ka.state.canvasContext;
     context.canvas.width = image.naturalWidth;
     context.canvas.height = image.naturalHeight;
     context.drawImage(image, 0, 0, image.naturalWidth, image.naturalHeight);
 
     if ('primaryPosterColor' in ka.data.byId[id] && !!ka.data.byId[id].primaryPosterColor) {
-        /*  Trigger complete render step of grid by painting every poster on the canvas. */
         gridItem.find('.boom-movie-grid-info-overlay-title').css('backgroundColor', '#' + ka.data.byId[id].primaryPosterColor);
     } else {
         ka.metrics.primaryPosterColor[id] = {start: performance.now()};
@@ -220,9 +220,16 @@ ka.lib.onPosterLoaded = function () {
 
 
 ka.lib.onPrimaryColorsCalculated = function (evt) {
-    var id = evt.data.id, movieObj = ka.data.byId[id],
+    var id = evt.data.id,
+        movieObj = ka.data.byId[id],
         primaryColors = evt.data.palette.slice(0, 3),
         luminanceAll = primaryColors.map(ka.lib.getLuminance);
+
+    /* Remove synthetic color artifact. */
+    var luminanceArtifact = ka.lib.getLuminance([192, 256, 128]);
+    if (luminanceAll.indexOf(luminanceArtifact) != -1) {
+        primaryColors.splice(luminanceAll.indexOf(luminanceArtifact), 1);
+    }
 
     /* Remove the darkest color from the palette. */
     primaryColors.splice(luminanceAll.indexOf(Math.min.apply(Math, luminanceAll)), 1);

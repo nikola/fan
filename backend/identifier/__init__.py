@@ -23,7 +23,12 @@ __copyright__ = 'Copyright (C) 2013-2014 Nikola Klaric'
 import os
 import re
 import datetime
+from contextlib import closing
 
+# import ujson as json
+import json
+
+from settings import APP_STORAGE_PATH
 from identifier.fixture import TOP_250, POSTERS, BACKDROPS, TRAILERS_HD
 from utils.net import getThrottledJsonResponse, makeUnthrottledGetRequest
 from utils.logs import getLogger
@@ -392,3 +397,63 @@ def identifyMovieByTitleYear(profile, language, country, titlePrimary, yearPrima
                 )
 
     return record
+
+
+def getMovieRecordFromLocation(profile, streamLocation, basedataFromStream, basedataFromDir, userConfig, imageBaseUrl, processCallback):
+    processCallback()
+
+    logger = getLogger(profile, 'identifier')
+
+    if not userConfig.get('isDemoMode', False):
+        logger.info('Found new supported file: %s' % streamLocation)
+    else:
+        logger.info('Importing TOP 250 movie: "%s (%d)"' % (basedataFromStream['title'], basedataFromStream['year']))
+
+    processCallback()
+
+    movieRecord = identifyMovieByTitleYear(
+        profile,
+        userConfig.get('language', 'en'),
+        userConfig.get('country', 'US'),
+        basedataFromDir.get('title'), basedataFromDir.get('year'),
+        basedataFromStream.get('title'), basedataFromStream.get('year'),
+        processCallback,
+    )
+
+    if movieRecord is not None:
+        for imageType in ('Poster', 'Backdrop'):
+            movieRecord['key' + imageType] = movieRecord['url' + imageType].replace('/', '').replace('.jpg', '')
+            pathname = os.path.join(APP_STORAGE_PATH, 'artwork', imageType.lower() + 's', movieRecord['key' + imageType])
+            try:
+                os.makedirs(pathname)
+            except OSError:
+                pass
+            processCallback()
+            with open(os.path.join(pathname, 'source.url'), 'wb+') as fp:
+                fp.write('[InternetShortcut]\r\nURL=%soriginal%s\r\n' % (imageBaseUrl, movieRecord['url' + imageType]))
+            processCallback()
+            closing(open(os.path.join(APP_STORAGE_PATH, 'backlog', imageType.lower() + 's', movieRecord['key' + imageType]), 'w+'))
+            processCallback()
+            del movieRecord['url' + imageType]
+
+    return movieRecord
+
+
+def getClientMovieRecordAsJson(movieId, movieRecord, streamLocation):
+    return json.dumps({
+        'id':               movieId,
+        'titleOriginal':    movieRecord['titleOriginal'],
+        'titleLocalized':   movieRecord['title'],
+        'releaseYear':      movieRecord['releaseYear'],
+        'runtime':          movieRecord['runtime'],
+        'storyline':        movieRecord['storyline'],
+        'rating':           movieRecord['rating'],
+        'genres':           movieRecord['genres'],
+        'budget':           movieRecord['budget'],
+        'trailer':          movieRecord['idYoutubeTrailer'],
+        'streamless':       streamLocation.startswith('\\\\03cab2fbe3354d838578b09178ac2a1a\\fan\\'),
+        'keyPoster':        movieRecord['keyPoster'],
+        'keyBackdrop':      movieRecord['keyBackdrop'],
+        'isBackdropCached': 0,
+        'certification':    movieRecord['certificationDict'][movieRecord['country']],
+    }, separators=(',',':'))

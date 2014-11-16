@@ -21,12 +21,14 @@ __author__ = 'Nikola Klaric (nikola@klaric.org)'
 __copyright__ = 'Copyright (C) 2013-2014 Nikola Klaric'
 
 import os
+import copy
+# import ujson as json
 import json
 from contextlib import contextmanager
 from operator import itemgetter
 from sqlite3 import dbapi2 as sqlite
 
-from sqlalchemy import create_engine, func
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -128,8 +130,10 @@ class StreamManager(object):
                 streamObject = None
 
             if movieDict is not None:
+                movieDict = copy.deepcopy(movieDict)
+
                 try:
-                    movieObject = session.query(Movie).filter("titleOriginal=:title and releaseYear=:year").params(title=movieDict["titleOriginal"], year=movieDict["releaseYear"]).one()
+                    movieObject = session.query(Movie).filter('titleOriginal=:title and releaseYear=:year').params(title=movieDict['titleOriginal'], year=movieDict['releaseYear']).one()
                 except NoResultFound:
                     if movieDict['certificationDict'].has_key(movieDict['country']):
                         certificationObject = Certification(
@@ -182,8 +186,7 @@ class StreamManager(object):
 
             session.commit()
 
-            if movieObject is not None:
-                return movieObject.id
+            return movieObject.id if movieObject is not None else None
 
 
     def isStreamKnown(self, streamLocation):
@@ -241,37 +244,6 @@ class StreamManager(object):
                         'isCompiled': compilationMovieCountById.get(movie.compilationId, 0) > 1,
                     })
             return json.dumps(movieList, separators=(',',':'))
-
-
-    def getMovieAsJson(self, identifier, language, country):
-        with self._session() as session:
-            # TODO: return compilation as well
-            try:
-                movie = list(session.query(Movie, Localization, Certification, GenresString).filter(Movie.id == identifier, Movie.id == Localization.movieId, Movie.id == Certification.movieId, Localization.locale == language, Certification.country == country, GenresString.country == country).distinct() \
-                    .values(Movie.id, Movie.titleOriginal, Localization.title, Movie.releaseYear, Movie.runtime, Localization.storyline, Movie.rating, GenresString.genresAsString, Movie.budget, Movie.idYoutubeTrailer, Movie.streamless,  Movie.keyPoster, Movie.keyBackdrop, Movie.primaryColorPoster, Certification.certification))[0]
-            except NoResultFound:
-                return None
-            else:
-                record = {
-                    'id': movie[0],
-                    'titleOriginal': movie[1],
-                    'titleLocalized': movie[2],
-                    'releaseYear': movie[3],
-                    'runtime': movie[4],
-                    'storyline': movie[5],
-                    'rating': movie[6],
-                    'genres': movie[7],
-                    'budget': movie[8],
-                    'trailer': movie[9],
-                    'streamless': movie[10],
-                    'keyPoster': movie[11],
-                    'keyBackdrop': movie[12],
-                    'isBackdropCached': 0,
-                    'primaryPosterColor': movie[13],
-                    'certification': movie[14],
-                }
-
-                return json.dumps(record, separators=(',',':'))
 
 
     def getStreamLocationById(self, identifier):

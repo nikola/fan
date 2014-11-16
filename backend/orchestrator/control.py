@@ -20,13 +20,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 __author__ = 'Nikola Klaric (nikola@klaric.org)'
 __copyright__ = 'Copyright (C) 2013-2014 Nikola Klaric'
 
-import os
 import time
-from contextlib import closing
 from utils.system import Process
 from Queue import Empty
 
-from simplejson import JSONDecodeError
 from pants import Engine as HttpServerEngine
 from pants.http import HTTPServer
 from pants.web import Application
@@ -34,54 +31,14 @@ from pants.web.fileserver import FileServer
 
 from models import StreamManager
 from settings import DEBUG
-from settings import APP_STORAGE_PATH, STATIC_PATH, SERVER_PORT
+from settings import STATIC_PATH, SERVER_PORT
 from orchestrator.urls import module as appModule
 from orchestrator.pubsub import PubSub
 from downloader.images import processBacklogEntry, downloadArtwork
-from identifier import getContainerCount, getStreamRecords, getFixedRecords, identifyMovieByTitleYear, getShorthandFromFilename
+from identifier import getContainerCount, getStreamRecords, getFixedRecords, getShorthandFromFilename, getMovieRecordFromLocation, getClientMovieRecordAsJson
 from utils.config import processCurrentUserConfig
 from utils.net import deleteResponseCache
 from utils.logs import getLogger
-
-
-def _getMovieRecordFromLocation(profile, streamLocation, basedataFromStream, basedataFromDir, processCallback):
-    processCallback()
-
-    logger = getLogger(profile, 'orchestrator')
-
-    if not appModule.userConfig.get('isDemoMode', False):
-        logger.info('Found new supported file: %s' % streamLocation)
-    else:
-        logger.info('Importing TOP 250 movie: "%s (%d)"' % (basedataFromStream['title'], basedataFromStream['year']))
-
-    processCallback()
-
-    movieRecord = identifyMovieByTitleYear(
-        profile,
-        appModule.userConfig.get('language', 'en'),
-        appModule.userConfig.get('country', 'US'),
-        basedataFromDir.get('title'), basedataFromDir.get('year'),
-        basedataFromStream.get('title'), basedataFromStream.get('year'),
-        processCallback,
-    )
-
-    if movieRecord is not None:
-        for imageType in ('Poster', 'Backdrop'):
-            movieRecord['key' + imageType] = movieRecord['url' + imageType].replace('/', '').replace('.jpg', '')
-            pathname = os.path.join(APP_STORAGE_PATH, 'artwork', imageType.lower() + 's', movieRecord['key' + imageType])
-            try:
-                os.makedirs(pathname)
-            except OSError:
-                pass
-            processCallback()
-            with open(os.path.join(pathname, 'source.url'), 'wb+') as fp:
-                fp.write('[InternetShortcut]\r\nURL=%soriginal%s\r\n' % (appModule.imageBaseUrl, movieRecord['url' + imageType]))
-            processCallback()
-            closing(open(os.path.join(APP_STORAGE_PATH, 'backlog', imageType.lower() + 's', movieRecord['key' + imageType]), 'w+'))
-            processCallback()
-            del movieRecord['url' + imageType]
-
-    return movieRecord
 
 
 def _startOrchestrator(profile, queue):
@@ -264,25 +221,33 @@ def _startOrchestrator(profile, queue):
 
                     if not isContainerKnown:
                         try:
-                            movieRecord = _getMovieRecordFromLocation(profile, streamLocation, basedataFromStream, basedataFromDir, _processRequests)
-                        except (JSONDecodeError, AttributeError, TypeError, KeyError):
+                            movieRecord = getMovieRecordFromLocation(
+                                profile,
+                                streamLocation,
+                                basedataFromStream,
+                                basedataFromDir,
+                                appModule.userConfig,
+                                appModule.imageBaseUrl,
+                                _processRequests,
+                            )
+                        except (ValueError, AttributeError, TypeError, KeyError):
                             logger.error('Error while querying themoviedb.org')
                         else:
                             if movieRecord is None:
                                 logger.warning('Could not identify file: %s' % streamLocation)
                             else:
+                                # Pre-load backdrop and poster draft.
                                 processBacklogEntry(profile, 'backdrop', movieRecord.get('keyBackdrop'), _processRequests)
                                 downloadArtwork(profile, '%s%s/%s.jpg' % (appModule.imageBaseUrl,  appModule.imageClosestSize, movieRecord.get('keyPoster')), 'poster@draft', movieRecord.get('keyPoster'), _processRequests)
 
                             version = getShorthandFromFilename(streamLocation, basedataFromStream.get('year'))
                             _processRequests()
-                            movieId = streamManager.addMovieStream(movieRecord, streamLocation, version) # TODO: re-wire stream to correct movie if necessary
+                            movieId = streamManager.addMovieStream(movieRecord, streamLocation, version)
                             _processRequests()
 
-                            if movieRecord is not None:
+                            if movieId is not None:
                                 if pubSubReference.connected:
-                                    pubSubReference.write(unicode('["receive:movie:item", %s]'
-                                        % streamManager.getMovieAsJson(movieId, appModule.userConfig.get('language'), appModule.userConfig.get('country'))))
+                                    pubSubReference.write(unicode('["receive:movie:item", %s]' % getClientMovieRecordAsJson(movieId, movieRecord, streamLocation)))
                                     _processRequests()
 
                                 if isDownloaderIdle:

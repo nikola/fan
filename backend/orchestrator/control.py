@@ -24,6 +24,7 @@ import time
 from utils.system import Process
 from Queue import Empty
 
+from simplejson import JSONDecodeError
 from pants import Engine as HttpServerEngine
 from pants.http import HTTPServer
 from pants.web import Application
@@ -230,7 +231,7 @@ def _startOrchestrator(profile, queue):
                                 appModule.imageBaseUrl,
                                 _processRequests,
                             )
-                        except (ValueError, AttributeError, TypeError, KeyError):
+                        except (JSONDecodeError, AttributeError, TypeError, KeyError):
                             logger.error('Error while querying themoviedb.org')
                         else:
                             if movieRecord is None:

@@ -22,7 +22,7 @@ __copyright__ = 'Copyright (C) 2013-2014 Nikola Klaric'
 
 import os
 
-import ujson as json
+import simplejson as json
 
 from settings import APP_STORAGE_PATH, ASSETS_PATH
 

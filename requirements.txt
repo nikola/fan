@@ -1,5 +1,5 @@
 SQLAlchemy
 SQLAlchemy-utils
 requests
-ujson
+simplejson
 pants

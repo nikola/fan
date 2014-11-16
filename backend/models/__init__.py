@@ -22,12 +22,11 @@ __copyright__ = 'Copyright (C) 2013-2014 Nikola Klaric'
 
 import os
 import copy
-# import ujson as json
-import json
 from contextlib import contextmanager
 from operator import itemgetter
 from sqlite3 import dbapi2 as sqlite
 
+import simplejson as json
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.exc import NoResultFound

@@ -25,8 +25,7 @@ import re
 import datetime
 from contextlib import closing
 
-# import ujson as json
-import json
+import simplejson as json
 
 from settings import APP_STORAGE_PATH
 from identifier.fixture import TOP_250, POSTERS, BACKDROPS, TRAILERS_HD

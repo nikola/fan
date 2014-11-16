@@ -25,7 +25,7 @@ import urllib
 import datetime
 import time
 
-import ujson as json
+import simplejson as json
 from pants.web.application import Module, abort
 from pants.http.utils import HTTPHeaders
 

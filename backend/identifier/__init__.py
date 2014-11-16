@@ -455,5 +455,5 @@ def getClientMovieRecordAsJson(movieId, movieRecord, streamLocation):
         'keyPoster':        movieRecord['keyPoster'],
         'keyBackdrop':      movieRecord['keyBackdrop'],
         'isBackdropCached': 0,
-        'certification':    movieRecord['certificationDict'][movieRecord['country']],
+        'certification':    movieRecord['certificationDict'].get(movieRecord.get('country', None), None),
     }, separators=(',',':'))

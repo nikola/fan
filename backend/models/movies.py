@@ -48,8 +48,6 @@ class Movie(Base):
 
     rating = Column(SmallInteger)
 
-    # genres = Column(String(convert_unicode=False))
-
     keyBackdrop = Column(String(convert_unicode=False))
     isBackdropCached = Column(Boolean, default=False)
 

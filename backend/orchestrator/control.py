@@ -35,8 +35,8 @@ from settings import DEBUG
 from settings import STATIC_PATH, SERVER_PORT
 from orchestrator.urls import module as appModule
 from orchestrator.pubsub import PubSub
-from downloader.images import processBacklogEntry, downloadArtwork
 from identifier import getContainerCount, getStreamRecords, getFixedRecords, getShorthandFromFilename, getMovieRecordFromLocation, getClientMovieRecordAsJson
+from downloader.images import processInitialArtwork
 from utils.config import processCurrentUserConfig
 from utils.net import deleteResponseCache
 from utils.logs import getLogger
@@ -237,9 +237,7 @@ def _startOrchestrator(profile, queue):
                             if movieRecord is None:
                                 logger.warning('Could not identify file: %s' % streamLocation)
                             else:
-                                # Pre-load backdrop and poster draft.
-                                processBacklogEntry(profile, 'backdrop', movieRecord.get('keyBackdrop'), _processRequests)
-                                downloadArtwork(profile, '%s%s/%s.jpg' % (appModule.imageBaseUrl,  appModule.imageClosestSize, movieRecord.get('keyPoster')), 'poster@draft', movieRecord.get('keyPoster'), _processRequests)
+                                processInitialArtwork(profile, movieRecord, appModule.imageBaseUrl, appModule.imageClosestSize, _processRequests)
 
                             version = getShorthandFromFilename(streamLocation, basedataFromStream.get('year'))
                             _processRequests()

@@ -37,6 +37,26 @@ CONVERT_EXE = os.path.join(ASSETS_PATH, 'thirdparty', 'convert', 'convert.exe')
 CWEBP_EXE = os.path.join(ASSETS_PATH, 'thirdparty', 'cwebp', 'cwebp.exe')
 
 
+def processInitialArtwork(profile, movieRecord, imageBaseUrl, imageClosestSize, pollingCallback):
+    for imageType in ('Poster', 'Backdrop'):
+        movieRecord['key' + imageType] = movieRecord['url' + imageType].replace('/', '').replace('.jpg', '')
+        pathname = os.path.join(APP_STORAGE_PATH, 'artwork', imageType.lower() + 's', movieRecord['key' + imageType])
+        try:
+            os.makedirs(pathname)
+        except OSError:
+            pass
+        pollingCallback()
+        with open(os.path.join(pathname, 'source.url'), 'wb+') as fp:
+            fp.write('[InternetShortcut]\r\nURL=%soriginal%s\r\n' % (imageBaseUrl, movieRecord['url' + imageType]))
+        pollingCallback()
+        closing(open(os.path.join(APP_STORAGE_PATH, 'backlog', imageType.lower() + 's', movieRecord['key' + imageType]), 'w+'))
+        pollingCallback()
+        # del movieRecord['url' + imageType]
+
+    processBacklogEntry(profile, 'backdrop', movieRecord.get('keyBackdrop'), pollingCallback)
+    downloadArtwork(profile, '%s%s/%s.jpg' % (imageBaseUrl,  imageClosestSize, movieRecord.get('keyPoster')), 'poster@draft', movieRecord.get('keyPoster'), pollingCallback)
+
+
 def downloadArtwork(profile, imageUrl, imageType, imageId, pollingCallback=None):
 
     def _yield(period=0):

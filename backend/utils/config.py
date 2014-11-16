@@ -22,7 +22,7 @@ __copyright__ = 'Copyright (C) 2013-2014 Nikola Klaric'
 
 import os
 
-import simplejson
+import ujson as json
 
 from settings import APP_STORAGE_PATH, ASSETS_PATH
 
@@ -31,18 +31,18 @@ def processCurrentUserConfig(profile, config=None):
     userConfigFile = os.path.join(APP_STORAGE_PATH, profile + '.config', 'fan-config.json')
 
     with open(os.path.join(ASSETS_PATH, 'config', 'default.json'), 'rU') as fp:
-        configDefaults = simplejson.load(fp)
+        configDefaults = json.load(fp)
 
     configUser = configDefaults.copy()
 
     if os.path.exists(userConfigFile):
         with open(userConfigFile, 'rU') as fp:
-            configUser.update(simplejson.load(fp))
+            configUser.update(json.load(fp))
 
     if config is not None:
         configUser.update(config)
 
     with open(userConfigFile, 'w') as fp:
-        simplejson.dump(configUser, fp, indent=4, sort_keys=True)
+        json.dump(configUser, fp, indent=4, sort_keys=True)
 
     return configUser.copy()

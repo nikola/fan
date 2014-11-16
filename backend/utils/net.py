@@ -26,7 +26,6 @@ import logging
 from collections import OrderedDict
 
 import requests
-from simplejson import JSONDecodeError
 
 from settings import CLIENT_AGENT
 from utils.logs import getLogger
@@ -78,7 +77,7 @@ def getThrottledJsonResponse(profile, url, params, pollingCallback=None):
             _yield()
             try:
                 TMDB_RESPONSE_CACHE[key] = response.json()
-            except JSONDecodeError:
+            except:
                 logger.error('Invalid JSON response from TMDb!')
                 return None
 

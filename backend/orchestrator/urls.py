@@ -25,7 +25,7 @@ import urllib
 import datetime
 import time
 
-import simplejson
+import ujson as json
 from pants.web.application import Module, abort
 from pants.http.utils import HTTPHeaders
 
@@ -59,7 +59,7 @@ def present(request, screen):
             content = fp.read()
         if screen in ('configure', 'gui'):
             content = content.replace('</head>', '<script>var ka = ka || {}; ka.config = %s;</script></head>'
-                % simplejson.dumps(module.userConfig))
+                % json.dumps(module.userConfig))
 
         return content, 200, HTTPHeaders(data={'Cache-Control': 'no-cache,max-age=0'})
     else:
@@ -183,7 +183,7 @@ def getAvailableVersions(request, identifier):
 
 @module.route('/update/configuration', methods=('POST',), content_type='text/plain')
 def updateConfiguration(request):
-    module.userConfig = processCurrentUserConfig(module.profile, simplejson.loads(urllib.unquote(request.body)))
+    module.userConfig = processCurrentUserConfig(module.profile, json.loads(urllib.unquote(request.body)))
     module.interProcessQueue.put('orchestrator:reload:config')
 
     return '', 200

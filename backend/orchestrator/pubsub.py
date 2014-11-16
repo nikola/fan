@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 __author__ = 'Nikola Klaric (nikola@klaric.org)'
 __copyright__ = 'Copyright (C) 2013-2014 Nikola Klaric'
 
-import json
+import ujson as json
 
 from pants.http import WebSocket
 

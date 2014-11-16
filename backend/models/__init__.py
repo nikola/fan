@@ -218,7 +218,7 @@ class StreamManager(object):
                 compilationMovieCountById[compilation.id] = len(compilation.movies)
 
             movieList = []
-            for movie, localization, certification, genres in session.query(Movie, Localization, Certification, GenresString).filter(Movie.id == Localization.movieId, Movie.id == Certification.movieId, Localization.locale == language, Certification.country == country, GenresString.country == country).group_by(Movie.id).distinct():
+            for movie, localization, certification, genreObject in session.query(Movie, Localization, Certification, GenresString).filter(Movie.id == Localization.movieId, Movie.id == Certification.movieId, Movie.id == GenresString.movieId, Localization.locale == language, Certification.country == country, GenresString.country == country).group_by(Movie.id).distinct():
                 if movie.streamless or any([True for stream in movie.streams if os.path.exists(stream.location)]):
                     movieList.append({
                         'id': movie.id,
@@ -228,7 +228,7 @@ class StreamManager(object):
                         'runtime': movie.runtime,
                         'storyline': localization.storyline,
                         'rating': movie.rating,
-                        'genres': genres.genresAsString,
+                        'genres': genreObject.genresAsString,
                         'budget': movie.budget,
                         'trailer': movie.idYoutubeTrailer,
                         'certification': certification.certification,

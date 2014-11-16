@@ -75,7 +75,7 @@ if __name__ == '__main__':
         if unsafe:
             interProcessQueue.cancel_join_thread()
             interProcessQueue.close()
-            logger.warning('All processes forcefully terminated after grace period.')
+            logger.warning('Some processes forcefully terminated after grace period.')
         else:
             interProcessQueue.join()
             interProcessQueue.close()

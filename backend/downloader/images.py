@@ -27,6 +27,7 @@ import time
 from socket import error as SocketError
 from subprocess import call
 from contextlib import closing
+from hashlib import md5 as MD5
 
 import requests
 
@@ -37,21 +38,29 @@ CONVERT_EXE = os.path.join(ASSETS_PATH, 'thirdparty', 'convert', 'convert.exe')
 CWEBP_EXE = os.path.join(ASSETS_PATH, 'thirdparty', 'cwebp', 'cwebp.exe')
 
 
-def processInitialArtwork(profile, movieRecord, imageBaseUrl, imageClosestSize, pollingCallback):
+def processInitialArtwork(profile, movieRecord, containerLocation, imageBaseUrl, imageClosestSize, pollingCallback):
     for imageType in ('Poster', 'Backdrop'):
-        movieRecord['key' + imageType] = movieRecord['url' + imageType].replace('/', '').replace('.jpg', '')
-        pathname = os.path.join(APP_STORAGE_PATH, 'artwork', imageType.lower() + 's', movieRecord['key' + imageType])
-        try:
-            os.makedirs(pathname)
-        except OSError:
-            pass
+        filename = os.path.join(os.path.dirname(containerLocation), imageType.lower() + '.jpg')
         pollingCallback()
-        with open(os.path.join(pathname, 'source.url'), 'wb+') as fp:
-            fp.write('[InternetShortcut]\r\nURL=%soriginal%s\r\n' % (imageBaseUrl, movieRecord['url' + imageType]))
-        pollingCallback()
-        closing(open(os.path.join(APP_STORAGE_PATH, 'backlog', imageType.lower() + 's', movieRecord['key' + imageType]), 'w+'))
-        pollingCallback()
-        # del movieRecord['url' + imageType]
+        if os.path.exists(filename):
+            pollingCallback()
+            identifier = getHashFromImage(filename, pollingCallback)
+
+
+
+        else:
+            movieRecord['key' + imageType] = movieRecord['url' + imageType].replace('/', '').replace('.jpg', '')
+            pathname = os.path.join(APP_STORAGE_PATH, 'artwork', imageType.lower() + 's', movieRecord['key' + imageType])
+            try:
+                os.makedirs(pathname)
+            except OSError:
+                pass
+            pollingCallback()
+            with open(os.path.join(pathname, 'source.url'), 'wb+') as fp:
+                fp.write('[InternetShortcut]\r\nURL=%soriginal%s\r\n' % (imageBaseUrl, movieRecord['url' + imageType]))
+            pollingCallback()
+            closing(open(os.path.join(APP_STORAGE_PATH, 'backlog', imageType.lower() + 's', movieRecord['key' + imageType]), 'w+'))
+            pollingCallback()
 
     processBacklogEntry(profile, 'backdrop', movieRecord.get('keyBackdrop'), pollingCallback)
     downloadArtwork(profile, '%s%s/%s.jpg' % (imageBaseUrl,  imageClosestSize, movieRecord.get('keyPoster')), 'poster@draft', movieRecord.get('keyPoster'), pollingCallback)
@@ -163,3 +172,12 @@ def processBacklogEntry(profile, artworkType, key, pollingCallback=None):
             _yield()
 
     return result
+
+
+def getHashFromImage(filename, pollingCallback):
+    md5 = MD5()
+    with open(filename, 'rb') as fp:
+        for chunk in iter(lambda: fp.read(32 * md5.block_size), b''):
+            md5.update(chunk)
+            pollingCallback()
+    return md5.hexdigest()

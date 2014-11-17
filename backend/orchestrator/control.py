@@ -237,7 +237,7 @@ def _startOrchestrator(profile, queue):
                             if movieRecord is None:
                                 logger.warning('Could not identify file: %s' % streamLocation)
                             else:
-                                processInitialArtwork(profile, movieRecord, appModule.imageBaseUrl, appModule.imageClosestSize, _processRequests)
+                                processInitialArtwork(profile, movieRecord, streamLocation, appModule.imageBaseUrl, appModule.imageClosestSize, _processRequests)
 
                             version = getShorthandFromFilename(streamLocation, basedataFromStream.get('year'))
                             _processRequests()

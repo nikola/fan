@@ -100,11 +100,3 @@ def deleteResponseCache():
     TMDB_RESPONSE_CACHE = None
     time.sleep(0)
     TMDB_RESPONSE_CACHE = {}
-
-
-def getVacantPort():
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
-    s.bind(('', 0))
-    port = s.getsockname()[1]
-    s.close()
-    return port

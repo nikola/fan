@@ -24,6 +24,7 @@ __copyright__ = 'Copyright (C) 2013-2014 Nikola Klaric'
 
 import os
 import time
+import shutil
 from socket import error as SocketError
 from subprocess import call
 from contextlib import closing
@@ -39,15 +40,34 @@ CWEBP_EXE = os.path.join(ASSETS_PATH, 'thirdparty', 'cwebp', 'cwebp.exe')
 
 
 def processInitialArtwork(profile, movieRecord, containerLocation, imageBaseUrl, imageClosestSize, pollingCallback):
+    logger = getLogger(profile, 'downloader')
+
     for imageType in ('Poster', 'Backdrop'):
-        filename = os.path.join(os.path.dirname(containerLocation), imageType.lower() + '.jpg')
+        pathnameOverlay = os.path.join(os.path.dirname(containerLocation), imageType.lower() + '.jpg')
         pollingCallback()
-        if os.path.exists(filename):
+        if os.path.exists(pathnameOverlay):
             pollingCallback()
-            identifier = getHashFromImage(filename, pollingCallback)
 
+            logger.info('Using local ' + imageType.lower() + ' for "%s (%d)" found in %s' % (movieRecord['title'], movieRecord['releaseYear'], os.path.dirname(containerLocation)))
+            pollingCallback()
 
+            identifier = getHashFromImage(pathnameOverlay, pollingCallback)
+            pathnameArtwork = os.path.join(APP_STORAGE_PATH, 'artwork', imageType.lower() + 's', identifier, imageType.lower() + '.jpg')
+            if not os.path.exists(pathnameArtwork):
+                try:
+                    pollingCallback()
+                    os.makedirs(os.path.dirname(pathnameArtwork))
+                except OSError:
+                    pass
+                pollingCallback()
+                shutil.copy(pathnameOverlay, pathnameArtwork)
+                pollingCallback()
+            movieRecord['key' + imageType] = identifier
 
+            if imageType == 'Poster':
+                processBacklogEntry(profile, 'poster', identifier, False, pollingCallback)
+            elif imageType == 'Backdrop':
+                pass
         else:
             movieRecord['key' + imageType] = movieRecord['url' + imageType].replace('/', '').replace('.jpg', '')
             pathname = os.path.join(APP_STORAGE_PATH, 'artwork', imageType.lower() + 's', movieRecord['key' + imageType])
@@ -62,8 +82,10 @@ def processInitialArtwork(profile, movieRecord, containerLocation, imageBaseUrl,
             closing(open(os.path.join(APP_STORAGE_PATH, 'backlog', imageType.lower() + 's', movieRecord['key' + imageType]), 'w+'))
             pollingCallback()
 
-    processBacklogEntry(profile, 'backdrop', movieRecord.get('keyBackdrop'), pollingCallback)
-    downloadArtwork(profile, '%s%s/%s.jpg' % (imageBaseUrl,  imageClosestSize, movieRecord.get('keyPoster')), 'poster@draft', movieRecord.get('keyPoster'), pollingCallback)
+            if imageType == 'Poster':
+                downloadArtwork(profile, '%s%s/%s.jpg' % (imageBaseUrl,  imageClosestSize, movieRecord.get('keyPoster')), 'poster@draft', movieRecord.get('keyPoster'), pollingCallback)
+            elif imageType == 'Backdrop':
+                processBacklogEntry(profile, 'backdrop', movieRecord.get('keyBackdrop'), True, pollingCallback)
 
 
 def downloadArtwork(profile, imageUrl, imageType, imageId, pollingCallback=None):
@@ -131,7 +153,7 @@ def getBacklogEntry(artworkType):
     return backlogItems[0] if len(backlogItems) else None
 
 
-def processBacklogEntry(profile, artworkType, key, pollingCallback=None):
+def processBacklogEntry(profile, artworkType, key, isRemoteSource=True, pollingCallback=None):
 
     def _yield(period=0):
         if pollingCallback is not None:
@@ -139,14 +161,18 @@ def processBacklogEntry(profile, artworkType, key, pollingCallback=None):
         else:
             time.sleep(period)
 
-    os.remove(os.path.join(APP_STORAGE_PATH, 'backlog', artworkType + 's', key))
-    _yield()
+    if isRemoteSource:
+        os.remove(os.path.join(APP_STORAGE_PATH, 'backlog', artworkType + 's', key))
+        _yield()
 
-    link = open(os.path.join(APP_STORAGE_PATH, 'artwork', artworkType + 's', key, 'source.url'), 'rU').read()
-    _yield()
-    sourceUrl = link[link.find('=') + 1:].strip()
+        link = open(os.path.join(APP_STORAGE_PATH, 'artwork', artworkType + 's', key, 'source.url'), 'rU').read()
+        _yield()
+        sourceUrl = link[link.find('=') + 1:].strip()
 
-    result = downloadArtwork(profile, sourceUrl, artworkType, key)
+        result = downloadArtwork(profile, sourceUrl, artworkType, key)
+    else:
+        result = True
+
     if artworkType == 'poster':
         if result:
             pathname = os.path.join(APP_STORAGE_PATH, 'artwork', 'posters', key)

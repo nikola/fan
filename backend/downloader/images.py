@@ -66,8 +66,8 @@ def processInitialArtwork(profile, movieRecord, containerLocation, imageBaseUrl,
 
             if imageType == 'Poster':
                 processBacklogEntry(profile, 'poster', identifier, False, pollingCallback)
-            elif imageType == 'Backdrop':
-                pass
+            # elif imageType == 'Backdrop':
+            #     pass
         else:
             movieRecord['key' + imageType] = movieRecord['url' + imageType].replace('/', '').replace('.jpg', '')
             pathname = os.path.join(APP_STORAGE_PATH, 'artwork', imageType.lower() + 's', movieRecord['key' + imageType])

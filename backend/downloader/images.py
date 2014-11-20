@@ -54,8 +54,8 @@ def processInitialArtwork(profile, movieRecord, containerLocation, imageBaseUrl,
             identifier = getHashFromImage(pathnameOverlay, pollingCallback)
             pathnameArtwork = os.path.join(APP_STORAGE_PATH, 'artwork', imageType.lower() + 's', identifier, imageType.lower() + '.jpg')
             if not os.path.exists(pathnameArtwork):
+                pollingCallback()
                 try:
-                    pollingCallback()
                     os.makedirs(os.path.dirname(pathnameArtwork))
                 except OSError:
                     pass
@@ -66,8 +66,6 @@ def processInitialArtwork(profile, movieRecord, containerLocation, imageBaseUrl,
 
             if imageType == 'Poster':
                 processBacklogEntry(profile, 'poster', identifier, False, pollingCallback)
-            # elif imageType == 'Backdrop':
-            #     pass
         else:
             movieRecord['key' + imageType] = movieRecord['url' + imageType].replace('/', '').replace('.jpg', '')
             pathname = os.path.join(APP_STORAGE_PATH, 'artwork', imageType.lower() + 's', movieRecord['key' + imageType])

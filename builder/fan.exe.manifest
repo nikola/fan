@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <assembly xmlns="urn:schemas-microsoft-com:asm.v1" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3" manifestVersion="1.0">
-    <assemblyIdentity name="fan" version="0.13.2.3" processorArchitecture="*" type="win32"/>
+    <assemblyIdentity name="fan" version="0.13.3.0" processorArchitecture="*" type="win32"/>
     <description>A movie compilation and playback app for Windows. Fast. Lean. No weather widget.</description>
 
     <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">

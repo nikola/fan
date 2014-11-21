@@ -26,7 +26,7 @@ import datetime
 
 import simplejson as json
 
-from identifier.fixture import TOP_250, POSTERS, BACKDROPS, TRAILERS_HD
+from identifier.fixture import TOP_250, BACKDROPS, TRAILERS_HD
 from utils.net import getThrottledJsonResponse, makeUnthrottledGetRequest
 from utils.logs import getLogger
 
@@ -339,11 +339,6 @@ def identifyMovieByTitleYear(profile, language, country, titlePrimary, yearPrima
                         if ratingSearch is not None:
                             rating = float(ratingSearch.group(1)) * 10
 
-                if POSTERS.has_key(movieId):
-                    urlPoster = '/%s.jpg' % POSTERS[movieId]
-                else:
-                    urlPoster = response['poster_path']
-
                 if BACKDROPS.has_key(movieId):
                     urlBackdrop = '/%s.jpg' % BACKDROPS[movieId]
                 else:
@@ -381,7 +376,7 @@ def identifyMovieByTitleYear(profile, language, country, titlePrimary, yearPrima
                     titleOriginal       = response['original_title'],
                     releaseYear         = datetime.datetime.strptime(response['release_date'], '%Y-%m-%d').year,
                     runtime             = response['runtime'] or None,
-                    urlPoster           = urlPoster,
+                    urlPoster           = response['poster_path'],
                     urlBackdrop         = urlBackdrop,
                     homepage            = response['homepage'],
                     budget              = response['budget'] or None,

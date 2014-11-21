@@ -43,15 +43,21 @@ def processInitialArtwork(profile, movieRecord, containerLocation, imageBaseUrl,
     logger = getLogger(profile, 'downloader')
 
     for imageType in ('Poster', 'Backdrop'):
-        pathnameOverlay = os.path.join(os.path.dirname(containerLocation), imageType.lower() + '.jpg')
+        useOverlayPathname = None
+        pathnameOverlay = os.path.join(os.path.dirname(containerLocation), imageType.lower())
         pollingCallback()
-        if os.path.exists(pathnameOverlay):
+        if os.path.exists(pathnameOverlay + '.jpg'):
+            useOverlayPathname = pathnameOverlay + '.jpg'
+            pollingCallback()
+        elif os.path.exists(pathnameOverlay + '.' + movieRecord.get('language') + '.jpg'):
+            useOverlayPathname = pathnameOverlay + '.' + movieRecord.get('language') + '.jpg'
             pollingCallback()
 
+        if useOverlayPathname is not None:
             logger.info('Using local ' + imageType.lower() + ' for "%s (%d)" found in %s' % (movieRecord['title'], movieRecord['releaseYear'], os.path.dirname(containerLocation)))
             pollingCallback()
 
-            identifier = getHashFromImage(pathnameOverlay, pollingCallback)
+            identifier = getHashFromImage(useOverlayPathname, pollingCallback)
             pathnameArtwork = os.path.join(APP_STORAGE_PATH, 'artwork', imageType.lower() + 's', identifier, imageType.lower() + '.jpg')
             if not os.path.exists(pathnameArtwork):
                 pollingCallback()
@@ -60,7 +66,7 @@ def processInitialArtwork(profile, movieRecord, containerLocation, imageBaseUrl,
                 except OSError:
                     pass
                 pollingCallback()
-                shutil.copy(pathnameOverlay, pathnameArtwork)
+                shutil.copy(useOverlayPathname, pathnameArtwork)
                 pollingCallback()
             movieRecord['key' + imageType] = identifier
 

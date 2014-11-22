@@ -106,7 +106,7 @@ def _startOrchestrator(profile, queue):
                 time.sleep(0)
 
                 break
-            elif command == 'orchestrator:start:scan':
+            elif command == 'orchestrator:start:sweep':
                 appModule.userConfig = processCurrentUserConfig(profile)
 
                 if appModule.userConfig.get('isDemoMode', False):

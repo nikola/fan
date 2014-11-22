@@ -46,8 +46,7 @@ def ready(request):
     module.imageBaseUrl, module.imageClosestSize = getImageConfiguration(module.profile, 300)
 
     if module.imageBaseUrl is not None:
-        module.interProcessQueue.put('orchestrator:start:scan')
-        # TODO: remame to orchestrator:start:sweep
+        module.interProcessQueue.put('orchestrator:start:sweep')
 
     return '', 200
 

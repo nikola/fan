@@ -41,10 +41,6 @@ from models.certifications import Certification
 from models.genres import GenresString
 
 
-# TODO: use named tuples ?
-#   https://docs.python.org/2/library/collections.html#collections.namedtuple
-
-
 def initialize(profile):
     StreamManager(profile, cleanUp=True).shutdown()
 

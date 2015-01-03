@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 from __future__ import division
 
 __author__ = 'Nikola Klaric (nikola@klaric.org)'
-__copyright__ = 'Copyright (C) 2013-2014 Nikola Klaric'
+__copyright__ = 'Copyright (C) 2013-2015 Nikola Klaric'
 
 import os
 import time

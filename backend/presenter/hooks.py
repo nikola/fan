@@ -1,7 +1,7 @@
 # coding: utf-8
 """
 fan - A movie compilation and playback app for Windows. Fast. Lean. No weather widget.
-Copyright (C) 2013-2014 Nikola Klaric.
+Copyright (C) 2013-2015 Nikola Klaric.
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

@@ -17,7 +17,7 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
  *  @author Nikola Klaric (nikola@klaric.org)
- *  @copyright Copyright (C) 2013-2015 Nikola Klaric
+ *  @copyright Copyright (C) 2013-2015 Nikola Klaric.
  */
 
 ; var ka = ka || {}; if (!('transition' in ka)) ka.transition = {};

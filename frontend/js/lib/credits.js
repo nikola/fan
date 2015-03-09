@@ -63,7 +63,7 @@ ka.lib.getLicenseTexts = function () {
 
         (function () {/*
 <span>fan</span>
-Copyright 2013-2014 Nikola Klaric.
+Copyright 2013-2015 Nikola Klaric.
 <br>
 This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
 <br>

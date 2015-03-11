@@ -67,7 +67,7 @@ ka.lib.grid = {
 
             buffer.css('display', 'none');
             $('#boom-movie-grid-container')
-                .css({'transform': 'translate3d(0,0,0)', height: 1080})
+                .css({'transform': 'translate3d(0,0,0)', height: ka.settings.deviceHeight})
                 .velocity({translateY: '0px'}, 0);
         }
     }
@@ -76,8 +76,8 @@ ka.lib.grid = {
         if (ka.state.occludedGridItems !== null && ka.state.occludedGridItems.length > 0) {
             ka.state.occludedGridItems.css({display: 'inline-block'});
             $('#boom-movie-grid-container')
-                .css({'transform': 'translate3d(0,-' + (ka.state.gridPage * 1080) + 'px,0)', height: ka.state.gridTotalPages * 1080})
-                .velocity({translateY: '-' + (ka.state.gridPage * 1080) + 'px'}, 0);
+                .css({'transform': 'translate3d(0,-' + (ka.state.gridPage * ka.settings.deviceHeight) + 'px,0)', height: ka.state.gridTotalPages * ka.settings.deviceHeight})
+                .velocity({translateY: '-' + (ka.state.gridPage * ka.settings.deviceHeight) + 'px'}, 0);
         }
     }
 
@@ -162,8 +162,8 @@ ka.lib.onPosterLoaded = function () {
     if (!movieObj.isBackdropCached) {
         $('<img>', {
             class: 'boom-backdrop'
-          , width: 1920
-          , height: 1080
+          , width: ka.settings.deviceWidth
+          , height: ka.settings.deviceHeight
           , src: '/movie/backdrop/' + movieObj.keyBackdrop + '.jpg'
           , data: {
                 'boom.key': movieObj.keyBackdrop
@@ -583,7 +583,7 @@ ka.lib.scrollGrid = function (skipEvents) {
         options.complete = ka.lib.grid.processDeferredUpdates;
     }
 
-    $('#boom-movie-grid-container').velocity({translateZ: 0, translateY: '-' + (ka.state.gridPage * 1080) + 'px'}, options);
+    $('#boom-movie-grid-container').velocity({translateZ: 0, translateY: '-' + (ka.state.gridPage * ka.settings.deviceHeight) + 'px'}, options);
 };
 
 
@@ -1081,7 +1081,7 @@ ka.lib.recalcPositionById = function (id) {
 
 
 ka.lib.repositionGrid = function (offscreen) {
-    $('#boom-movie-grid-container').velocity({translateZ: 0, translateY: '-' + (ka.state.gridPage * 1080) + 'px'}, 0);
+    $('#boom-movie-grid-container').velocity({translateZ: 0, translateY: '-' + (ka.state.gridPage * ka.settings.deviceHeight) + 'px'}, 0);
 
     var top = 16 + 360 * ka.state.gridFocusY, left = 116 + 260 * ka.state.gridFocusX, display = 'block';
     if (offscreen) {

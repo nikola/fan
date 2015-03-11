@@ -122,9 +122,9 @@ if __name__ == '__main__':
             logger.critical('Aborting because system is not Windows Vista or newer.')
             sys.exit()
 
-        if getScreenResolution() != (1920, 1080):
-            windll.user32.MessageBoxA(0, 'This application must be run at 1920x1080 screen resolution.', 'Error', 0)
-            logger.critical('Aborting because screen resolution is not 1920x1080.')
+        if getScreenResolution() not in ((1920, 1080), (2560,1440)):
+            windll.user32.MessageBoxA(0, 'This application must be run at 1920x1080 or 2560x1440 screen resolution.', 'Error', 0)
+            logger.critical('Aborting because screen resolution is not 1920x1080 or 2560x1440.')
             sys.exit()
 
         if not isDesktopCompositionEnabled():

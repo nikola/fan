@@ -26,7 +26,7 @@
     }
 
 #boom-movie-grid-container {
-    width: 1920px;
+    /* width: 1920px; */
 
     position: absolute; top: 0; left: 0;
 
@@ -56,8 +56,9 @@
     }
 
 .boom-movie-grid-key {
-    width: 120px; height: 360px;
-    margin-right: -20px;
+    /* width: 120px;
+    margin-right: -20px; */
+    height: 360px;
     padding: 0;
 
     display: inline-block;
@@ -85,8 +86,8 @@
     }
 
 .boom-movie-grid-table {
-    display: inline-block;
     width: 1820px;
+    display: inline-block;
     border-collapse: collapse;
 
     background-color: black;
@@ -239,8 +240,34 @@
 
 @media (device-width: 1920px) {
 
+    #boom-movie-grid-container {
+        width: 1920px;
+        }
+
+    .boom-movie-grid-key {
+        width: 120px;
+        margin-right: -20px;
+        }
+
+    .boom-movie-grid-table {
+        width: 1820px;
+        }
+
     }
 
 @media (device-width: 2560px) {
+
+     #boom-movie-grid-container {
+        width: 2560px;
+        }
+
+    .boom-movie-grid-key {
+        width: 240px;
+        margin-right: -20px;
+        }
+
+    .boom-movie-grid-table {
+        width: 2340px;
+        }
 
     }

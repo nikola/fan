@@ -185,8 +185,8 @@ ka.lib.browser = {
 
                     var poster = $('<img>', {
                         class: 'boom-backdrop'
-                      , width: 1920
-                      , height: 1080
+                      , width: ka.settings.deviceWidth
+                      , height: ka.settings.deviceHeight
                       , src: '/movie/backdrop/' + movieObj.keyBackdrop + '.jpg'
                       , data: {
                             'boom.key': movieObj.keyBackdrop
@@ -702,7 +702,7 @@ ka.lib.toggleAvailableStreams = function () {
         ka.state.view = 'limbo';
 
         var movieObj = ka.data.byId[$('#boom-movie-detail').data('boom.id')],
-            height = ka.lib.browser.isHidden() ? 1080 : ka.lib.browser.isExpanded() ? 610 : 833;
+            height = ka.lib.browser.isHidden() ? ka.settings.deviceHeight : ka.lib.browser.isExpanded() ? 610 : 833; // TODO: set height depending on resolution
         $('#boom-detail-available-streams, #boom-detail-buttons-shade').velocity({height: height}, {duration: 0, complete: function () {
             $('#boom-detail-focus').velocity({translateZ: 0, opacity: 0}, ka.settings.durationShort);
 

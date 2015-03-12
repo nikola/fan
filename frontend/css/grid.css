@@ -56,8 +56,8 @@
     }
 
 .boom-movie-grid-key {
-    /* width: 120px;
-    margin-right: -20px; */
+    width: 120px;
+    margin-right: -20px;
     height: 360px;
     padding: 0;
 
@@ -244,10 +244,10 @@
         width: 1920px;
         }
 
-    .boom-movie-grid-key {
+    /* .boom-movie-grid-key {
         width: 120px;
         margin-right: -20px;
-        }
+        } */
 
     .boom-movie-grid-table {
         width: 1820px;
@@ -258,16 +258,16 @@
 @media (device-width: 2560px) {
 
      #boom-movie-grid-container {
-        width: 2560px;
+        width: 2460px;
         }
 
-    .boom-movie-grid-key {
+    /* .boom-movie-grid-key {
         width: 240px;
         margin-right: -20px;
-        }
+        } */
 
     .boom-movie-grid-table {
-        width: 2340px;
+        width: 2360px;
         }
 
     }

@@ -27,7 +27,7 @@ ka.state.youtubePlayerInitialized = false;
 
 function onYouTubeIframeAPIReady() {
     ka.state.movieTrailerPlayer = new YT.Player('boom-movie-trailer', {
-        width: '1920', height: '1080', playerVars: {
+        width: ka.settings.deviceWidth, height: ka.settings.deviceHeight, playerVars: {
             autoplay: 1
           , autohide: 1
           , controls: 0

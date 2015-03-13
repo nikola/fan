@@ -941,7 +941,7 @@ ka.lib.openCompilation = function (callback) {
     $('#boom-compilation-container')
         .css({
             width: 360 * ka.state.currentCompilationColumnSize
-          , marginLeft: (1920 - (360 * ka.state.currentCompilationColumnSize) + 100) / 2
+          , marginLeft: (ka.settings.deviceWidth - (360 * ka.state.currentCompilationColumnSize) + 100) / 2
         })
         .velocity('transition.expandIn', {display: 'flex', duration: ka.settings.durationNormal, complete: function () {
             var coord = $('.boom-compilation-grid-item:first-child').offset();
@@ -993,9 +993,9 @@ ka.lib.dissolveCompilation = function () {
     ka.state.actualScreenMode = null;
     ka.state.currentCompilationPosterCount = 0;
 
-    $('#boom-movie-grid-container, #boom-grid-focus').velocity({left: '-=1920'}, 0);
+    $('#boom-movie-grid-container, #boom-grid-focus').velocity({left: '-=' + ka.settings.deviceWidth}, 0);
     $('#boom-compilation-container, #boom-compilation-focus').velocity('fadeOut', {duration: 0, complete: function () {
-        $('#boom-compilation-container, #boom-compilation-focus').velocity({left: '+=1920'}, 0);
+        $('#boom-compilation-container, #boom-compilation-focus').velocity({left: '+=' + ka.settings.deviceWidth}, 0);
     }});
 
     $('.boom-movie-grid-image').css('webkitFilter', '').velocity({scaleX: 1, scaleY: 1, scaleZ: 1, opacity: 1}, 0);
@@ -1085,7 +1085,7 @@ ka.lib.repositionGrid = function (offscreen) {
 
     var top = 16 + 360 * ka.state.gridFocusY, left = 116 + 260 * ka.state.gridFocusX, display = 'block';
     if (offscreen) {
-        left -= 1920;
+        left -= ka.settings.deviceWidth;
         display = 'none';
     }
 

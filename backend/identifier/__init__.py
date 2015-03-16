@@ -98,7 +98,7 @@ def getStreamRecords(sources):
 
                 # Only files with actual movie content.
                 if dirname.lower() != 'extras':
-                    streams = getOnlyStreams(root, files)
+                    streams = getOnlySupportedStreams(root, files)
 
                     if len(streams):
                         if re.compile(r'^\\\\\?\\UNC\\\w+\\\w+$').search(root) is None:
@@ -171,7 +171,7 @@ def getBaseDataFromPathname(pathname):
     return {'title': extractedTitle, 'year': releaseYear}
 
 
-def getOnlyStreams(root, files):
+def getOnlySupportedStreams(root, files):
     streams = []
     for filename in files:
         if not filename.lower().endswith('.mkv'):
@@ -391,7 +391,7 @@ def identifyMovieByTitleYear(profile, language, country, titlePrimary, yearPrima
     return record
 
 
-def getMovieRecordFromLocation(profile, streamLocation, basedataFromStream, basedataFromDir, userConfig, imageBaseUrl, processCallback):
+def getMovieRecordFromLocation(profile, streamLocation, basedataFromStream, basedataFromDir, userConfig, processCallback):
     processCallback()
 
     logger = getLogger(profile, 'identifier')
@@ -402,6 +402,12 @@ def getMovieRecordFromLocation(profile, streamLocation, basedataFromStream, base
         logger.info('Importing TOP 250 movie: "%s (%d)"' % (basedataFromStream['title'], basedataFromStream['year']))
 
     processCallback()
+
+    for root, dirs, filenames in os.walk(os.path.dirname(streamLocation)):
+        processCallback()
+        for filename in filenames:
+            if re.search('^\d+.tmdb$', filename) is not None:
+                idTheMovieDb = os.path.splitext(filename)[0]
 
     movieRecord = identifyMovieByTitleYear(
         profile,

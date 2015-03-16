@@ -228,7 +228,6 @@ def _startOrchestrator(profile, queue):
                                 basedataFromStream,
                                 basedataFromDir,
                                 appModule.userConfig,
-                                appModule.imageBaseUrl,
                                 _processRequests,
                             )
                         except (JSONDecodeError, AttributeError, TypeError, KeyError):

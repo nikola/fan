@@ -308,85 +308,7 @@ def identifyMovieByTitleYear(profile, language, country, titlePrimary, yearPrima
         if len(resultList):
             movieId = resultList[0]['id']
 
-            url = 'https://api.themoviedb.org/3/movie/%d' % movieId
-            params = {
-                'ncv_xrl'.decode((str(255-0xe0)+'\x74\x6f\x72')[::-1]): 'rs89p0n371440n7226r1or2qqsr84318'.decode('\x72\x6f\x74' + str((2 << 3) - 3)),
-                'language': language,
-                'append_to_response': 'trailers,releases',
-            }
-            response = getThrottledJsonResponse(profile, url, params, pollingCallback)
-
-            if response.get('poster_path', None) is not None:
-                logger.info('Movie identified at themoviedb.org as "%s" with ID: %d.' % (response['original_title'], movieId))
-                pollingCallback()
-
-                overview = response.get('overview', None)
-                if overview is None:
-                    logger.info('Movie has no overview in locale "%s", falling back to English ...' % language)
-                    pollingCallback()
-                    params['language'] = 'en'
-                    response = getThrottledJsonResponse(profile, url, params, pollingCallback)
-
-                # Fetch rating from IMDB instead of TheMovieDB.
-                rating = None
-                idImdb = response['imdb_id']
-                if idImdb is not None:
-                    url = 'http://www.imdb.com/title/%s/' % idImdb
-                    responseImdb = makeUnthrottledGetRequest(profile, url)
-                    pollingCallback()
-                    if responseImdb is not None:
-                        ratingSearch = re.search('<span itemprop="ratingValue">\s*([^<]+)', responseImdb.text)
-                        if ratingSearch is not None:
-                            rating = float(ratingSearch.group(1)) * 10
-
-                if BACKDROPS.has_key(movieId):
-                    urlBackdrop = '/%s.jpg' % BACKDROPS[movieId]
-                else:
-                    urlBackdrop = response['backdrop_path']
-
-                if TRAILERS_HD.has_key(movieId):
-                    idYoutubeTrailer = TRAILERS_HD[movieId]
-                elif response['trailers'].has_key('youtube') and len(response['trailers']['youtube']):
-                    idYoutubeTrailer = response['trailers']['youtube'][0].get('source')
-                else:
-                    idYoutubeTrailer = None
-
-                belongsToCollection = response['belongs_to_collection']
-                if belongsToCollection is not None:
-                    collectionId = belongsToCollection['id']
-                    collectionName = belongsToCollection['name']
-                    if language == 'en':
-                        collectionName = collectionName.replace(' Collection', '')
-                    elif language == 'de':
-                        collectionName = re.sub(r' [a-zA-Z]*reihe$', '', collectionName, flags=re.IGNORECASE)
-                else:
-                    collectionId, collectionName = None, None
-
-                genres = ', '.join(sorted([genre['name'] for genre in response.get('genres', []) if genre['name'] not in ('Adventure', 'Abenteuer')])) or ''
-                certifications = {country['iso_3166_1']: country['certification'] for country in response['releases'].get('countries', [])}
-
-                record = dict(
-                    idTheMovieDb        = movieId,
-                    language            = language,
-                    country             = country,
-                    title               = response['title'] or response['original_title'],
-                    storyline           = overview,
-                    idImdb              = idImdb,
-                    idYoutubeTrailer    = idYoutubeTrailer,
-                    titleOriginal       = response['original_title'],
-                    releaseYear         = datetime.datetime.strptime(response['release_date'], '%Y-%m-%d').year,
-                    runtime             = response['runtime'] or None,
-                    urlPoster           = response['poster_path'],
-                    urlBackdrop         = urlBackdrop,
-                    homepage            = response['homepage'],
-                    budget              = response['budget'] or None,
-                    revenue             = response['revenue'] or None,
-                    certificationDict   = certifications,
-                    rating              = rating,
-                    genres              = genres,
-                    compilationId       = collectionId,
-                    compilationName     = collectionName,
-                )
+            record = getMovieRecordById(movieId, profile, language, country, pollingCallback)
 
     return record
 
@@ -403,22 +325,125 @@ def getMovieRecordFromLocation(profile, streamLocation, basedataFromStream, base
 
     processCallback()
 
-    for root, dirs, filenames in os.walk(os.path.dirname(streamLocation)):
+    movieRecord = None
+
+    streamDir = os.path.dirname(streamLocation)
+    for root, dirs, filenames in os.walk(streamDir):
         processCallback()
         for filename in filenames:
             if re.search('^\d+.tmdb$', filename) is not None:
-                idTheMovieDb = os.path.splitext(filename)[0]
+                idTheMovieDb = int(os.path.splitext(filename)[0])
+                logger.info('Found TMDB override ID %d in %s, trying to fetch metadata ...' % (idTheMovieDb, streamDir))
+                try:
+                    movieRecord = getMovieRecordById(
+                        idTheMovieDb,
+                        profile,
+                        userConfig.get('language', 'en'),
+                        userConfig.get('country', 'US'),
+                        processCallback,
+                    )
+                except (json.JSONDecodeError, AttributeError, TypeError, KeyError):
+                    pass
 
-    movieRecord = identifyMovieByTitleYear(
-        profile,
-        userConfig.get('language', 'en'),
-        userConfig.get('country', 'US'),
-        basedataFromDir.get('title'), basedataFromDir.get('year'),
-        basedataFromStream.get('title'), basedataFromStream.get('year'),
-        processCallback,
-    )
+    if movieRecord is None:
+        movieRecord = identifyMovieByTitleYear(
+            profile,
+            userConfig.get('language', 'en'),
+            userConfig.get('country', 'US'),
+            basedataFromDir.get('title'), basedataFromDir.get('year'),
+            basedataFromStream.get('title'), basedataFromStream.get('year'),
+            processCallback,
+        )
 
     return movieRecord
+
+
+def getMovieRecordById(movieId, profile, language, country, pollingCallback):
+    logger = getLogger(profile, 'identifier')
+
+    record = None
+
+    url = 'https://api.themoviedb.org/3/movie/%d' % movieId
+    params = {
+        'ncv_xrl'.decode((str(255-0xe0)+'\x74\x6f\x72')[::-1]): 'rs89p0n371440n7226r1or2qqsr84318'.decode('\x72\x6f\x74' + str((2 << 3) - 3)),
+        'language': language,
+        'append_to_response': 'trailers,releases',
+    }
+    response = getThrottledJsonResponse(profile, url, params, pollingCallback)
+
+    if response.get('poster_path', None) is not None:
+        logger.info('Movie identified at themoviedb.org as "%s" with ID: %d.' % (response['original_title'], movieId))
+        pollingCallback()
+
+        overview = response.get('overview', None)
+        if overview is None:
+            logger.info('Movie has no overview in locale "%s", falling back to English ...' % language)
+            pollingCallback()
+            params['language'] = 'en'
+            response = getThrottledJsonResponse(profile, url, params, pollingCallback)
+
+        # Fetch rating from IMDB instead of TheMovieDB.
+        rating = None
+        idImdb = response['imdb_id']
+        if idImdb is not None:
+            url = 'http://www.imdb.com/title/%s/' % idImdb
+            responseImdb = makeUnthrottledGetRequest(profile, url)
+            pollingCallback()
+            if responseImdb is not None:
+                ratingSearch = re.search('<span itemprop="ratingValue">\s*([^<]+)', responseImdb.text)
+                if ratingSearch is not None:
+                    rating = float(ratingSearch.group(1)) * 10
+
+        if BACKDROPS.has_key(movieId):
+            urlBackdrop = '/%s.jpg' % BACKDROPS[movieId]
+        else:
+            urlBackdrop = response['backdrop_path']
+
+        if TRAILERS_HD.has_key(movieId):
+            idYoutubeTrailer = TRAILERS_HD[movieId]
+        elif response['trailers'].has_key('youtube') and len(response['trailers']['youtube']):
+            idYoutubeTrailer = response['trailers']['youtube'][0].get('source')
+        else:
+            idYoutubeTrailer = None
+
+        belongsToCollection = response['belongs_to_collection']
+        if belongsToCollection is not None:
+            collectionId = belongsToCollection['id']
+            collectionName = belongsToCollection['name']
+            if language == 'en':
+                collectionName = collectionName.replace(' Collection', '')
+            elif language == 'de':
+                collectionName = re.sub(r' [a-zA-Z]*reihe$', '', collectionName, flags=re.IGNORECASE)
+        else:
+            collectionId, collectionName = None, None
+
+        genres = ', '.join(sorted([genre['name'] for genre in response.get('genres', []) if genre['name'] not in ('Adventure', 'Abenteuer')])) or ''
+        certifications = {country['iso_3166_1']: country['certification'] for country in response['releases'].get('countries', [])}
+
+        record = dict(
+            idTheMovieDb        = movieId,
+            language            = language,
+            country             = country,
+            title               = response['title'] or response['original_title'],
+            storyline           = overview,
+            idImdb              = idImdb,
+            idYoutubeTrailer    = idYoutubeTrailer,
+            titleOriginal       = response['original_title'],
+            releaseYear         = datetime.datetime.strptime(response['release_date'], '%Y-%m-%d').year,
+            runtime             = response['runtime'] or None,
+            urlPoster           = response['poster_path'],
+            urlBackdrop         = urlBackdrop,
+            homepage            = response['homepage'],
+            budget              = response['budget'] or None,
+            revenue             = response['revenue'] or None,
+            certificationDict   = certifications,
+            rating              = rating,
+            genres              = genres,
+            compilationId       = collectionId,
+            compilationName     = collectionName,
+        )
+
+    return record
 
 
 def getClientMovieRecordAsJson(movieId, movieRecord, streamLocation):

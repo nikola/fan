@@ -1,7 +1,7 @@
 # coding: utf-8
 """
 fan - A movie compilation and playback app for Windows. Fast. Lean. No weather widget.
-Copyright (C) 2013-2014 Nikola Klaric.
+Copyright (C) 2013-2015 Nikola Klaric.
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,7 +18,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 __author__ = 'Nikola Klaric (nikola@klaric.org)'
-__copyright__ = 'Copyright (C) 2013-2014 Nikola Klaric'
+__copyright__ = 'Copyright (C) 2013-2015 Nikola Klaric'
 
 import sys
 import os
@@ -122,9 +122,9 @@ if __name__ == '__main__':
             logger.critical('Aborting because system is not Windows Vista or newer.')
             sys.exit()
 
-        if getScreenResolution() not in ((1920, 1080), (2560,1440)):
-            windll.user32.MessageBoxA(0, 'This application must be run at 1920x1080 or 2560x1440 screen resolution.', 'Error', 0)
-            logger.critical('Aborting because screen resolution is not 1920x1080 or 2560x1440.')
+        if getScreenResolution() not in ((1920, 1080), (2560,1440), (3840, 2160)):
+            windll.user32.MessageBoxA(0, 'This application must be run at 1920x1080, 2560x1440 or 3840x2160 screen resolution.', 'Error', 0)
+            logger.critical('Aborting because screen resolution is not 1920x1080, 2560x1440 or 3840x2160.')
             sys.exit()
 
         if not isDesktopCompositionEnabled():

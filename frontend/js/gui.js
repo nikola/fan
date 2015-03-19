@@ -57,10 +57,12 @@ ka.metrics = {
 ka.settings = {
     deviceWidth: window.screen.width
   , deviceHeight: window.screen.height
-  , gridMaxRows: window.screen.height / 360
-  , gridMaxColumns: Math.floor((window.screen.width - 100) / 260)
-  , compilationPosterOffsetTop: -18
-  , compilationPosterOffsetLeft: 12
+  /* , gridMaxRows: window.screen.height / 360
+  , gridMaxColumns: Math.floor((window.screen.width - 100) / 260) */
+  , gridMaxRows: 3
+  , gridMaxColumns: 7
+  , compilationPosterOffsetTop: -18 // TODO: adapt/scale
+  , compilationPosterOffsetLeft: 12 // TODO: adapt/scale
 
   , durationUltraShort: 45
   , durationVeryShort: 90

@@ -52,12 +52,12 @@ ka.lib.browser = {
 
             ka.lib.browser.poster.slideUp();
 
-            $('#boom-detail-title').velocity({translateZ: 0, width: 1580, height: '-=100'}, ka.settings.durationNormal);
-            $('#boom-detail-collection').velocity({translateZ: 0, bottom: '+=100', opacity: 0}, {duration: ka.settings.durationNormal, display: 'none'});
+            $('#boom-detail-title').velocity({translateZ: 0, width: 1580, height: '-=100'}, ka.settings.durationNormal); // TODO: adapt/scale
+            $('#boom-detail-collection').velocity({translateZ: 0, bottom: '+=100', opacity: 0}, {duration: ka.settings.durationNormal, display: 'none'}); // TODO: adapt/scale
 
-            $('#boom-detail-storyline').velocity({translateZ: 0, top: '-=120'}, ka.settings.durationNormal);
+            $('#boom-detail-storyline').velocity({translateZ: 0, top: '-=120'}, ka.settings.durationNormal); // TODO: adapt/scale
 
-            $('#boom-detail-browser, #boom-detail-focus').velocity({translateZ: 0, bottom: '+=247px', opacity: 0}, {display: 'none', duration: ka.settings.durationNormal});
+            $('#boom-detail-browser, #boom-detail-focus').velocity({translateZ: 0, bottom: '+=247px', opacity: 0}, {display: 'none', duration: ka.settings.durationNormal}); // TODO: adapt/scale
 
             $('#boom-detail-panel').velocity({translateZ: 0, bottom: 0}, {duration: ka.settings.durationNormal, complete: function () {
                 ka.lib.browser.setExpanded();
@@ -73,15 +73,15 @@ ka.lib.browser = {
 
             ka.lib.browser.poster.slideDown();
 
-            $('#boom-detail-title').velocity({translateZ: 0, width: 1049, height: '+=100'}, ka.settings.durationNormal);
-            $('#boom-detail-collection').css('display', 'inline-block').velocity({translateZ: 0, bottom: '-=100', opacity: 1}, ka.settings.durationNormal);
+            $('#boom-detail-title').velocity({translateZ: 0, width: 1049, height: '+=100'}, ka.settings.durationNormal); // TODO: adapt/scale
+            $('#boom-detail-collection').css('display', 'inline-block').velocity({translateZ: 0, bottom: '-=100', opacity: 1}, ka.settings.durationNormal); // TODO: adapt/scale
 
-            $('#boom-detail-storyline').velocity({translateZ: 0, top: '+=120'}, ka.settings.durationNormal);
+            $('#boom-detail-storyline').velocity({translateZ: 0, top: '+=120'}, ka.settings.durationNormal); // TODO: adapt/scale
 
-            $('#boom-detail-browser').css('display', 'inline-block').velocity({translateZ: 0, bottom: '-=247px', opacity: 1}, ka.settings.durationNormal);
-            $('#boom-detail-focus').css('display', 'inline-block').velocity({translateZ: 0, bottom: [226, 473], opacity: 1}, ka.settings.durationNormal);
+            $('#boom-detail-browser').css('display', 'inline-block').velocity({translateZ: 0, bottom: '-=247px', opacity: 1}, ka.settings.durationNormal); // TODO: adapt/scale
+            $('#boom-detail-focus').css('display', 'inline-block').velocity({translateZ: 0, bottom: [226, 473], opacity: 1}, ka.settings.durationNormal); // TODO: adapt/scale
 
-            $('#boom-detail-panel').velocity({translateZ: 0, bottom: -223}, {duration: ka.settings.durationNormal, complete: function () {
+            $('#boom-detail-panel').velocity({translateZ: 0, bottom: -223}, {duration: ka.settings.durationNormal, complete: function () { // TODO: adapt/scale
                 ka.lib.browser.setContracted();
 
                 ka.state.view = 'detail';
@@ -94,7 +94,7 @@ ka.lib.browser = {
 
         var isHidden = $('#boom-detail-panel').data('boom.isHidden'),
             direction = isHidden ? '+' : '-',
-            distance = ka.lib.browser.isExpanded() ? 470 : 247;
+            distance = ka.lib.browser.isExpanded() ? 470 : 247; // TODO: adapt/scale
 
         $('#boom-detail-panel')
             .data('boom.isHidden', !isHidden)
@@ -106,7 +106,7 @@ ka.lib.browser = {
   , focus: {
 
         reposition: function () {
-            $('#boom-detail-focus').velocity({left: 1110 + 2 + 160 * ka.state.currentDetailBrowserPosterColumn}, 0);
+            $('#boom-detail-focus').velocity({left: 1110 + 2 + 160 * ka.state.currentDetailBrowserPosterColumn}, 0); // TODO: adapt/scale
         }
 
     }
@@ -126,11 +126,11 @@ ka.lib.browser = {
                     if (ka.state.isPosterScaled[movieObj.keyPoster] || gridPoster.size() == 0) {
                         image = $('<img>', {
                             src: '/movie/poster/' + movieObj.keyPoster + '-300.image'
-                          , width: 300
-                          , height: 450
+                          , width: 300 // TODO: adapt/scale
+                          , height: 450 // TODO: adapt/scale
                         });
                     } else {
-                        image = gridPoster.clone(false).removeAttr('id class').attr({width: 300, height: 450});
+                        image = gridPoster.clone(false).removeAttr('id class').attr({width: 300, height: 450}); // TODO: adapt/scale
                     }
                 }
 
@@ -142,11 +142,11 @@ ka.lib.browser = {
         }
 
       , slideUp: function () {
-            $('#boom-detail-large-poster').css('display', 'block').velocity({translateZ: 0, bottom: [10, -480]}, ka.settings.durationNormal);
+            $('#boom-detail-large-poster').css('display', 'block').velocity({translateZ: 0, bottom: [10, -480]}, ka.settings.durationNormal); // TODO: adapt/scale
         }
 
       , slideDown: function () {
-            $('#boom-detail-large-poster').velocity({translateZ: 0, bottom: [-480, 10]}, {duration: ka.settings.durationNormal, display: 'none'});
+            $('#boom-detail-large-poster').velocity({translateZ: 0, bottom: [-480, 10]}, {duration: ka.settings.durationNormal, display: 'none'}); // TODO: adapt/scale
         }
 
     }
@@ -234,15 +234,15 @@ ka.lib.browser = {
   , posters: {
 
         show: function () {
-            $('#boom-detail-focus').velocity({bottom: -21}, {duration: 0, complete: function () {
-                $('#boom-detail-focus').css('display', 'block').velocity({translateZ: 0, bottom: 226}, ka.settings.durationNormal);
-                $('#boom-detail-browser').css('display', 'inline-block').velocity({translateZ: 0, bottom: '+=247'}, ka.settings.durationNormal);
+            $('#boom-detail-focus').velocity({bottom: -21}, {duration: 0, complete: function () { // TODO: adapt/scale
+                $('#boom-detail-focus').css('display', 'block').velocity({translateZ: 0, bottom: 226}, ka.settings.durationNormal); // TODO: adapt/scale
+                $('#boom-detail-browser').css('display', 'inline-block').velocity({translateZ: 0, bottom: '+=247'}, ka.settings.durationNormal); // TODO: adapt/scale
             }});
         }
 
       , hide: function () {
-            $('#boom-detail-browser').velocity({bottom: '+=' + 247, opacity: 0}, 0);
-            $('#boom-detail-focus').velocity({bottom: 473, opacity: 0}, 0);
+            $('#boom-detail-browser').velocity({bottom: '+=' + 247, opacity: 0}, 0); // TODO: adapt/scale
+            $('#boom-detail-focus').velocity({bottom: 473, opacity: 0}, 0); // TODO: adapt/scale
 
             ka.state.currentDetailBrowserPosterColumn = ka.lib.populateDetailBrowserGrid();
 
@@ -282,8 +282,8 @@ ka.lib._addBrowserGridImage = function (movieObj, index, unselected) {
     var styles = {
         webkitTransform: 'translateZ(0)'
       , webkitFilter: (unselected) ? 'saturate(0%) opacity(0.5)' : ''
-      , width: 150
-      , marginLeft: 10
+      , width: 150 // TODO: adapt/scale
+      , marginLeft: 10 // TODO: adapt/scale
       , backgroundColor: '#' + (movieObj.primaryPosterColor || '000000')
     };
 
@@ -295,14 +295,14 @@ ka.lib._addBrowserGridImage = function (movieObj, index, unselected) {
         if (ka.state.isPosterScaled[movieObj.keyPoster] || gridPoster.size() == 0) {
             return $('<img>', {
                 src: '/movie/poster/' + movieObj.keyPoster + '-150.image'
-              , width: 150
-              , height: 225
+              , width: 150 // TODO: adapt/scale
+              , height: 225 // TODO: adapt/scale
               , data: {'boom.index': index}
               , css: styles
             }).appendTo('#boom-detail-browser');
         } else {
             return gridPoster.clone(false)
-                .removeAttr('id class').attr({width: 150, height: 225}).css(styles).data('boom.index', index)
+                .removeAttr('id class').attr({width: 150, height: 225}).css(styles).data('boom.index', index) // TODO: adapt/scale
                 .appendTo('#boom-detail-browser');
         }
     }
@@ -310,8 +310,8 @@ ka.lib._addBrowserGridImage = function (movieObj, index, unselected) {
 
 ka.lib._addBrowserGridDummy = function () {
     return $('<img>', {
-        width: 0
-      , height: 225
+        width: 0 // TODO: adapt/scale
+      , height: 225 // TODO: adapt/scale
       , css: {
             webkitFilter: 'saturate(0%) opacity(0.5)'
           , webkitTransform: 'translateZ(0)'
@@ -324,8 +324,8 @@ ka.lib._addBrowserGridDummy = function () {
 ka.lib.populateDetailBrowserGrid = function () {
     $('#boom-detail-browser').empty();
     $('<img>', {
-          width: 150
-        , height: 225
+          width: 150 // TODO: adapt/scale
+        , height: 225 // TODO: adapt/scale
         , css: {
             webkitFilter: 'saturate(0%) opacity(0.5)'
           , webkitTransform: 'translateZ(0)'
@@ -382,7 +382,7 @@ ka.lib._updateDetailBrowserInfo = function (movieObj) {
 
     $('#boom-detail-title').text(ka.state.gridSortDisplayLanguage == 'localized' ? movieObj.titleLocalized : movieObj.titleOriginal);
 
-    var collectionName = '&nbsp;'
+    var collectionName = '&nbsp;';
     if (movieObj.isCompiled) {
         collectionName = movieObj.compilation;
         if (ka.config.language == 'en') {
@@ -434,7 +434,7 @@ ka.lib.moveDetailBrowserLeft = function () {
             }
 
             ka.lib.updateDetailBrowserInfo(snapshot[currentPosterIndex - 1], true);
-            ka.lib._moveDetailBrowserFocus(posters.eq(column + 1), posters.eq(column), '-=160', isPosterGridOffscreen);
+            ka.lib._moveDetailBrowserFocus(posters.eq(column + 1), posters.eq(column), '-=160', isPosterGridOffscreen); // TODO: adapt/scale
             ka.state.currentDetailBrowserPosterColumn -= 1;
         }, ka.settings.durationUltraShort);
     } else if (firstPosterIndex > 0) {
@@ -444,8 +444,8 @@ ka.lib.moveDetailBrowserLeft = function () {
             styles = {
                 webkitTransform: 'translateZ(0)'
               , webkitFilter: 'saturate(0%) opacity(0.5)'
-              , width: 150
-              , marginLeft: 10
+              , width: 150 // TODO: adapt/scale
+              , marginLeft: 10 // TODO: adapt/scale
               , backgroundColor: '#' + (movieObj.primaryPosterColor || '000000')
         };
         if (movieObj.keyPoster in ka.cache.smallBrowserPosterByKey) {
@@ -456,12 +456,12 @@ ka.lib.moveDetailBrowserLeft = function () {
             var gridPoster = $('#boom-poster-' + movieObj.id);
 
             if (ka.state.isPosterScaled[movieObj.keyPoster] || gridPoster.size() == 0) {
-                posters.eq(0).attr('src', '/movie/poster/' + movieObj.keyPoster + '-150.image')
+                posters.eq(0).attr('src', '/movie/poster/' + movieObj.keyPoster + '-150.image') // TODO: adapt/scale
                     .css(styles).data('boom.index', firstPosterIndex - 1);
             } else {
                 posters.eq(0).replaceWith(
                     gridPoster.clone(false)
-                        .removeAttr('id class').attr({width: 150, height: 225})
+                        .removeAttr('id class').attr({width: 150, height: 225}) // TODO: adapt/scale
                         .css(styles).data('boom.index', firstPosterIndex - 1)
                 );
             }
@@ -477,7 +477,7 @@ ka.lib.moveDetailBrowserLeft = function () {
             ka.lib.updateDetailBrowserInfo(snapshot[firstPosterIndex + 1], true);
             ka.lib._animatePosterMove(
                  ka.lib._addBrowserGridDummy()
-              , {translateZ: 0, width: 150, marginLeft: 10}
+              , {translateZ: 0, width: 150, marginLeft: 10} // TODO: adapt/scale
               , $('#boom-detail-browser img').eq(6)
               , posters.eq(3).get(0)
               , posters.eq(2).get(0)
@@ -507,7 +507,7 @@ ka.lib.moveDetailBrowserRight = function () {
             }
 
             ka.lib.updateDetailBrowserInfo(snapshot[currentPosterIndex + 1], true);
-            ka.lib._moveDetailBrowserFocus(posters.eq(column + 1), posters.eq(column + 2), '+=160', isPosterGridOffscreen);
+            ka.lib._moveDetailBrowserFocus(posters.eq(column + 1), posters.eq(column + 2), '+=160', isPosterGridOffscreen); // TODO: adapt/scale
             ka.state.currentDetailBrowserPosterColumn += 1;
         }, ka.settings.durationUltraShort);
     } else if (posters.length == 6 && lastPosterIndex + 1 < snapshot.length) {
@@ -625,12 +625,12 @@ ka.lib._rotateLargePoster = function (movieObj, direction) {
 
         if (ka.state.isPosterScaled[movieObj.keyPoster] || gridPoster.size() == 0) {
             image = $('<img>', {
-                src: '/movie/poster/' + movieObj.keyPoster + '-300.image'
+                src: '/movie/poster/' + movieObj.keyPoster + '-300.image' // TODO: adapt/scale
               , css: styles
             });
         } else {
             image = gridPoster.clone(false)
-                .removeAttr('id class').attr({width: 300, height: 450})
+                .removeAttr('id class').attr({width: 300, height: 450}) // TODO: adapt/scale
                 .css(styles);
         }
     }
@@ -702,7 +702,7 @@ ka.lib.toggleAvailableStreams = function () {
         ka.state.view = 'limbo';
 
         var movieObj = ka.data.byId[$('#boom-movie-detail').data('boom.id')],
-            height = ka.lib.browser.isHidden() ? ka.settings.deviceHeight : ka.lib.browser.isExpanded() ? 610 : 833; // TODO: set height depending on resolution
+            height = ka.lib.browser.isHidden() ? ka.settings.deviceHeight : ka.lib.browser.isExpanded() ? 610 : 833; // TODO: adapt/scale
         $('#boom-detail-available-streams, #boom-detail-buttons-shade').velocity({height: height}, {duration: 0, complete: function () {
             $('#boom-detail-focus').velocity({translateZ: 0, opacity: 0}, ka.settings.durationShort);
 

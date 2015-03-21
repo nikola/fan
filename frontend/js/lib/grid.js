@@ -137,23 +137,23 @@ ka.lib.onPosterLoaded = function () {
         id = gridItem.data('boom.id'),
         movieObj = ka.data.byId[id],
         image = target.get(0),
-        isScaled = Boolean(image.naturalWidth == 200);
+        isScaled = Boolean(image.naturalWidth == 200); // TODO: adapt/scale
 
     target.off('load');
 
     ka.state.isPosterScaled[movieObj.keyPoster] = isScaled;
     ka.cache.smallBrowserPosterByKey[movieObj.keyPoster] = $('<img>', {
-        width: 150
-      , height: 225
-      , src: '/movie/poster/' + movieObj.keyPoster + '-' + (isScaled ? 150 : 200) + '.image'
+        width: 150 // TODO: adapt/scale
+      , height: 225 // TODO: adapt/scale
+      , src: '/movie/poster/' + movieObj.keyPoster + '-' + (isScaled ? 150 : 200) + '.image' // TODO: adapt/scale
       , css: {
             webkitTransform: 'translateZ(0)'
         }
     });
     ka.cache.largeBrowserPosterByKey[movieObj.keyPoster] = $('<img>', {
-        width: 300
-      , height: 450
-      , src: '/movie/poster/' + movieObj.keyPoster + '-' + (isScaled ? 300 : 200) + '.image'
+        width: 300 // TODO: adapt/scale
+      , height: 450 // TODO: adapt/scale
+      , src: '/movie/poster/' + movieObj.keyPoster + '-' + (isScaled ? 300 : 200) + '.image' // TODO: adapt/scale
       , css: {
             webkitTransform: 'translateZ(0)'
         }
@@ -263,15 +263,15 @@ ka.lib.onPrimaryColorsCalculated = function (evt) {
 
 
 ka.lib.recalcMovieGrid = function () {
-    var lookupMatrix = ka.state.gridLookupMatrix = [];
+    var lookupMatrix = ka.state.gridLookupMatrix = [], keys;
     ka.state.gridLookupLinesByKey = {};
     ka.state.gridLookupKeyByLine = [];
     ka.state.gridLookupCoordById = {};
 
     if (ka.state.gridSortCriterion == 'byBudget') {
-        var keys = Object.getOwnPropertyNames(ka.data[ka.state.gridSortCriterion]).sort(ka.lib.sortExpandedKeys);
+        keys = Object.getOwnPropertyNames(ka.data[ka.state.gridSortCriterion]).sort(ka.lib.sortExpandedKeys);
     } else {
-        var keys = Object.getOwnPropertyNames(ka.data[ka.state.gridSortCriterion]).sort();
+        keys = Object.getOwnPropertyNames(ka.data[ka.state.gridSortCriterion]).sort();
     }
     var keyCount = keys.length;
     if (ka.state.gridSortOrder == 'desc') {
@@ -525,7 +525,7 @@ ka.lib.renderMovieGridCell = function (movie, operation, context) {
                 movie
               , 'boom-movie-grid-item-' + movie.id
               , 'boom-poster-' + movie.id
-              , 200, 300
+              , 200, 300 // TODO: adapt/scale
               , 'movie'
               , ka.lib.onPosterLoaded
               , ka.lib.hideBrokenPoster
@@ -605,7 +605,7 @@ ka.lib.getFirstMovieObjectFromCoord = function (x, y) {
 
 ka.lib.moveFocusFirstItem = function () {
     if (ka.state.gridFocusX > 0) {
-        var distance = 260 * ka.state.gridFocusX;
+        var distance = 260 * ka.state.gridFocusX; // TODO: adapt/scale
         ka.state.gridFocusX = 0;
 
         ka.lib.moveMovieFocusHorizontally('-=' + distance);
@@ -616,7 +616,7 @@ ka.lib.moveFocusFirstItem = function () {
 ka.lib.moveFocusLastItem = function () {
     var items = ka.lib.getItemsPerLineAtFocus();
     if (ka.state.gridFocusX < items - 1) {
-        var distance = 260 * (items - ka.state.gridFocusX - 1);
+        var distance = 260 * (items - ka.state.gridFocusX - 1); // TODO: adapt/scale
         ka.state.gridFocusX = items - 1;
 
         ka.lib.moveMovieFocusHorizontally('+=' + distance);
@@ -647,7 +647,7 @@ ka.lib.moveFocusPageDown = function () {
 
         if (ka.state.gridFocusY > 0 && ka.lib.getGridFocusAbsoluteY() >= ka.state.gridLookupMatrix.length) {
             var overshoot = ka.lib.getGridFocusAbsoluteY() - ka.state.gridLookupMatrix.length + 1,
-                offsetY = overshoot * 360;
+                offsetY = overshoot * 360; // TODO: adapt/scale
             ka.state.gridFocusY -= overshoot;
 
             transitionY = [{top: '-=' + offsetY}, {duration: offsetY}];
@@ -692,12 +692,12 @@ ka.lib.moveFocusUp = function () {
         }
 
         if (notFirstRow) {
-            props.top = '-=360';
+            props.top = '-=360'; // TODO: adapt/scale
             options.duration = ka.settings.durationNormal;
 
             ka.state.gridFocusY -= 1;
         } else {
-            props.top = '+=720';
+            props.top = '+=720'; // TODO: adapt/scale
             options.duration = ka.settings.durationLong;
 
             ka.state.gridFocusY = ka.settings.gridMaxRows - 1;
@@ -729,12 +729,12 @@ ka.lib.moveFocusDown = function () {
         }
 
         if (notLastRow) {
-            props.top = '+=360';
+            props.top = '+=360'; // TODO: adapt/scale
             options.duration = ka.settings.durationNormal;
 
             ka.state.gridFocusY += 1;
         } else {
-            props.top = '-=720';
+            props.top = '-=720'; // TODO: adapt/scale
             options.duration = ka.settings.durationLong;
 
             ka.state.gridFocusY = 0;
@@ -750,7 +750,7 @@ ka.lib.moveFocusDown = function () {
 ka.lib.moveMovieFocusHorizontally = function (offset) {
     ka.state.view = 'limbo';
 
-    ka.lib.grid.focus.show().velocity({translateZ: 0, left: offset}, {duration: 260, complete: ka.lib.grid.processDeferredUpdates});
+    ka.lib.grid.focus.show().velocity({translateZ: 0, left: offset}, {duration: 260, complete: ka.lib.grid.processDeferredUpdates}); // TODO: why 260 ???
 };
 
 
@@ -758,7 +758,7 @@ ka.lib.moveFocusLeft = function () {
     if (ka.state.gridFocusX > 0) {
         ka.state.gridFocusX -= 1;
 
-        ka.lib.moveMovieFocusHorizontally('-=260');
+        ka.lib.moveMovieFocusHorizontally('-=260'); // TODO: adapt/scale
     }
 };
 
@@ -767,14 +767,14 @@ ka.lib.moveFocusRight = function () {
     if (ka.state.gridFocusX < ka.settings.gridMaxColumns - 1 && ka.state.gridFocusX + 1 < ka.lib.getItemsPerLineAtFocus()) {
         ka.state.gridFocusX += 1;
 
-        ka.lib.moveMovieFocusHorizontally('+=260');
+        ka.lib.moveMovieFocusHorizontally('+=260'); // TODO: adapt/scale
     }
 };
 
 
 ka.lib.moveFocusToIndex = function (index) {
     if (index < ka.lib.getItemsPerLineAtFocus() && index != ka.state.gridFocusX) {
-        var distance = 260 * (index - ka.state.gridFocusX), operator = (distance < 0) ? '-' : '+';
+        var distance = 260 * (index - ka.state.gridFocusX), operator = (distance < 0) ? '-' : '+'; // TODO: adapt/scale
         ka.state.gridFocusX = index;
 
         ka.lib.moveMovieFocusHorizontally(operator + '=' + Math.abs(distance));
@@ -894,7 +894,7 @@ ka.lib.populateCompilationGrid = function () {
             movieObj
           , 'boom-movie-compilation-item-' + movieObj.id
           , 'boom-movie-compilation-poster-' + movieObj.id
-          , 300, 450
+          , 300, 450 // TODO: adapt/scale
           , 'compilation'
           , null
           , ka.lib.hideBrokenPoster
@@ -940,8 +940,8 @@ ka.lib.openCompilation = function (callback) {
 
     $('#boom-compilation-container')
         .css({
-            width: 360 * ka.state.currentCompilationColumnSize
-          , marginLeft: (ka.settings.deviceWidth - (360 * ka.state.currentCompilationColumnSize) + 100) / 2
+            width: 360 * ka.state.currentCompilationColumnSize // TODO: adapt/scale
+          , marginLeft: (ka.settings.deviceWidth - (360 * ka.state.currentCompilationColumnSize) + 100) / 2 // TODO: adapt/scale
         })
         .velocity('transition.expandIn', {display: 'flex', duration: ka.settings.durationNormal, complete: function () {
             var coord = $('.boom-compilation-grid-item:first-child').offset();
@@ -1038,7 +1038,7 @@ ka.lib.getItemsPerLineAtFocus = function () {
 
 ka.lib.repositionFocusX = function (targetY) {
     var targetX = ka.state.gridLookupItemsPerLine[targetY] - 1,
-        driftLeft = '-=' + 260 * (ka.state.gridFocusX - targetX);
+        driftLeft = '-=' + 260 * (ka.state.gridFocusX - targetX); // TODO: adapt/scale
     ka.state.gridFocusX = targetX;
     return driftLeft;
 };
@@ -1083,7 +1083,7 @@ ka.lib.recalcPositionById = function (id) {
 ka.lib.repositionGrid = function (offscreen) {
     $('#boom-movie-grid-container').velocity({translateZ: 0, translateY: '-' + (ka.state.gridPage * ka.settings.deviceHeight) + 'px'}, 0);
 
-    var top = 16 + 360 * ka.state.gridFocusY, left = 116 + 260 * ka.state.gridFocusX, display = 'block';
+    var top = 16 + 360 * ka.state.gridFocusY, left = 116 + 260 * ka.state.gridFocusX, display = 'block'; // TODO: adapt/scale
     if (offscreen) {
         left -= ka.settings.deviceWidth;
         display = 'none';

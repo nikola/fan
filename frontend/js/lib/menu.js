@@ -99,7 +99,7 @@ ka.lib.updateDesaturatedGrid = function () {
 
     ka.lib.repositionGrid();
 
-    $('#boom-grid-focus').velocity({translateZ: 0, left: '+=780'}, 0);
+    $('#boom-grid-focus').velocity({translateZ: 0, left: '+=780'}, 0); // TODO: adapt/scale
 };
 
 

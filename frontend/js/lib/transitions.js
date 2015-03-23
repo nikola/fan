@@ -31,7 +31,7 @@ ka.transition.menu = {to: {
         ka.lib.grid.occlude();
 
         $('#boom-menu, #boom-movie-grid-container, #boom-grid-focus').velocity(
-            {translateZ: 0, left: '-=780'}
+            {translateZ: 0, left: '-=780'} // TODO: adapt/scale
           , {
                 duration: ka.settings.durationNormal
               , progress: function (elements, percentComplete) {
@@ -89,7 +89,7 @@ ka.transition.grid = {to: {
         }
 
         $('#boom-menu, #boom-movie-grid-container, #boom-grid-focus').velocity(
-            {translateZ: 0, left: '+=780'}
+            {translateZ: 0, left: '+=780'} // TODO: adapt/scale
           , {
                 duration: ka.settings.durationNormal
               , progress: function (elements, percentComplete) {
@@ -229,9 +229,9 @@ ka.transition.detail = {to: {
                 var restoreElements = '#boom-detail-browser';
                 if (ka.lib.browser.isHidden()) {
                     if (ka.lib.browser.isExpanded()) {
-                        $('#boom-detail-panel').data('boom.isHidden', false).velocity({bottom: '+=470'}, 0);
+                        $('#boom-detail-panel').data('boom.isHidden', false).velocity({bottom: '+=470'}, 0); // TODO: adapt/scale
                     } else {
-                        $('#boom-detail-panel').data('boom.isHidden', false).velocity({bottom: '+=247'}, 0);
+                        $('#boom-detail-panel').data('boom.isHidden', false).velocity({bottom: '+=247'}, 0); // TODO: adapt/scale
                     }
                 } else {
                     if (!ka.lib.browser.isExpanded()) {
@@ -239,7 +239,7 @@ ka.transition.detail = {to: {
                     }
                 }
 
-                $(restoreElements).velocity({bottom: '-=247'}, {duration: 0, complete: function () {
+                $(restoreElements).velocity({bottom: '-=247'}, {duration: 0, complete: function () { // TODO: adapt/scale
                     $('#boom-movie-detail, #boom-detail-browser, #boom-detail-focus').css('display', 'none');
                     $('#boom-detail-browser img').each(ka.lib._detachSmallBrowserPoster);
                 }});

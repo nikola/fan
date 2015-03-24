@@ -27,7 +27,6 @@ body {
     font-family: 'Segoe UI', sans-serif;
     color: white; background-color: black;
 
-    width: 1920px; height: 1080px;
     margin: 0; padding: 0;
     overflow: hidden;
     }
@@ -35,7 +34,7 @@ body {
 #boom-menu {
     display: none;
 
-    width: 750px; height: 1080px;
+    width: 750px; height: 100%;
 
     position: absolute; top: 0; left: -780px;
 
@@ -72,10 +71,10 @@ iframe[seamless] {
     justify-content: center;
     position: absolute; left: 0; top: 0;
 
-    width: 780px; height: 1080px;
+    width: 40vw; height: 100%;
     white-space: pre-line;
     font-size: 20px;
-    margin-left: 570px;
+    margin-left: 30vw;
     }
 
 #boom-credit-text span {
@@ -99,5 +98,12 @@ img[src='']  {
     body {
         width: 2560px;
         height: 1440px;
+    }
+}
+
+@media (device-width: 3840px) {
+    body {
+        width: 3840px;
+        height: 2160px;
     }
 }

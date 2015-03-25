@@ -34,11 +34,11 @@ body {
 #boom-menu {
     display: none;
 
-    width: 750px; height: 100%;
+    width: 39.0625vw; height: 100%;
 
-    position: absolute; top: 0; left: -780px;
+    position: absolute; top: 0; left: -40.625vw;
 
-    padding-left: 30px;
+    padding-left: 1.5625vw;
     }
 
 #boom-menu-pending-objects {

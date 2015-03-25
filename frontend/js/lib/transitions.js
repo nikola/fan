@@ -31,7 +31,7 @@ ka.transition.menu = {to: {
         ka.lib.grid.occlude();
 
         $('#boom-menu, #boom-movie-grid-container, #boom-grid-focus').velocity(
-            {translateZ: 0, left: '-=780'} // TODO: adapt/scale
+            {translateZ: 0, left: '-=40.625vw'}
           , {
                 duration: ka.settings.durationNormal
               , progress: function (elements, percentComplete) {
@@ -89,7 +89,7 @@ ka.transition.grid = {to: {
         }
 
         $('#boom-menu, #boom-movie-grid-container, #boom-grid-focus').velocity(
-            {translateZ: 0, left: '+=780'} // TODO: adapt/scale
+            {translateZ: 0, left: '+=40.625vw'}
           , {
                 duration: ka.settings.durationNormal
               , progress: function (elements, percentComplete) {

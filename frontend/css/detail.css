@@ -23,11 +23,11 @@
 #boom-movie-detail {
     display: none;
 
-    width: 1920px; height: 1080px;
+    width: 100%; height: 100%;
 
-    position: absolute; top: 0; left: 1920px;
+    position: absolute; top: 0; left: 100vw;
 
-    background-size: 1920px 1080px;
+    background-size: 100% 100%;
     background-repeat: no-repeat;
     background-color: black;
     }
@@ -35,7 +35,7 @@
 #boom-detail-panel {
     display: block;
 
-    width: 1920px; height: 470px;
+    width: 100vw; height: 470px;
     position: absolute; left: 0; bottom: -223px;
     background: linear-gradient(to right, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.25) 50%, rgba(0, 0, 0, 0.25) 100%),
                 linear-gradient(to top, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0.25) 50%, rgba(0, 0, 0, 0) 75%);
@@ -210,15 +210,5 @@
     }
 
 #boom-detail-watch-trailer {
-
-    }
-
-/* ================================================================================================================== */
-
-@media (device-width: 1920px) {
-
-    }
-
-@media (device-width: 2560px) {
 
     }

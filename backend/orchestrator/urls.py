@@ -24,6 +24,7 @@ import os.path
 import urllib
 import datetime
 import time
+import re
 
 import simplejson as json
 from pants.web.application import Module, abort
@@ -56,6 +57,7 @@ def present(request, screen):
     if screen in ('load', 'configure', 'gui'):
         with open(os.path.join(STATIC_PATH, 'html', '%s.html' % screen)) as fp:
             content = fp.read()
+        content = re.sub(r'>\s*<', '><', content)
         if screen in ('configure', 'gui'):
             content = content.replace('</head>', '<script>var ka = ka || {}; ka.config = %s;</script></head>'
                 % json.dumps(module.userConfig))

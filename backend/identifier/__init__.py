@@ -331,7 +331,7 @@ def getMovieRecordFromLocation(profile, streamLocation, basedataFromStream, base
     for root, dirs, filenames in os.walk(streamDir):
         processCallback()
         for filename in filenames:
-            if re.search('^\d+.tmdb$', filename) is not None:
+            if re.search('^\d+.tmdb$', filename, re.IGNORECASE) is not None:
                 idTheMovieDb = int(os.path.splitext(filename)[0])
                 logger.info('Found TMDB override ID %d in %s, trying to fetch metadata ...' % (idTheMovieDb, streamDir))
                 try:

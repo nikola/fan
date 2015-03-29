@@ -343,7 +343,12 @@ def getMovieRecordFromLocation(profile, streamLocation, basedataFromStream, base
                         processCallback,
                     )
                 except (json.JSONDecodeError, AttributeError, TypeError, KeyError):
-                    pass
+                    logger.error('Error while querying themoviedb.org for movie with ID: %d' % idTheMovieDb)
+                else:
+                    if movieRecord is None:
+                        logger.warning('Could not find themoviedb.org records for ID: %d' % idTheMovieDb)
+                    else:
+                        break
 
     if movieRecord is None:
         movieRecord = identifyMovieByTitleYear(

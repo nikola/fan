@@ -333,6 +333,7 @@ def getMovieRecordFromLocation(profile, streamLocation, basedataFromStream, base
         for filename in filenames:
             if re.search('^\d+.tmdb$', filename, re.IGNORECASE) is not None:
                 idTheMovieDb = int(os.path.splitext(filename)[0])
+                processCallback()
                 logger.info('Found TMDB override ID %d in %s, trying to fetch metadata ...' % (idTheMovieDb, streamDir))
                 try:
                     movieRecord = getMovieRecordById(
@@ -344,9 +345,11 @@ def getMovieRecordFromLocation(profile, streamLocation, basedataFromStream, base
                     )
                 except (json.JSONDecodeError, AttributeError, TypeError, KeyError):
                     logger.error('Error while querying themoviedb.org for movie with ID: %d' % idTheMovieDb)
+                    processCallback()
                 else:
                     if movieRecord is None:
                         logger.warning('Could not find themoviedb.org records for ID: %d' % idTheMovieDb)
+                        processCallback()
                     else:
                         break
 

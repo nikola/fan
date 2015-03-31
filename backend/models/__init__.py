@@ -184,24 +184,14 @@ class StreamManager(object):
             return movieObject.id if movieObject is not None else None
 
 
-    def isStreamKnown(self, streamLocation):
-        with self._session() as session:
-            try:
-                session.query(Stream).filter(Stream.location == streamLocation).one()
-            except NoResultFound:
-                return False
-            else:
-                return True
-
-
-    def getMovieFromStreamLocation(self, streamLocation):
+    def getMovieIdFromStreamLocation(self, streamLocation):
         with self._session() as session:
             try:
                 stream = session.query(Stream).filter(Stream.location == streamLocation).one()
             except NoResultFound:
-                return None
+                return 0
             else:
-                return stream.movie
+                return stream.movie.idTheMovieDb
 
 
     def getAllMoviesAsJson(self, language, country):
@@ -214,30 +204,36 @@ class StreamManager(object):
 
             movieList = []
             for movie, localization, certification, genreObject in session.query(Movie, Localization, Certification, GenresString).filter(Movie.id == Localization.movieId, Movie.id == Certification.movieId, Movie.id == GenresString.movieId, Localization.locale == language, Certification.country == country, GenresString.country == country).group_by(Movie.id).distinct():
-                if movie.streamless or any([True for stream in movie.streams if os.path.exists(stream.location)]):
-                    movieList.append({
-                        'id': movie.id,
-                        'titleOriginal': movie.titleOriginal,
-                        'titleLocalized': localization.title,
-                        'releaseYear': movie.releaseYear,
-                        'runtime': movie.runtime,
-                        'storyline': localization.storyline,
-                        'rating': movie.rating,
-                        'genres': genreObject.genresAsString,
-                        'budget': movie.budget,
-                        'trailer': movie.idYoutubeTrailer,
-                        'certification': certification.certification,
+                if not movie.streamless:
+                    for stream in movie.streams:
+                        if os.path.exists(stream.location):
+                            break
+                    else:
+                        continue
 
-                        'keyPoster': movie.keyPoster,
-                        'primaryPosterColor': movie.primaryColorPoster,
-                        'keyBackdrop': movie.keyBackdrop,
-                        'isBackdropCached': movie.isBackdropCached,
+                movieList.append({
+                    'id': movie.id,
+                    'titleOriginal': movie.titleOriginal,
+                    'titleLocalized': localization.title,
+                    'releaseYear': movie.releaseYear,
+                    'runtime': movie.runtime,
+                    'storyline': localization.storyline,
+                    'rating': movie.rating,
+                    'genres': genreObject.genresAsString,
+                    'budget': movie.budget,
+                    'trailer': movie.idYoutubeTrailer,
+                    'certification': certification.certification,
 
-                        'streamless': movie.streamless,
+                    'keyPoster': movie.keyPoster,
+                    'primaryPosterColor': movie.primaryColorPoster,
+                    'keyBackdrop': movie.keyBackdrop,
+                    'isBackdropCached': movie.isBackdropCached,
 
-                        'compilation': compilationNameById.get(movie.compilationId),
-                        'isCompiled': compilationMovieCountById.get(movie.compilationId, 0) > 1,
-                    })
+                    'streamless': movie.streamless,
+
+                    'compilation': compilationNameById.get(movie.compilationId),
+                    'isCompiled': compilationMovieCountById.get(movie.compilationId, 0) > 1,
+                })
             return json.dumps(movieList, separators=(',',':'))
 
 

@@ -313,6 +313,50 @@ def identifyMovieByTitleYear(profile, language, country, titlePrimary, yearPrima
     return record
 
 
+def getOverrideId(profile, streamLocation, processCallback):
+    logger = getLogger(profile, 'identifier')
+
+    movieId = None
+
+    streamDir = os.path.dirname(streamLocation)
+    for root, dirs, filenames in os.walk(streamDir):
+        processCallback()
+        for filename in filenames:
+            if re.search('^\d+.tmdb$', filename, re.IGNORECASE) is not None:
+                movieId = int(os.path.splitext(filename)[0])
+                processCallback()
+                logger.info('Found TMDB override ID %d in %s' % (movieId, streamDir))
+                break
+
+    processCallback()
+
+    return movieId
+
+
+def getMovieRecordFromOverrideId(profile, idTheMovieDb, userConfig, processCallback):
+    logger = getLogger(profile, 'identifier')
+
+    movieRecord = None
+
+    try:
+        movieRecord = getMovieRecordById(
+            idTheMovieDb,
+            profile,
+            userConfig.get('language', 'en'),
+            userConfig.get('country', 'US'),
+            processCallback,
+        )
+    except (json.JSONDecodeError, AttributeError, TypeError, KeyError):
+        logger.error('Error while querying themoviedb.org for movie with ID: %d' % idTheMovieDb)
+    else:
+        if movieRecord is None:
+            logger.warning('Could not find themoviedb.org records for ID: %d' % idTheMovieDb)
+
+    processCallback()
+
+    return movieRecord
+
+
 def getMovieRecordFromLocation(profile, streamLocation, basedataFromStream, basedataFromDir, userConfig, processCallback):
     processCallback()
 
@@ -327,31 +371,9 @@ def getMovieRecordFromLocation(profile, streamLocation, basedataFromStream, base
 
     movieRecord = None
 
-    streamDir = os.path.dirname(streamLocation)
-    for root, dirs, filenames in os.walk(streamDir):
-        processCallback()
-        for filename in filenames:
-            if re.search('^\d+.tmdb$', filename, re.IGNORECASE) is not None:
-                idTheMovieDb = int(os.path.splitext(filename)[0])
-                processCallback()
-                logger.info('Found TMDB override ID %d in %s, trying to fetch metadata ...' % (idTheMovieDb, streamDir))
-                try:
-                    movieRecord = getMovieRecordById(
-                        idTheMovieDb,
-                        profile,
-                        userConfig.get('language', 'en'),
-                        userConfig.get('country', 'US'),
-                        processCallback,
-                    )
-                except (json.JSONDecodeError, AttributeError, TypeError, KeyError):
-                    logger.error('Error while querying themoviedb.org for movie with ID: %d' % idTheMovieDb)
-                    processCallback()
-                else:
-                    if movieRecord is None:
-                        logger.warning('Could not find themoviedb.org records for ID: %d' % idTheMovieDb)
-                        processCallback()
-                    else:
-                        break
+    movieOverrideId = getOverrideId(profile, streamLocation, processCallback)
+    if movieOverrideId:
+        movieRecord = getMovieRecordFromOverrideId(profile, movieOverrideId, userConfig, processCallback)
 
     if movieRecord is None:
         movieRecord = identifyMovieByTitleYear(

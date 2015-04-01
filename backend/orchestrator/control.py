@@ -35,7 +35,7 @@ from settings import DEBUG
 from settings import STATIC_PATH, SERVER_PORT
 from orchestrator.urls import module as appModule
 from orchestrator.pubsub import PubSub
-from identifier import getContainerCount, getStreamRecords, getFixedRecords, getShorthandFromFilename, getMovieRecordFromLocation, getClientMovieRecordAsJson
+from identifier import getContainerCount, getStreamRecords, getFixedRecords, getShorthandFromFilename, getMovieRecordFromLocation, getClientMovieRecordAsJson, getOverrideId, getMovieRecordFromOverrideId
 from downloader.images import processInitialArtwork
 from utils.config import processCurrentUserConfig
 from utils.net import deleteResponseCache
@@ -208,19 +208,25 @@ def _startOrchestrator(profile, queue):
                 else:
                     _processRequests()
 
-                    if mustSendContainerCount and pubSubReference.connected:
-                        pubSubReference.write(unicode('["receive:container:count", %d]' % mustSendContainerCount))
-                        mustSendContainerCount = None
-                        _processRequests()
-
-                    isContainerKnown = streamManager.isStreamKnown(streamLocation)
-                    _processRequests()
-
                     if pubSubReference.connected:
+                        if mustSendContainerCount:
+                            pubSubReference.write(unicode('["receive:container:count", %d]' % mustSendContainerCount))
+                            mustSendContainerCount = None
+                            _processRequests()
+
                         pubSubReference.write(unicode('["receive:container:decrement", 1]'))
                         _processRequests()
 
-                    if not isContainerKnown:
+                    movieRecord = None
+                    movieStoredId = streamManager.getMovieIdFromStreamLocation(streamLocation)
+
+                    if movieStoredId and not appModule.userConfig.get('isDemoMode', False):
+                        _processRequests()
+
+                        movieOverrideId = getOverrideId(profile, streamLocation, _processRequests)
+                        if movieOverrideId and movieOverrideId != movieStoredId:
+                            movieRecord = getMovieRecordFromOverrideId(profile, movieOverrideId, appModule.userConfig, _processRequests)
+                    else:
                         try:
                             movieRecord = getMovieRecordFromLocation(
                                 profile,
@@ -232,25 +238,28 @@ def _startOrchestrator(profile, queue):
                             )
                         except (JSONDecodeError, AttributeError, TypeError, KeyError):
                             logger.error('Error while querying themoviedb.org')
+                            _processRequests()
                         else:
                             if movieRecord is None:
                                 logger.warning('Could not identify file: %s' % streamLocation)
-                            else:
-                                processInitialArtwork(profile, movieRecord, streamLocation, appModule.imageBaseUrl, appModule.imageClosestSize, _processRequests)
+                                _processRequests()
 
-                            version = getShorthandFromFilename(streamLocation, basedataFromStream.get('year'))
-                            _processRequests()
-                            movieId = streamManager.addMovieStream(movieRecord, streamLocation, version)
-                            _processRequests()
+                    if movieRecord is not None:
+                        processInitialArtwork(profile, movieRecord, streamLocation, appModule.imageBaseUrl, appModule.imageClosestSize, _processRequests)
 
-                            if movieId is not None:
-                                if pubSubReference.connected:
-                                    pubSubReference.write(unicode('["receive:movie:item", %s]' % getClientMovieRecordAsJson(movieId, movieRecord, streamLocation)))
-                                    _processRequests()
+                        version = getShorthandFromFilename(streamLocation, basedataFromStream.get('year'))
+                        _processRequests()
+                        movieId = streamManager.addMovieStream(movieRecord, streamLocation, version)
+                        _processRequests()
 
-                                if isDownloaderIdle:
-                                    queue.put('downloader:resume')
-                                    _processRequests()
+                        if movieId is not None:
+                            if pubSubReference.connected:
+                                pubSubReference.write(unicode('["receive:movie:item", %s]' % getClientMovieRecordAsJson(movieId, movieRecord, streamLocation)))
+                                _processRequests()
+
+                            if isDownloaderIdle:
+                                queue.put('downloader:resume')
+                                _processRequests()
             elif syncFinished is True:
                 deleteResponseCache()
 

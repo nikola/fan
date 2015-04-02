@@ -252,7 +252,7 @@ class StreamManager(object):
             try:
                 movie = session.query(Movie).filter(Movie.id == identifier).one()
             except NoResultFound:
-                return None
+                return []
             else:
                 containers = []
                 for stream in movie.streams:

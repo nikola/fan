@@ -64,6 +64,21 @@ ka.settings = {
   , compilationPosterOffsetTop: -18 // TODO: adapt/scale
   , compilationPosterOffsetLeft: 12 // TODO: adapt/scale
 
+  , posterSize: {
+        browser: {
+            width: 150
+          , height: 225
+        }
+      , grid: {
+            width: 200
+          , height: 300
+        }
+      , detail: {
+            width: 300
+          , height: 450
+        }
+    }
+
   , durationUltraShort: 45
   , durationVeryShort: 90
   , durationShort: 180

@@ -66,16 +66,16 @@ ka.settings = {
 
   , posterSize: {
         browser: {
-            width: 150
-          , height: 225
+            width: Math.floor(150 / 1920 * window.screen.width)
+          , height: Math.floor(225 / 1080 * window.screen.height)
         }
       , grid: {
-            width: 200
-          , height: 300
+            width: Math.floor(200 / 1920 * window.screen.width)
+          , height: Math.floor(300 / 1080 * window.screen.height)
         }
       , detail: {
-            width: 300
-          , height: 450
+            width: Math.floor(300 / 1920 * window.screen.width)
+          , height: Math.floor(450 / 1080 * window.screen.height)
         }
     }
 

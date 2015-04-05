@@ -137,23 +137,23 @@ ka.lib.onPosterLoaded = function () {
         id = gridItem.data('boom.id'),
         movieObj = ka.data.byId[id],
         image = target.get(0),
-        isScaled = Boolean(image.naturalWidth == 200); // TODO: adapt/scale
+        isScaled = Boolean(image.naturalWidth == ka.settings.posterSize.grid.width);
 
     target.off('load');
 
     ka.state.isPosterScaled[movieObj.keyPoster] = isScaled;
     ka.cache.smallBrowserPosterByKey[movieObj.keyPoster] = $('<img>', {
-        width: 150 // TODO: adapt/scale
-      , height: 225 // TODO: adapt/scale
-      , src: '/movie/poster/' + movieObj.keyPoster + '-' + (isScaled ? 150 : 200) + '.image' // TODO: adapt/scale
+        width: ka.settings.posterSize.browser.width
+      , height: ka.settings.posterSize.browser.height
+      , src: '/movie/poster/' + movieObj.keyPoster + '-' + (isScaled ? ka.settings.posterSize.browser.width : ka.settings.posterSize.grid.width) + '.image'
       , css: {
             webkitTransform: 'translateZ(0)'
         }
     });
     ka.cache.largeBrowserPosterByKey[movieObj.keyPoster] = $('<img>', {
-        width: 300 // TODO: adapt/scale
-      , height: 450 // TODO: adapt/scale
-      , src: '/movie/poster/' + movieObj.keyPoster + '-' + (isScaled ? 300 : 200) + '.image' // TODO: adapt/scale
+        width: ka.settings.posterSize.detail.width
+      , height: ka.settings.posterSize.detail.height
+      , src: '/movie/poster/' + movieObj.keyPoster + '-' + (isScaled ? ka.settings.posterSize.detail.width : ka.settings.posterSize.grid.width) + '.image'
       , css: {
             webkitTransform: 'translateZ(0)'
         }
@@ -525,7 +525,8 @@ ka.lib.renderMovieGridCell = function (movie, operation, context) {
                 movie
               , 'boom-movie-grid-item-' + movie.id
               , 'boom-poster-' + movie.id
-              , 200, 300 // TODO: adapt/scale
+              , ka.settings.posterSize.grid.width
+              , ka.settings.posterSize.grid.height
               , 'movie'
               , ka.lib.onPosterLoaded
               , ka.lib.hideBrokenPoster

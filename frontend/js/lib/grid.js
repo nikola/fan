@@ -895,7 +895,8 @@ ka.lib.populateCompilationGrid = function () {
             movieObj
           , 'boom-movie-compilation-item-' + movieObj.id
           , 'boom-movie-compilation-poster-' + movieObj.id
-          , 300, 450 // TODO: adapt/scale
+          , ka.settings.posterSize.compilation.width
+          , ka.settings.posterSize.compilation.height
           , 'compilation'
           , null
           , ka.lib.hideBrokenPoster

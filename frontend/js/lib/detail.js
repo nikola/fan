@@ -125,12 +125,15 @@ ka.lib.browser = {
                     var gridPoster = $('#boom-poster-' + movieObj.id);
                     if (ka.state.isPosterScaled[movieObj.keyPoster] || gridPoster.size() == 0) {
                         image = $('<img>', {
-                            src: '/movie/poster/' + movieObj.keyPoster + '-300.image'
-                          , width: 300 // TODO: adapt/scale
-                          , height: 450 // TODO: adapt/scale
+                            src: '/movie/poster/' + movieObj.keyPoster + '-' + ka.settings.posterSize.detail.width + '.image'
+                          , width: ka.settings.posterSize.detail.width
+                          , height: ka.settings.posterSize.detail.height
                         });
                     } else {
-                        image = gridPoster.clone(false).removeAttr('id class').attr({width: 300, height: 450}); // TODO: adapt/scale
+                        image = gridPoster.clone(false).removeAttr('id class').attr({
+                            width: ka.settings.posterSize.detail.width
+                          , height: ka.settings.posterSize.detail.height
+                        });
                     }
                 }
 

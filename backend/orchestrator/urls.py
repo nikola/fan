@@ -78,15 +78,19 @@ def getScaledPosterByKey(request, key, width):
     if imageIsScaled:
         filename += '@%d.webp' % width
     else:
-        if not os.path.exists(filename + '@draft.jpg'):
-            time.sleep(0)
-            link = open(os.path.join(pathname, 'source.url'), 'rU').read()
-            time.sleep(0)
-            sourceUrl = link[link.find('=') + 1:].replace('original', module.imageClosestSize).strip()
-            downloadArtwork(module.profile, sourceUrl, 'poster@draft', key)
-            time.sleep(0)
+        if os.path.exists(filename + '.jpg') and not os.path.exists(filename + ('@%d.webp' % width)):
+            # TODO: generate additional poster sizes of overlay after screen resolution has changed
+            filename += '.jpg'
+        else:
+            if not os.path.exists(filename + '@draft.jpg'):
+                time.sleep(0)
+                link = open(os.path.join(pathname, 'source.url'), 'rU').read()
+                time.sleep(0)
+                sourceUrl = link[link.find('=') + 1:].replace('original', module.imageClosestSize).strip()
+                downloadArtwork(module.profile, sourceUrl, 'poster@draft', key)
+                time.sleep(0)
 
-        filename += '@draft.jpg'
+            filename += '@draft.jpg'
 
     if not os.path.exists(filename):
         request.send_status(404)

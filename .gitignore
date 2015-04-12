@@ -45,7 +45,6 @@ local.properties
 
 [Dd]ebug/
 [Rr]elease/
-x64/
 build/
 [Bb]in/
 [Oo]bj/
@@ -75,7 +74,6 @@ build/
 *.vssscc
 .builds
 *.pidb
-*.log
 *.scc
 
 # Visual C++ cache files
@@ -193,7 +191,6 @@ $RECYCLE.BIN/
 *.egg
 *.egg-info
 dist/
-build/
 eggs/
 parts/
 var/
@@ -231,7 +228,6 @@ backend/.idea/
 ## File-based project format
 *.ipr
 *.iws
-*.iml
 
 ## Additional for IntelliJ
 out/
@@ -240,4 +236,3 @@ out/
 ## Project-specific.
 dummy.exe
 builder/clean/
-shaders/

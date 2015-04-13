@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+    <assemblyIdentity name="MPC-HC" processorArchitecture="*" version="1.7.8.0" type="win32"></assemblyIdentity>
+    <description>MPC-HC</description>
+    <dependency>
+        <dependentAssembly>
+            <assemblyIdentity type="win32" name="Microsoft.Windows.Common-Controls" version="6.0.0.0" processorArchitecture="*" publicKeyToken="6595b64144ccf1df" language="*"></assemblyIdentity>
+        </dependentAssembly>
+    </dependency>
+    <trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
+        <security>
+            <requestedPrivileges>
+                <requestedExecutionLevel level="asInvoker" uiAccess="false"></requestedExecutionLevel>
+            </requestedPrivileges>
+        </security>
+    </trustInfo>
+    <asmv3:application xmlns:asmv3="urn:schemas-microsoft-com:asm.v3" xmlns="urn:schemas-microsoft-com:asm.v3">
+        <asmv3:windowsSettings xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">
+            <dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">true</dpiAware>
+        </asmv3:windowsSettings>
+    </asmv3:application>
+    <ms_compatibility:compatibility xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" xmlns="urn:schemas-microsoft-com:compatibility.v1">
+        <ms_compatibility:application xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1">
+            <ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{e2011457-1546-43c5-a5fe-008deee3d3f0}"></ms_compatibility:supportedOS>
+            <ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{35138b9a-5d96-4fbd-8e2d-a2440225f93a}"></ms_compatibility:supportedOS>
+            <ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{4a2f28e3-53b9-4441-ba9c-d69d4a4a6e38}"></ms_compatibility:supportedOS>
+            <ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{1f676c76-80e1-4239-95bb-83d0f6d0da78}"></ms_compatibility:supportedOS>
+            <ms_compatibility:supportedOS xmlns:ms_compatibility="urn:schemas-microsoft-com:compatibility.v1" Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}"></ms_compatibility:supportedOS>
+        </ms_compatibility:application>
+    </ms_compatibility:compatibility>
+    <file name="madVR.ax">
+        <comClass clsid="{E1A8B82A-32CE-4B0D-BE0D-AA68C772E423}" threadingModel="Both" description="madVR"></comClass>
+        <comClass clsid="{F352C9C1-D39D-4622-A279-978A60927CDE}" threadingModel="Both" description="madVR Property Page"></comClass>
+    </file>
+    <file name="LAVSplitter.ax">
+        <comClass clsid="{171252A0-8820-4AFE-9DF8-5C92B2D66B04}" threadingModel="Both" description="LAV Splitter"></comClass>
+        <comClass clsid="{A19DE2F2-2F74-4927-8436-61129D26C141}" threadingModel="Both" description="LAV Splitter Properties"></comClass>
+        <comClass clsid="{B98D13E7-55DB-4385-A33D-09FD1BA26338}" threadingModel="Both" description="LAV Splitter Source"></comClass>
+        <comClass clsid="{56904B22-091C-4459-A2E6-B1F4F946B55F}" threadingModel="Both" description="LAV Splitter Input Formats"></comClass>
+    </file>
+    <file name="LAVAudio.ax">
+        <comClass clsid="{E8E73B6B-4CB3-44A4-BE99-4F7BCB96E491}" threadingModel="Both" description="LAV Audio Decoder"></comClass>
+        <comClass clsid="{2D8F1801-A70D-48F4-B76B-7F5AE022AB54}" threadingModel="Both" description="LAV Audio Properties"></comClass>
+        <comClass clsid="{BD72668E-6BFF-4CD1-8480-D465708B336B}" threadingModel="Both" description="LAV Audio Format Settings"></comClass>
+        <comClass clsid="{20ED4A03-6AFD-4FD9-980B-2F6143AA0892}" threadingModel="Both" description="LAV Audio Status"></comClass>
+        <comClass clsid="{C89FC33C-E60A-4C97-BEF4-ACC5762B6404}" threadingModel="Both" description="LAV Audio Mixer"></comClass>
+    </file>
+    <file name="LAVVideo.ax">
+        <comClass clsid="{EE30215D-164F-4A92-A4EB-9D4C13390F9F}" threadingModel="Both" description="LAV Video Decoder"></comClass>
+        <comClass clsid="{278407C2-558C-4BED-83A0-B6FA454200BD}" threadingModel="Both" description="LAV Video Properties"></comClass>
+        <comClass clsid="{2D4D6F88-8B41-40A2-B297-3D722816648B}" threadingModel="Both" description="LAV Video Format Settings"></comClass>
+    </file>
+</assembly>

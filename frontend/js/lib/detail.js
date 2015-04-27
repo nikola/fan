@@ -285,7 +285,7 @@ ka.lib._addBrowserGridImage = function (movieObj, index, unselected) {
     var styles = {
         webkitTransform: 'translateZ(0)'
       , webkitFilter: (unselected) ? 'saturate(0%) opacity(0.5)' : ''
-      , width: 150 // TODO: adapt/scale
+      , width: ka.settings.posterSize.browser.width
       , marginLeft: 10 // TODO: adapt/scale
       , backgroundColor: '#' + (movieObj.primaryPosterColor || '000000')
     };
@@ -297,9 +297,9 @@ ka.lib._addBrowserGridImage = function (movieObj, index, unselected) {
 
         if (ka.state.isPosterScaled[movieObj.keyPoster] || gridPoster.size() == 0) {
             return $('<img>', {
-                src: '/movie/poster/' + movieObj.keyPoster + '-150.image'
-              , width: 150 // TODO: adapt/scale
-              , height: 225 // TODO: adapt/scale
+                src: '/movie/poster/' + movieObj.keyPoster + '-' + ka.settings.posterSize.browser.width + '.image'
+              , width: ka.settings.posterSize.browser.width
+              , height: ka.settings.posterSize.browser.height
               , data: {'boom.index': index}
               , css: styles
             }).appendTo('#boom-detail-browser');

@@ -87,7 +87,7 @@ ka.lib.executeMenuSelection = function () {
 
 ka.lib.updateDesaturatedGrid = function () {
     var movieObj = ka.lib.getFirstMovieObjectFromCoord(ka.state.gridFocusX, ka.lib.getGridFocusAbsoluteY()),
-        id = movieObj ?movieObj.id : null;
+        id = movieObj ? movieObj.id : null;
 
     ka.lib.recalcMovieGrid();
     if (id) {
@@ -99,7 +99,7 @@ ka.lib.updateDesaturatedGrid = function () {
 
     ka.lib.repositionGrid();
 
-    $('#boom-grid-focus').velocity({translateZ: 0, left: '+=780'}, 0); // TODO: adapt/scale
+    $('#boom-grid-focus').velocity({translateZ: 0, left: '+=40.625vw'}, 0);
 };
 
 

@@ -305,7 +305,13 @@ ka.lib._addBrowserGridImage = function (movieObj, index, unselected) {
             }).appendTo('#boom-detail-browser');
         } else {
             return gridPoster.clone(false)
-                .removeAttr('id class').attr({width: 150, height: 225}).css(styles).data('boom.index', index) // TODO: adapt/scale
+                .removeAttr('id class')
+                .attr({
+                    width: ka.settings.posterSize.browser.width
+                  , height: ka.settings.posterSize.browser.height
+                })
+                .css(styles)
+                .data('boom.index', index)
                 .appendTo('#boom-detail-browser');
         }
     }

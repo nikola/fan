@@ -333,8 +333,8 @@ ka.lib._addBrowserGridDummy = function () {
 ka.lib.populateDetailBrowserGrid = function () {
     $('#boom-detail-browser').empty();
     $('<img>', {
-          width: 150 // TODO: adapt/scale
-        , height: 225 // TODO: adapt/scale
+          width: ka.settings.posterSize.browser.width
+        , height: ka.settings.posterSize.browser.height
         , css: {
             webkitFilter: 'saturate(0%) opacity(0.5)'
           , webkitTransform: 'translateZ(0)'

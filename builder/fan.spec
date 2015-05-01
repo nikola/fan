@@ -52,6 +52,8 @@ for pathname in _getAssets(os.path.join(BASE_DIR, 'thirdparty'), '.exe', '.dll',
 for pathname in _getAssets(os.path.join(BASE_DIR, 'frontend'), '.html', '.js', '.css', '.gif', '.otf'):
     a.datas.append(('frontend/%s' % pathname, '../frontend/%s' % pathname, 'DATA'))
 
+# upx --compress-exports=0 madHcCtrl.exe
+
 pyz = PYZ(
     a.pure,
 )

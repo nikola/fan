@@ -319,8 +319,8 @@ ka.lib._addBrowserGridImage = function (movieObj, index, unselected) {
 
 ka.lib._addBrowserGridDummy = function () {
     return $('<img>', {
-        width: 0 // TODO: adapt/scale
-      , height: 225 // TODO: adapt/scale
+        width: 0
+      , height: ka.settings.posterSize.browser.height
       , css: {
             webkitFilter: 'saturate(0%) opacity(0.5)'
           , webkitTransform: 'translateZ(0)'

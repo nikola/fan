@@ -453,7 +453,7 @@ ka.lib.moveDetailBrowserLeft = function () {
             styles = {
                 webkitTransform: 'translateZ(0)'
               , webkitFilter: 'saturate(0%) opacity(0.5)'
-              , width: 150 // TODO: adapt/scale
+              , width: ka.settings.posterSize.browser.width
               , marginLeft: 10 // TODO: adapt/scale
               , backgroundColor: '#' + (movieObj.primaryPosterColor || '000000')
         };
@@ -465,13 +465,18 @@ ka.lib.moveDetailBrowserLeft = function () {
             var gridPoster = $('#boom-poster-' + movieObj.id);
 
             if (ka.state.isPosterScaled[movieObj.keyPoster] || gridPoster.size() == 0) {
-                posters.eq(0).attr('src', '/movie/poster/' + movieObj.keyPoster + '-150.image') // TODO: adapt/scale
+                posters.eq(0).attr('src', '/movie/poster/' + movieObj.keyPoster + '-' + ka.settings.posterSize.browser.width + '.image')
                     .css(styles).data('boom.index', firstPosterIndex - 1);
             } else {
                 posters.eq(0).replaceWith(
                     gridPoster.clone(false)
-                        .removeAttr('id class').attr({width: 150, height: 225}) // TODO: adapt/scale
-                        .css(styles).data('boom.index', firstPosterIndex - 1)
+                        .removeAttr('id class')
+                        .attr({
+                            width: ka.settings.posterSize.browser.width
+                          , height: ka.settings.posterSize.browser.height
+                        })
+                        .css(styles)
+                        .data('boom.index', firstPosterIndex - 1)
                 );
             }
         }
@@ -486,7 +491,7 @@ ka.lib.moveDetailBrowserLeft = function () {
             ka.lib.updateDetailBrowserInfo(snapshot[firstPosterIndex + 1], true);
             ka.lib._animatePosterMove(
                  ka.lib._addBrowserGridDummy()
-              , {translateZ: 0, width: 150, marginLeft: 10} // TODO: adapt/scale
+              , {translateZ: 0, width: ka.settings.posterSize.browser.width, marginLeft: 10}
               , $('#boom-detail-browser img').eq(6)
               , posters.eq(3).get(0)
               , posters.eq(2).get(0)

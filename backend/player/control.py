@@ -49,7 +49,7 @@ def _startPlayer(profile, queue):
                 break
             elif command.startswith('player:play:'):
                 if not isPlayerUpToDate:
-                    updatePlayer(profile)
+                    updatePlayer(profile, queue)
                     isPlayerUpToDate = True
                 queue.put('orchestrator:player:updated')
 

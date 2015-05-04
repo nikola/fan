@@ -33,7 +33,7 @@ from updater.lib import *
 PLAYER_AMALGAM_PATH = os.path.join(APP_STORAGE_PATH, 'amalgam')
 
 
-def _updateComponents(profile):
+def _updateComponents(profile, queue):
     def _log(text, *args):
         if text.strip():
             logger.info(text.strip())
@@ -140,8 +140,8 @@ def _writeConfig():
         fp.write(MPCHC_INI)
 
 
-def update(profile):
-    if _updateComponents(profile):
+def update(profile, queue):
+    if _updateComponents(profile, queue):
         _patchManifest()
         _writeConfig()
 

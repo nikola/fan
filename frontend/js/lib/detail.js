@@ -639,12 +639,16 @@ ka.lib._rotateLargePoster = function (movieObj, direction) {
 
         if (ka.state.isPosterScaled[movieObj.keyPoster] || gridPoster.size() == 0) {
             image = $('<img>', {
-                src: '/movie/poster/' + movieObj.keyPoster + '-300.image' // TODO: adapt/scale
+                src: '/movie/poster/' + movieObj.keyPoster + '-' + ka.settings.posterSize.detail.width + '.image'
               , css: styles
             });
         } else {
             image = gridPoster.clone(false)
-                .removeAttr('id class').attr({width: 300, height: 450}) // TODO: adapt/scale
+                .removeAttr('id class')
+                .attr({
+                    width: ka.settings.posterSize.detail.width
+                  , height: ka.settings.posterSize.detail.height
+                })
                 .css(styles);
         }
     }

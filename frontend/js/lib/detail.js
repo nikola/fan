@@ -94,7 +94,7 @@ ka.lib.browser = {
 
         var isHidden = $('#boom-detail-panel').data('boom.isHidden'),
             direction = isHidden ? '+' : '-',
-            distance = ka.lib.browser.isExpanded() ? 470 : 247; // TODO: adapt/scale
+            distance = ka.lib.browser.isExpanded() ? $('#boom-detail-panel').height() : 247; // TODO: adapt/scale
 
         $('#boom-detail-panel')
             .data('boom.isHidden', !isHidden)
@@ -755,7 +755,10 @@ ka.lib._updateAvailableStreams = function (movieObj, versions) {
             for (var version, index = 0; version = versions[index]; index++) {
                 $('<div>', {
                     text: version[0], class: 'boom-button', data: {
-                        'boom.stream': version[1], 'boom.color': '#' + movieObj.primaryPosterColor, 'boom.type': 'stream'
+                        'boom.stream': version[1]
+                      , 'boom.location': version[2]
+                      , 'boom.color': '#' + movieObj.primaryPosterColor
+                      , 'boom.type': 'stream'
                     }
                 }).appendTo('#boom-detail-available-streams');
             }

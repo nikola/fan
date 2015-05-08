@@ -263,6 +263,7 @@ class StreamManager(object):
                             'space': stream.space[::-1],
                             'resolution': stream.resolution,
                             'edit': stream.edit,
+                            'location': stream.location,
                         })
 
                 containers = sorted(containers, key=itemgetter('resolution'))
@@ -286,7 +287,7 @@ class StreamManager(object):
                         container.get('resolution'),
                         container.get('space'),
                         container.get('format'),
-                    ])), container.get('stream')])
+                    ])), container.get('stream'), container.get('location')])
 
                 return versions
 

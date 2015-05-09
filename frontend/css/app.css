@@ -43,7 +43,7 @@ body {
 
 #boom-menu-pending-objects {
     display: none;
-    width: 720px; height: 45px;
+    width: 37.5vw; height: 45px;
 
     color: rgb(128, 128, 128);
     font-size: 30px;

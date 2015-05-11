@@ -263,7 +263,7 @@ class StreamManager(object):
                             'space': stream.space[::-1],
                             'resolution': stream.resolution,
                             'edit': stream.edit,
-                            'location': stream.location,
+                            'location': os.path.basename(stream.location),
                         })
 
                 containers = sorted(containers, key=itemgetter('resolution'))

@@ -757,8 +757,10 @@ ka.lib._updateAvailableStreams = function (movieObj, versions) {
                     text: version[0], class: 'boom-button', data: {
                         'boom.stream': version[1]
                       , 'boom.location': version[2]
+                      , 'boom.shorthand': version[0]
                       , 'boom.color': '#' + movieObj.primaryPosterColor
                       , 'boom.type': 'stream'
+                      , 'boom.display': 'shorthand'
                     }
                 }).appendTo('#boom-detail-available-streams');
             }

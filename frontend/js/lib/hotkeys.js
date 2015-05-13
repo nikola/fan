@@ -147,6 +147,15 @@ ka.lib.handleKeypressToggle = function () {
         ka.lib.toggleCompilationFocus();
     } else if (ka.state.view == 'detail') {
         ka.lib.browser.toggle();
+    } else if (ka.state.view == 'select-stream') {
+        var selected = $('#boom-detail-available-streams .boom-active');
+        if (selected.data('boom.type') == 'stream') {
+            if (selected.data('boom.display') == 'shorthand') {
+                selected.text(selected.data('boom.location')).data('boom.display', 'location');
+            } else {
+                selected.text(selected.data('boom.shorthand')).data('boom.display', 'shorthand');
+            }
+        }
     }
 };
 

@@ -6,7 +6,7 @@ A movie compilation and playback app for Windows. Fast. Lean. No weather widget.
 [fan &raquo; Releases &raquo; 0.13.3.0]
 
 **Screencast:**  
-[![YouTube video](https://raw.githubusercontent.com/nikola/fan/master/screenshots/screencap.png?token=AADVUKc9I82NamvhwfGf-yOAEpyIq5Dqks5WKSPTwA%3D%3D)](https://www.youtube.com/watch?v=d78GJJeES3c)
+[![YouTube video](https://raw.githubusercontent.com/nikola/fan/master/screenshots/screencap.png?token=AADVUObimZzU04k7poNbNHs4VMBp5OF_ks5WKSV6wA%3D%3D)](https://www.youtube.com/watch?v=d78GJJeES3c)
 
 **Key features:**
 
@@ -54,7 +54,7 @@ A movie compilation and playback app for Windows. Fast. Lean. No weather widget.
   
 [![Screenshot: Movie detail](https://raw.githubusercontent.com/nikola/fan/master/screenshots/movie-detail-thumb.png?token=AADVUK-Db_JcA2pJhSUb_6armem-97Jsks5WKSS4wA%3D%3D)](https://raw.githubusercontent.com/nikola/fan/master/screenshots/movie-detail.png?token=AADVUCSYK03j7dQjCCLdsrkGZWokYGtvks5WKSTVwA%3D%3D)
   
-[![Screenshot: Menu](https://raw.githubusercontent.com/nikola/fan/master/screenshots/menu-thumb.png?token=AADVUKc9I82NamvhwfGf-yOAEpyIq5Dqks5WKSPTwA%3D%3D)](https://raw.githubusercontent.com/nikola/fan/master/screenshots/menu.png?token=AADVUKc9I82NamvhwfGf-yOAEpyIq5Dqks5WKSPTwA%3D%3D)
+[![Screenshot: Menu](https://raw.githubusercontent.com/nikola/fan/master/screenshots/menu-thumb.png?token=AADVUHpNXAo561cKWaXpSeS1XU-sh7uUks5WKSVGwA%3D%3D)](https://raw.githubusercontent.com/nikola/fan/master/screenshots/menu.png?token=AADVUA_W0WvF2fSA8ef2SrYYpbi6D9kPks5WKSVlwA%3D%3D)
 
 ---
 

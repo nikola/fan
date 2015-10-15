@@ -6,7 +6,7 @@ A movie compilation and playback app for Windows. Fast. Lean. No weather widget.
 [fan &raquo; Releases &raquo; 0.13.3.0]
 
 **Screencast:**  
-[![YouTube video](https://raw.githubusercontent.com/nikola/fan/master/screenshots/screencap.png)](https://www.youtube.com/watch?v=d78GJJeES3c)
+[![YouTube video](https://raw.githubusercontent.com/nikola/fan/master/screenshots/screencap.png?token=AADVUKc9I82NamvhwfGf-yOAEpyIq5Dqks5WKSPTwA%3D%3D)](https://www.youtube.com/watch?v=d78GJJeES3c)
 
 **Key features:**
 
@@ -46,15 +46,15 @@ A movie compilation and playback app for Windows. Fast. Lean. No weather widget.
 
 **Screenshots:**
 
-[![Screenshot: Movie grid](https://raw.githubusercontent.com/nikola/fan/master/screenshots/movie-grid-thumb.png)](https://raw.githubusercontent.com/nikola/fan/master/screenshots/movie-grid.png)
+[![Screenshot: Movie grid](https://raw.githubusercontent.com/nikola/fan/master/screenshots/movie-grid-thumb.png?token=AADVUN4AfWwp3rwAMwIZG8FULS5MxsYmks5WKSNHwA%3D%3D)](https://raw.githubusercontent.com/nikola/fan/master/screenshots/movie-grid.png?token=AADVUEkXbVd-9iz66VpXIW94RRu-d1BQks5WKSOFwA%3D%3D)
   
-[![Screenshot: Movie compilation](https://raw.githubusercontent.com/nikola/fan/master/screenshots/compilation-thumb.png)](https://raw.githubusercontent.com/nikola/fan/master/screenshots/compilation.png)
+[![Screenshot: Movie compilation](https://raw.githubusercontent.com/nikola/fan/master/screenshots/compilation-thumb.png?token=AADVUGVzIRfAESlQL_96FBUv-uXS851Xks5WKSO7wA%3D%3D)](https://raw.githubusercontent.com/nikola/fan/master/screenshots/compilation.png?token=AADVUKc9I82NamvhwfGf-yOAEpyIq5Dqks5WKSPTwA%3D%3D)
   
-[![Screenshot: Detail browser](https://raw.githubusercontent.com/nikola/fan/master/screenshots/detail-browser-thumb.png)](https://raw.githubusercontent.com/nikola/fan/master/screenshots/detail-browser.png)
+[![Screenshot: Detail browser](https://raw.githubusercontent.com/nikola/fan/master/screenshots/detail-browser-thumb.png?token=AADVUH3z1PNf8c7IYTnLqa5A2d3Jdlsaks5WKSP0wA%3D%3D)](https://raw.githubusercontent.com/nikola/fan/master/screenshots/detail-browser.png?token=AADVUEIZ7QK68FbIYvUK6sMtWz2Z4t3Sks5WKSQOwA%3D%3D)
   
-[![Screenshot: Movie detail](https://raw.githubusercontent.com/nikola/fan/master/screenshots/movie-detail-thumb.png)](https://raw.githubusercontent.com/nikola/fan/master/screenshots/movie-detail.png)
+[![Screenshot: Movie detail](https://raw.githubusercontent.com/nikola/fan/master/screenshots/movie-detail-thumb.png?token=AADVUKc9I82NamvhwfGf-yOAEpyIq5Dqks5WKSPTwA%3D%3D)](https://raw.githubusercontent.com/nikola/fan/master/screenshots/movie-detail.png?token=AADVUKc9I82NamvhwfGf-yOAEpyIq5Dqks5WKSPTwA%3D%3D)
   
-[![Screenshot: Menu](https://raw.githubusercontent.com/nikola/fan/master/screenshots/menu-thumb.png)](https://raw.githubusercontent.com/nikola/fan/master/screenshots/menu.png)
+[![Screenshot: Menu](https://raw.githubusercontent.com/nikola/fan/master/screenshots/menu-thumb.png?token=AADVUKc9I82NamvhwfGf-yOAEpyIq5Dqks5WKSPTwA%3D%3D)](https://raw.githubusercontent.com/nikola/fan/master/screenshots/menu.png?token=AADVUKc9I82NamvhwfGf-yOAEpyIq5Dqks5WKSPTwA%3D%3D)
 
 ---
 
